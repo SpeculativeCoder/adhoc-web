@@ -1,0 +1,50 @@
+{
+  "name": "adhoc-app",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^15.2.0",
+    "@angular/common": "^15.2.0",
+    "@angular/compiler": "^15.2.0",
+    "@angular/core": "^15.2.0",
+    "@angular/forms": "^15.2.0",
+    "@angular/localize": "^15.2.0",
+    "@angular/platform-browser": "^15.2.0",
+    "@angular/platform-browser-dynamic": "^15.2.0",
+    "@angular/router": "^15.2.0",
+    "@ng-bootstrap/ng-bootstrap": "^14.0.1",
+    "@popperjs/core": "^2.11.6",
+    "angular-in-memory-web-api": "^0.15.0",
+    "bootstrap": "^5.3.0-alpha1",
+    "fabric": "^5.3.0",
+    "open-iconic": "^1.1.1",
+    "rxjs": "~7.8.0",
+    "sockjs-client": "^1.6.1",
+    "tslib": "^2.3.0",
+    "webstomp-client": "^1.2.6",
+    "zone.js": "~0.12.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^15.2.0",
+    "@angular/cli": "~15.2.0",
+    "@angular/compiler-cli": "^15.2.0",
+    "@types/fabric": "^4.5.15",
+    "@types/jasmine": "~4.3.0",
+    "@types/node": "^18.14.1",
+    "@types/sockjs-client": "^1.5.1",
+    "jasmine-core": "~4.5.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.0.0",
+    "typescript": "~4.9.4"
+  }
+}

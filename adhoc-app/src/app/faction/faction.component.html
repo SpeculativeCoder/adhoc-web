@@ -1,0 +1,67 @@
+<!--
+  ~ Copyright (c) 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<div class="container-xxl">
+  <h2>
+    Faction {{ faction.id }}
+    <!--   <small class="text-muted">{{ factions.name }}</small> -->
+  </h2>
+  <form>
+    <!--   <div class="form-group form-row">
+      <label for="idInput" class="col-md-2 col-form-label">ID</label>
+      <input type="number" readonly [(ngModel)]="factions.id" name="id" id="idInput" class="col-md-4 form-control" />
+    </div> -->
+    <div class="mb-3">
+      <label class="form-label" for="nameInput">Name</label>
+      <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="faction.name"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="colorInput">Color</label>
+      <input class="form-control" id="colorInput" name="color" type="text" readonly [(ngModel)]="faction.color"/>
+      <!--<label class="form-label" for="colorDropdown">Color</label>
+      <div class="row">
+        <div ngbDropdown class="d-inline-block">
+          <button ngbDropdownToggle class="btn btn-outline-secondary btn-block" id="colorDropdown" disabled="true">
+            <span [ngStyle]="{ 'color': faction.color }">{{ faction.color }}</span>
+          </button>
+          <div ngbDropdownMenu aria-labelledby="colorDropdown">
+            <button ngbDropdownItem *ngFor="let color of colors" [ngClass]="{ active: color === faction.color }" (click)="faction.color = color">
+              {{ color }}
+            </button>
+          </div>
+        </div>
+      </div>-->
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="scoreInput">Score</label>
+      <input class="form-control" id="scoreInput" name="score" type="number" readonly [(ngModel)]="faction.score"/>
+    </div>
+    <div class="row">
+      <!--<div class="col-auto mt-3 mb-3">
+        <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
+      </div>-->
+      <div class="col-auto mt-3 mb-3">
+        <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
+      </div>
+    </div>
+  </form>
+</div>

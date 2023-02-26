@@ -1,0 +1,87 @@
+<!--
+  ~ Copyright (c) 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<div class="container-xxl">
+  <h2>
+    Objective {{ objective.id }}
+  </h2>
+  <form>
+    <div class="mb-3">
+      <label class="form-label" for="nameInput">Name</label>
+      <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="objective.name"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="regionInput">Region</label>
+      <input class="form-control" id="regionInput" name="region" type="number" readonly [(ngModel)]="objective.regionId"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="indexInput">Index</label>
+      <input class="form-control" id="indexInput" name="index" type="number" readonly [(ngModel)]="objective.index"/>
+    </div>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="xInput">X</label>
+        <input class="form-control" id="xInput" name="x" type="number" readonly [(ngModel)]="objective.x"/>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="yInput">Y</label>
+        <input class="form-control" id="yInput" name="y" type="number" readonly [(ngModel)]="objective.y"/>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="zInput">Z</label>
+        <input class="form-control" id="zInput" name="z" type="number" readonly [(ngModel)]="objective.z"/>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="areaInput">Area</label>
+      <input class="form-control" id="areaInput" name="area" type="number" readonly [(ngModel)]="objective.areaId"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="linkedObjectives">Linked Objectives</label>
+      <input class="form-control" id="linkedObjectives" name="linkedObjectives" type="text" readonly [ngModel]="objective.linkedObjectiveIds"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="factionIdInput">Faction</label>
+      <input class="form-control" id="factionIdInput" name="factionId" type="text" readonly [ngModel]="getFaction(objective.factionId)?.name"/>
+      <!--<div ngbDropdown class="col-md-4 d-inline-block btn-block">
+        <button class="btn btn-outline-dark btn-block" id="changeFactionDropdown" ngbDropdownToggle>
+          {{ getFaction(controlPoint.factionId)?.name }}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="changeFactionDropdown">
+          <button ngbDropdownItem *ngFor="let factions of factions"
+            [ngClass]="{ active: factions.factionId === controlPoint.factionId }"
+            (click)="controlPoint.factionId = factions.factionId">
+            {{ factions.name }}
+          </button>
+        </div>
+      </div>-->
+    </div>
+    <div class="row">
+      <!--<div class="col-auto mt-3 mb-3">
+        <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
+      </div>-->
+      <div class="col-auto mt-3 mb-3">
+        <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,115 @@
+<!--
+  ~ Copyright (c) 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<div class="container-xxl">
+  <h2>
+    Structure {{ structure.id }}
+  </h2>
+  <form>
+    <div class="row">
+      <div class="mb-3">
+        <label class="form-label" for="nameInput">Name</label>
+        <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="structure.name"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mb-3">
+        <label class="form-label" for="uuidInput">UUID</label>
+        <input class="form-control" id="uuidInput" name="uuid" type="text" readonly [(ngModel)]="structure.uuid"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mb-3">
+        <label class="form-label" for="typeInput">Type</label>
+        <input class="form-control" id="typeInput" name="type" type="text" readonly [(ngModel)]="structure.type"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mb-3">
+        <label class="form-label" for="regionInput">Region</label>
+        <input class="form-control" id="regionInput" name="region" type="number" readonly [(ngModel)]="structure.regionId"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="xInput">X</label>
+        <input class="form-control" id="xInput" name="x" type="number" readonly [(ngModel)]="structure.x"/>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="yInput">Y</label>
+        <input class="form-control" id="yInput" name="y" type="number" readonly [(ngModel)]="structure.y"/>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="zInput">Z</label>
+        <input class="form-control" id="zInput" name="z" type="number" readonly [(ngModel)]="structure.z"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="pitchInput">Pitch</label>
+        <input class="form-control" id="pitchInput" name="pitch" type="number" readonly [(ngModel)]="structure.pitch"/>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="rollInput">Roll</label>
+        <input class="form-control" id="rollInput" name="roll" type="number" readonly [(ngModel)]="structure.roll"/>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="yawInput">Yaw</label>
+        <input class="form-control" id="yawInput" name="yaw" type="number" readonly [(ngModel)]="structure.yaw"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="sizeXInput">SizeX</label>
+        <input class="form-control" id="sizeXInput" name="sizeX" type="number" readonly [(ngModel)]="structure.sizeX"/>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="sizeYInput">SizeY</label>
+        <input class="form-control" id="sizeYInput" name="sizeY" type="number" readonly [(ngModel)]="structure.sizeY"/>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="sizeZInput">SizeZ</label>
+        <input class="form-control" id="sizeZInput" name="sizeZ" type="number" readonly [(ngModel)]="structure.sizeZ"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mb-3">
+        <label class="form-label" for="factionInput">Faction</label>
+        <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(structure.factionId)?.name"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mb-3">
+        <label class="form-label" for="userInput">User</label>
+        <input class="form-control" id="userInput" name="user" type="number" readonly [(ngModel)]="structure.userId"/>
+      </div>
+    </div>
+    <div class="row">
+      <!--<div class="col-auto mt-3 mb-3">
+        <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
+      </div>-->
+      <div class="col-auto mt-3 mb-3">
+        <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
+      </div>
+    </div>
+  </form>
+</div>

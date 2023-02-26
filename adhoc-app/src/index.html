@@ -1,0 +1,42 @@
+<!--
+  ~ Copyright (c) 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<!doctype html>
+<html lang="en" data-bs-theme="dark"> <!-- data-bs-theme="light" -->
+<head>
+  <meta charset="utf-8">
+  <!--<meta name="_csrf_token" th:content="${_csrf.token}"/>-->
+  <!--<meta name="_csrf_headerName" th:content="${_csrf.headerName}"/>-->
+  <!--<meta name="_csrf_parameterName" th:content="${_csrf.parameterName}"/>-->
+  <meta name="MODE" th:content="${MODE}">
+  <meta name="FEATURE_FLAGS" th:content="${FEATURE_FLAGS}">
+  <!--<meta name="ADHOC_APP_TITLE" th:content="${ADHOC_APP_TITLE}">-->
+  <!--<meta name="ADHOC_APP_DEVELOPER" th:content="${ADHOC_APP_DEVELOPER}">-->
+  <!--<title th:text="${ADHOC_APP_TITLE}">WebApp</title>--> <!-- TODO -->
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--<link rel="icon" type="image/x-icon" href="favicon.ico">-->
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>

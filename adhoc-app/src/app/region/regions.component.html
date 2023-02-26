@@ -1,0 +1,55 @@
+<!--
+  ~ Copyright (c) 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<div class="container-xxl">
+  <h2>
+    Regions
+  </h2>
+  <div class="table-responsive">
+    <table class="table table-striped table-sm caption-bottom" (sort)="sortBy($event)">
+      <!--    <caption>{{regions.length}} regions</caption>-->
+      <thead>
+      <tr>
+        <!--<th scope="col"></th>-->
+        <th scope="col" sortable="id">ID</th>
+        <th scope="col" sortable="name">Name</th>
+        <th scope="col" sortable="mapName">Map</th>
+        <th scope="col" sortable="x">X</th>
+        <th scope="col" sortable="y">Y</th>
+        <th scope="col" sortable="z">Z</th>
+        <th scope="col" sortable="areas">Areas</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let region of regions">
+        <th scope="row"><a routerLink="/regions/{{ region.id }}">{{ region.id }}</a></th>
+        <td>{{ region.name }}</td>
+        <td>{{ region.mapName }}</td>
+        <td>{{ region.x }}</td>
+        <td>{{ region.y }}</td>
+        <td>{{ region.z }}</td>
+        <td>{{ region.areaIds }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,92 @@
+<!--
+  ~ Copyright (c) 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<ul class="nav justify-content-center">
+  <li class="nav-item">
+    <a class="nav-link text-body-emphasis" routerLink="/">{{adhocAppTitle}}</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/map">Map</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/servers">Servers</a>
+  </li>
+  <!-- *ngIf="currentUser && currentUser.roles.indexOf('ADMIN') != -1" -->
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/regions">Regions</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/areas">Areas</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/objectives">Objectives</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/structures">Structures</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/pawns">Pawns</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/factions">Factions</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/users">Users</a>
+  </li>
+  <li class="nav-item">
+    <a *ngIf="!currentUser && featureFlags.indexOf('development') != -1" class="nav-link text-body" routerLink="/login"><b>Login&nbsp;or&nbsp;Register</b></a>
+    <a *ngIf="currentUser" class="nav-link text-body disabled">
+      <small>
+        {{ currentUser?.name }}
+        <span [ngStyle]="{'color': currentUserFaction?.color}">
+          <span class="small oi oi-person"></span>
+        </span>
+      </small>
+    </a>
+  </li>
+  <li class="nav-item dropdown">
+    <a class="nav-link text-body dropdown-toggle" data-bs-toggle="dropdown">
+      <span class="oi oi-sun"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" style="--bs-dropdown-min-width: 5rem;">
+      <li>
+        <a class="dropdown-item text-center" onclick="document.documentElement.setAttribute('data-bs-theme', 'light')">Light</a>
+      </li>
+      <li>
+        <a class="dropdown-item text-center" onclick="document.documentElement.setAttribute('data-bs-theme', 'dark')">Dark</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<router-outlet></router-outlet>
+
+<!--<app-messages></app-messages>-->
+
+<ul class="nav justify-content-center fixed-bottom bg-body">
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/pages/eula">EULA</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-body" routerLink="/pages/about">About</a>
+  </li>
+</ul>

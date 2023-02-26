@@ -1,0 +1,78 @@
+<!--
+  ~ Copyright (c) 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<div class="container-xxl">
+  <h2>
+    Servers
+  </h2>
+  <div class="table-responsive">
+    <table class="table table-striped table-sm caption-bottom" (sort)="sortBy($event)">
+      <!--    <caption>{{servers.length}} servers</caption>-->
+      <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Region</th>
+        <th scope="col">Areas</th>
+        <th scope="col">Map</th>
+        <th scope="col">X</th>
+        <th scope="col">Y</th>
+        <th scope="col">Z</th>
+        <!--<th scope="col">Hosting Type</th>-->
+        <th scope="col">Status</th>
+        <!--<th scope="col">Manager Host</th>
+        <th scope="col">Private IP</th>
+        <th scope="col">Public IP</th>
+        <th scope="col">Port</th>-->
+        <!--      <th scope="col">WebSocket URL</th>-->
+        <th scope="col">Initiated</th>
+        <th scope="col">Last Seen</th>
+        <th scope="col">Join</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let server of servers">
+        <th scope="row"><a routerLink="/servers/{{ server.id }}">{{ server.id }}</a></th>
+        <td>{{ server.name }}</td>
+        <td>{{ server.regionId }}</td>
+        <td>{{ server.areaIds }}</td>
+        <td>{{ server.mapName }}</td>
+        <td>{{ server.x }}</td>
+        <td>{{ server.y }}</td>
+        <td>{{ server.z }}</td>
+        <!--<td>{{ server.hostingType }}</td>-->
+        <td>{{ server.status }}</td>
+        <!--<td>{{ server.managerHost }}</td>
+        <td>{{ server.privateIp }}</td>
+        <td>{{ server.publicIp }}</td>
+        <td>{{ server.publicWebSocketPort }}</td>-->
+        <!--      <td>{{ server.webSocketUrl }}</td>-->
+        <td>{{ server.initiated | simpleDate }}</td>
+        <td>{{ server.seen | simpleDate }}</td>
+        <td>
+          <a *ngIf="server.publicIp" (click)="joinServer(server)" href="javascript:;">Join</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

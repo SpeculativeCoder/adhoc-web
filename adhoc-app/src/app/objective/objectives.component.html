@@ -1,0 +1,72 @@
+<!--
+  ~ Copyright (c) 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<div class="container-xxl">
+  <h2>
+    Objectives
+  </h2>
+  <div class="table-responsive">
+    <table class="table table-striped table-sm caption-bottom" (sort)="sortBy($event)">
+      <!--    <caption>{{objectives.length}} objectives</caption>-->
+      <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Region</th>
+        <th scope="col">Index</th>
+        <th scope="col">X</th>
+        <th scope="col">Y</th>
+        <th scope="col">Z</th>
+        <th scope="col">Area</th>
+        <th scope="col">Linked Objectives</th>
+        <th scope="col">Faction</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let objective of objectives">
+        <th scope="row"><a routerLink="/objectives/{{ objective.id }}">{{ objective.id }}</a></th>
+        <td>{{ objective.name }}</td>
+        <td>{{ objective.regionId }}</td>
+        <td>{{ objective.index }}</td>
+        <td>{{ objective.x }}</td>
+        <td>{{ objective.y }}</td>
+        <td>{{ objective.z }}</td>
+        <td>{{ objective.areaId }}</td>
+        <td>{{ objective.linkedObjectiveIds }}</td>
+        <td>{{ getFaction(objective.factionId)?.name }}</td>
+        <!-- <div *ngIf="false" ngbDropdown class="d-inline-block btn-block">
+           <button class="btn btn-sm btn-outline-dark btn-block" id="changeFactionDropdown" ngbDropdownToggle>
+             {{ getFaction(objective.factionId)?.name }}
+           </button>
+           <div ngbDropdownMenu aria-labelledby="changeFactionDropdown">
+             <button ngbDropdownItem *ngFor="let faction of factions"
+                     [ngClass]="{ active: faction.id === objective.factionId }"
+                     (click)="changeFaction(objective, faction)">
+               {{ faction.name }}
+             </button>
+           </div>
+         </div> -->
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

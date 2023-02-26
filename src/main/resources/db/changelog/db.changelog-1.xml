@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet author="adhoc" id="1">
+
+        <createTable tableName="world">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="world_pkey"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+        </createTable>
+        <createTable tableName="world_manager_hosts">
+            <column name="world_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="manager_hosts" type="VARCHAR(255)"/>
+        </createTable>
+        <createTable tableName="world_kiosk_hosts">
+            <column name="world_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="kiosk_hosts" type="VARCHAR(255)"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="world_id" baseTableName="world_manager_hosts" constraintName="fk5p2phlrmf74n2vo1m38ewuge2"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="world" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="world_id" baseTableName="world_kiosk_hosts" constraintName="fk5pjgfje78k34dj23828sj1kmr"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="world" validate="true"/>
+
+        <createTable tableName="faction">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="faction_pkey"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="index" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="color" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="score" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="region">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="region_pkey"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="map_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="y" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="z" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="server_id_sequence" startValue="1"/>
+        <createTable tableName="server">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="server_pkey"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="map_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="y" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="z" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="manager_host" type="VARCHAR(255)"/>
+            <column name="private_ip" type="VARCHAR(255)"/>
+            <column name="public_ip" type="VARCHAR(255)"/>
+            <column name="public_web_socket_port" type="INTEGER"/>
+            <column name="web_socket_url" type="VARCHAR(255)"/>
+            <column name="initiated" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="seen" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="server" baseColumnNames="region_id" constraintName="fkqfcqq9wydnb0r4qtrrxdd37bb" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="region"
+                                 validate="true"/>
+
+        <createSequence sequenceName="area_id_sequence" startValue="1"/>
+        <createTable tableName="area">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="area_pkey"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="region_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="index" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="y" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="z" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sizex" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sizey" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sizez" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="server_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="area" baseColumnNames="region_id" constraintName="fkm736mn3qtcsju72tmphl9t7el" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="region"
+                                 validate="true"/>
+        <addForeignKeyConstraint baseTableName="area" baseColumnNames="server_id" constraintName="fk7n82egpflqj46utyqnk17qo16" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="server"
+                                 validate="true"/>
+
+        <createSequence sequenceName="objective_id_sequence" startValue="1"/>
+        <createTable tableName="objective">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="objective_pkey"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="region_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="index" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="y" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="z" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="initial_faction_id" type="BIGINT"/>
+            <column name="faction_id" type="BIGINT"/>
+            <column name="area_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="objective" baseColumnNames="region_id" constraintName="fkmfbe4288ixqa8dh1oeb9kxlb1" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="region"
+                                 validate="true"/>
+        <addForeignKeyConstraint baseTableName="objective" baseColumnNames="initial_faction_id" constraintName="fkcpfvsmcami2eb79au042qkbwt" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
+                                 validate="true"/>
+        <addForeignKeyConstraint baseTableName="objective" baseColumnNames="faction_id" constraintName="fk8s9is6xkp3tls97h48qim8muf" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
+                                 validate="true"/>
+        <addForeignKeyConstraint baseTableName="objective" baseColumnNames="area_id" constraintName="fkunaeqnn9mkt8243jyhds3iqh" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="area"
+                                 validate="true"/>
+
+        <createTable tableName="objective_linked_objectives">
+            <column name="objective_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="linked_objectives_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="objective_linked_objectives" baseColumnNames="objective_id" constraintName="fk63hnadpknb5s6hpdn5ntncpco"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="objective" validate="true"/>
+        <addForeignKeyConstraint baseTableName="objective_linked_objectives" baseColumnNames="linked_objectives_id" constraintName="fkhsrfeev6vp2hfqnwfk48qj71t"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="objective" validate="true"/>
+
+        <createSequence sequenceName="user_id_sequence" startValue="1"/>
+        <createTable tableName="adhoc_user">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="adhoc_user_pkey"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="faction_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="score" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x" type="FLOAT(24)"/>
+            <column name="y" type="FLOAT(24)"/>
+            <column name="z" type="FLOAT(24)"/>
+            <column name="pitch" type="FLOAT(24)"/>
+            <column name="yaw" type="FLOAT(24)"/>
+            <column name="created" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_login" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="last_join" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="seen" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="token" type="UUID"/>
+            <column name="server_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="adhoc_user" baseColumnNames="faction_id" constraintName="fks8beh8jbi10ep37shuw6glpwt" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
+                                 validate="true"/>
+        <addForeignKeyConstraint baseTableName="adhoc_user" baseColumnNames="server_id" constraintName="fkgg1e86vvf7mmostuh72ib3htc" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="server"
+                                 validate="true"/>
+
+        <createTable tableName="adhoc_user_roles">
+            <column name="adhoc_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roles" type="INTEGER"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="adhoc_user_roles" baseColumnNames="adhoc_user_id" constraintName="fkbpj40nowvqa5m1p39ceopxbcp"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="adhoc_user" validate="true"/>
+
+        <createSequence sequenceName="pawn_id_sequence" startValue="1"/>
+        <createTable tableName="pawn">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pawn_pkey"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="server_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="index" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="y" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="z" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="faction_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seen" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="pawn" baseColumnNames="server_id" constraintName="fk8ratt6yxhkx0u5epmclxpt219" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="server"
+                                 validate="true"/>
+        <addForeignKeyConstraint baseTableName="pawn" baseColumnNames="user_id" constraintName="fkfkquulew69eagmd7dj4npgp3d" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="adhoc_user" validate="true"/>
+        <addForeignKeyConstraint baseTableName="pawn" baseColumnNames="faction_id" constraintName="fkr1p0om4920da2l1yy7al11a5f" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
+                                 validate="true"/>
+
+        <createSequence sequenceName="structure_id_sequence" startValue="1"/>
+        <createTable tableName="structure">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="structure_pkey"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="uuid" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="y" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="z" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pitch" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="yaw" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roll" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="scalex" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="scaley" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="scalez" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sizex" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sizey" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sizez" type="FLOAT(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="faction_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="region_id" baseTableName="structure" constraintName="fko6fi6ghb7y0o43j46tb4k08fe" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="region"
+                                 validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="faction_id" baseTableName="structure" constraintName="fkgmk4vg84gd2vbufn4bx3oa2sr" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
+                                 validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="structure" constraintName="fkc8m9lkv9k0q4ogotr6uaup85s" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="adhoc_user" validate="true"/>
+    </changeSet>
+
+</databaseChangeLog>

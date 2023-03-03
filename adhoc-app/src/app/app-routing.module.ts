@@ -31,7 +31,7 @@ import {UsersComponent} from './user/users.component';
 import {UserComponent} from './user/user.component';
 import {MapComponent} from './map/map.component';
 import {ServerComponent} from './server/server.component';
-import {LoginRegisterComponent} from './user/login-register.component';
+import {LoginOrRegisterComponent} from './login-or-register/login-or-register.component';
 import {RegionsComponent} from "./region/regions.component";
 import {RegionComponent} from "./region/region.component";
 import {AreasComponent} from "./area/areas.component";
@@ -63,7 +63,7 @@ const routes: Routes = [
   {path: 'factions/:id', component: FactionComponent},
   {path: 'users', component: UsersComponent},
   {path: 'users/:id', component: UserComponent},
-  {path: 'login', component: LoginRegisterComponent},
+  {path: 'login-or-register', component: LoginOrRegisterComponent},
   {path: 'pages/:page', component: PagesComponent},
   {path: 'client', component: ClientComponent},
   {path: 'client/:mapName', component: ClientComponent},

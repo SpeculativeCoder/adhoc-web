@@ -80,10 +80,6 @@ public class ObjectiveManagerService {
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
         Objective objective = objectiveRepository
                 .findWithPessimisticWriteLockByRegionAndIndex(region, objectiveDto.getIndex())
-                //.map(o -> {
-                //    entityManager.lock(o, LockModeType.PESSIMISTIC_WRITE);
-                //    return o;
-                //})
                 .orElseGet(Objective::new);
 
         Faction initialFaction = objectiveDto.getInitialFactionIndex() == null ? null :
@@ -101,7 +97,8 @@ public class ObjectiveManagerService {
         objective.setZ(objectiveDto.getZ());
 
         objective.setInitialFaction(initialFaction);
-        objective.setFaction(faction == null ? initialFaction : faction);
+        // NOTE: we never change existing non-null faction (if admin wishes to do this - they can send an objective taken event)
+        objective.setFaction(objective.getFaction() == null ? initialFaction : objective.getFaction());
 
         objective.setLinkedObjectives(Collections.emptyList()); // NOTE: will be set in stage 2
 

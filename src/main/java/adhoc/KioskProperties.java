@@ -38,7 +38,6 @@ public class KioskProperties {
 
     @Value("${adhoc.manager-message-broker-host}")
     private String managerMessageBrokerHost;
-
     @Value("${adhoc.manager-message-broker-core-port}")
     private int managerMessageBrokerCorePort;
 

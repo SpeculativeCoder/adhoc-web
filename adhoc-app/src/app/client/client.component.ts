@@ -61,7 +61,7 @@ export class ClientComponent implements OnInit {
 
     // NOTE: mapName has been sanitized above via regex
     this.clientUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-      location.protocol + '//' + location.host + '/' + this.mapName + '/Adhoc.html');
+      location.protocol + '//' + location.host + '/' + this.mapName + '/Client.html');
 
     if (window.navigator.userAgent.indexOf('Windows') != -1) {
       this.showClient = true;

@@ -24,8 +24,8 @@ package adhoc.server;
 
 public enum ServerStatus {
 
-    STOPPED,
+    INACTIVE,
     STARTING,
-    STARTED,
+    ACTIVE,
     ERROR
 }

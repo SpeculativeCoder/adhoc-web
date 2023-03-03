@@ -415,14 +415,14 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
         hoverCursor: 'default',
         editable: false,
         selectable: false,
-        visible: false, // only visible on mouseover
+        visible: !!pawn.userId, // bot name only visible on mouseover
       });
       pawnCircle.on('mouseover', () => {
         pawnText.set('visible', true);
         this.canvas.requestRenderAll();
       });
       pawnCircle.on('mouseout', () => {
-        pawnText.set('visible', false);
+        pawnText.set('visible', !!pawn.userId);
         this.canvas.requestRenderAll();
       });
       this.canvas.add(pawnCircle);
@@ -431,12 +431,13 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
 
     for (const server of this.servers) {
       if (server.publicIp) {
-        let label = 'Server ' + server.id + ' - ' + server.publicIp + '\n(double click to join)';
+        let label = 'Server ' + server.id + '\n(double click to join)';
         let serverText = new fabric.IText(label, {
           originX: 'center',
           originY: 'center',
           fontFamily: 'sans-serif',
           fontSize: 14 * (1 / this.mapScale),
+          textAlign: 'center',
           fill: '#DDDDDD',
           editable: false,
           selectable: false,

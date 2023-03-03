@@ -142,8 +142,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
     //private Map<String, Object> managerToKioskCoreProps() {
     //    Map<String, Object> props = new LinkedHashMap<>();
     //    props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-    //    props.put(TransportConstants.HOST_PROP_NAME, adhocManagerProperties.get().getKioskMessageBrokerHost());
-    //    props.put(TransportConstants.PORT_PROP_NAME, adhocManagerProperties.get().getKioskMessageBrokerCorePort());
+    //    props.put(TransportConstants.HOST_PROP_NAME, managerProperties.get().getKioskMessageBrokerHost());
+    //    props.put(TransportConstants.PORT_PROP_NAME, managerProperties.get().getKioskMessageBrokerCorePort());
     //    props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
     //    log.warn("managerToKioskCoreProps: props={}", props);
     //    return props;

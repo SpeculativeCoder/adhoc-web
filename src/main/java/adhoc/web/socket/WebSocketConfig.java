@@ -42,13 +42,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         //registry.addEndpoint("/ws/stomp/user")
         //        .addInterceptors(new HttpSessionHandshakeInterceptor());
-        //.setAllowedOrigins("http://127.0.0.1:4200", "http://localhost:4200");
 
         registry.addEndpoint("/ws/stomp/server")
                 .addInterceptors(new HttpSessionHandshakeInterceptor());
-
-        // registry.addEndpoint("/stomp/user").addInterceptors(new HttpSessionHandshakeInterceptor());
-        // registry.addEndpoint("/stomp/server").addInterceptors(new HttpSessionHandshakeInterceptor());
 
         registry.addEndpoint("/ws/stomp/user_sockjs")
                 .addInterceptors(new HttpSessionHandshakeInterceptor())

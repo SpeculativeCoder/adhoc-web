@@ -44,8 +44,8 @@ export class HeaderSortComponent {
     return this.direction === 'asc' ? 'oi-sort-ascending' : 'oi-sort-descending';
   }
 
-  @HostListener('click')
-  click() {
+  @HostListener('click', ['$event'])
+  click(event: MouseEvent) {
     this.direction = this.direction === 'asc' ? 'desc' : 'asc';
     this.sortEvent$.emit({column: this.column, direction: this.direction});
   }

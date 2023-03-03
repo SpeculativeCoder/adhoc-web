@@ -53,11 +53,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // add a cors mapping to allow local access when using "ng serve" to host the
-        // frontend locally on port 4200
         registry.addMapping("/**")
-                // TODO: guard this for dev/local environment only
-                //.allowedOrigins("http://127.0.0.1:4200", "http://localhost:4200")
                 .allowedOriginPatterns(
                         "https://" + adhocProperties.getAdhocDomain(),
                         "http://" + adhocProperties.getAdhocDomain(),

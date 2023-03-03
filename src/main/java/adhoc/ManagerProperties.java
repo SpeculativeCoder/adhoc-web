@@ -41,6 +41,11 @@ public class ManagerProperties {
     @Value("${adhoc.server.basic-auth.password}")
     private String serverBasicAuthPassword;
 
+    @Value("${adhoc.default-user-password}")
+    private String defaultUserPassword;
+    @Value("${adhoc.default-admin-password}")
+    private String defaultAdminPassword;
+
     @Value("${adhoc.max-pawns}")
     private Integer maxPawns;
     @Value("${adhoc.max-players}")
@@ -48,34 +53,32 @@ public class ManagerProperties {
     @Value("${adhoc.max-bots}")
     private Integer maxBots;
 
-    //@Value("${adhoc.kiosk-message-broker-host}")
-    //private String kioskMessageBrokerHost;
-    //
-    //@Value("${adhoc.kiosk-message-broker-core-port}")
-    //private int kioskMessageBrokerCorePort;
+    @Value("${adhoc.kiosk-message-broker-host}")
+    private String kioskMessageBrokerHost;
+
+    @Value("${adhoc.kiosk-message-broker-core-port}")
+    private int kioskMessageBrokerCorePort;
 
     @Value("${adhoc.manager-domain}")
     private String managerDomain;
-
     @Value("${adhoc.kiosk-domain}")
     private String kioskDomain;
-
     @Value("${adhoc.server-domain}")
     private String serverDomain;
 
     @Value("${MANAGER_IMAGE:adhoc_manager}")
     private String managerImage;
-
     @Value("${KIOSK_IMAGE:adhoc_kiosk}")
     private String kioskImage;
-
     @Value("${SERVER_IMAGE:adhoc_server}")
     private String serverImage;
 
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
+        log.info("serverBasicAuthUsername={} serverBasicAuthPassword={}", serverBasicAuthUsername, serverBasicAuthPassword == null ? null : "***");
+        log.info("defaultUserPassword={} defaultAdminPassword={}", defaultUserPassword, defaultAdminPassword == null ? null : "***");
         log.info("maxPawns={} maxPlayers={} maxBots={}", maxPawns, maxPlayers, maxBots);
-        //log.info("kioskMessageBrokerHost={} kioskMessageBrokerCorePort={}", kioskMessageBrokerHost, kioskMessageBrokerCorePort);
+        log.info("kioskMessageBrokerHost={} kioskMessageBrokerCorePort={}", kioskMessageBrokerHost, kioskMessageBrokerCorePort);
         log.info("managerDomain={} kioskDomain={} serverDomain={}", managerDomain, kioskDomain, serverDomain);
         log.info("managerImage={} kioskImage={} serverImage={}", managerImage, kioskImage, serverImage);
     }

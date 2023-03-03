@@ -69,7 +69,7 @@ public class ServerManagerService {
         server.setY(server.getY());
         server.setZ(server.getZ());
 
-        server.setStatus(ServerStatus.STOPPED);
+        server.setStatus(ServerStatus.INACTIVE);
 
         server.setManagerHost(server.getManagerHost());
         server.setPrivateIp(server.getPrivateIp());
@@ -83,7 +83,7 @@ public class ServerManagerService {
     public void processServerStarted(ServerStartedEvent serverStartedEvent) {
         Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
-        server.setStatus(ServerStatus.STARTED);
+        server.setStatus(ServerStatus.ACTIVE);
         server.setPrivateIp(serverStartedEvent.getPrivateIp());
         //server.setManagerHost(server.getManagerHost());
 

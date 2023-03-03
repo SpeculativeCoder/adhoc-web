@@ -22,14 +22,13 @@
 
 package adhoc.world;
 
-import com.google.common.collect.Sets;
 import adhoc.AdhocProperties;
+import adhoc.ManagerProperties;
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
 import adhoc.dns.DnsService;
 import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
-import adhoc.ManagerProperties;
 import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
 import adhoc.pawn.PawnRepository;
@@ -42,10 +41,10 @@ import adhoc.user.User;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
 import adhoc.world.event.WorldUpdatedEvent;
+import com.google.common.collect.Sets;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
@@ -82,15 +81,6 @@ public class WorldManagerService {
     private final SimpMessageSendingOperations stomp;
     private final DnsService dnsService;
     private final PlatformTransactionManager platformTransactionManager;
-
-    @Value("${adhoc.feature-flags}")
-    private String featureFlags;
-
-    @Value("${adhoc.default-user-password}")
-    private String defaultUserPassword;
-
-    @Value("${adhoc.default-admin-password}")
-    private String defaultAdminPassword;
 
     /**
      * Inserts some initial data to set up the world e.g. factions.
@@ -189,7 +179,7 @@ public class WorldManagerService {
         server1.setZ(region1.getZ());
         server1.setRegion(region1);
         server1.setAreas(Arrays.asList(area1));
-        server1.setStatus(ServerStatus.STOPPED);
+        server1.setStatus(ServerStatus.INACTIVE);
         server1 = serverRepository.save(server1);
 
         area1.setServer(server1);
@@ -202,94 +192,94 @@ public class WorldManagerService {
         //server2.setHostingType(AdhocApplication.hostingType);
         //if (AdhocApplication.serverPublicIps.size() >= 2) {
         //    server2.setPublicIp(AdhocApplication.serverPublicIps.get(1));
-        //    server2.setStatus(Server.Status.STARTED);
+        //    server2.setStatus(Server.Status.ACTIVE);
         //    server2.setSeen(LocalDateTime.now());
         //} else {
-        //    server2.setStatus(Server.Status.STOPPED);
+        //    server2.setStatus(Server.Status.INACTIVE);
         //}
         //server2.setAreas(Sets.newHashSet());
         //server2 = serverRepository.save(server2);
 
         // some startup objectives for the map - this will get clobbered once the first server reports in but nice to have something
 
-        Objective objective1 = new Objective();
-        objective1.setRegion(region1);
-        objective1.setIndex(0);
-        objective1.setName("A1");
-        objective1.setX(1500F);
-        objective1.setY(1500F);
-        objective1.setZ(0F);
-        objective1.setFaction(team1);
-        objective1.setInitialFaction(team1);
-        objective1.setArea(area1);
-        objective1 = objectiveRepository.save(objective1);
+        Objective objectiveA1 = new Objective();
+        objectiveA1.setRegion(region1);
+        objectiveA1.setIndex(0);
+        objectiveA1.setName("A1");
+        objectiveA1.setX(1500F);
+        objectiveA1.setY(1500F);
+        objectiveA1.setZ(0F);
+        objectiveA1.setFaction(team1);
+        objectiveA1.setInitialFaction(team1);
+        objectiveA1.setArea(area1);
+        objectiveA1 = objectiveRepository.save(objectiveA1);
 
-        Objective objective2 = new Objective();
-        objective2.setRegion(region1);
-        objective2.setIndex(1);
-        objective2.setName("A2"); // "Training Yard");
-        objective2.setX(1000F);
-        objective2.setY(2000F);
-        objective2.setZ(0F);
-        objective2.setFaction(team3);
-        objective2.setInitialFaction(team3);
-        objective2.setArea(area1);
-        objective2 = objectiveRepository.save(objective2);
+        Objective objectiveA2 = new Objective();
+        objectiveA2.setRegion(region1);
+        objectiveA2.setIndex(1);
+        objectiveA2.setName("A2"); // "Training Yard");
+        objectiveA2.setX(500F);
+        objectiveA2.setY(2000F);
+        objectiveA2.setZ(0F);
+        objectiveA2.setFaction(team3);
+        objectiveA2.setInitialFaction(team3);
+        objectiveA2.setArea(area1);
+        objectiveA2 = objectiveRepository.save(objectiveA2);
 
-        Objective objective3 = new Objective();
-        objective3.setRegion(region1);
-        objective3.setIndex(2);
-        objective3.setName("A3"); // "Supply Building");
-        objective3.setX(2000F);
-        objective3.setY(2000F);
-        objective3.setZ(0F);
-        objective3.setFaction(team4);
-        objective3.setInitialFaction(team4);
-        objective3.setArea(area1);
-        objective3 = objectiveRepository.save(objective3);
+        Objective objectiveA3 = new Objective();
+        objectiveA3.setRegion(region1);
+        objectiveA3.setIndex(2);
+        objectiveA3.setName("A3"); // "Supply Building");
+        objectiveA3.setX(2000F);
+        objectiveA3.setY(1800F);
+        objectiveA3.setZ(0F);
+        objectiveA3.setFaction(team4);
+        objectiveA3.setInitialFaction(team4);
+        objectiveA3.setArea(area1);
+        objectiveA3 = objectiveRepository.save(objectiveA3);
 
-        Objective objective4 = new Objective();
-        objective4.setRegion(region1);
-        objective4.setIndex(3);
-        objective4.setName("B1"); // "Barracks");
-        objective4.setX(1000F);
-        objective4.setY(1000F);
-        objective4.setZ(0F);
-        objective4.setFaction(team2);
-        objective4.setInitialFaction(team2);
-        objective4.setArea(area2);
-        objective4 = objectiveRepository.save(objective4);
+        Objective objectiveB1 = new Objective();
+        objectiveB1.setRegion(region1);
+        objectiveB1.setIndex(3);
+        objectiveB1.setName("B1"); // "Barracks");
+        objectiveB1.setX(1200F);
+        objectiveB1.setY(1000F);
+        objectiveB1.setZ(0F);
+        objectiveB1.setFaction(team2);
+        objectiveB1.setInitialFaction(team2);
+        objectiveB1.setArea(area2);
+        objectiveB1 = objectiveRepository.save(objectiveB1);
 
-        Objective objective5 = new Objective();
-        objective5.setRegion(region1);
-        objective5.setIndex(4);
-        objective5.setName("B2"); // "Bunker");
-        objective5.setX(2000F);
-        objective5.setY(1000F);
-        objective5.setZ(0F);
-        objective5.setArea(area2);
-        objective5 = objectiveRepository.save(objective5);
+        Objective objectiveB2 = new Objective();
+        objectiveB2.setRegion(region1);
+        objectiveB2.setIndex(4);
+        objectiveB2.setName("B2"); // "Bunker");
+        objectiveB2.setX(1800F);
+        objectiveB2.setY(500F);
+        objectiveB2.setZ(0F);
+        objectiveB2.setArea(area2);
+        objectiveB2 = objectiveRepository.save(objectiveB2);
 
-        objective1.setLinkedObjectives(Arrays.asList(objective4, objective2, objective3, objective5)
+        objectiveA1.setLinkedObjectives(Arrays.asList(objectiveB1, objectiveA2, objectiveA3, objectiveB2)
                 .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toList()));
-        objective4.setLinkedObjectives(Arrays.asList(objective1, objective2)
+        objectiveA2.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveB1)
                 .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toList()));
-        objective2.setLinkedObjectives(Arrays.asList(objective1, objective4)
+        objectiveA3.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveB2)
                 .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toList()));
-        objective3.setLinkedObjectives(Arrays.asList(objective1, objective5)
+        objectiveB1.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveA2, objectiveB2)
                 .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toList()));
-        objective5.setLinkedObjectives(Arrays.asList(objective1, objective3)
+        objectiveB2.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveA3, objectiveB1)
                 .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toList()));
 
         // admin user and some faction specific users for testing
 
-        if (featureFlags.contains("development")) {
+        if (adhocProperties.getFeatureFlags().contains("development")) {
             User u0 = new User();
             u0.setName("admin");
             u0.setEmail("admin@" + adhocProperties.getAdhocDomain());
             u0.setFaction(team1);
             u0.setScore(0F);
-            u0.setPassword(passwordEncoder.encode(defaultAdminPassword));
+            u0.setPassword(passwordEncoder.encode(managerProperties.getDefaultAdminPassword()));
             u0.setCreated(LocalDateTime.now());
             u0.setUpdated(u0.getCreated());
             u0.setRoles(Sets.newHashSet(UserRole.USER)); // TODO: restore User.Role.ADMIN,
@@ -300,7 +290,7 @@ public class WorldManagerService {
             u1.setEmail("alphatester@" + adhocProperties.getAdhocDomain());
             u1.setFaction(team1);
             u1.setScore(0F);
-            u1.setPassword(passwordEncoder.encode(defaultUserPassword));
+            u1.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
             u1.setCreated(LocalDateTime.now());
             u1.setUpdated(u1.getCreated());
             u1.setRoles(Sets.newHashSet(UserRole.USER));
@@ -311,7 +301,7 @@ public class WorldManagerService {
             u2.setEmail("betatester@" + adhocProperties.getAdhocDomain());
             u2.setFaction(team2);
             u2.setScore(10F);
-            u2.setPassword(passwordEncoder.encode(defaultUserPassword));
+            u2.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
             u2.setCreated(LocalDateTime.now());
             u2.setUpdated(u2.getCreated());
             u2.setRoles(Sets.newHashSet(UserRole.USER));
@@ -322,7 +312,7 @@ public class WorldManagerService {
             u3.setEmail("deltatester@" + adhocProperties.getAdhocDomain());
             u3.setFaction(team3);
             u3.setScore(20F);
-            u3.setPassword(passwordEncoder.encode(defaultUserPassword));
+            u3.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
             u3.setCreated(LocalDateTime.now());
             u3.setUpdated(u3.getCreated());
             u3.setRoles(Sets.newHashSet(UserRole.USER));
@@ -333,7 +323,7 @@ public class WorldManagerService {
             u4.setEmail("gammatester@" + adhocProperties.getAdhocDomain());
             u4.setFaction(team4);
             u4.setScore(30F);
-            u4.setPassword(passwordEncoder.encode(defaultUserPassword));
+            u4.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
             u4.setCreated(LocalDateTime.now());
             u4.setUpdated(u4.getCreated());
             u4.setRoles(Sets.newHashSet(UserRole.USER));

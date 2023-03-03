@@ -44,7 +44,7 @@ import {MapComponent} from './map/map.component';
 import {ServersComponent} from './server/servers.component';
 import {ServerComponent} from './server/server.component';
 import {SimpleDatePipe} from './pipe/simple-date.pipe';
-import {LoginRegisterComponent} from './user/login-register.component';
+import {LoginOrRegisterComponent} from './login-or-register/login-or-register.component';
 import {RegionsComponent} from './region/regions.component';
 import {RegionComponent} from './region/region.component';
 import {AreasComponent} from './area/areas.component';
@@ -82,7 +82,7 @@ import {TitleStrategy} from "@angular/router";
     FactionComponent,
     UsersComponent,
     UserComponent,
-    LoginRegisterComponent,
+    LoginOrRegisterComponent,
     ClientComponent
   ],
   imports: [

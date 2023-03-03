@@ -210,7 +210,7 @@ export class UserService {
         window.sessionStorage.removeItem('UnrealEngine_WebSocketUrl');
       }
 
-      //let clientUrl = location.protocol + '//' + location.host + '/' + server.mapName + '/Adhoc.html';
+      //let clientUrl = location.protocol + '//' + location.host + '/' + server.mapName + '/Client.html';
       //console.log('clientUrl: ' + clientUrl);
 
       // console.log('angular navigate to ' + '/client/' + server.mapName);

@@ -53,7 +53,7 @@
     <a class="nav-link text-body" routerLink="/users">Users</a>
   </li>
   <li class="nav-item">
-    <a *ngIf="!currentUser && featureFlags.indexOf('development') != -1" class="nav-link text-body" routerLink="/login"><b>Login&nbsp;or&nbsp;Register</b></a>
+    <a *ngIf="!currentUser && featureFlags.indexOf('development') != -1" class="nav-link text-body" routerLink="/login-or-register"><b>Login&nbsp;or&nbsp;Register</b></a>
     <a *ngIf="currentUser" class="nav-link text-body disabled">
       <small>
         {{ currentUser?.name }}

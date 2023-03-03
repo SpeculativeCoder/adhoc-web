@@ -29,24 +29,18 @@
       <!--    <caption>{{servers.length}} servers</caption>-->
       <thead>
       <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Name</th>
-        <th scope="col">Region</th>
-        <th scope="col">Areas</th>
-        <th scope="col">Map</th>
-        <th scope="col">X</th>
-        <th scope="col">Y</th>
-        <th scope="col">Z</th>
-        <!--<th scope="col">Hosting Type</th>-->
-        <th scope="col">Status</th>
-        <!--<th scope="col">Manager Host</th>
-        <th scope="col">Private IP</th>
-        <th scope="col">Public IP</th>
-        <th scope="col">Port</th>-->
-        <!--      <th scope="col">WebSocket URL</th>-->
-        <th scope="col">Initiated</th>
-        <th scope="col">Last Seen</th>
-        <th scope="col">Join</th>
+        <th scope="col" sortable="id">ID</th>
+        <th scope="col" sortable="name">Name</th>
+        <th scope="col" sortable="region">Region</th>
+        <th scope="col" sortable="areas">Areas</th>
+        <th scope="col" sortable="map">Map</th>
+        <th scope="col" sortable="x">X</th>
+        <th scope="col" sortable="y">Y</th>
+        <th scope="col" sortable="z">Z</th>
+        <th scope="col" sortable="status">Status</th>
+        <th scope="col" sortable="initiated">Initiated</th>
+        <th scope="col" sortable="seen">Last Seen</th>
+        <th scope="col">Link</th>
       </tr>
       </thead>
       <tbody>
@@ -59,13 +53,7 @@
         <td>{{ server.x }}</td>
         <td>{{ server.y }}</td>
         <td>{{ server.z }}</td>
-        <!--<td>{{ server.hostingType }}</td>-->
         <td>{{ server.status }}</td>
-        <!--<td>{{ server.managerHost }}</td>
-        <td>{{ server.privateIp }}</td>
-        <td>{{ server.publicIp }}</td>
-        <td>{{ server.publicWebSocketPort }}</td>-->
-        <!--      <td>{{ server.webSocketUrl }}</td>-->
         <td>{{ server.initiated | simpleDate }}</td>
         <td>{{ server.seen | simpleDate }}</td>
         <td>

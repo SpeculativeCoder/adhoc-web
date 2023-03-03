@@ -28,7 +28,7 @@
       <p>Login using an existing user name (or email) and password</p>
       <form>
         <div class="mb-3">
-          <label class="form-label" for="usernameOrEmail">User Name or Email</label>
+          <label class="form-label" for="usernameOrEmail">Name or Email</label>
           <!-- autofocus -->
           <input class="form-control" id="usernameOrEmail" name="usernameOrEmail" type="text" required #usernameOrEmail [(ngModel)]="loginUsernameOrEmail">
         </div>
@@ -60,9 +60,10 @@
 
         <div class="mb-3">
           <label class="form-label" for="name">User Name</label>
-          <input class="form-control" id="name" name="name" type="text" disabled placeholder="(auto-generated)"/>
+          <small class="text-secondary"> (this will be seen by other users)</small>
+          <input class="form-control" id="name" name="name" type="text" disabled placeholder="(auto-generated e.g. AnonXXX)"/>
           <!-- [(ngModel)]="user.name" -->
-          <small class="text-secondary">NOTE: currently forced to be auto-generated - in future you may be allowed to pick/change your name</small>
+          <small class="text-secondary">NOTE: forced to be auto-generated - in future you may be allowed to pick/change your name</small>
         </div>
         <div class="mb-3">
           <label class="form-label" for="factionId">Faction</label>

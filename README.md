@@ -12,9 +12,7 @@ Full functionality of this repository depends upon the Adhoc Unreal project code
 
 However, elements of the code may still be of interest and could be useful if diagnosing bugs / issues with a deployed Adhoc web application.
 
-## Example
-
-[AdhocCombat (https://adhoccombat.com)](https://adhoccombat.com) - work in progress
+Live Example: [**AdhocCombat** (https://adhoccombat.com)](https://adhoccombat.com) - work in progress
 
 ## Usage
 

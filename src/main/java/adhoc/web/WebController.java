@@ -42,7 +42,7 @@ public class WebController {
     // TODO: better way than this to catch browser refresh in non-root URLs
     @GetMapping(value = {
             "/",
-            "/login/**",
+            "/login-or-register/**",
             "/map/**",
             "/servers/**",
             "/regions/**",
@@ -58,8 +58,6 @@ public class WebController {
     public String getIndex(Model model) {
         model.addAttribute("MODE", adhocProperties.getMode());
         model.addAttribute("FEATURE_FLAGS", adhocProperties.getFeatureFlags());
-        //model.addAttribute("ADHOC_APP_TITLE", adhocProperties.getAdhocAppTitle());
-        //model.addAttribute("ADHOC_APP_DEVELOPER", adhocProperties.getAdhocAppDeveloper());
         return "index.html";
     }
 }

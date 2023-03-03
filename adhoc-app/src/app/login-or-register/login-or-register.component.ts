@@ -29,10 +29,10 @@ import {FactionService} from '../faction/faction.service';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login-register.component.html',
-  styleUrls: ['./login-register.component.css']
+  templateUrl: './login-or-register.component.html',
+  styleUrls: ['./login-or-register.component.css']
 })
-export class LoginRegisterComponent implements OnInit, AfterViewInit {
+export class LoginOrRegisterComponent implements OnInit, AfterViewInit {
 
   loginUsernameOrEmail: string = '';
   loginPassword: string = '';

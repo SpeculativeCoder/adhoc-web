@@ -125,7 +125,7 @@ public class ServerManagerJobService {
 
                 if (server.getId() == null) {
                     server.setName(""); // the id will be added after insert (see below)
-                    server.setStatus(ServerStatus.STOPPED);
+                    server.setStatus(ServerStatus.INACTIVE);
 
                     server = serverRepository.save(server);
 
@@ -172,7 +172,7 @@ public class ServerManagerJobService {
                 }
                 if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
                     if (task.getPublicIp() != null) {
-                        server.setStatus(ServerStatus.STARTED);
+                        server.setStatus(ServerStatus.ACTIVE);
                         String webSocketHost = server.getId() + "-" + managerProperties.getServerDomain();
                         int webSocketPort = Objects.requireNonNull(task.getPublicWebSocketPort(),
                                 "web socket port not available from task when constructing url");
@@ -188,9 +188,9 @@ public class ServerManagerJobService {
                 }
 
             } else if (task == null) {
-                if (server.getStatus() == ServerStatus.STARTED) {
+                if (server.getStatus() == ServerStatus.ACTIVE) {
                     log.warn("Server {} seems to have stopped running!", server.getId());
-                    server.setStatus(ServerStatus.STOPPED);
+                    server.setStatus(ServerStatus.INACTIVE);
 
                     server.setPrivateIp(null);
                     server.setPublicIp(null);
@@ -200,7 +200,7 @@ public class ServerManagerJobService {
                     server.setSeen(null);
                     sendEvent = true;
 
-                } else if (server.getStatus() == ServerStatus.STOPPED) {
+                } else if (server.getStatus() == ServerStatus.INACTIVE) {
                     // don't start a server unless it will be able to connect to a manager
                     //if (hostingState.getManagerHosts().isEmpty()) {
                     //    log.warn("Need to start server {} but no manager(s) available!", server.getId());

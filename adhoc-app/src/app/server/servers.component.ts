@@ -28,26 +28,24 @@ import {ServerService} from './server.service';
 import {User} from '../user/user';
 import {ConfigService} from "../config/config.service";
 import {SortEvent} from "../table-sort/header-sort.component";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-servers',
-  templateUrl: './servers.component.html',
-  styleUrls: ['./servers.component.css']
+  templateUrl: './servers.component.html'
 })
 export class ServersComponent implements OnInit {
-  currentUser: User;
   servers: Server[] = [];
 
-  constructor(private serverService: ServerService, private userService: UserService, private configService: ConfigService) {
+  constructor(private serverService: ServerService,
+              private userService: UserService,
+              private configService: ConfigService,
+              private router: Router) {
   }
 
   ngOnInit() {
     forkJoin([this.serverService.getServers()]).subscribe(data => {
       [this.servers] = data;
-    });
-
-    this.userService.refreshCurrentUser().subscribe(currentUser => {
-      this.currentUser = currentUser;
     });
   }
 
@@ -56,7 +54,18 @@ export class ServersComponent implements OnInit {
   }
 
   joinServer(server: Server) {
-    this.userService.joinServer(server);
+    // send to a random area being handled by this server
+    console.log(`server.areaIds: ${server.areaIds}`);
+    let randomServerAreaIdsIndex = Math.floor(Math.random() * server.areaIds.length);
+    console.log(`randomServerAreaIdsIndex: ${randomServerAreaIdsIndex}`);
+    let randomServerAreaId = server.areaIds[randomServerAreaIdsIndex];
+    console.log(`randomServerAreaId: ${randomServerAreaId}`);
+
+    this.router.navigate(['/client', randomServerAreaId], {
+      // queryParams: {
+      //   areaId: randomServerAreaId
+      // }
+    });
   }
 
   sortBy(sort: SortEvent) {

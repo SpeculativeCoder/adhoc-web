@@ -28,8 +28,7 @@ import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-servers',
-  templateUrl: './server.component.html',
-  styleUrls: ['./server.component.css']
+  templateUrl: './server.component.html'
 })
 export class ServerComponent implements OnInit {
   server: Server = {};

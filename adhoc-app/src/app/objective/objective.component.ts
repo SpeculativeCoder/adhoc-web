@@ -30,8 +30,7 @@ import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-objectives',
-  templateUrl: './objective.component.html',
-  styleUrls: ['./objective.component.css']
+  templateUrl: './objective.component.html'
 })
 export class ObjectiveComponent implements OnInit {
   objective: Objective = {};

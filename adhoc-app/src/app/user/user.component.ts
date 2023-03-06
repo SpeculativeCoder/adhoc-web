@@ -30,8 +30,7 @@ import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-users',
-  templateUrl: './user.component.html',
-  styleUrls: ['./user.component.css']
+  templateUrl: './user.component.html'
 })
 export class UserComponent implements OnInit {
   user: User = {};

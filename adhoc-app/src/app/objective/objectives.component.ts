@@ -31,8 +31,7 @@ import {User} from "../user/user";
 
 @Component({
   selector: 'app-objectives',
-  templateUrl: './objectives.component.html',
-  styleUrls: ['./objectives.component.css']
+  templateUrl: './objectives.component.html'
 })
 export class ObjectivesComponent implements OnInit {
   objectives: Objective[] = [];

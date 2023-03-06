@@ -34,11 +34,10 @@ import {appEnvironment} from "../environments/app-environment";
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-  adhocAppTitle = 'WebApp';
+  appTitle = 'WebApp';
 
   featureFlags: string;
 
@@ -56,26 +55,16 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    let featureFlagsMetaElement = document.head.querySelector('meta[name=FEATURE_FLAGS]');
-    this.configService.featureFlags = featureFlagsMetaElement['content'] || 'development';
-    console.log("featureFlags=" + this.configService.featureFlags);
-
-    // let adhocAppTitleMetaElement = document.head.querySelector('meta[name=ADHOC_APP_TITLE]');
-    // this.configService.adhocAppTitle = adhocAppTitleMetaElement['content'] || 'WebApp';
-    // console.log("adhocAppTitle=" + this.configService.adhocAppTitle);
-    //
-    // let adhocAppDeveloperMetaElement = document.head.querySelector('meta[name=ADHOC_APP_DEVELOPER]');
-    // this.configService.adhocAppDeveloper = adhocAppDeveloperMetaElement['content'] || 'the developer(s) of this web page / application';
-    // console.log("adhocAppDeveloper=" + this.configService.adhocAppDeveloper);
-
     this.featureFlags = this.configService.featureFlags;
-    this.adhocAppTitle = appEnvironment.appTitle;
+    this.appTitle = appEnvironment.appTitle;
 
-    this.userService.watchCurrentUser().subscribe(currentUser => {
+    this.userService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser = currentUser;
 
       if (this.currentUser) {
-        this.factionService.getFaction(currentUser.factionId).subscribe(faction => this.currentUserFaction = faction);
+        this.factionService.getFaction(currentUser.factionId).subscribe(faction => {
+          this.currentUserFaction = faction
+        });
       }
     });
 
@@ -84,11 +73,7 @@ export class AppComponent implements OnInit {
       this.stompService.setCsrf(csrf);
 
       this.stompService.connect();
-    })
-
-    // let serverDomainMetaElement = document.head.querySelector('meta[name=SERVER_DOMAIN]');
-    // this.configService.serverDomain = serverDomainMetaElement['content'] || 'localhost';
-    // console.log("serverDomain="+this.configService.serverDomain);
+    });
   }
 
 }

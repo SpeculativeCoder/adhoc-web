@@ -37,16 +37,14 @@ import {AreaService} from "../area/area.service";
 import {fabric} from 'fabric';
 import {Pawn} from "../pawn/pawn";
 import {PawnService} from "../pawn/pawn.service";
-import {AppComponent} from "../app.component";
 import {ConfigService} from "../config/config.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css'],
+  templateUrl: './map.component.html'
 })
 export class MapComponent implements OnInit, DoCheck, OnChanges {
-  currentUser: User;
   regions: Region[] = [];
   areas: Area[] = [];
   objectives: Objective[] = [];
@@ -94,15 +92,12 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
               private userService: UserService,
               private featureFlagsService: ConfigService,
               private iterableDiffers: IterableDiffers,
-              private keyValueDiffers: KeyValueDiffers) {
+              private keyValueDiffers: KeyValueDiffers,
+              private router: Router) {
   }
 
   ngOnInit(): void {
     this.createDiffers();
-
-    this.userService.refreshCurrentUser().subscribe(currentUser => {
-      this.currentUser = currentUser;
-    });
 
     this.canvas = new fabric.Canvas('map-canvas', {
       preserveObjectStacking: true,
@@ -429,47 +424,53 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
       this.canvas.add(pawnText);
     }
 
-    for (const server of this.servers) {
-      if (server.publicIp) {
-        let label = 'Server ' + server.id + '\n(double click to join)';
-        let serverText = new fabric.IText(label, {
-          originX: 'center',
-          originY: 'center',
-          fontFamily: 'sans-serif',
-          fontSize: 14 * (1 / this.mapScale),
-          textAlign: 'center',
-          fill: '#DDDDDD',
-          editable: false,
-          selectable: false,
-          padding: 5,
-        });
-        let serverRect = new fabric.Rect({
-          originX: 'center',
-          originY: 'center',
-          width: serverText.get('width') + 20 * (1 / this.mapScale),
-          height: serverText.get('height') + 20 * (1 / this.mapScale),
-          stroke: '#888888',
-          strokeWidth: 2 * (1 / this.mapScale),
-          fill: '#444444DD',
-          selectable: false,
-          hasControls: false,
-        });
-        let serverGroup = new fabric.Group([serverRect, serverText], {
-          originX: 'center',
-          originY: 'center',
-          left: server.x,
-          top: -server.y,
-          selectable: true,
-          lockMovementX: true,
-          lockMovementY: true,
-          lockRotation: true,
-          hasControls: false,
-          hoverCursor: 'pointer',
-        });
-        serverGroup.on('mousedblclick', () => {
-          this.userService.joinServer(server)
-        })
-        this.canvas.add(serverGroup);
+    for (const area of this.areas) {
+      for (const server of this.servers) {
+        if (server.publicIp && server.areaIds.indexOf(area.id) != -1) {
+          let label = `Area ${area.name} - Server ${server.name}\n(double click to join)`;
+          let serverText = new fabric.IText(label, {
+            originX: 'center',
+            originY: 'center',
+            fontFamily: 'sans-serif',
+            fontSize: 14 * (1 / this.mapScale),
+            textAlign: 'center',
+            fill: '#DDDDDD',
+            editable: false,
+            selectable: false,
+            padding: 5,
+          });
+          let serverRect = new fabric.Rect({
+            originX: 'center',
+            originY: 'center',
+            width: serverText.get('width') + 20 * (1 / this.mapScale),
+            height: serverText.get('height') + 20 * (1 / this.mapScale),
+            stroke: '#888888',
+            strokeWidth: 2 * (1 / this.mapScale),
+            fill: '#444444DD',
+            selectable: false,
+            hasControls: false,
+          });
+          let serverGroup = new fabric.Group([serverRect, serverText], {
+            originX: 'center',
+            originY: 'center',
+            left: server.x,
+            top: -server.y,
+            selectable: true,
+            lockMovementX: true,
+            lockMovementY: true,
+            lockRotation: true,
+            hasControls: false,
+            hoverCursor: 'pointer',
+          });
+          serverGroup.on('mousedblclick', () => {
+            this.router.navigate(['/client', area.id], {
+              // queryParams: {
+              //   areaId: area.id
+              // }
+            });
+          });
+          this.canvas.add(serverGroup);
+        }
       }
     }
 

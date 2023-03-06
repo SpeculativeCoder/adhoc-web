@@ -28,8 +28,7 @@ import {RegionService} from "./region.service";
 
 @Component({
   selector: 'app-region',
-  templateUrl: './region.component.html',
-  styleUrls: ['./region.component.css']
+  templateUrl: './region.component.html'
 })
 export class RegionComponent implements OnInit {
 

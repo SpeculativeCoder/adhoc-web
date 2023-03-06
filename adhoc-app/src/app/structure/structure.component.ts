@@ -30,8 +30,7 @@ import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-structures',
-  templateUrl: './structure.component.html',
-  styleUrls: ['./structure.component.css']
+  templateUrl: './structure.component.html'
 })
 export class StructureComponent implements OnInit {
   structure: Structure = {};

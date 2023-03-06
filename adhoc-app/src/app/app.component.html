@@ -22,7 +22,7 @@
 
 <ul class="nav justify-content-center">
   <li class="nav-item">
-    <a class="nav-link text-body-emphasis" routerLink="/">{{adhocAppTitle}}</a>
+    <a class="nav-link text-body-emphasis" routerLink="/">{{appTitle}}</a>
   </li>
   <li class="nav-item">
     <a class="nav-link text-body" routerLink="/map">Map</a>
@@ -53,8 +53,10 @@
     <a class="nav-link text-body" routerLink="/users">Users</a>
   </li>
   <li class="nav-item">
-    <a *ngIf="!currentUser && featureFlags.indexOf('development') != -1" class="nav-link text-body" routerLink="/login-or-register"><b>Login&nbsp;or&nbsp;Register</b></a>
-    <a *ngIf="currentUser" class="nav-link text-body disabled">
+    <a class="nav-link text-body" routerLink="/login-or-register" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
+      <b>Login&nbsp;or&nbsp;Register</b>
+    </a>
+    <a class="nav-link text-body disabled" *ngIf="currentUser">
       <small>
         {{ currentUser?.name }}
         <span [ngStyle]="{'color': currentUserFaction?.color}">

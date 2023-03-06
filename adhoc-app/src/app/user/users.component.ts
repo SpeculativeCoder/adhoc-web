@@ -30,15 +30,12 @@ import {SortEvent} from '../table-sort/header-sort.component';
 
 @Component({
   selector: 'app-users',
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css']
+  templateUrl: './users.component.html'
 })
 export class UsersComponent implements OnInit {
   users: User[] = [];
   factions: Faction[] = [];
   selectedUsers: User[] = [];
-  sortColumn: string;
-  sortDirection: string;
 
   constructor(private userService: UserService, private factionService: FactionService) {
   }

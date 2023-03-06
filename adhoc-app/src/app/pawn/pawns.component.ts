@@ -30,8 +30,7 @@ import {SortEvent} from '../table-sort/header-sort.component';
 
 @Component({
   selector: 'app-pawns',
-  templateUrl: './pawns.component.html',
-  styleUrls: ['./pawns.component.css']
+  templateUrl: './pawns.component.html'
 })
 export class PawnsComponent implements OnInit {
   pawns: Pawn[] = [];

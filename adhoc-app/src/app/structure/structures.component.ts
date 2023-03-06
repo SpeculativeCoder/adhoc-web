@@ -30,8 +30,7 @@ import {SortEvent} from '../table-sort/header-sort.component';
 
 @Component({
   selector: 'app-structures',
-  templateUrl: './structures.component.html',
-  styleUrls: ['./structures.component.css']
+  templateUrl: './structures.component.html'
 })
 export class StructuresComponent implements OnInit {
   structures: Structure[] = [];

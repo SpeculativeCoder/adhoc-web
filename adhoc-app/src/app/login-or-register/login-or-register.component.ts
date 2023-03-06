@@ -29,8 +29,7 @@ import {FactionService} from '../faction/faction.service';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login-or-register.component.html',
-  styleUrls: ['./login-or-register.component.css']
+  templateUrl: './login-or-register.component.html'
 })
 export class LoginOrRegisterComponent implements OnInit, AfterViewInit {
 

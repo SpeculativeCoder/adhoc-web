@@ -24,10 +24,9 @@ import {Inject, Injectable} from '@angular/core';
 import {User} from './user';
 import {HttpClient} from '@angular/common/http';
 import {MessageService} from '../messages/message.service';
-import {BehaviorSubject, mergeMap, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, mergeMap, Observable, of, take} from 'rxjs';
 import {StompService} from '../stomp/stomp.service';
 import {map} from 'rxjs/operators';
-import {Server} from "../server/server";
 import {ConfigService} from "../config/config.service";
 import {Router} from "@angular/router";
 
@@ -35,11 +34,11 @@ import {Router} from "@angular/router";
   providedIn: 'root'
 })
 export class UserService {
+
   private readonly usersUrl: string;
   private readonly loginUrl: string;
 
   private users: User[];
-  //private currentUser: User;
   private currentUser$: BehaviorSubject<User> = new BehaviorSubject(null);
 
   constructor(@Inject('BASE_URL') baseUrl: string,
@@ -79,6 +78,21 @@ export class UserService {
     return this.http.get<User>(`${this.usersUrl}/${id}`);
   }
 
+  getCurrentUser$(): Observable<User> {
+    if (this.currentUser$.value) {
+      return this.currentUser$;
+    }
+    return this.refreshCurrentUser$();
+  }
+
+  refreshCurrentUser$() {
+    return this.http.get<User>(`${this.usersUrl}/current`, {withCredentials: true}).pipe(
+      mergeMap(user => {
+        this.currentUser$.next(user);
+        return this.currentUser$;
+      }));
+  }
+
   getCurrentUser(): Observable<User> {
     if (this.currentUser$.value) {
       return of(this.currentUser$.value);
@@ -86,19 +100,8 @@ export class UserService {
     return this.refreshCurrentUser();
   }
 
-  watchCurrentUser(): Observable<User> {
-    if (this.currentUser$.value) {
-      return this.currentUser$;
-    }
-    return this.refreshCurrentUser();
-  }
-
   refreshCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.usersUrl}/current`, {withCredentials: true}).pipe(
-      mergeMap(user => {
-        this.currentUser$.next(user);
-        return this.currentUser$;
-      }));
+    return this.refreshCurrentUser$().pipe(take(1));
   }
 
   register(user: User): Observable<User> {
@@ -109,10 +112,10 @@ export class UserService {
       }));
   }
 
-  // autoRegister(serverId: number): Observable<User> {
-  //   return this.http.post(`${this.usersUrl}/autoRegister`, { serverId: serverId }, {withCredentials: true})
-  //       .pipe(tap(user => this.currentUser = user));
-  // }
+  getCurrentUserOrRegister(serverId: number): Observable<User> {
+    return this.currentUser$.value ? of(this.currentUser$.value)
+      : this.register({serverId: serverId});
+  }
 
   login(usernameOrEmail: string, password: string) {
     const formData: FormData = new FormData();
@@ -120,7 +123,7 @@ export class UserService {
     formData.set('password', password ?? '');
 
     return this.http.post(`${this.loginUrl}`, formData, {responseType: 'text', withCredentials: true}).pipe(
-      mergeMap(result => this.getCurrentUser()));
+      mergeMap(_ => this.refreshCurrentUser()));
   }
 
   updateUser(user: User): Observable<User> {
@@ -170,53 +173,5 @@ export class UserService {
     }
     // TODO: announce score
     //this.messages.add(JSON.stringify(factionIdToAwardedScore));
-  }
-
-  joinServer(server: Server) {
-    let observable: Observable<User> =
-      this.currentUser$.value
-        ? of(this.currentUser$.value)
-        : this.register({serverId: server.id});
-
-    observable.subscribe(user => {
-      let unrealEngineCommandLine = server.publicIp + ":" + server.publicWebSocketPort;
-
-      //if (server.publicWebSocketPort != 8889) {
-      //   unrealEngineCommandLine += ":" + server.publicWebSocketPort;
-      //}
-      //unrealEngineCommandLine += '?WebSocketPort=' + server.publicWebSocketPort;
-
-      unrealEngineCommandLine += ''; // '?ServerID=' + server.id;
-      //unrealEngineCommandLine += '?ServerDomain=' + this.configService.serverDomain;
-      if (user && user.id && user.token) {
-        unrealEngineCommandLine += '?UserID=' + user.id + '?Token=' + user.token;
-      }
-      if (this.configService.featureFlags) {
-        unrealEngineCommandLine += ' FeatureFlags=' + this.configService.featureFlags;
-      }
-      unrealEngineCommandLine += ' -stdout';
-      console.log('unrealEngineCommandLine: ' + unrealEngineCommandLine);
-
-      window.sessionStorage.setItem('UnrealEngine_CommandLine', unrealEngineCommandLine);
-
-      // let webSocketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      // let webSocketUrl = webSocketProtocol + '//' + server.id + '-' + this.configService.serverDomain + ':' + server.publicWebSocketPort;
-      // console.log('webSocketUrl: '+webSocketUrl);
-
-      if (server.webSocketUrl) {
-        console.log('webSocketUrl: ' + server.webSocketUrl);
-        window.sessionStorage.setItem('UnrealEngine_WebSocketUrl', server.webSocketUrl);
-      } else {
-        window.sessionStorage.removeItem('UnrealEngine_WebSocketUrl');
-      }
-
-      //let clientUrl = location.protocol + '//' + location.host + '/' + server.mapName + '/Client.html';
-      //console.log('clientUrl: ' + clientUrl);
-
-      // console.log('angular navigate to ' + '/client/' + server.mapName);
-      this.router.navigate(['/client/' + server.mapName]);
-
-      //window.location.href = clientUrl;
-    });
   }
 }

@@ -27,8 +27,7 @@ import {ConfigService} from "../config/config.service";
 
 @Component({
   selector: 'app-page',
-  templateUrl: './pages.component.html',
-  styleUrls: ['./pages.component.scss']
+  templateUrl: './pages.component.html'
 })
 export class PagesComponent {
 

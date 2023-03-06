@@ -29,8 +29,7 @@ import {User} from "../user/user";
 
 @Component({
   selector: 'app-areas',
-  templateUrl: './areas.component.html',
-  styleUrls: ['./areas.component.css']
+  templateUrl: './areas.component.html'
 })
 export class AreasComponent implements OnInit {
   areas: Area[] = [];

@@ -66,7 +66,7 @@ const routes: Routes = [
   {path: 'login-or-register', component: LoginOrRegisterComponent},
   {path: 'pages/:page', component: PagesComponent},
   {path: 'client', component: ClientComponent},
-  {path: 'client/:mapName', component: ClientComponent},
+  {path: 'client/:areaId', component: ClientComponent},
 ];
 
 @NgModule({

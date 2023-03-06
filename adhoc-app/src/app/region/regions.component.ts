@@ -29,8 +29,7 @@ import {User} from "../user/user";
 
 @Component({
   selector: 'app-regions',
-  templateUrl: './regions.component.html',
-  styleUrls: ['./regions.component.css']
+  templateUrl: './regions.component.html'
 })
 export class RegionsComponent implements OnInit {
   regions: Region[] = [];

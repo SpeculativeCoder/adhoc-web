@@ -22,14 +22,12 @@
 
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {forkJoin} from "rxjs";
 import {Area} from "./area";
 import {AreaService} from "./area.service";
 
 @Component({
   selector: 'app-area',
-  templateUrl: './area.component.html',
-  styleUrls: ['./area.component.css']
+  templateUrl: './area.component.html'
 })
 export class AreaComponent implements OnInit {
 
@@ -44,8 +42,8 @@ export class AreaComponent implements OnInit {
 
   ngOnInit() {
     const objectiveId = +this.route.snapshot.paramMap.get('id');
-    forkJoin([this.areaService.getArea(objectiveId)]).subscribe(data => {
-      [this.area] = data;
+    this.areaService.getArea(objectiveId).subscribe(data => {
+      this.area = data;
     });
   }
 

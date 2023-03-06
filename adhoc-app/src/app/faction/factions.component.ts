@@ -29,8 +29,7 @@ import {User} from "../user/user";
 
 @Component({
   selector: 'app-factions',
-  templateUrl: './factions.component.html',
-  styleUrls: ['./factions.component.css']
+  templateUrl: './factions.component.html'
 })
 export class FactionsComponent implements OnInit {
   factions: Faction[] = [];

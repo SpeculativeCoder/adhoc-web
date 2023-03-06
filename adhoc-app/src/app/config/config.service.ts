@@ -28,21 +28,24 @@ import {Injectable} from '@angular/core';
 export class ConfigService {
 
   featureFlags: string = '';
-  adhocAppTitle: string = 'WebApp';
-  adhocAppDeveloper: string = 'the developer(s) of this web page / application';
+  appTitle: string = 'WebApp';
+  appDeveloper: string = 'the developer(s) of this web page / application';
 
   constructor() {
+    let featureFlagsMetaElement = document.head.querySelector('meta[name=FEATURE_FLAGS]');
+    this.featureFlags = featureFlagsMetaElement['content'] || 'development';
+    console.log("featureFlags=" + this.featureFlags);
   }
 
-  getFeatureFlags() {
-    return this.featureFlags;
-  }
-
-  getAdhocAppTitle() {
-    return this.adhocAppTitle;
-  }
-
-  getAdhocAppDeveloper() {
-    return this.adhocAppDeveloper;
-  }
+  // getFeatureFlags() {
+  //   return this.featureFlags;
+  // }
+  //
+  // getAppTitle() {
+  //   return this.appTitle;
+  // }
+  //
+  // getAppDeveloper() {
+  //   return this.appDeveloper;
+  // }
 }

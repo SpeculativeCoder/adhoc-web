@@ -25,53 +25,98 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {ConfigService} from "../config/config.service";
 import {appEnvironment} from "../../environments/app-environment";
+import {AreaService} from "../area/area.service";
+import {UserService} from "../user/user.service";
+import {ServerService} from "../server/server.service";
 
 @Component({
   selector: 'app-client',
-  templateUrl: './client.component.html',
-  styleUrls: ['./client.component.scss']
+  templateUrl: './client.component.html'
 })
 export class ClientComponent implements OnInit {
 
   showClient: boolean;
-
   showCompatibilityWarning: boolean;
 
-  mapName: string;
+  appEnvironment = appEnvironment;
 
   clientUrl: SafeResourceUrl;
 
-  adhocEnvironment = appEnvironment;
+  private areaId: number;
 
-  constructor(private route: ActivatedRoute, private router: Router, private sanitizer: DomSanitizer,
-              private configService: ConfigService) {
+  constructor(private route: ActivatedRoute,
+              private router: Router,
+              private sanitizer: DomSanitizer,
+              private configService: ConfigService,
+              private areaService: AreaService,
+              private serverService: ServerService,
+              private userService: UserService) {
   }
 
   ngOnInit() {
-    this.mapName = this.route.snapshot.paramMap.get('mapName');
-    console.log("mapName: " + this.mapName);
-
-    let commandLine = window.sessionStorage.getItem('UnrealEngine_CommandLine');
-    console.log("commandLine: " + commandLine);
-
-    if (!this.mapName || !commandLine || !this.mapName.match("^Region[0-9]+$")) {
-      this.router.navigate(['']);
+    if (window.navigator.userAgent.indexOf('Windows') == -1) {
+      this.showCompatibilityWarning = true;
       return;
     }
 
-    // NOTE: mapName has been sanitized above via regex
-    this.clientUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-      location.protocol + '//' + location.host + '/' + this.mapName + '/Client.html');
-
-    if (window.navigator.userAgent.indexOf('Windows') != -1) {
-      this.showClient = true;
-    } else {
-      this.showCompatibilityWarning = true;
-    }
+    this.runClient();
   }
 
-  runAnyway() {
+  runClientAnyway() {
     this.showCompatibilityWarning = false;
-    this.showClient = true;
+
+    this.runClient();
+  }
+
+  private runClient() {
+    let areaIdString: string = this.route.snapshot.paramMap.get('areaId');
+    console.log(`areaId: ${areaIdString}`);
+    if (!areaIdString) {
+      throw new Error(`areaId not set or empty`);
+    }
+
+    this.areaId = Number.parseInt(areaIdString);
+    if (Number.isNaN(this.areaId)) {
+      throw new Error(`areaId is not a number: ${areaIdString}`);
+    }
+
+    this.areaService.getArea(this.areaId).subscribe(area => {
+      if (!area.serverId) {
+        throw new Error(`area ${this.areaId} has no server`);
+      }
+
+      this.serverService.getServer(area.serverId).subscribe(server => {
+
+        this.userService.getCurrentUserOrRegister(server.id).subscribe(user => {
+          let unrealEngineCommandLine = server.publicIp + ":" + server.publicWebSocketPort;
+          if (user && user.id && user.token) {
+            unrealEngineCommandLine += '?UserID=' + user.id + '?Token=' + user.token;
+          }
+          if (this.configService.featureFlags) {
+            unrealEngineCommandLine += ' FeatureFlags=' + this.configService.featureFlags;
+          }
+          unrealEngineCommandLine += ' -stdout';
+          console.log(`unrealEngineCommandLine: ${unrealEngineCommandLine}`);
+
+          window.sessionStorage.setItem('UnrealEngine_CommandLine', unrealEngineCommandLine);
+
+          if (server.webSocketUrl) {
+            console.log(`webSocketUrl: ${server.webSocketUrl}`);
+            window.sessionStorage.setItem('UnrealEngine_WebSocketUrl', server.webSocketUrl);
+          } else {
+            window.sessionStorage.removeItem('UnrealEngine_WebSocketUrl');
+          }
+
+          if (!server.mapName || !server.mapName.match("^Region[0-9]+$")) {
+            throw new Error(`invalid map name: ${server.mapName}`);
+          }
+          // NOTE: mapName has been sanitized above via regex
+          this.clientUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+            location.protocol + '//' + location.host + '/' + server.mapName + '/Client.html');
+
+          this.showClient = true;
+        });
+      });
+    });
   }
 }

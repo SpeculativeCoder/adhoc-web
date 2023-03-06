@@ -27,8 +27,7 @@ import {FactionService} from './faction.service';
 
 @Component({
   selector: 'app-factions',
-  templateUrl: './faction.component.html',
-  styleUrls: ['./faction.component.css']
+  templateUrl: './faction.component.html'
 })
 export class FactionComponent implements OnInit {
   faction: Faction = {};

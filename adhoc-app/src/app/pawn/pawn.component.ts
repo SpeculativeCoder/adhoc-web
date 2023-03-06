@@ -30,8 +30,7 @@ import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-pawns',
-  templateUrl: './pawn.component.html',
-  styleUrls: ['./pawn.component.css']
+  templateUrl: './pawn.component.html'
 })
 export class PawnComponent implements OnInit {
   pawn: Pawn = {};

@@ -88,7 +88,7 @@ public class UserManagerController {
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
     public UserDefeatedUserEvent handleDefeatedUser(@Valid @RequestBody UserDefeatedUserEvent userDefeatedUserEvent) {
-        log.info("Handling: {}", userDefeatedUserEvent);
+        log.debug("Handling: {}", userDefeatedUserEvent);
 
         return userManagerService.processUserDefeatedUser(userDefeatedUserEvent);
     }
@@ -97,7 +97,7 @@ public class UserManagerController {
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
     public UserDefeatedBotEvent handleDefeatedBot(@Valid @RequestBody UserDefeatedBotEvent userDefeatedBotEvent) {
-        log.info("Handling: {}", userDefeatedBotEvent);
+        log.debug("Handling: {}", userDefeatedBotEvent);
 
         return userManagerService.processUserDefeatedBot(userDefeatedBotEvent);
     }

@@ -23,7 +23,9 @@
 package adhoc.structure;
 
 import adhoc.region.Region;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -35,7 +37,8 @@ public interface StructureRepository extends JpaRepository<Structure, Long> {
 
     Stream<Structure> findByRegionIdOrderById(Long regionId);
 
-    Optional<Structure> findByRegionAndUuid(Region region, UUID uuid);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Structure> findWithPessimisticWriteLockByRegionAndUuid(Region region, UUID uuid);
 
     Structure getByRegionAndUuid(Region area, UUID uuid);
 }

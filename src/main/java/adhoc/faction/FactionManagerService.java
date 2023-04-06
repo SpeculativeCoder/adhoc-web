@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 public class FactionManagerService {
 
     private final FactionRepository factionRepository;
+
     private final FactionService factionService;
 
     public FactionDto updateFaction(FactionDto factionDto) {

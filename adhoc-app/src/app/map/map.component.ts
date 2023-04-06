@@ -463,7 +463,7 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
             hoverCursor: 'pointer',
           });
           serverGroup.on('mousedblclick', () => {
-            this.router.navigate(['/client', area.id], {
+            this.router.navigate(['client', 'area', area.id], {
               // queryParams: {
               //   areaId: area.id
               // }

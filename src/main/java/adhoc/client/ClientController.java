@@ -78,14 +78,14 @@ public class ClientController {
         return resource;
     }
 
-    @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".UE4.js", produces = "application/javascript")
+    @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".UE4.js", produces = "text/javascript")
     public ClassPathResource getClientUE4Js(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.UE4.js.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
 
-    @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".data.js.gz", produces = "application/javascript")
+    @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".data.js.gz", produces = "text/javascript")
     public ClassPathResource getClientDataJsGz(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.data.js.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
@@ -99,14 +99,14 @@ public class ClientController {
         return resource;
     }
 
-    @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".js.gz", produces = "application/javascript")
+    @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".js.gz", produces = "text/javascript")
     public ClassPathResource getClientClientJsGz(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.js.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
 
-    @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".js.symbols.gz", produces = "application/javascript")
+    @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".js.symbols.gz", produces = "text/javascript")
     public ClassPathResource getClientClientJsSymbolsGz(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.js.symbols.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
@@ -121,21 +121,21 @@ public class ClientController {
     }
 
     // worker js for multithreading builds only
-    @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".worker.js.gz", produces = "application/javascript")
+    @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".worker.js.gz", produces = "text/javascript")
     public ClassPathResource getClientClientWorkerJsGz(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.worker.js.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
 
-    @GetMapping(value = "/" + MAP_NAME + "/Utility.js.gz", produces = "application/javascript")
+    @GetMapping(value = "/" + MAP_NAME + "/Utility.js.gz", produces = "text/javascript")
     public ClassPathResource getUtilityJsGz(@PathVariable(value = "mapName") String mapName, HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/Utility.js.gz", mapName));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
 
-    @GetMapping(value = "/" + MAP_NAME + "/jquery-2.1.3.min.js", produces = "application/javascript")
+    @GetMapping(value = "/" + MAP_NAME + "/jquery-2.1.3.min.js", produces = "text/javascript")
     public ClassPathResource getJQueryJs(@PathVariable(value = "mapName") String mapName, HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/jquery-2.1.3.min.js", mapName));
         return resource;
@@ -147,26 +147,26 @@ public class ClientController {
         return resource;
     }
 
-    @GetMapping(value = "/" + MAP_NAME + "/bootstrap.min.js", produces = "application/javascript")
+    @GetMapping(value = "/" + MAP_NAME + "/bootstrap.min.js", produces = "text/javascript")
     public ClassPathResource getBootstrapJs(@PathVariable(value = "mapName") String mapName, HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/bootstrap.min.js", mapName));
         return resource;
     }
 
     // the font access is from the root of the app - so just get the fonts from first mapName as they are all the same
-    @GetMapping(value = "/fonts/glyphicons-halflings-regular.ttf")
+    @GetMapping(value = "/fonts/glyphicons-halflings-regular.ttf", produces="font/ttf")
     public ClassPathResource getFontsGlyphiconsHalflingsRegularTtf(HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource("/Client/Region0001/HTML5/fonts/glyphicons-halflings-regular.ttf");
         return resource;
     }
 
-    @GetMapping(value = "/fonts/glyphicons-halflings-regular.woff")
+    @GetMapping(value = "/fonts/glyphicons-halflings-regular.woff", produces="font/woff")
     public ClassPathResource getFontsGlyphiconsHalflingsRegularWoff(HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource("/Client/Region0001/HTML5/fonts/glyphicons-halflings-regular.woff");
         return resource;
     }
 
-    @GetMapping(value = "/fonts/glyphicons-halflings-regular.woff2")
+    @GetMapping(value = "/fonts/glyphicons-halflings-regular.woff2", produces="font/woff2")
     public ClassPathResource getFontsGlyphiconsHalflingsRegularWoff2(HttpServletResponse response) {
         ClassPathResource resource = new ClassPathResource("/Client/Region0001/HTML5/fonts/glyphicons-halflings-regular.woff2");
         return resource;

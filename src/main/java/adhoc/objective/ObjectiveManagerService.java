@@ -135,6 +135,6 @@ public class ObjectiveManagerService {
                     friendly.setScore(friendly.getScore() + 1);
                 });
 
-        log.info("Objective {} has been taken by {}", objective.getName(), faction.getName());
+        log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
     }
 }

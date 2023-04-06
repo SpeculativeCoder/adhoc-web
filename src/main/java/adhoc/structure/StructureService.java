@@ -109,7 +109,7 @@ public class StructureService {
 
     private Structure toEntity(StructureDto structureDto) {
         Region region = regionRepository.getReferenceById(structureDto.getRegionId());
-        Structure structure = structureRepository.findByRegionAndUuid(region, structureDto.getUuid()).orElseGet(Structure::new);
+        Structure structure = structureRepository.findWithPessimisticWriteLockByRegionAndUuid(region, structureDto.getUuid()).orElseGet(Structure::new);
 
         structure.setRegion(region);
         structure.setUuid(structureDto.getUuid());

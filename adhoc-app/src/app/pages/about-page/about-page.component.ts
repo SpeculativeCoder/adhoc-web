@@ -31,7 +31,7 @@ import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 })
 export class AboutPageComponent {
 
-  adhocEnvironment = appEnvironment;
+  appEnvironment = appEnvironment;
 
   aboutPageExtra: SafeHtml;
 

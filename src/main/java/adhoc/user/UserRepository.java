@@ -23,13 +23,19 @@
 package adhoc.user;
 
 import adhoc.faction.Faction;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	List<User> findWithPessimisticWriteLockBy();
 
 	//public User findByEmail(String email);
 

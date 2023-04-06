@@ -50,14 +50,14 @@ public class FactionManagerJobService {
         log.trace("Decaying user scores...");
 
         // TODO: properties
-        userRepository.findAll().forEach(user -> user.setScore(user.getScore() * 0.99F));
+        userRepository.findWithPessimisticWriteLockBy().forEach(user -> user.setScore(user.getScore() * 0.99F));
     }
 
     public void decayFactionScores() {
         log.trace("Decaying faction scores...");
 
         // TODO: properties
-        factionRepository.findAll().forEach(faction -> faction.setScore(faction.getScore() * 0.98F));
+        factionRepository.findWithPessimisticWriteLockBy().forEach(faction -> faction.setScore(faction.getScore() * 0.98F));
     }
 
     public void awardFactionScores() {
@@ -69,7 +69,7 @@ public class FactionManagerJobService {
                 .filter(objective -> objective.getFaction() != null)
                 .forEach(objective -> factionAwardedScores.merge(objective.getFaction(), 1, (awardedScore, o) -> awardedScore + 1));
 
-        factionRepository.findAll().stream()
+        factionRepository.findWithPessimisticWriteLockBy().stream()
                 .filter(factionAwardedScores::containsKey)
                 .forEach(faction -> faction.setScore(faction.getScore() + factionAwardedScores.get(faction)));
 

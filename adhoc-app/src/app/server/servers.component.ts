@@ -61,7 +61,7 @@ export class ServersComponent implements OnInit {
     let randomServerAreaId = server.areaIds[randomServerAreaIdsIndex];
     console.log(`randomServerAreaId: ${randomServerAreaId}`);
 
-    this.router.navigate(['/client', randomServerAreaId], {
+    this.router.navigate(['client', 'area', randomServerAreaId], {
       // queryParams: {
       //   areaId: randomServerAreaId
       // }

@@ -31,6 +31,7 @@
         <version>3.0.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>adhoc</groupId>
     <artifactId>adhoc-web</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -42,7 +43,9 @@
         <angular.configuration>development</angular.configuration>
         <unreal.configuration>Development</unreal.configuration>
         <liquibase.propertyFile>liquibase.properties</liquibase.propertyFile>
+
         <java.version>19</java.version>
+        <spring-framework.version>6.0.8</spring-framework.version>
         <guava.version>31.1-jre</guava.version>
         <awssdk.version>2.20.30</awssdk.version>
         <docker-java.version>3.3.0</docker-java.version>
@@ -143,7 +146,8 @@
             <artifactId>spring-security-messaging</artifactId>
         </dependency>
 
-        <!--<dependency>
+        <!--
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
@@ -154,7 +158,8 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
-        </dependency>-->
+        </dependency>
+        -->
 
         <dependency>
             <groupId>io.projectreactor.netty</groupId>
@@ -216,24 +221,27 @@
             <scope>test</scope>
         </dependency>
 
-        <!--		<dependency>-->
-        <!--			<groupId>org.springframework.boot</groupId>-->
-        <!--			<artifactId>spring-boot-starter-activemq</artifactId>-->
-        <!--		</dependency>-->
+        <!--
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-activemq</artifactId>
+        </dependency>
 
-        <!--		<dependency>-->
-        <!--			<groupId>org.springframework.integration</groupId>-->
-        <!--			<artifactId>spring-integration-jdbc</artifactId>-->
-        <!--		</dependency>-->
-        <!--		<dependency>-->
-        <!--			<groupId>org.springframework.integration</groupId>-->
-        <!--			<artifactId>spring-integration-stomp</artifactId>-->
-        <!--		</dependency>-->
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-stomp</artifactId>
+        </dependency>
 
-        <!--		<dependency>-->
-        <!--			<groupId>javax.servlet</groupId>-->
-        <!--			<artifactId>javax.servlet-api</artifactId>-->
-        <!--		</dependency>-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        -->
+
     </dependencies>
 
     <build>
@@ -248,7 +256,8 @@
                 </includes>
                 <filtering>false</filtering>
             </resource>
-            <!--<resource>
+            <!--
+            <resource>
                 <directory>certs</directory>
                 <includes>
                     <include>adhoc.cer</include>
@@ -257,7 +266,8 @@
                 </includes>
                 <targetPath>certs</targetPath>
                 <filtering>false</filtering>
-            </resource>-->
+            </resource>
+            -->
             <resource>
                 <directory>adhoc-app/dist/adhoc-app</directory>
                 <includes>

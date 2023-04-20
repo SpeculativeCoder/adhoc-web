@@ -32,6 +32,9 @@ import java.util.Optional;
 public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Objective getWithPessimisticWriteLockById(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Objective> findWithPessimisticWriteLockByRegionAndIndex(Region region, Integer index);
 
     Objective getByRegionAndIndex(Region region, Integer index);

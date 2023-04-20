@@ -35,6 +35,9 @@ import java.util.stream.Stream;
 public interface UserRepository extends JpaRepository<User, Long> {
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	User getWithPessimisticWriteLockById(Long id);
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	List<User> findWithPessimisticWriteLockBy();
 
 	//public User findByEmail(String email);

@@ -119,8 +119,8 @@ public class ObjectiveManagerService {
     }
 
     public void processObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
-        Faction faction = factionRepository.getReferenceById(objectiveTakenEvent.getFactionId());
-        Objective objective = objectiveRepository.getReferenceById(objectiveTakenEvent.getObjectiveId());
+        Faction faction = factionRepository.getWithPessimisticWriteLockById(objectiveTakenEvent.getFactionId());
+        Objective objective = objectiveRepository.getWithPessimisticWriteLockById(objectiveTakenEvent.getObjectiveId());
 
         faction.setScore(faction.getScore() + 1);
         objective.setFaction(faction);

@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.5</version>
+        <version>3.0.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -45,9 +45,9 @@
         <liquibase.propertyFile>liquibase.properties</liquibase.propertyFile>
 
         <java.version>19</java.version>
-        <spring-framework.version>6.0.8</spring-framework.version>
+        <!--<spring-framework.version>6.0.8</spring-framework.version>-->
         <guava.version>31.1-jre</guava.version>
-        <awssdk.version>2.20.30</awssdk.version>
+        <awssdk.version>2.20.49</awssdk.version>
         <docker-java.version>3.3.0</docker-java.version>
     </properties>
 

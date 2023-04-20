@@ -31,6 +31,9 @@ import java.util.List;
 public interface FactionRepository extends JpaRepository<Faction, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Faction getWithPessimisticWriteLockById(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Faction> findWithPessimisticWriteLockBy();
 
     Faction getByIndex(Integer index);

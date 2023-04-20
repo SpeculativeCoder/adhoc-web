@@ -104,7 +104,7 @@ public class UserManagerService {
     }
 
     public UserDefeatedUserEvent processUserDefeatedUser(UserDefeatedUserEvent userDefeatedUserEvent) {
-        User user = userRepository.getReferenceById(userDefeatedUserEvent.getUserId());
+        User user = userRepository.getWithPessimisticWriteLockById(userDefeatedUserEvent.getUserId());
         user.setScore(user.getScore() + 1);
 
 //		FactionEntity faction = user.getFaction();
@@ -114,7 +114,7 @@ public class UserManagerService {
     }
 
     public UserDefeatedBotEvent processUserDefeatedBot(UserDefeatedBotEvent userDefeatedBotEvent) {
-        User user = userRepository.getReferenceById(userDefeatedBotEvent.getUserId());
+        User user = userRepository.getWithPessimisticWriteLockById(userDefeatedBotEvent.getUserId());
         user.setScore(user.getScore() + 1);
 
 //		FactionEntity faction = user.getFaction();

@@ -41,12 +41,12 @@ public class AdhocApplication {
 
     public enum Mode {
         /**
-         * When running as a {@link #MANAGER}, this application talks to the {@link adhoc.hosting.HostingService} to ensure servers are representing each area in each region (and will start / stop servers accordingly).
+         * When running as a {@link #MANAGER}, this application talks to a {@link adhoc.hosting.HostingService} to ensure servers are representing each area in each region (and will start / stop servers accordingly).
          * There will likely only be a few (and typically just 1) {@link #MANAGER} applications running.
-         *
+         * <p>
          * Servers communicate with the {@link #MANAGER} to let it know about events occurring in the world.
          * Events are handled by the {@link #MANAGER} and then emitted in the {@link adhoc.web.socket.ArtemisConfig} cluster for {@link #KIOSK}'s to observe.
-         *
+         * <p>
          * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the manager.
          */
         MANAGER,
@@ -54,9 +54,9 @@ public class AdhocApplication {
         /**
          * When running as a {@link #KIOSK} this application is for access by users (i.e. the "public" facing variant of the application).
          * There will likely be many {@link #KIOSK}'s running - enough to handle whatever load is occurring.
-         *
+         * <p>
          * It receives events via the Artemis cluster to pass on to users.
-         *
+         * <p>
          * Most of the access to the kiosk will be users with {@link UserRole#USER} role.
          */
         KIOSK

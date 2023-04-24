@@ -46,16 +46,8 @@ public class ManagerProperties {
     @Value("${adhoc.default-admin-password}")
     private String defaultAdminPassword;
 
-    @Value("${adhoc.max-pawns}")
-    private Integer maxPawns;
-    @Value("${adhoc.max-players}")
-    private Integer maxPlayers;
-    @Value("${adhoc.max-bots}")
-    private Integer maxBots;
-
     @Value("${adhoc.kiosk-message-broker-host}")
     private String kioskMessageBrokerHost;
-
     @Value("${adhoc.kiosk-message-broker-core-port}")
     private int kioskMessageBrokerCorePort;
 
@@ -73,13 +65,20 @@ public class ManagerProperties {
     @Value("${SERVER_IMAGE:adhoc_server}")
     private String serverImage;
 
+    @Value("${adhoc.max-pawns}")
+    private Integer maxPawns;
+    @Value("${adhoc.max-players}")
+    private Integer maxPlayers;
+    @Value("${adhoc.max-bots}")
+    private Integer maxBots;
+
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
         log.info("serverBasicAuthUsername={} serverBasicAuthPassword={}", serverBasicAuthUsername, serverBasicAuthPassword == null ? null : "***");
         log.info("defaultUserPassword={} defaultAdminPassword={}", defaultUserPassword, defaultAdminPassword == null ? null : "***");
-        log.info("maxPawns={} maxPlayers={} maxBots={}", maxPawns, maxPlayers, maxBots);
         log.info("kioskMessageBrokerHost={} kioskMessageBrokerCorePort={}", kioskMessageBrokerHost, kioskMessageBrokerCorePort);
         log.info("managerDomain={} kioskDomain={} serverDomain={}", managerDomain, kioskDomain, serverDomain);
         log.info("managerImage={} kioskImage={} serverImage={}", managerImage, kioskImage, serverImage);
+        log.info("maxPawns={} maxPlayers={} maxBots={}", maxPawns, maxPlayers, maxBots);
     }
 }

@@ -38,6 +38,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	User getWithPessimisticWriteLockById(Long id);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	Optional<User> findWithPessimisticWriteLockById(Long id);
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	List<User> findWithPessimisticWriteLockBy();
 
 	//public User findByEmail(String email);
@@ -52,5 +55,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	boolean existsByName(String name);
 
-	Stream<User> findBySeenBeforeAndPasswordIsNull(LocalDateTime time);
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	Stream<User> findWithPessimisticWriteLockBySeenBeforeAndPasswordIsNull(LocalDateTime time);
 }

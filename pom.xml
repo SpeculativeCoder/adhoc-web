@@ -252,7 +252,7 @@
             <resource>
                 <directory>customization</directory>
                 <includes>
-                    <include>adhoc.properties</include>
+                    <include>adhoc.env</include>
                 </includes>
                 <filtering>false</filtering>
             </resource>

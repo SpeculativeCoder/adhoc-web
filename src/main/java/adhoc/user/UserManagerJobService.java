@@ -44,7 +44,7 @@ public class UserManagerJobService {
         log.trace("Purging old users...");
 
         userRepository
-                .findBySeenBeforeAndPasswordIsNull(LocalDateTime.now().minusHours(24)) //.minusMinutes(30))
+                .findWithPessimisticWriteLockBySeenBeforeAndPasswordIsNull(LocalDateTime.now().minusDays(7)) //.minusMinutes(30))
                 .forEach(oldUser -> {
                     log.info("Purging old auto-registered user - oldUser={}", oldUser);
 //                    for (Pawn pawn : oldUser.getPawns()) {

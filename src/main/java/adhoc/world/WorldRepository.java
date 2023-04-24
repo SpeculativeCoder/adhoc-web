@@ -22,8 +22,12 @@
 
 package adhoc.world;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 
 public interface WorldRepository extends JpaRepository<World, Long> {
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    World getWithPessimisticWriteLockById(Long id);
 }

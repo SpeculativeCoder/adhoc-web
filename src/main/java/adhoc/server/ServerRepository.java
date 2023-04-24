@@ -23,11 +23,19 @@
 package adhoc.server;
 
 import adhoc.area.Area;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ServerRepository extends JpaRepository<Server, Long> {
 
-    Optional<Server> findFirstByAreasContains(Area area);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Server> findWithPessimisticWriteLockBy();
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Server> findFirstWithPessimisticWriteLockByAreasContains(Area area);
 }

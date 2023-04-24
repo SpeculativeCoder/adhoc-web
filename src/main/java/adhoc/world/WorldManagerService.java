@@ -92,12 +92,11 @@ public class WorldManagerService {
     public void initializeDefaultWorld() {
         //TransactionStatus transaction = platformTransactionManager.getTransaction(TransactionDefinition.withDefaults());
 
-        World world = worldRepository.findById(WorldService.WORLD_ID).orElse(null);
-        if (world != null) {
+        if (worldRepository.existsById(WorldService.WORLD_ID)) {
             return; // already initialised the world - no need to do anything
         }
 
-        world = new World();
+        World world = new World();
         world.setId(WorldService.WORLD_ID);
         world = worldRepository.save(world);
 
@@ -352,11 +351,13 @@ public class WorldManagerService {
 
         if (!world.getManagerHosts().equals(managerHosts)) {
             world.setManagerHosts(managerHosts);
+            // TODO: move to some dns service
             dnsService.createOrUpdateDnsRecord(managerProperties.getManagerDomain(), managerHosts);
             emitEvent = true;
         }
         if (!world.getKioskHosts().equals(kioskHosts)) {
             world.setKioskHosts(kioskHosts);
+            // TODO: move to some dns service
             dnsService.createOrUpdateDnsRecord(managerProperties.getKioskDomain(), kioskHosts);
             emitEvent = true;
         }

@@ -22,16 +22,19 @@
 
 package adhoc.server;
 
-import com.google.common.collect.Sets;
 import adhoc.ManagerProperties;
 import adhoc.area.Area;
+import adhoc.area.AreaRepository;
 import adhoc.dns.DnsService;
-import adhoc.region.Region;
-import adhoc.region.RegionRepository;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.hosting.ServerTask;
+import adhoc.region.Region;
+import adhoc.region.RegionRepository;
 import adhoc.world.WorldManagerService;
+import com.google.common.collect.Sets;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,11 +58,15 @@ public class ServerManagerJobService {
 
     private final RegionRepository regionRepository;
 
+    private final AreaRepository areaRepository;
+
     private final HostingService hostingService;
 
     private final WorldManagerService worldManagerService;
 
     private final ServerManagerService serverManagerService;
+
+    private final EntityManager entityManager;
 
     private final DnsService dnsService;
 
@@ -79,7 +86,7 @@ public class ServerManagerJobService {
      * This will typically be based on number of players in each area.
      */
     //@Scheduled(cron="0 */1 * * * *")
-    public void manageNeededServers() {
+    private void manageNeededServers() {
         log.trace("Managing needed servers...");
 
         List<Region> regions = regionRepository.findAll();
@@ -94,9 +101,9 @@ public class ServerManagerJobService {
             }
 
             for (List<Area> areaGroup : areaGroups) {
-                // TODO: other servers may already be hosting some of the other areas so can't just check first area
+                // TODO: other servers may already be hosting some of the other areas so can't just check first area (but we do for now)
                 Area firstArea = areaGroup.get(0);
-                Server server = serverRepository.findFirstByAreasContains(firstArea).orElseGet(Server::new);
+                Server server = serverRepository.findFirstWithPessimisticWriteLockByAreasContains(firstArea).orElseGet(Server::new);
 
                 if (server.getRegion() == null || !region.getId().equals(server.getRegion().getId())) {
                     server.setRegion(region);
@@ -119,6 +126,7 @@ public class ServerManagerJobService {
                                 areaGroup.stream().map(Area::getId).collect(Collectors.toSet()))) {
                     server.setAreas(new ArrayList<>(areaGroup));
                     for (Area area : server.getAreas()) {
+                        entityManager.lock(area, LockModeType.PESSIMISTIC_WRITE);
                         area.setServer(server);
                     }
                 }
@@ -143,7 +151,7 @@ public class ServerManagerJobService {
      * by the current needed servers.
      */
     //@Scheduled(cron="0 */1 * * * *")
-    public void manageHostingTasks() {
+    private void manageHostingTasks() {
         log.trace("Managing hosting tasks...");
 
         // get state of running containers
@@ -156,7 +164,7 @@ public class ServerManagerJobService {
         worldManagerService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
 
         Set<ServerTask> tasksToKeep = Sets.newLinkedHashSet();
-        List<Server> servers = serverRepository.findAll();
+        List<Server> servers = serverRepository.findWithPessimisticWriteLockBy();
 
         for (Server server : servers) {
             boolean sendEvent = false;

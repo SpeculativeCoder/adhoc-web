@@ -34,6 +34,11 @@ import org.springframework.stereotype.Component;
 @Getter
 public class AdhocProperties {
 
+    @Value("${adhoc.application.mode}")
+    private AdhocApplication.Mode mode;
+    @Value("${adhoc.feature-flags}")
+    private String featureFlags;
+
     @Value("${adhoc.message-broker-host}")
     private String messageBrokerHost;
     @Value("${adhoc.message-broker.stomp-port}")
@@ -46,21 +51,18 @@ public class AdhocProperties {
     @Value("${adhoc.kiosk-host}")
     private String kioskHost;
 
-    @Value("${adhoc.application.mode}")
-    private AdhocApplication.Mode mode;
-    @Value("${adhoc.feature-flags}")
-    private String featureFlags;
-
     @Value("${adhoc.domain}")
     private String adhocDomain;
+
     @Value("${adhoc.unreal-project-name}")
     private String unrealProjectName;
 
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
+        log.info("mode={} featureFlags={}", mode, featureFlags);
         log.info("messageBrokerHost={} messageBrokerStompPort={} messageBrokerCorePort={}", messageBrokerHost, messageBrokerStompPort, messageBrokerCorePort);
         log.info("managerHost={} kioskHost={}", managerHost, kioskHost);
-        log.info("mode={} featureFlags={}", mode, featureFlags);
-        log.info("adhocDomain={} unrealProjectName={}", adhocDomain, unrealProjectName);
+        log.info("adhocDomain={}", adhocDomain);
+        log.info("unrealProjectName={}", unrealProjectName);
     }
 }

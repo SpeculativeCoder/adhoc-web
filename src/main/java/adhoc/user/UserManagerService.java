@@ -59,7 +59,7 @@ public class UserManagerService {
     }
 
     public ResponseEntity<UserNavigateResponse> navigate(UserNavigateRequest userNavigateRequest) {
-        User user = userRepository.getReferenceById(userNavigateRequest.getUserId());
+        User user = userRepository.getWithPessimisticWriteLockById(userNavigateRequest.getUserId());
         Area area = areaRepository.getReferenceById(userNavigateRequest.getAreaId());
         Server server = area.getServer();
         if (server == null) {
@@ -84,11 +84,7 @@ public class UserManagerService {
     }
 
     public ResponseEntity<UserDetailDto> userJoin(UserJoinRequest userJoinRequest) {
-        User user = userRepository.findById(userJoinRequest.getUserId()).orElse(null);
-        if (user == null) {
-            return ResponseEntity.unprocessableEntity().build();
-        }
-
+        User user = userRepository.getWithPessimisticWriteLockById(userJoinRequest.getUserId());
         Server server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
         // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)

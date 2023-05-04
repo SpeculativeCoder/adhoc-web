@@ -111,10 +111,16 @@ export class ClientComponent implements OnInit {
           if (!server.mapName || !server.mapName.match("^Region[0-9]+$")) {
             throw new Error(`invalid map name: ${server.mapName}`);
           }
-          // NOTE: mapName has been sanitized above via regex
-          this.clientUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-            location.protocol + '//' + location.host + '/' + server.mapName + '/Client.html');
 
+          const clientUrl = location.protocol + '//' + location.host + '/' + server.mapName + '/Client.html';
+          console.log(`clientUrl: ${clientUrl}`);
+
+          // uncomment this if we prefer to send to the client directly rather than iframe
+          //window.location.href = clientUrl;
+          //return;
+
+          // NOTE: mapName as part of clientUrl was sanitized above via regex
+          this.clientUrl = this.sanitizer.bypassSecurityTrustResourceUrl(clientUrl);
           this.showClient = true;
         });
       });

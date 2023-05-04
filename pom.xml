@@ -44,10 +44,10 @@
         <unreal.configuration>Development</unreal.configuration>
         <liquibase.propertyFile>liquibase.properties</liquibase.propertyFile>
 
-        <java.version>19</java.version>
-        <!--<spring-framework.version>6.0.8</spring-framework.version>-->
+        <java.version>20</java.version>
+        <!--<spring-framework.version></spring-framework.version>-->
         <guava.version>31.1-jre</guava.version>
-        <awssdk.version>2.20.49</awssdk.version>
+        <awssdk.version>2.20.59</awssdk.version>
         <docker-java.version>3.3.0</docker-java.version>
     </properties>
 
@@ -326,6 +326,7 @@
                             <workingDirectory>adhoc-app</workingDirectory>
                             <arguments>
                                 <argument>install</argument>
+                                <argument>--legacy-peer-deps</argument> <!-- until ng-bootstrap for angular 16 -->
                             </arguments>
                         </configuration>
                     </execution>

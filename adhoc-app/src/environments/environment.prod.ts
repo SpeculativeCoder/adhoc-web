@@ -19,9 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 export const environment = {
   production: true,
   inMemoryDb: false,
-  baseUrl: location.protocol + '//' + location.host,
-  cluster: 'prod',
+  baseUrl: location.protocol + '//' + location.host
 };

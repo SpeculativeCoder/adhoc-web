@@ -50,7 +50,7 @@ public class FactionManagerJobService {
         log.trace("Decaying user scores...");
 
         // TODO: properties
-        userRepository.findWithPessimisticWriteLockBy().forEach(user -> user.setScore(user.getScore() * 0.99F));
+        userRepository.findWithPessimisticWriteLockBy().forEach(user -> user.setScore(user.getScore() * 0.999F));
     }
 
     public void decayFactionScores() {

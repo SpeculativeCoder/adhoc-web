@@ -22,7 +22,6 @@
 
 package adhoc.web.socket;
 
-import adhoc.KioskProperties;
 import adhoc.AdhocProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +40,6 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Configure Active MQ Artemis to act as an embedded message broker running locally.
@@ -55,7 +53,6 @@ import java.util.Optional;
 public class ArtemisConfig implements ArtemisConfigurationCustomizer {
 
     private final AdhocProperties adhocProperties;
-    private final Optional<KioskProperties> kioskProperties;
 
     @Bean
     public TopicConfiguration eventsTopic() {
@@ -77,14 +74,11 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         configuration.addConnectorConfiguration("core-connector",
                 new TransportConfiguration(NettyConnectorFactory.class.getName(), coreProps()));
 
-        //if (applicationMode == AdhocApplication.Mode.MANAGER) {
-        //    configuration.addConnectorConfiguration("kiosk-core-connector",
-        //            new TransportConfiguration(NettyConnectorFactory.class.getName(), managerToKioskCoreProps()));
-        //} else
-        if (kioskProperties.isPresent()) {
-            configuration.addConnectorConfiguration("manager-core-connector",
-                    new TransportConfiguration(NettyConnectorFactory.class.getName(), kioskToManagerCoreProps()));
-        }
+        configuration.addConnectorConfiguration("kiosk-core-connector",
+                new TransportConfiguration(NettyConnectorFactory.class.getName(), kioskCoreProps()));
+
+        configuration.addConnectorConfiguration("manager-core-connector",
+                new TransportConfiguration(NettyConnectorFactory.class.getName(), managerCoreProps()));
 
         ClusterConnectionConfiguration clusterConnection = new ClusterConnectionConfiguration();
         clusterConnection.setName("adhoc-cluster-connection");
@@ -97,12 +91,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         //clusterConnection.setAllowDirectConnectionsOnly(true);
         //clusterConnection.setReconnectAttempts(1);
         //clusterConnection.setInitialConnectAttempts(1);
-        if (kioskProperties.isPresent()) {
-            clusterConnection.setStaticConnectors(Arrays.asList("manager-core-connector"));
-        } else {
-            clusterConnection.setStaticConnectors(Arrays.asList("core-connector"));
-            //clusterConnection.setStaticConnectors(Arrays.asList("kiosk-core-connector"));
-        }
+        clusterConnection.setStaticConnectors(Arrays.asList("manager-core-connector", "core-connector"));
         //clusterConnection.setClientFailureCheckPeriod(10000);
         configuration.addClusterConfiguration(clusterConnection);
     }
@@ -129,25 +118,25 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         return props;
     }
 
-    private Map<String, Object> kioskToManagerCoreProps() {
+    private Map<String, Object> managerCoreProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-        props.put(TransportConstants.HOST_PROP_NAME, kioskProperties.get().getManagerMessageBrokerHost());
-        props.put(TransportConstants.PORT_PROP_NAME, kioskProperties.get().getManagerMessageBrokerCorePort());
+        props.put(TransportConstants.HOST_PROP_NAME, adhocProperties.getManagerMessageBrokerHost());
+        props.put(TransportConstants.PORT_PROP_NAME, adhocProperties.getManagerMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
-        log.info("kioskToManagerCoreProps: props={}", props);
+        log.info("managerCoreProps: props={}", props);
         return props;
     }
 
-    //private Map<String, Object> managerToKioskCoreProps() {
-    //    Map<String, Object> props = new LinkedHashMap<>();
-    //    props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-    //    props.put(TransportConstants.HOST_PROP_NAME, managerProperties.get().getKioskMessageBrokerHost());
-    //    props.put(TransportConstants.PORT_PROP_NAME, managerProperties.get().getKioskMessageBrokerCorePort());
-    //    props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
-    //    log.warn("managerToKioskCoreProps: props={}", props);
-    //    return props;
-    //}
+    private Map<String, Object> kioskCoreProps() {
+        Map<String, Object> props = new LinkedHashMap<>();
+        props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
+        props.put(TransportConstants.HOST_PROP_NAME, adhocProperties.getKioskMessageBrokerHost());
+        props.put(TransportConstants.PORT_PROP_NAME, adhocProperties.getKioskMessageBrokerCorePort());
+        props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
+        log.warn("kioskCoreProps: props={}", props);
+        return props;
+    }
 }
 
 //        log.info("configuration={}", configuration);

@@ -46,6 +46,16 @@ public class AdhocProperties {
     @Value("${adhoc.message-broker.core-port}")
     private int messageBrokerCorePort;
 
+    @Value("${adhoc.manager-message-broker-host}")
+    private String managerMessageBrokerHost;
+    @Value("${adhoc.manager-message-broker-core-port}")
+    private int managerMessageBrokerCorePort;
+
+    @Value("${adhoc.kiosk-message-broker-host}")
+    private String kioskMessageBrokerHost;
+    @Value("${adhoc.kiosk-message-broker-core-port}")
+    private int kioskMessageBrokerCorePort;
+
     @Value("${adhoc.manager-host}")
     private String managerHost;
     @Value("${adhoc.kiosk-host}")
@@ -61,6 +71,8 @@ public class AdhocProperties {
     public void contextRefreshed(ContextRefreshedEvent event) {
         log.info("mode={} featureFlags={}", mode, featureFlags);
         log.info("messageBrokerHost={} messageBrokerStompPort={} messageBrokerCorePort={}", messageBrokerHost, messageBrokerStompPort, messageBrokerCorePort);
+        log.info("managerMessageBrokerHost={} managerMessageBrokerCorePort={}", managerMessageBrokerHost, managerMessageBrokerCorePort);
+        log.info("kioskMessageBrokerHost={} kioskMessageBrokerCorePort={}", kioskMessageBrokerHost, kioskMessageBrokerCorePort);
         log.info("managerHost={} kioskHost={}", managerHost, kioskHost);
         log.info("adhocDomain={}", adhocDomain);
         log.info("unrealProjectName={}", unrealProjectName);

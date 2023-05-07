@@ -46,11 +46,6 @@ public class ManagerProperties {
     @Value("${adhoc.default-admin-password}")
     private String defaultAdminPassword;
 
-    @Value("${adhoc.kiosk-message-broker-host}")
-    private String kioskMessageBrokerHost;
-    @Value("${adhoc.kiosk-message-broker-core-port}")
-    private int kioskMessageBrokerCorePort;
-
     @Value("${adhoc.manager-domain}")
     private String managerDomain;
     @Value("${adhoc.kiosk-domain}")
@@ -76,7 +71,6 @@ public class ManagerProperties {
     public void contextRefreshed(ContextRefreshedEvent event) {
         log.info("serverBasicAuthUsername={} serverBasicAuthPassword={}", serverBasicAuthUsername, serverBasicAuthPassword == null ? null : "***");
         log.info("defaultUserPassword={} defaultAdminPassword={}", defaultUserPassword, defaultAdminPassword == null ? null : "***");
-        log.info("kioskMessageBrokerHost={} kioskMessageBrokerCorePort={}", kioskMessageBrokerHost, kioskMessageBrokerCorePort);
         log.info("managerDomain={} kioskDomain={} serverDomain={}", managerDomain, kioskDomain, serverDomain);
         log.info("managerImage={} kioskImage={} serverImage={}", managerImage, kioskImage, serverImage);
         log.info("maxPawns={} maxPlayers={} maxBots={}", maxPawns, maxPlayers, maxBots);

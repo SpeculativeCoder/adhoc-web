@@ -45,7 +45,6 @@
         <liquibase.propertyFile>liquibase.properties</liquibase.propertyFile>
 
         <java.version>20</java.version>
-        <!--<spring-framework.version></spring-framework.version>-->
         <guava.version>31.1-jre</guava.version>
         <awssdk.version>2.20.59</awssdk.version>
         <docker-java.version>3.3.0</docker-java.version>

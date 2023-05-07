@@ -20,39 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.faction;
 
-import adhoc.server.event.ServerStartedEvent;
-import adhoc.server.dto.ServerDto;
-import jakarta.validation.Valid;
+import adhoc.faction.dto.FactionDto;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 
-@RestController
+@Transactional
+@Service
 @Profile("mode-manager")
-@RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ServerManagerController {
+public class ManagerFactionService {
 
-    private final ServerManagerService serverManagerService;
+    private final FactionRepository factionRepository;
 
-    @PutMapping("/servers/{serverId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ServerDto putServer(@PathVariable("serverId") Long serverId, @Valid @RequestBody ServerDto serverDto) {
-        serverDto.setId(serverId);
+    private final FactionService factionService;
 
-        return serverManagerService.updateServer(serverDto);
-    }
-    @MessageMapping("ServerStarted")
-    @PreAuthorize("hasRole('SERVER')")
-    public void handleServerStarted(@Valid @RequestBody ServerStartedEvent serverStartedEvent) {
-        log.info("Handling: {}", serverStartedEvent);
-
-        serverManagerService.processServerStarted(serverStartedEvent);
+    public FactionDto updateFaction(FactionDto factionDto) {
+        return factionService.toDto(
+                factionRepository.save(factionService.toEntity(factionDto)));
     }
 }

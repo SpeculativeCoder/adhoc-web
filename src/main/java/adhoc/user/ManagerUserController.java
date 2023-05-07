@@ -41,16 +41,16 @@ import org.springframework.web.bind.annotation.*;
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class UserManagerController {
+public class ManagerUserController {
 
-    private final UserManagerService userManagerService;
+    private final ManagerUserService managerUserService;
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public UserDto putUser(@PathVariable("userId") Long userId, @Valid @RequestBody UserDto userDto) {
         userDto.setId(userId);
 
-        return userManagerService.updateUser(userDto);
+        return managerUserService.updateUser(userDto);
     }
 
     /**
@@ -62,7 +62,7 @@ public class UserManagerController {
             @PathVariable("serverId") Long serverId, @Valid @RequestBody UserRegisterRequest userRegisterRequest, Authentication authentication) {
         userRegisterRequest.setServerId(serverId);
 
-        return userManagerService.serverUserRegister(userRegisterRequest, authentication);
+        return managerUserService.serverUserRegister(userRegisterRequest, authentication);
     }
 
     @PostMapping("/servers/{serverId}/users/{userId}/navigate")
@@ -71,7 +71,7 @@ public class UserManagerController {
             @PathVariable("serverId") Long serverId, @PathVariable("userId") Long userId, @Valid @RequestBody UserNavigateRequest userNavigateRequest) {
         userNavigateRequest.setUserId(userId);
 
-        return userManagerService.navigate(userNavigateRequest);
+        return managerUserService.navigate(userNavigateRequest);
     }
 
     @PostMapping("/servers/{serverId}/users/{userId}/join")
@@ -81,7 +81,7 @@ public class UserManagerController {
         userJoinRequest.setServerId(serverId);
         userJoinRequest.setUserId(userId);
 
-        return userManagerService.userJoin(userJoinRequest);
+        return managerUserService.userJoin(userJoinRequest);
     }
 
     @MessageMapping("UserDefeatedUser")
@@ -90,7 +90,7 @@ public class UserManagerController {
     public UserDefeatedUserEvent handleDefeatedUser(@Valid @RequestBody UserDefeatedUserEvent userDefeatedUserEvent) {
         log.debug("Handling: {}", userDefeatedUserEvent);
 
-        return userManagerService.processUserDefeatedUser(userDefeatedUserEvent);
+        return managerUserService.processUserDefeatedUser(userDefeatedUserEvent);
     }
 
     @MessageMapping("UserDefeatedBot")
@@ -99,6 +99,6 @@ public class UserManagerController {
     public UserDefeatedBotEvent handleDefeatedBot(@Valid @RequestBody UserDefeatedBotEvent userDefeatedBotEvent) {
         log.debug("Handling: {}", userDefeatedBotEvent);
 
-        return userManagerService.processUserDefeatedBot(userDefeatedBotEvent);
+        return managerUserService.processUserDefeatedBot(userDefeatedBotEvent);
     }
 }

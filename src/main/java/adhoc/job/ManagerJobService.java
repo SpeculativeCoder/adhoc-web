@@ -22,10 +22,10 @@
 
 package adhoc.job;
 
-import adhoc.faction.FactionManagerJobService;
-import adhoc.pawn.PawnManagerJobService;
-import adhoc.server.ServerManagerJobService;
-import adhoc.user.UserManagerJobService;
+import adhoc.faction.ManagerFactionJobService;
+import adhoc.pawn.ManagerPawnJobService;
+import adhoc.server.ManagerServerJobService;
+import adhoc.user.ManagerUserJobService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,13 +42,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ManagerJobService implements Job {
 
-    private final ServerManagerJobService serverManagerJobService;
+    private final ManagerServerJobService managerServerJobService;
 
-    private final FactionManagerJobService factionManagerJobService;
+    private final ManagerFactionJobService managerFactionJobService;
 
-    private final UserManagerJobService userManagerJobService;
+    private final ManagerUserJobService managerUserJobService;
 
-    private final PawnManagerJobService pawnManagerJobService;
+    private final ManagerPawnJobService managerPawnJobService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -56,22 +56,22 @@ public class ManagerJobService implements Job {
             String jobName = context.getJobDetail().getKey().getName();
             switch (jobName) {
                 case ManagerJobConfig.MANAGE_SERVERS:
-                    serverManagerJobService.manageServers();
+                    managerServerJobService.manageServers();
                     break;
                 case ManagerJobConfig.AWARD_FACTION_SCORES:
-                    factionManagerJobService.awardFactionScores();
+                    managerFactionJobService.awardFactionScores();
                     break;
                 case ManagerJobConfig.DECAY_FACTION_SCORES:
-                    factionManagerJobService.decayFactionScores();
+                    managerFactionJobService.decayFactionScores();
                     break;
                 case ManagerJobConfig.DECAY_USER_SCORES:
-                    factionManagerJobService.decayUserScores();
+                    managerFactionJobService.decayUserScores();
                     break;
                 case ManagerJobConfig.PURGE_OLD_USERS:
-                    userManagerJobService.purgeOldUsers();
+                    managerUserJobService.purgeOldUsers();
                     break;
                 case ManagerJobConfig.PURGE_OLD_PAWNS:
-                    pawnManagerJobService.purgeOldPawns();
+                    managerPawnJobService.purgeOldPawns();
                     break;
                 default:
                     log.error("Skipping unknown job! jobName={}", jobName);

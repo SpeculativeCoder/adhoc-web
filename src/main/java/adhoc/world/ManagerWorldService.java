@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class WorldManagerService {
+public class ManagerWorldService {
 
     private final AdhocProperties adhocProperties;
     private final ManagerProperties managerProperties;

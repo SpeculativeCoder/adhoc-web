@@ -22,31 +22,31 @@
 
 package adhoc.pawn;
 
-import adhoc.server.event.ServerPawnsEvent;
-import jakarta.validation.Valid;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
-@RestController
-@RequestMapping("/api")
+import java.time.LocalDateTime;
+
+@Transactional
+@Service
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class PawnManagerController {
+public class ManagerPawnJobService {
 
-    private final PawnManagerService pawnManagerService;
+    private final PawnRepository pawnRepository;
 
-    @MessageMapping("ServerPawns")
-    @PreAuthorize("hasRole('SERVER')")
-    public void handleServerPawns(@Valid @RequestBody ServerPawnsEvent serverPawnsEvent) {
-        log.debug("Handling: {}", serverPawnsEvent);
+    public void purgeOldPawns() {
+        log.trace("Purging old pawns...");
 
-        pawnManagerService.processServerPawns(serverPawnsEvent);
+        pawnRepository
+                .findBySeenBefore(LocalDateTime.now().minusMinutes(1))
+                .forEach(oldPawn -> {
+                    log.debug("Purging old pawn: oldPawn={}", oldPawn);
+                    pawnRepository.delete(oldPawn);
+                });
     }
 }

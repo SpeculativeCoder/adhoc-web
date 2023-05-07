@@ -45,7 +45,7 @@ import java.time.LocalDateTime;
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class UserManagerService {
+public class ManagerUserService {
 
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;

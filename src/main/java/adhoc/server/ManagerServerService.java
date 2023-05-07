@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class ServerManagerService {
+public class ManagerServerService {
 
     private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;

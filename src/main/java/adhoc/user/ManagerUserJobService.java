@@ -20,33 +20,42 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.user;
 
-import adhoc.area.dto.AreaDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @Transactional
 @Service
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class AreaManagerService {
+public class ManagerUserJobService {
 
-    private final AreaRepository areaRepository;
-    private final AreaService areaService;
+    private final UserRepository userRepository;
 
-    public List<AreaDto> updateServerAreas(Long serverId, List<AreaDto> areaDtos) {
-        return areaDtos.stream()
-                .map(areaService::toEntity)
-                .map(areaRepository::save)
-                .map(areaService::toDto)
-                .collect(Collectors.toList());
+    //@Scheduled(cron="0 */1 * * * *")
+    public void purgeOldUsers() {
+        log.trace("Purging old users...");
+
+        userRepository
+                .findWithPessimisticWriteLockBySeenBeforeAndPasswordIsNull(LocalDateTime.now().minusDays(7)) //.minusMinutes(30))
+                .forEach(oldUser -> {
+                    log.info("Purging old auto-registered user - oldUser={}", oldUser);
+//                    for (Pawn pawn : oldUser.getPawns()) {
+//                        pawn.setUser(null);
+//                    }
+                    userRepository.delete(oldUser);
+                });
     }
 }
+
+//    @EventListener
+//    public void contextStarted(ApplicationStartedEvent event) {
+//        purgeOldAutoRegisteredUsers();
+//    }

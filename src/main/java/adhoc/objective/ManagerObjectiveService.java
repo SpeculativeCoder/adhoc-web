@@ -47,7 +47,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ObjectiveManagerService {
+public class ManagerObjectiveService {
 
     private final ObjectiveRepository objectiveRepository;
     private final RegionRepository regionRepository;

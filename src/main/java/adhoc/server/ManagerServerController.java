@@ -20,28 +20,39 @@
  * SOFTWARE.
  */
 
-package adhoc.faction;
+package adhoc.server;
 
-import adhoc.faction.dto.FactionDto;
-import jakarta.transaction.Transactional;
+import adhoc.server.event.ServerStartedEvent;
+import adhoc.server.dto.ServerDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-@Transactional
-@Service
+@RestController
 @Profile("mode-manager")
+@RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class FactionManagerService {
+public class ManagerServerController {
 
-    private final FactionRepository factionRepository;
+    private final ManagerServerService managerServerService;
 
-    private final FactionService factionService;
+    @PutMapping("/servers/{serverId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ServerDto putServer(@PathVariable("serverId") Long serverId, @Valid @RequestBody ServerDto serverDto) {
+        serverDto.setId(serverId);
 
-    public FactionDto updateFaction(FactionDto factionDto) {
-        return factionService.toDto(
-                factionRepository.save(factionService.toEntity(factionDto)));
+        return managerServerService.updateServer(serverDto);
+    }
+    @MessageMapping("ServerStarted")
+    @PreAuthorize("hasRole('SERVER')")
+    public void handleServerStarted(@Valid @RequestBody ServerStartedEvent serverStartedEvent) {
+        log.info("Handling: {}", serverStartedEvent);
+
+        managerServerService.processServerStarted(serverStartedEvent);
     }
 }

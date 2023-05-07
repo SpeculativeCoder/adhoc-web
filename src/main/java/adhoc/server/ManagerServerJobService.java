@@ -31,7 +31,7 @@ import adhoc.hosting.HostingState;
 import adhoc.hosting.ServerTask;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.world.WorldManagerService;
+import adhoc.world.ManagerWorldService;
 import com.google.common.collect.Sets;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class ServerManagerJobService {
+public class ManagerServerJobService {
 
     private final ManagerProperties managerProperties;
 
@@ -62,9 +62,9 @@ public class ServerManagerJobService {
 
     private final HostingService hostingService;
 
-    private final WorldManagerService worldManagerService;
+    private final ManagerWorldService managerWorldService;
 
-    private final ServerManagerService serverManagerService;
+    private final ManagerServerService managerServerService;
 
     private final EntityManager entityManager;
 
@@ -161,7 +161,7 @@ public class ServerManagerJobService {
             throw new IllegalStateException("hostingState is null");
         }
 
-        worldManagerService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
+        managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
 
         Set<ServerTask> tasksToKeep = Sets.newLinkedHashSet();
         List<Server> servers = serverRepository.findWithPessimisticWriteLockBy();
@@ -230,7 +230,7 @@ public class ServerManagerJobService {
             }
 
             if (sendEvent) {
-                serverManagerService.sendServerUpdatedEvent(server);
+                managerServerService.sendServerUpdatedEvent(server);
             }
         }
 

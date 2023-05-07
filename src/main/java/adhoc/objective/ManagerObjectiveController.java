@@ -20,13 +20,15 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.objective;
 
-import adhoc.area.dto.AreaDto;
+import adhoc.objective.event.ObjectiveTakenEvent;
+import adhoc.objective.dto.ObjectiveDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,16 +36,35 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class AreaManagerController {
+public class ManagerObjectiveController {
 
-    private final AreaManagerService areaManagerService;
+    private final ManagerObjectiveService managerObjectiveService;
 
-    @PutMapping("/servers/{serverId}/areas")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> putServerAreas(@PathVariable Long serverId, @Valid @RequestBody List<AreaDto> areaDtos) {
-        return areaManagerService.updateServerAreas(serverId, areaDtos);
+    @PutMapping("/objectives/{objectiveId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ObjectiveDto putObjective(@PathVariable("objectiveId") Long objectiveId, @Valid @RequestBody ObjectiveDto objectiveDto) {
+        objectiveDto.setId(objectiveId);
+
+        return managerObjectiveService.updateObjective(objectiveDto);
     }
+
+    @PutMapping("/servers/{serverId}/objectives")
+    @PreAuthorize("hasRole('SERVER')")
+    public List<ObjectiveDto> putServerObjectives(@PathVariable Long serverId, @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
+        return managerObjectiveService.updateObjectives(objectiveDtos);
+    }
+
+    @MessageMapping("ObjectiveTaken")
+    @SendTo("/topic/events")
+    @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
+    public ObjectiveTakenEvent handleObjectiveTaken(@Valid @RequestBody ObjectiveTakenEvent objectiveTakenEvent) {
+        log.debug("Handling: {}", objectiveTakenEvent);
+
+        managerObjectiveService.processObjectiveTaken(objectiveTakenEvent);
+
+        return objectiveTakenEvent;
+    }
+
 }

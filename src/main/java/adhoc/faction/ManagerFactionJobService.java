@@ -39,7 +39,7 @@ import java.util.Map;
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class FactionManagerJobService {
+public class ManagerFactionJobService {
 
     private final ObjectiveRepository objectiveRepository;
     private final FactionRepository factionRepository;

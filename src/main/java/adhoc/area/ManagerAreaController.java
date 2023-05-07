@@ -20,42 +20,30 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.area;
 
-import jakarta.transaction.Transactional;
+import adhoc.area.dto.AreaDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-@Transactional
-@Service
+@RestController
+@RequestMapping("/api")
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class UserManagerJobService {
+public class ManagerAreaController {
 
-    private final UserRepository userRepository;
+    private final ManagerAreaService managerAreaService;
 
-    //@Scheduled(cron="0 */1 * * * *")
-    public void purgeOldUsers() {
-        log.trace("Purging old users...");
-
-        userRepository
-                .findWithPessimisticWriteLockBySeenBeforeAndPasswordIsNull(LocalDateTime.now().minusDays(7)) //.minusMinutes(30))
-                .forEach(oldUser -> {
-                    log.info("Purging old auto-registered user - oldUser={}", oldUser);
-//                    for (Pawn pawn : oldUser.getPawns()) {
-//                        pawn.setUser(null);
-//                    }
-                    userRepository.delete(oldUser);
-                });
+    @PutMapping("/servers/{serverId}/areas")
+    @PreAuthorize("hasRole('SERVER')")
+    public List<AreaDto> putServerAreas(@PathVariable Long serverId, @Valid @RequestBody List<AreaDto> areaDtos) {
+        return managerAreaService.updateServerAreas(serverId, areaDtos);
     }
 }
-
-//    @EventListener
-//    public void contextStarted(ApplicationStartedEvent event) {
-//        purgeOldAutoRegisteredUsers();
-//    }

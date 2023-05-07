@@ -20,51 +20,33 @@
  * SOFTWARE.
  */
 
-package adhoc.objective;
+package adhoc.pawn;
 
-import adhoc.objective.event.ObjectiveTakenEvent;
-import adhoc.objective.dto.ObjectiveDto;
+import adhoc.server.event.ServerPawnsEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
+@Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class ObjectiveManagerController {
+public class ManagerPawnController {
 
-    private final ObjectiveManagerService objectiveManagerService;
+    private final ManagerPawnService managerPawnService;
 
-    @PutMapping("/objectives/{objectiveId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ObjectiveDto putObjective(@PathVariable("objectiveId") Long objectiveId, @Valid @RequestBody ObjectiveDto objectiveDto) {
-        objectiveDto.setId(objectiveId);
-
-        return objectiveManagerService.updateObjective(objectiveDto);
-    }
-
-    @PutMapping("/servers/{serverId}/objectives")
+    @MessageMapping("ServerPawns")
     @PreAuthorize("hasRole('SERVER')")
-    public List<ObjectiveDto> putServerObjectives(@PathVariable Long serverId, @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
-        return objectiveManagerService.updateObjectives(objectiveDtos);
+    public void handleServerPawns(@Valid @RequestBody ServerPawnsEvent serverPawnsEvent) {
+        log.debug("Handling: {}", serverPawnsEvent);
+
+        managerPawnService.processServerPawns(serverPawnsEvent);
     }
-
-    @MessageMapping("ObjectiveTaken")
-    @SendTo("/topic/events")
-    @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public ObjectiveTakenEvent handleObjectiveTaken(@Valid @RequestBody ObjectiveTakenEvent objectiveTakenEvent) {
-        log.debug("Handling: {}", objectiveTakenEvent);
-
-        objectiveManagerService.processObjectiveTaken(objectiveTakenEvent);
-
-        return objectiveTakenEvent;
-    }
-
 }

@@ -44,7 +44,7 @@ import java.util.Set;
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class PawnManagerService {
+public class ManagerPawnService {
 
     private final PawnRepository pawnRepository;
     private final UserRepository userRepository;

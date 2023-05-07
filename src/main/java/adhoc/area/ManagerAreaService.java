@@ -20,30 +20,33 @@
  * SOFTWARE.
  */
 
-package adhoc.faction;
+package adhoc.area;
 
-import adhoc.faction.dto.FactionDto;
-import jakarta.validation.Valid;
+import adhoc.area.dto.AreaDto;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 
-@RestController
-@RequestMapping("/api")
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Transactional
+@Service
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class FactionManagerController {
+public class ManagerAreaService {
 
-    private final FactionManagerService factionManagerService;
+    private final AreaRepository areaRepository;
+    private final AreaService areaService;
 
-    @PutMapping("/factions/{factionId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public FactionDto putFaction(@PathVariable("factionId") Long factionId, @Valid @RequestBody FactionDto factionDto) {
-        factionDto.setId(factionId);
-
-        return factionManagerService.updateFaction(factionDto);
+    public List<AreaDto> updateServerAreas(Long serverId, List<AreaDto> areaDtos) {
+        return areaDtos.stream()
+                .map(areaService::toEntity)
+                .map(areaRepository::save)
+                .map(areaService::toDto)
+                .collect(Collectors.toList());
     }
 }

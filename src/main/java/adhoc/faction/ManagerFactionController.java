@@ -20,33 +20,30 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.faction;
 
-import jakarta.transaction.Transactional;
+import adhoc.faction.dto.FactionDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
-@Transactional
-@Service
+@RestController
+@RequestMapping("/api")
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class PawnManagerJobService {
+public class ManagerFactionController {
 
-    private final PawnRepository pawnRepository;
+    private final ManagerFactionService managerFactionService;
 
-    public void purgeOldPawns() {
-        log.trace("Purging old pawns...");
+    @PutMapping("/factions/{factionId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public FactionDto putFaction(@PathVariable("factionId") Long factionId, @Valid @RequestBody FactionDto factionDto) {
+        factionDto.setId(factionId);
 
-        pawnRepository
-                .findBySeenBefore(LocalDateTime.now().minusMinutes(1))
-                .forEach(oldPawn -> {
-                    log.debug("Purging old pawn: oldPawn={}", oldPawn);
-                    pawnRepository.delete(oldPawn);
-                });
+        return managerFactionService.updateFaction(factionDto);
     }
 }

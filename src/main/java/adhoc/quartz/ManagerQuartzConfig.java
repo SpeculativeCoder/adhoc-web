@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.job;
+package adhoc.quartz;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ import java.util.Date;
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerJobConfig {
+public class ManagerQuartzConfig {
 
     public static final String MANAGE_SERVERS = "manageServers";
     public static final String AWARD_FACTION_SCORES = "awardFactionScores";
@@ -105,32 +105,32 @@ public class ManagerJobConfig {
 
     @Bean
     public JobDetail manageServersJobDetail() {
-        return JobBuilder.newJob(ManagerJobService.class).withIdentity(MANAGE_SERVERS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(MANAGE_SERVERS).storeDurably().build();
     }
 
     @Bean
     public JobDetail grantFactionScoresJobDetail() {
-        return JobBuilder.newJob(ManagerJobService.class).withIdentity(AWARD_FACTION_SCORES).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(AWARD_FACTION_SCORES).storeDurably().build();
     }
 
     @Bean
     public JobDetail decayFactionScoresJobDetail() {
-        return JobBuilder.newJob(ManagerJobService.class).withIdentity(DECAY_FACTION_SCORES).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(DECAY_FACTION_SCORES).storeDurably().build();
     }
 
     @Bean
     public JobDetail decayUserScoresJobDetail() {
-        return JobBuilder.newJob(ManagerJobService.class).withIdentity(DECAY_USER_SCORES).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(DECAY_USER_SCORES).storeDurably().build();
     }
 
     @Bean
     public JobDetail purgeOldUsersJobDetail() {
-        return JobBuilder.newJob(ManagerJobService.class).withIdentity(PURGE_OLD_USERS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(PURGE_OLD_USERS).storeDurably().build();
     }
 
     @Bean
     public JobDetail purgeOldPawnsJobDetail() {
-        return JobBuilder.newJob(ManagerJobService.class).withIdentity(PURGE_OLD_PAWNS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(PURGE_OLD_PAWNS).storeDurably().build();
     }
 }
 

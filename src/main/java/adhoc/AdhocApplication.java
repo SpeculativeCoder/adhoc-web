@@ -22,6 +22,7 @@
 
 package adhoc;
 
+import adhoc.artemis.ArtemisConfig;
 import adhoc.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ public class AdhocApplication {
          * There will likely only be a few (and typically just 1) {@link #MANAGER} applications running.
          * <p>
          * Servers communicate with the {@link #MANAGER} to let it know about events occurring in the world.
-         * Events are handled by the {@link #MANAGER} and then emitted in the {@link adhoc.web.socket.ArtemisConfig} cluster for {@link #KIOSK}'s to observe.
+         * Events are handled by the {@link #MANAGER} and then emitted in the {@link ArtemisConfig} cluster for {@link #KIOSK}'s to observe.
          * <p>
          * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the manager.
          */

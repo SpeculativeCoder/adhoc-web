@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.job;
+package adhoc.quartz;
 
 import adhoc.faction.ManagerFactionJobService;
 import adhoc.pawn.ManagerPawnJobService;
@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
 @Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerJobService implements Job {
+public class ManagerQuartzService implements Job {
 
     private final ManagerServerJobService managerServerJobService;
 
@@ -55,22 +55,22 @@ public class ManagerJobService implements Job {
         try {
             String jobName = context.getJobDetail().getKey().getName();
             switch (jobName) {
-                case ManagerJobConfig.MANAGE_SERVERS:
+                case ManagerQuartzConfig.MANAGE_SERVERS:
                     managerServerJobService.manageServers();
                     break;
-                case ManagerJobConfig.AWARD_FACTION_SCORES:
+                case ManagerQuartzConfig.AWARD_FACTION_SCORES:
                     managerFactionJobService.awardFactionScores();
                     break;
-                case ManagerJobConfig.DECAY_FACTION_SCORES:
+                case ManagerQuartzConfig.DECAY_FACTION_SCORES:
                     managerFactionJobService.decayFactionScores();
                     break;
-                case ManagerJobConfig.DECAY_USER_SCORES:
+                case ManagerQuartzConfig.DECAY_USER_SCORES:
                     managerFactionJobService.decayUserScores();
                     break;
-                case ManagerJobConfig.PURGE_OLD_USERS:
+                case ManagerQuartzConfig.PURGE_OLD_USERS:
                     managerUserJobService.purgeOldUsers();
                     break;
-                case ManagerJobConfig.PURGE_OLD_PAWNS:
+                case ManagerQuartzConfig.PURGE_OLD_PAWNS:
                     managerPawnJobService.purgeOldPawns();
                     break;
                 default:

@@ -26,46 +26,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.6</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>adhoc</groupId>
+        <artifactId>adhoc-web-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <groupId>adhoc</groupId>
-    <artifactId>adhoc-web-parent</artifactId>
+    <artifactId>adhoc-manager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>adhoc-web-parent</name>
-    <description>adhoc-web-parent</description>
+    <name>adhoc-manager</name>
+    <description>adhoc-manager</description>
 
-    <modules>
-        <module>adhoc-web</module>
-        <module>adhoc-manager</module>
-    </modules>
-
-    <properties>
-        <maven.compiler.debug>true</maven.compiler.debug>
-        <angular.configuration>development</angular.configuration>
-        <unreal.configuration>Development</unreal.configuration>
-        <liquibase.propertyFile>liquibase.properties</liquibase.propertyFile>
-
-        <java.version>20</java.version>
-        <guava.version>31.1-jre</guava.version>
-        <awssdk.version>2.20.59</awssdk.version>
-        <docker-java.version>3.3.0</docker-java.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>software.amazon.awssdk</groupId>
-                <artifactId>bom</artifactId>
-                <version>${awssdk.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <dependencies>
+        <!-- TODO -->
+    </dependencies>
 
 </project>

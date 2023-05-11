@@ -1,6 +1,8 @@
-/*
+*
 
 !adhoc-app
+!adhoc-web
+!adhoc-manager
 !src
 
 !.gitignore

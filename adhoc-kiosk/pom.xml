@@ -32,10 +32,10 @@
     </parent>
 
     <groupId>adhoc</groupId>
-    <artifactId>adhoc-manager</artifactId>
+    <artifactId>adhoc-kiosk</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>adhoc-manager</name>
-    <description>adhoc-manager</description>
+    <name>adhoc-kiosk</name>
+    <description>adhoc-kiosk</description>
 
     <dependencies>
         <dependency>

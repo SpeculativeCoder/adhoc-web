@@ -40,7 +40,9 @@
     <description>adhoc-web-parent</description>
 
     <modules>
+        <module>adhoc-app</module>
         <module>adhoc-web</module>
+        <module>adhoc-kiosk</module>
         <module>adhoc-manager</module>
     </modules>
 

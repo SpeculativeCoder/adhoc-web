@@ -1,9 +1,13 @@
-*
+/*
 
-!adhoc-app
-!adhoc-web
-!adhoc-manager
-!src
+target/
+
+!adhoc-app/
+!adhoc-web/
+!adhoc-kiosk/
+!adhoc-manager/
+
+*.iml
 
 !.gitignore
 !pom.xml

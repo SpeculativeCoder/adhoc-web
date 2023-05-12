@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 public class AdhocProperties {
 
     @Value("${adhoc.application.mode}")
-    private AdhocApplication.Mode mode;
+    private AdhocApplicationMode mode;
     @Value("${adhoc.feature-flags}")
     private String featureFlags;
 

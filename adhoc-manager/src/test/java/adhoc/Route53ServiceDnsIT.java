@@ -35,6 +35,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Collections;
 
+@Disabled
 @SpringBootTest
 @ActiveProfiles({"mode-manager", "dns-route53"})
 @Import(Route53ServiceDnsIT.Route53ServiceDnsTestConfiguration.class)
@@ -54,7 +55,6 @@ public class Route53ServiceDnsIT {
     @Autowired
     private Route53DnsService dnsService;
 
-    @Disabled
     @Test
     public void testCreateOrUpdateDnsRecord() {
         dnsService.createOrUpdateDnsRecord("1-server-local." + adhocProperties.getAdhocDomain(), Collections.singleton("127.0.0.1"));

@@ -20,7 +20,7 @@ Running the application in its current state will only show a development mode a
 
 You can either run:
 
-`mvn spring-boot:run`
+`mvn spring-boot:run -f adhoc-web`
 
 which builds and runs the app, or alternatively:
 

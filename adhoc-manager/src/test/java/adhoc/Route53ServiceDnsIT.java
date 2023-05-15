@@ -37,7 +37,7 @@ import java.util.Collections;
 
 @Disabled
 @SpringBootTest
-@ActiveProfiles({"mode-manager", "dns-route53"})
+@ActiveProfiles({"dns-route53"})
 @Import(Route53ServiceDnsIT.Route53ServiceDnsTestConfiguration.class)
 public class Route53ServiceDnsIT {
 

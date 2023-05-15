@@ -23,9 +23,9 @@
 package adhoc.user;
 
 import com.google.common.collect.Sets;
-import adhoc.ManagerProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,7 +44,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AdhocUserDetailsManager implements UserDetailsManager {
 
-    private final Optional<ManagerProperties> optionalManagerProperties;
+    @Value("${adhoc.server.basic-auth.username:#{null}}")
+    private Optional<String> serverBasicAuthUsername;
+    @Value("${adhoc.server.basic-auth.password:#{null}}")
+    private Optional<String> serverBasicAuthPassword;
 
     private final UserRepository userRepository;
 
@@ -53,10 +56,12 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (optionalManagerProperties.isPresent() && optionalManagerProperties.get().getServerBasicAuthUsername().equals(username)) {
+        if (serverBasicAuthUsername.isPresent()
+                && serverBasicAuthPassword.isPresent()
+                && serverBasicAuthUsername.get().equals(username)) {
             User user = new User();
-            user.setName(optionalManagerProperties.get().getServerBasicAuthUsername());
-            user.setPassword(passwordEncoder.encode(optionalManagerProperties.get().getServerBasicAuthPassword()));
+            user.setName(serverBasicAuthUsername.get());
+            user.setPassword(passwordEncoder.encode(serverBasicAuthPassword.get()));
             user.setRoles(Sets.newHashSet(UserRole.SERVER));
             return user;
         }

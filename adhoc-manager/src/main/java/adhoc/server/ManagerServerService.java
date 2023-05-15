@@ -25,13 +25,12 @@ package adhoc.server;
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
 import adhoc.region.RegionRepository;
+import adhoc.server.dto.ServerDto;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
-import adhoc.server.dto.ServerDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Service
-@Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerServerService {

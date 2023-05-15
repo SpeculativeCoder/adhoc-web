@@ -46,7 +46,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -62,7 +61,6 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Service
-@Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerWorldService {

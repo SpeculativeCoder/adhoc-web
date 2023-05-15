@@ -27,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import java.time.Instant;
 import java.util.Date;
@@ -37,7 +36,6 @@ import java.util.Date;
  * Includes things like managing the servers, cleaning up old users, regular scoring etc.
  */
 @Configuration
-@Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerQuartzConfig {

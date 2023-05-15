@@ -27,7 +27,6 @@ import adhoc.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +35,6 @@ import java.util.Map;
 
 @Transactional
 @Service
-@Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerFactionJobService {

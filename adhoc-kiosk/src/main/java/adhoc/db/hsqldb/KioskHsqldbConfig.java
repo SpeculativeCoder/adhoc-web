@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Profile;
 import javax.sql.DataSource;
 
 @Configuration
-@Profile("db-hsqldb & mode-kiosk")
+@Profile("db-hsqldb")
 @Slf4j
 @RequiredArgsConstructor
 public class KioskHsqldbConfig {

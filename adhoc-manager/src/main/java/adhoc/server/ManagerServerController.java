@@ -22,18 +22,16 @@
 
 package adhoc.server;
 
-import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.dto.ServerDto;
+import adhoc.server.event.ServerStartedEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Profile("mode-manager")
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor

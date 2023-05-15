@@ -22,14 +22,16 @@
 
 package adhoc.web.logging;
 
-import adhoc.ManagerProperties;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
+
+import java.util.Optional;
 
 /**
  * Logging component to enable logging of POSTS/PUTS etc.
@@ -38,8 +40,8 @@ import org.springframework.web.filter.AbstractRequestLoggingFilter;
 @Slf4j
 public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
-    @Autowired(required = false)
-    private ManagerProperties managerProperties;
+    @Value("${adhoc.server.basic-auth.username:#{null}}")
+    private Optional<String> serverBasicAuthUsername;
 
     @Autowired
     private HttpServletResponse httpServletResponse;
@@ -75,8 +77,8 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
         boolean getRequest = "GET".equals(request.getMethod());
 
-        boolean serverUser = (managerProperties != null && request.getUserPrincipal() != null
-                && managerProperties.getServerBasicAuthUsername().equals(request.getUserPrincipal().getName()));
+        boolean serverUser = (serverBasicAuthUsername.isPresent() && request.getUserPrincipal() != null
+                && serverBasicAuthUsername.get().equals(request.getUserPrincipal().getName()));
 
         return debugLogging && (errorStatus
                 //|| stompTraffic

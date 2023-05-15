@@ -26,7 +26,6 @@ import adhoc.area.dto.AreaDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +33,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerAreaController {

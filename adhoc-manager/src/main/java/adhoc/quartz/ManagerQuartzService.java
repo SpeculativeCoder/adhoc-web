@@ -32,12 +32,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Transactional
 @Service
-@Profile("mode-manager")
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerQuartzService implements Job {

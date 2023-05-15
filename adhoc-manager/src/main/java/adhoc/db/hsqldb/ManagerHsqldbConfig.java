@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @Configuration
-@Profile("db-hsqldb & mode-manager")
+@Profile("db-hsqldb")
 @Slf4j
 public class ManagerHsqldbConfig {
 

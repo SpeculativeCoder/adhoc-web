@@ -18,15 +18,15 @@ Live Example: [**AdhocCombat** (https://adhoccombat.com)](https://adhoccombat.co
 
 Running the application in its current state will only show a development mode application without the Unreal / cloud server functionality.
 
-You can either run:
+To build the application:
 
-`mvn spring-boot:run -f adhoc-web`
+`mvn clean install -DskipTests`
 
-which builds and runs the app, or alternatively:
+To run the application you can run:
 
-`mvn clean package -DskipTests`
+`mvn spring-boot:run -f adhoc-manager`
 
-to build it then manually run `AdhocApplication` in your IDE.
+or alternatively you can manually run `AdhocManagerApplication` in your IDE.
 
 If you go to http://localhost you should see the application running.
 

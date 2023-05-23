@@ -37,14 +37,6 @@
   <name>adhoc-app</name>
   <description>adhoc-app</description>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <optional>true</optional>
-    </dependency>
-  </dependencies>
-
   <build>
     <resources>
       <resource>
@@ -69,7 +61,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.0.0</version>
         <executions>
           <execution>
             <id>npm install</id>

@@ -24,7 +24,6 @@ package adhoc.db.hsqldb;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hsqldb.server.Server;
-import org.hsqldb.server.ServerAcl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -48,15 +47,18 @@ public class ManagerHsqldbConfig {
     private String password;
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    Server hsqldbServer() throws IOException, ServerAcl.AclFormatException {
+    Server hsqldbServer() throws IOException {
         System.setProperty("hsqldb.reconfig_logging", "false");
 
         Server server = new Server();
 
         //server.setAddress("localhost"); //"0.0.0.0");
         server.setDatabaseName(0, "adhoc");
-        server.setDatabasePath(0, "file:" + Files.createTempFile("adhoc_hsqldb_", ".dat").toString()
-                +";user=" + username + ";password=" + password);
+        server.setDatabasePath(0, "file:" + Files.createTempFile("adhoc_hsqldb_", ".dat").toString() +
+                ";user=" + username + ";password=" + password +
+                ";hsqldb.tx=mvlocks" + // locks/mvlocks
+                ";check_props=true" +
+                ";sql.enforce_types=true");
         server.setNoSystemExit(true);
         server.setSilent(true); // TODO
         //Properties hsqldbProperties = new Properties();
@@ -71,9 +73,7 @@ public class ManagerHsqldbConfig {
     @Primary
     public DataSource dataSource(Server hsqldbServer) {
         return DataSourceBuilder.create()
-                .url("jdbc:hsqldb:hsql://localhost:9001/adhoc" +
-                        ";check_props=true" +
-                        ";sql.enforce_types=true")
+                .url("jdbc:hsqldb:hsql://localhost:9001/adhoc")
                 .username(username)
                 .password(password)
                 .build();

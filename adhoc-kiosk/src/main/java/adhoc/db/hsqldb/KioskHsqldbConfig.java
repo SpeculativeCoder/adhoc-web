@@ -53,9 +53,7 @@ public class KioskHsqldbConfig {
     @Primary
     public DataSource dataSource() {
         return DataSourceBuilder.create()
-                .url("jdbc:hsqldb:hsql://" + adhocProperties.getManagerHost() + ":9001/adhoc" +
-                        ";check_props=true" +
-                        ";sql.enforce_types=true")
+                .url("jdbc:hsqldb:hsql://" + adhocProperties.getManagerHost() + ":9001/adhoc")
                 .username(username)
                 .password(password)
                 .build();

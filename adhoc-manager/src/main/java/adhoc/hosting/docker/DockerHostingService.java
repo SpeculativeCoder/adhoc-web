@@ -22,6 +22,12 @@
 
 package adhoc.hosting.docker;
 
+import adhoc.ManagerProperties;
+import adhoc.area.Area;
+import adhoc.hosting.HostingService;
+import adhoc.hosting.HostingState;
+import adhoc.hosting.ServerTask;
+import adhoc.server.Server;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
@@ -29,14 +35,8 @@ import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
-import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
-import adhoc.area.Area;
-import adhoc.hosting.HostingService;
-import adhoc.hosting.HostingState;
-import adhoc.hosting.ServerTask;
-import adhoc.ManagerProperties;
-import adhoc.server.Server;
+import com.github.dockerjava.zerodep.ZerodepDockerHttpClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -104,7 +104,8 @@ public class DockerHostingService implements HostingService {
     }
 
     private DockerHttpClient dockerHttpClient() {
-        return new ApacheDockerHttpClient.Builder()
+        //return new ApacheDockerHttpClient.Builder()
+        return new ZerodepDockerHttpClient.Builder()
                 .dockerHost(dockerClientConfig().getDockerHost())
                 .connectionTimeout(Duration.ofSeconds(5))
                 .responseTimeout(Duration.ofSeconds(5))
@@ -135,6 +136,8 @@ public class DockerHostingService implements HostingService {
         hostingState.getManagerHosts().add(DEFAULT_KIOSK_HOST);
 
         for (Container container : containers) {
+            //log.info("state: {}", container.getState());
+
             InspectContainerResponse inspectedContainer = dockerClient.inspectContainerCmd(container.getId()).exec();
             log.trace("inspectedContainer: {}", inspectedContainer);
             log.trace("env: {}", (Object[]) inspectedContainer.getConfig().getEnv());
@@ -224,14 +227,16 @@ public class DockerHostingService implements HostingService {
                         String.format("FEATURE_FLAGS=%s", featureFlags),
                         String.format("CA_CERTIFICATE=%s", multilineEnvironmentVariable(caCertificate)),
                         String.format("SERVER_CERTIFICATE=%s", multilineEnvironmentVariable(serverCertificate)),
-                        String.format("PRIVATE_KEY=%s", multilineEnvironmentVariable(privateKey))))
+                        String.format("PRIVATE_KEY=%s", multilineEnvironmentVariable(privateKey)),
+                        String.format("SERVER_BASIC_AUTH_PASSWORD=%s", managerProperties.getServerBasicAuthPassword())))
                 .withHostConfig(
                         HostConfig.newHostConfig()
                                 .withPortBindings(
                                         new PortBinding(
                                                 new Ports.Binding("0.0.0.0", Integer.toString(publicWebSocketPort)),
                                                 ExposedPort.tcp(8889)))
-                                .withAutoRemove(true))
+                                .withAutoRemove(false))
+                                //.withAutoRemove(true))
                 .exec();
         log.trace("createdContainer: {}", createdContainer);
 

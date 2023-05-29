@@ -8,7 +8,7 @@ This is a work in progress.
 
 The eventual ideal/goal of Adhoc is to be a system for running a multi-user, multi-server 3D world in the cloud (e.g. AWS) using Unreal Engine with the HTML5 (WebGL) platform plugin.
 
-Full functionality of this repository depends upon the Adhoc Unreal project code and content **which is not in this repository and is not yet available**. Also, the full build process and AWS setup is **not yet documented / included in this repository**. Thus, the Unreal functionality and cloud server management won't currently be usable out of the box.
+Full functionality of this repository depends upon the Adhoc Unreal plugin **which is not in this repository and is not yet available**. Also, the full build process and AWS setup is **not yet documented / included in this repository**. Thus, the Unreal functionality and cloud server management won't currently be usable out of the box.
 
 However, elements of the code may still be of interest and could be useful if diagnosing bugs / issues with a deployed Adhoc web application.
 

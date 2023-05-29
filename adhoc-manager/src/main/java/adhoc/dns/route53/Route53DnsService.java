@@ -26,7 +26,6 @@ import adhoc.AdhocProperties;
 import adhoc.dns.DnsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -46,8 +45,7 @@ public class Route53DnsService implements DnsService {
 
     private final AdhocProperties adhocProperties;
 
-    @Value("${adhoc.dns-route53.aws-profile}")
-    private String awsProfile;
+    private final Route53DnsProperties route53DnsProperties;
 
     private Route53Client route53Client() {
         return Route53Client.builder()
@@ -57,7 +55,7 @@ public class Route53DnsService implements DnsService {
 
     private AwsCredentialsProvider credentialsProvider() {
         return DefaultCredentialsProvider.builder()
-                .profileName(awsProfile)
+                .profileName(route53DnsProperties.getAwsProfileForRoute53())
                 .build();
     }
 

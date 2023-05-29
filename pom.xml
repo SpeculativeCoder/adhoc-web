@@ -53,8 +53,8 @@
         <liquibase.propertyFile>liquibase.properties</liquibase.propertyFile>
 
         <java.version>20</java.version>
-        <guava.version>31.1-jre</guava.version>
-        <awssdk.version>2.20.68</awssdk.version>
+        <guava.version>32.0.0-jre</guava.version>
+        <awssdk.version>2.20.74</awssdk.version>
         <docker-java.version>3.3.0</docker-java.version>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
     </properties>

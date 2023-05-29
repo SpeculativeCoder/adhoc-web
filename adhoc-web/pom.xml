@@ -267,7 +267,7 @@
             <id>extra</id>
             <activation>
                 <file>
-                    <exists>../extra/adhoc-web</exists>
+                    <exists>../adhoc-extra/adhoc-web-extra</exists>
                 </file>
             </activation>
             <build>
@@ -284,7 +284,19 @@
                                 </goals>
                                 <configuration>
                                     <sources>
-                                        <source>../extra/adhoc-web/src/main/java</source>
+                                        <source>../adhoc-extra/adhoc-web-extra/src/main/java</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>add-test-source</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-test-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>../adhoc-extra/adhoc-web-extra/src/test/java</source>
                                     </sources>
                                 </configuration>
                             </execution>

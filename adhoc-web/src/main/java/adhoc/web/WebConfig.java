@@ -43,12 +43,16 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final AdhocProperties adhocProperties;
 
-    @Value("${server.http.port}")
-    private Integer httpPort;
+    @Value("${server.port}")
+    private Integer serverPort;
+
+    @Value("${server.port-2}")
+    private Integer serverPort2;
 
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
-        log.info("httpPort={}", httpPort);
+        log.info("serverPort={}", serverPort);
+        log.info("serverPort2={}", serverPort2);
     }
 
     @Override
@@ -65,12 +69,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 
-    /** Also allow HTTP access on port 80 for now. */
+    /** Also allow HTTP access on a secondary port for now. */
     @Bean
     WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer() {
         return (TomcatServletWebServerFactory factory) -> {
             final Connector connector = new Connector();
-            connector.setPort(httpPort);
+            connector.setPort(serverPort2);
             factory.addAdditionalTomcatConnectors(connector);
         };
     }

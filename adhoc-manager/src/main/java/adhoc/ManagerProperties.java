@@ -51,11 +51,11 @@ public class ManagerProperties {
     @Value("${adhoc.server-domain}")
     private String serverDomain;
 
-    @Value("${MANAGER_IMAGE:adhoc_manager}")
+    @Value("${adhoc.manager-image}")
     private String managerImage;
-    @Value("${KIOSK_IMAGE:adhoc_kiosk}")
+    @Value("${adhoc.kiosk-image}")
     private String kioskImage;
-    @Value("${SERVER_IMAGE:adhoc_server}")
+    @Value("${adhoc.server-image}")
     private String serverImage;
 
     @Value("${adhoc.max-pawns}")

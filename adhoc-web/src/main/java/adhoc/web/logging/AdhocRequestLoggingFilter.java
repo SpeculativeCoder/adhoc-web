@@ -22,29 +22,39 @@
 
 package adhoc.web.logging;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
+import java.io.IOException;
 import java.util.Optional;
 
 /**
  * Logging component to enable logging of POSTS/PUTS etc.
  */
 @Component
+@Order(value = Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
 public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
     @Value("${adhoc.server.basic-auth.username:#{null}}")
     private Optional<String> serverBasicAuthUsername;
 
-    @Autowired
-    private HttpServletResponse httpServletResponse;
+    @Value("${adhoc.server.basic-auth.password:#{null}}")
+    private Optional<String> serverBasicAuthPassword;
+
+    private String encodedServerBasicAuth;
 
     public AdhocRequestLoggingFilter() {
         setIncludeQueryString(true);
@@ -55,33 +65,86 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
         // setHeaderPredicate(...);
     }
 
+    @PostConstruct
+    public void postConstruct() {
+        if (serverBasicAuthUsername.isPresent() && serverBasicAuthPassword.isPresent()) {
+            encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(serverBasicAuthUsername.get(), serverBasicAuthPassword.get(), null);
+        }
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request, getMaxPayloadLength());
+        //ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+
+        try {
+            filterChain.doFilter(requestWrapper, response);
+
+        } finally {
+
+            boolean logDebug = log.isDebugEnabled();
+
+            boolean statusError =
+                    response.getStatus() != HttpStatus.SWITCHING_PROTOCOLS.value() // 101 (websocket causes this)
+                            && response.getStatus() != HttpStatus.OK.value() // 200
+                            && response.getStatus() != HttpStatus.CREATED.value() // 201
+                            && response.getStatus() != HttpStatus.NO_CONTENT.value() // 204
+                            && response.getStatus() != HttpStatus.NOT_MODIFIED.value() // 304
+                    ;
+
+            boolean methodGet = "GET".equals(request.getMethod());
+
+            boolean userServer = false;
+            if (encodedServerBasicAuth != null) {
+                String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+                userServer = encodedServerBasicAuth != null
+                        && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
+            }
+
+            if (statusError || (logDebug && !methodGet && !userServer)) {
+
+                String message = createMessage(requestWrapper, "", "");
+
+                log.debug("{}, status={}", message, response.getStatus());
+            }
+
+            //responseWrapper.copyBodyToResponse();
+        }
+    }
+
     @Override
     protected void beforeRequest(HttpServletRequest request, String message) {
-        //log.debug("{}", message);
+        // will do our own logging for now
     }
 
     @Override
     protected void afterRequest(HttpServletRequest request, String message) {
-        log.debug("{} status={}", message, httpServletResponse.getStatus());
+        // will do our own logging for now
     }
 
     @Override
     protected boolean shouldLog(HttpServletRequest request) {
+        // will do our own logging for now
+        return false;
+    }
 
-        boolean debugLogging = log.isDebugEnabled();
+    @Override
+    protected String getMessagePayload(HttpServletRequest request) {
+        if (isRegisterOrLoginRequest(request)) {
+            return "***";
+        }
+        return super.getMessagePayload(request);
+    }
 
-        boolean errorStatus = httpServletResponse.getStatus() != HttpStatus.OK.value()
-                && httpServletResponse.getStatus() != HttpStatus.CREATED.value();
+    private boolean isRegisterOrLoginRequest(HttpServletRequest request) {
+        // TODO
 
-        //boolean stompTraffic = (request.getRequestURI() != null && request.getRequestURI().contains("/stomp/"));
+        boolean methodPost = "POST".equals(request.getMethod());
+        boolean uriRegister = "/api/users/register".equals(request.getRequestURI());
+        boolean uriLogin = "/login".equals(request.getRequestURI());
 
-        boolean getRequest = "GET".equals(request.getMethod());
-
-        boolean serverUser = (serverBasicAuthUsername.isPresent() && request.getUserPrincipal() != null
-                && serverBasicAuthUsername.get().equals(request.getUserPrincipal().getName()));
-
-        return debugLogging && (errorStatus
-                //|| stompTraffic
-                || (!getRequest && !serverUser));
+        return methodPost && (uriRegister || uriLogin);
     }
 }

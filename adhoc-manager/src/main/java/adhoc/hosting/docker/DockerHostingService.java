@@ -235,8 +235,8 @@ public class DockerHostingService implements HostingService {
                                         new PortBinding(
                                                 new Ports.Binding("0.0.0.0", Integer.toString(publicWebSocketPort)),
                                                 ExposedPort.tcp(8889)))
-                                .withAutoRemove(false))
-                                //.withAutoRemove(true))
+                                //.withAutoRemove(false))
+                                .withAutoRemove(true))
                 .exec();
         log.trace("createdContainer: {}", createdContainer);
 

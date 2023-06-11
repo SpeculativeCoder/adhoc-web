@@ -233,7 +233,7 @@
             <resource>
                 <directory>../customization</directory>
                 <includes>
-                    <include>adhoc.env</include>
+                    <include>adhoc-customization.properties</include>
                 </includes>
                 <filtering>false</filtering>
             </resource>

@@ -22,13 +22,13 @@
 
 package adhoc.hosting.ecs;
 
-import com.google.common.collect.ImmutableList;
+import adhoc.ManagerProperties;
 import adhoc.area.Area;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.hosting.ServerTask;
-import adhoc.ManagerProperties;
 import adhoc.server.Server;
+import com.google.common.collect.ImmutableList;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -254,7 +254,8 @@ public class EcsHostingService implements HostingService {
              Ec2Client ec2Client = ec2Client()) {
 
             DescribeSecurityGroupsRequest describeSecurityGroupsRequest = DescribeSecurityGroupsRequest.builder()
-                    .groupNames(awsSecurityGroupName)
+                    .filters(
+                            Filter.builder().name("group-name").values(awsSecurityGroupName).build())
                     .build();
             log.debug("describeSecurityGroupsRequest: {}", describeSecurityGroupsRequest);
 
@@ -266,19 +267,25 @@ public class EcsHostingService implements HostingService {
                 throw new IllegalStateException("expected 1 security group but got: " + describeSecurityGroupsResponse.securityGroups());
             }
 
-            if (!describeSecurityGroupsResponse.securityGroups().get(0).groupName().equals(awsSecurityGroupName)) {
-                throw new IllegalStateException("expected security group ith name " + awsSecurityGroupName + " but got: " +
-                        describeSecurityGroupsResponse.securityGroups().get(0).groupName());
+            SecurityGroup securityGroup = describeSecurityGroupsResponse.securityGroups().get(0);
+
+            if (!securityGroup.groupName().equals(awsSecurityGroupName)) {
+                throw new IllegalStateException("expected security group with name " + awsSecurityGroupName + " but got: " +
+                        securityGroup.groupName());
             }
 
-            String securityGroupId = describeSecurityGroupsResponse.securityGroups().get(0).groupId();
+            String securityGroupId = securityGroup.groupId();
             log.debug("securityGroupId: {}", securityGroupId);
 
+            // TODO: better way to have the vpc-id / availability-zone chosen
             DescribeSubnetsRequest describeSubnetsRequest = DescribeSubnetsRequest.builder()
-                    .filters(Filter.builder().name("availability-zone").values(awsAvailabilityZone).build())
+                    .filters(
+                            Filter.builder().name("vpc-id").values(securityGroup.vpcId()).build(),
+                            Filter.builder().name("availability-zone").values(awsAvailabilityZone).build())
                     .build();
             log.debug("describeSubnetsRequest: {}", describeSubnetsRequest);
 
+            // TODO: should be random subnet of those available for use
             DescribeSubnetsResponse describeSubnetsResponse =
                     ec2Client.describeSubnets(describeSubnetsRequest);
             log.debug("describeSubnetsResponse: {}", describeSubnetsResponse);
@@ -334,6 +341,7 @@ public class EcsHostingService implements HostingService {
                                                     .build())
                                     .build())
                     .build();
+            log.info("runTaskRequest: {}", runTaskRequest);
 
             RunTaskResponse runTaskResponse = ecsClient.runTask(runTaskRequest);
             log.trace("runTaskResponse: {}", runTaskResponse);

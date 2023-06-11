@@ -6,7 +6,7 @@ https://github.com/SpeculativeCoder/adhoc-web
 
 This is a work in progress.
 
-The eventual ideal/goal of Adhoc is to be a system for running a multi-user, multi-server 3D world in the cloud (e.g. AWS) using Unreal Engine with the HTML5 (WebGL) platform plugin.
+The eventual ideal/goal of Adhoc is to be a system for running a multi-user, multi-server 3D world in the cloud (e.g. AWS) using Unreal Engine with the HTML5 ES3 (WebGL2) platform plugin.
 
 Full functionality of this repository depends upon the Adhoc Unreal plugin **which is not in this repository and is not yet available**. Also, the full build process and AWS setup is **not yet documented / included in this repository**. Thus, the Unreal functionality and cloud server management won't currently be usable out of the box.
 
@@ -34,7 +34,7 @@ If you go to http://localhost you should see the application running.
 
 Copyright (c) 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
 
-[LICENSE](LICENSE) (**MIT License**) applies to all files in this repository unless otherwise indicated.
+[LICENSE](LICENSE) (**MIT License**) applies to the files in this repository unless otherwise indicated.
 
 There are currently some files under a different license (indicated in the file and with license provided in adjacent *-LICENSE file):
 - [src/main/resources/db/changelog/db.changelog-2.xml](src/main/resources/db/changelog/db.changelog-2.xml) uses SQL from Quartz Scheduler to set up the Quartz database tables - subject to **[Apache License, Version 2.0](src/main/resources/db/changelog/db.changelog-2.xml-LICENSE)**

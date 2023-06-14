@@ -80,6 +80,6 @@ public class Objective {
     @ManyToMany
     private List<Objective> linkedObjectives;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Area area;
 }

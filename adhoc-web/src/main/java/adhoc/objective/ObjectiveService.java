@@ -64,7 +64,7 @@ public class ObjectiveService {
                 objective.getFaction() == null ? null : objective.getFaction().getIndex(),
                 objective.getLinkedObjectives().stream().map(Objective::getId).collect(Collectors.toList()),
                 objective.getLinkedObjectives().stream().map(Objective::getIndex).collect(Collectors.toList()),
-                objective.getArea().getId(),
-                objective.getArea().getIndex());
+                objective.getArea() == null ? null : objective.getArea().getId(),
+                objective.getArea() == null ? null : objective.getArea().getIndex());
     }
 }

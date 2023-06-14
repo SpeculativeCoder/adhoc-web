@@ -34,6 +34,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -61,6 +63,7 @@ import java.util.stream.Collectors;
 public class EcsHostingService implements HostingService {
 
     private final ManagerProperties managerProperties;
+
     @Value("${adhoc.feature-flags}")
     private String featureFlags;
 
@@ -74,6 +77,15 @@ public class EcsHostingService implements HostingService {
     private String awsSecurityGroupName;
     @Value("${adhoc.server-container-service.ecs-cluster}")
     private String ecsCluster;
+
+    @EventListener
+    public void contextRefreshed(ContextRefreshedEvent event) {
+        log.info("awsRegion={}", awsRegion);
+        log.info("awsProfile={}", awsRegion);
+        log.info("awsAvailabilityZone={}", awsAvailabilityZone);
+        log.info("awsSecurityGroupName={}", awsSecurityGroupName);
+        log.info("ecsCluster={}", ecsCluster);
+    }
 
     private Ec2Client ec2Client() {
         return Ec2Client.builder()

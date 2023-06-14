@@ -80,7 +80,6 @@ public class ObjectiveDto {
     @Min(1)
     private Long areaId;
 
-    @NotNull
     @Min(0)
     private Integer areaIndex;
 }

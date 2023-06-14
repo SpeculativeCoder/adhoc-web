@@ -27,6 +27,7 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public interface AreaRepository extends JpaRepository<Area, Long> {
@@ -39,4 +40,6 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
     Optional<Area> findWithPessimisticWriteLockByRegionAndIndex(Region region, Integer index);
 
     Area getByRegionAndIndex(Region region, Integer index);
+
+    Collection<Area> findAllByIdNotIn(Collection<Long> ids);
 }

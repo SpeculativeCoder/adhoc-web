@@ -22,12 +22,15 @@
 
 package adhoc.area;
 
+import adhoc.objective.Objective;
 import adhoc.region.Region;
 import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import java.util.List;
 
 /**
  * An area within a region (a region is map in the Unreal project).
@@ -77,6 +80,9 @@ public class Area {
     private Float sizeY;
     @Basic(optional = false)
     private Float sizeZ;
+
+    @OneToMany(mappedBy = "area")
+    private List<Objective> objectives;
 
     /**
      * Server currently representing this area.

@@ -4,19 +4,17 @@ Web code for Adhoc (final name to be decided).
 
 https://github.com/SpeculativeCoder/adhoc-web
 
-This is a work in progress.
+This is a work in progress, experimental, and subject to major changes.
 
 The eventual ideal/goal of Adhoc is to be a system for running a multi-user, multi-server 3D world in the cloud (e.g. AWS) using Unreal Engine with the HTML5 ES3 (WebGL2) platform plugin.
 
-Full functionality of this repository depends upon the Adhoc Unreal plugin **which is not in this repository and is not yet available**. Also, the full build process and AWS setup is **not yet documented / included in this repository**. Thus, the Unreal functionality and cloud server management won't currently be usable out of the box.
-
-However, elements of the code may still be of interest and could be useful if diagnosing bugs / issues with a deployed Adhoc web application.
+Documentation / Guide: https://github.com/SpeculativeCoder/AdhocDocumentation
 
 Live Example: [**AdhocCombat** (https://adhoccombat.com)](https://adhoccombat.com) - work in progress
 
 ## Usage
 
-Running the application in its current state will only show a development mode application without the Unreal / cloud server functionality.
+Out of the box, the application in this repository will run in a development mode without the Unreal / cloud server functionality.
 
 To build the application:
 
@@ -28,7 +26,9 @@ To run the application you can run:
 
 or alternatively you can manually run `AdhocManagerApplication` in your IDE.
 
-If you go to http://localhost you should see the application running.
+If you go to http://localhost you should see the application running in development mode.
+
+Further functionality requires setup (see https://github.com/SpeculativeCoder/AdhocDocumentation).
 
 ## Copyright / License(s)
 

@@ -1,15 +1,9 @@
-/*
-
+.idea/
 target/
-
-!adhoc-app/
-!adhoc-web/
-!adhoc-kiosk/
-!adhoc-manager/
+adhoc-extra/
+certs/
+customization/
+env/
+Package
 
 *.iml
-
-!.gitignore
-!pom.xml
-!README.md
-!LICENSE

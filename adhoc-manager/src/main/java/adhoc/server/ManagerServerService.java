@@ -24,16 +24,26 @@ package adhoc.server;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
+import adhoc.dns.DnsService;
+import adhoc.hosting.HostingService;
+import adhoc.hosting.HostingState;
+import adhoc.properties.ManagerProperties;
+import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.server.dto.ServerDto;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
+import adhoc.world.ManagerWorldService;
+import com.google.common.collect.Sets;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -42,11 +52,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerServerService {
 
+    private final ManagerProperties managerProperties;
+
+    private final ManagerWorldService managerWorldService;
+    private final HostingService hostingService;
+    private final DnsService dnsService;
+
     private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
     private final ServerService serverService;
     private final SimpMessageSendingOperations stomp;
+
+    private final EntityManager entityManager;
 
     public ServerDto updateServer(ServerDto serverDto) {
         return serverService.toDto(
@@ -78,8 +96,8 @@ public class ManagerServerService {
         return server;
     }
 
-    public void processServerStarted(ServerStartedEvent serverStartedEvent) {
-        Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
+    public void handleServerStarted(ServerStartedEvent serverStartedEvent) {
+        Server server = serverRepository.getWithPessimisticWriteLockById(serverStartedEvent.getServerId());
 
         server.setStatus(ServerStatus.ACTIVE);
         server.setPrivateIp(serverStartedEvent.getPrivateIp());
@@ -107,5 +125,179 @@ public class ManagerServerService {
 
         log.info("Sending: {}", event);
         stomp.convertAndSend("/topic/events", event);
+    }
+
+    /**
+     * Manage the needed servers to represent areas within each region.
+     * This will typically be based on number of players in each area.
+     */
+    //@Scheduled(cron="0 */1 * * * *")
+    public void manageNeededServers() {
+        log.trace("Managing needed servers...");
+
+        List<Region> regions = regionRepository.findAll();
+
+        for (Region region : regions) {
+            log.trace("Managing needed servers for region {}", region.getId());
+
+            // TODO: assign areas to servers based on player count etc. - for now we just do one server per area
+            List<List<Area>> areaGroups = new ArrayList<>();
+            for (Area area : region.getAreas()) {
+                entityManager.lock(area, LockModeType.PESSIMISTIC_WRITE);
+                areaGroups.add(Collections.singletonList(area));
+            }
+
+            for (List<Area> areaGroup : areaGroups) {
+                // TODO: other servers may already be hosting some of the other areas so can't just check first area (but we do for now)
+                Area firstArea = areaGroup.get(0);
+                Server server = serverRepository.findFirstWithPessimisticWriteLockByAreasContains(firstArea).orElseGet(Server::new);
+
+                if (server.getRegion() == null || !region.getId().equals(server.getRegion().getId())) {
+                    server.setRegion(region);
+                }
+                if (!region.getMapName().equals(server.getMapName())) {
+                    server.setMapName(region.getMapName());
+                }
+
+                // TODO: average across all the areas
+                if (!firstArea.getX().equals(server.getX())
+                        || !firstArea.getY().equals(server.getY())
+                        || !firstArea.getZ().equals(server.getZ())) {
+                    server.setX(firstArea.getX());
+                    server.setY(firstArea.getY());
+                    server.setZ(firstArea.getZ());
+                }
+
+                if (server.getAreas() == null ||
+                        !server.getAreas().stream().map(Area::getId).collect(Collectors.toSet()).equals(
+                                areaGroup.stream().map(Area::getId).collect(Collectors.toSet()))) {
+                    server.setAreas(new ArrayList<>(areaGroup));
+                    for (Area area : server.getAreas()) {
+                        area.setServer(server);
+                    }
+                }
+
+                if (server.getId() == null) {
+                    server.setName(""); // the id will be added after insert (see below)
+                    server.setStatus(ServerStatus.INACTIVE);
+
+                    server = serverRepository.save(server);
+
+                    server.setName(server.getId().toString());
+
+                    log.info("New server {} assigned to region {} areas {}", server.getId(), server.getRegion().getId(),
+                            server.getAreas().stream().map(Area::getId).collect(Collectors.toList()));
+                }
+            }
+        }
+    }
+
+    /**
+     * Manage the tasks in the hosting service, creating new ones and/or tearing down old ones as required
+     * by the current needed servers.
+     */
+    //@Scheduled(cron="0 */1 * * * *")
+    public void manageHostingTasks() {
+        log.trace("Managing hosting tasks...");
+
+        // get state of running containers
+        HostingState hostingState = hostingService.poll();
+        log.debug("manageHostingTasks: hostingState={}", hostingState);
+        if (hostingState == null) {
+            throw new IllegalStateException("hostingState is null");
+        }
+
+        managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
+
+        Set<HostingState.ServerTask> tasksToKeep = Sets.newLinkedHashSet();
+        List<Server> servers = serverRepository.findWithPessimisticWriteLockBy();
+
+        for (Server server : servers) {
+            boolean sendEvent = false;
+
+            HostingState.ServerTask task = hostingState.getServerTasks().get(server.getId());
+            if (task != null) {
+                tasksToKeep.add(task);
+                server.setSeen(LocalDateTime.now());
+
+                if (!Objects.equals(server.getPrivateIp(), task.getPrivateIp())) {
+                    server.setPrivateIp(task.getPrivateIp());
+                    sendEvent = true;
+                }
+                if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
+                    if (task.getPublicIp() != null) {
+                        server.setStatus(ServerStatus.ACTIVE);
+                        String webSocketHost = server.getId() + "-" + managerProperties.getServerDomain();
+                        int webSocketPort = Objects.requireNonNull(task.getPublicWebSocketPort(),
+                                "web socket port not available from task when constructing url");
+                        server.setWebSocketUrl("wss://" + webSocketHost + ":" + webSocketPort);
+                        dnsService.createOrUpdateDnsRecord(webSocketHost, Collections.singleton(task.getPublicIp()));
+                    }
+                    server.setPublicIp(task.getPublicIp());
+                    sendEvent = true;
+                }
+                if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
+                    server.setPublicWebSocketPort(task.getPublicWebSocketPort());
+                    sendEvent = true;
+                }
+
+            } else if (task == null) {
+                if (server.getStatus() == ServerStatus.ACTIVE) {
+                    log.warn("Server {} seems to have stopped running!", server.getId());
+                    server.setStatus(ServerStatus.INACTIVE);
+
+                    server.setPrivateIp(null);
+                    server.setPublicIp(null);
+                    server.setPublicWebSocketPort(null);
+
+                    server.setInitiated(null);
+                    server.setSeen(null);
+                    sendEvent = true;
+
+                } else if (server.getStatus() == ServerStatus.INACTIVE) {
+                    // don't start a server unless it will be able to connect to a manager
+                    //if (hostingState.getManagerHosts().isEmpty()) {
+                    //    log.warn("Need to start server {} but no manager(s) available!", server.getId());
+                    //} else {
+                    log.info("Need to start server {}", server.getId());
+                    try {
+                        hostingService.startServerTask(server); //, hostingState.getManagerHosts());
+                        server.setStatus(ServerStatus.STARTING);
+                        server.setInitiated(LocalDateTime.now());
+                        //server.setManagerHost(hostingState.getManagerHosts().iterator().next());
+                        sendEvent = true;
+                    } catch (Exception e) {
+                        log.warn("Failed to start server {}!", server.getId(), e);
+                        server.setStatus(ServerStatus.ERROR);
+                        //throw new RuntimeException("Failed to start server "+server.getId(), e);
+                    }
+                    //}
+                }
+            }
+
+            if (sendEvent) {
+                sendServerUpdatedEvent(server);
+            }
+        }
+
+        for (HostingState.ServerTask task : hostingState.getServerTasks().values()) {
+            if (!tasksToKeep.contains(task)) {
+                log.debug("Need to stop task {}", task);
+                hostingService.stopServerTask(task);
+            }
+        }
+    }
+
+    private void stopAllTasks() {
+        // get state of running containers
+        HostingState hostingState = hostingService.poll();
+        log.debug("stopAllTasks: hostingState={}", hostingState);
+        if (hostingState == null) {
+            return;
+        }
+        for (HostingState.ServerTask task : hostingState.getServerTasks().values()) {
+            log.debug("Stopping task {}", task);
+            hostingService.stopServerTask(task);
+        }
     }
 }

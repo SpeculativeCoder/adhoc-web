@@ -27,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Transactional
 @Service
 @Slf4j
@@ -34,6 +36,15 @@ import org.springframework.stereotype.Service;
 public class WorldService {
 
     public static final long WORLD_ID = 1L;
+
+    public WorldDto toDto(World world) {
+        return WorldDto.builder()
+                .id(WorldService.WORLD_ID)
+                .version(world.getVersion())
+                .managerHosts(new ArrayList<>(world.getManagerHosts()))
+                .kioskHosts(new ArrayList<>(world.getKioskHosts()))
+                .build();
+    }
 }
 
 //private final AdhocProperties adhocProperties;

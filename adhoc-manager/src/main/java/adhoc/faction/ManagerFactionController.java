@@ -22,7 +22,6 @@
 
 package adhoc.faction;
 
-import adhoc.faction.dto.FactionDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

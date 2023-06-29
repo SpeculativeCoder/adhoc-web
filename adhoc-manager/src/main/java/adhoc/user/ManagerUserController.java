@@ -22,9 +22,10 @@
 
 package adhoc.user;
 
-import adhoc.user.dto.*;
+import adhoc.user.request.*;
 import adhoc.user.event.UserDefeatedBotEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
+import adhoc.user.response.UserNavigateResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,11 +66,11 @@ public class ManagerUserController {
 
     @PostMapping("/servers/{serverId}/users/{userId}/navigate")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserNavigateResponse> postNavigate(
+    public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
             @PathVariable("serverId") Long serverId, @PathVariable("userId") Long userId, @Valid @RequestBody UserNavigateRequest userNavigateRequest) {
         userNavigateRequest.setUserId(userId);
 
-        return managerUserService.navigate(userNavigateRequest);
+        return managerUserService.serverUserNavigate(userNavigateRequest);
     }
 
     @PostMapping("/servers/{serverId}/users/{userId}/join")
@@ -88,7 +89,7 @@ public class ManagerUserController {
     public UserDefeatedUserEvent handleDefeatedUser(@Valid @RequestBody UserDefeatedUserEvent userDefeatedUserEvent) {
         log.debug("Handling: {}", userDefeatedUserEvent);
 
-        return managerUserService.processUserDefeatedUser(userDefeatedUserEvent);
+        return managerUserService.handleUserDefeatedUser(userDefeatedUserEvent);
     }
 
     @MessageMapping("UserDefeatedBot")
@@ -97,6 +98,6 @@ public class ManagerUserController {
     public UserDefeatedBotEvent handleDefeatedBot(@Valid @RequestBody UserDefeatedBotEvent userDefeatedBotEvent) {
         log.debug("Handling: {}", userDefeatedBotEvent);
 
-        return managerUserService.processUserDefeatedBot(userDefeatedBotEvent);
+        return managerUserService.handleUserDefeatedBot(userDefeatedBotEvent);
     }
 }

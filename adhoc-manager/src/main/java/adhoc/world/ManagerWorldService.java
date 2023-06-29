@@ -22,8 +22,6 @@
 
 package adhoc.world;
 
-import adhoc.AdhocProperties;
-import adhoc.ManagerProperties;
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
 import adhoc.dns.DnsService;
@@ -31,7 +29,8 @@ import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
 import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
-import adhoc.pawn.PawnRepository;
+import adhoc.properties.ManagerProperties;
+import adhoc.properties.WebProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
@@ -50,10 +49,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -65,7 +62,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerWorldService {
 
-    private final AdhocProperties adhocProperties;
+    private final WebProperties webProperties;
+
+    private final WorldService worldService;
+
     private final ManagerProperties managerProperties;
     private final WorldRepository worldRepository;
     private final UserRepository userRepository;
@@ -74,11 +74,10 @@ public class ManagerWorldService {
     private final AreaRepository areaRepository;
     private final ObjectiveRepository objectiveRepository;
     private final ServerRepository serverRepository;
-    private final PawnRepository pawnRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final SimpMessageSendingOperations stomp;
     private final DnsService dnsService;
-    private final PlatformTransactionManager platformTransactionManager;
 
     /**
      * Inserts some initial data to set up the world e.g. factions.
@@ -270,10 +269,10 @@ public class ManagerWorldService {
 
         // admin user and some faction specific users for testing
 
-        if (adhocProperties.getFeatureFlags().contains("development")) {
+        if (webProperties.getFeatureFlags().contains("development")) {
             User u0 = new User();
             u0.setName("admin");
-            u0.setEmail("admin@" + adhocProperties.getAdhocDomain());
+            u0.setEmail("admin@" + webProperties.getAdhocDomain());
             u0.setFaction(team1);
             u0.setScore(0F);
             u0.setPassword(passwordEncoder.encode(managerProperties.getDefaultAdminPassword()));
@@ -284,7 +283,7 @@ public class ManagerWorldService {
 
             User u1 = new User();
             u1.setName("AlphaTester");
-            u1.setEmail("alphatester@" + adhocProperties.getAdhocDomain());
+            u1.setEmail("alphatester@" + webProperties.getAdhocDomain());
             u1.setFaction(team1);
             u1.setScore(0F);
             u1.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
@@ -295,7 +294,7 @@ public class ManagerWorldService {
 
             User u2 = new User();
             u2.setName("BetaTester");
-            u2.setEmail("betatester@" + adhocProperties.getAdhocDomain());
+            u2.setEmail("betatester@" + webProperties.getAdhocDomain());
             u2.setFaction(team2);
             u2.setScore(10F);
             u2.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
@@ -306,7 +305,7 @@ public class ManagerWorldService {
 
             User u3 = new User();
             u3.setName("DeltaTester");
-            u3.setEmail("deltatester@" + adhocProperties.getAdhocDomain());
+            u3.setEmail("deltatester@" + webProperties.getAdhocDomain());
             u3.setFaction(team3);
             u3.setScore(20F);
             u3.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
@@ -317,7 +316,7 @@ public class ManagerWorldService {
 
             User u4 = new User();
             u4.setName("GammaTester");
-            u4.setEmail("gammatester@" + adhocProperties.getAdhocDomain());
+            u4.setEmail("gammatester@" + webProperties.getAdhocDomain());
             u4.setFaction(team4);
             u4.setScore(30F);
             u4.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
@@ -343,7 +342,7 @@ public class ManagerWorldService {
     }
 
     public void updateManagerAndKioskHosts(Set<String> managerHosts, Set<String> kioskHosts) {
-        World world = worldRepository.getReferenceById(WorldService.WORLD_ID);
+        World world = worldRepository.getWithPessimisticWriteLockById(WorldService.WORLD_ID);
 
         boolean emitEvent = false;
 
@@ -361,16 +360,13 @@ public class ManagerWorldService {
         }
 
         if (emitEvent) {
-            emitWorldUpdatedEvent(world);
+            sendWorldUpdatedEvent(world);
         }
     }
 
-    private void emitWorldUpdatedEvent(World world) {
+    private void sendWorldUpdatedEvent(World world) {
         WorldUpdatedEvent event = WorldUpdatedEvent.builder()
-                .id(WorldService.WORLD_ID)
-                .version(world.getVersion())
-                .managerHosts(new ArrayList<>(world.getManagerHosts()))
-                .kioskHosts(new ArrayList<>(world.getKioskHosts()))
+                .world(worldService.toDto(world))
                 .build();
 
         log.info("Sending: {}", event);

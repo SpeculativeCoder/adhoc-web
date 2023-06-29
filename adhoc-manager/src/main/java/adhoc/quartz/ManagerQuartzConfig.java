@@ -103,32 +103,32 @@ public class ManagerQuartzConfig {
 
     @Bean
     public JobDetail manageServersJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(MANAGE_SERVERS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_SERVERS).storeDurably().build();
     }
 
     @Bean
     public JobDetail grantFactionScoresJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(AWARD_FACTION_SCORES).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(AWARD_FACTION_SCORES).storeDurably().build();
     }
 
     @Bean
     public JobDetail decayFactionScoresJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(DECAY_FACTION_SCORES).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(DECAY_FACTION_SCORES).storeDurably().build();
     }
 
     @Bean
     public JobDetail decayUserScoresJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(DECAY_USER_SCORES).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(DECAY_USER_SCORES).storeDurably().build();
     }
 
     @Bean
     public JobDetail purgeOldUsersJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(PURGE_OLD_USERS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(PURGE_OLD_USERS).storeDurably().build();
     }
 
     @Bean
     public JobDetail purgeOldPawnsJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzService.class).withIdentity(PURGE_OLD_PAWNS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(PURGE_OLD_PAWNS).storeDurably().build();
     }
 }
 

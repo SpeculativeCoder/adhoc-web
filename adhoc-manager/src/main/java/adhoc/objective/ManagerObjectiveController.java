@@ -23,7 +23,6 @@
 package adhoc.objective;
 
 import adhoc.objective.event.ObjectiveTakenEvent;
-import adhoc.objective.dto.ObjectiveDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,10 +49,10 @@ public class ManagerObjectiveController {
         return managerObjectiveService.updateObjective(objectiveDto);
     }
 
-    @PutMapping("/servers/{serverId}/objectives")
+    @PostMapping("/servers/{serverId}/objectives")
     @PreAuthorize("hasRole('SERVER')")
-    public List<ObjectiveDto> putServerObjectives(@PathVariable Long serverId, @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
-        return managerObjectiveService.updateObjectives(objectiveDtos);
+    public List<ObjectiveDto> postServerObjectives(@PathVariable Long serverId, @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
+        return managerObjectiveService.processServerObjectives(serverId, objectiveDtos);
     }
 
     @MessageMapping("ObjectiveTaken")
@@ -62,7 +61,7 @@ public class ManagerObjectiveController {
     public ObjectiveTakenEvent handleObjectiveTaken(@Valid @RequestBody ObjectiveTakenEvent objectiveTakenEvent) {
         log.debug("Handling: {}", objectiveTakenEvent);
 
-        managerObjectiveService.processObjectiveTaken(objectiveTakenEvent);
+        managerObjectiveService.handleObjectiveTaken(objectiveTakenEvent);
 
         return objectiveTakenEvent;
     }

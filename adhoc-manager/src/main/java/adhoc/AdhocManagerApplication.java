@@ -25,10 +25,6 @@ package adhoc;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * When running as a manager, this application talks to a {@link adhoc.hosting.HostingService} to ensure servers are representing each area in each region (and will start / stop servers accordingly).
@@ -39,13 +35,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * <p>
  * Typically, only {@link adhoc.user.UserRole#SERVER} and {@link adhoc.user.UserRole#ADMIN} users access the manager.
  */
-@SpringBootApplication
-@EnableConfigurationProperties
-@EnableScheduling
-@EnableCaching
 @Slf4j
 @RequiredArgsConstructor
-public class AdhocManagerApplication {
+public class AdhocManagerApplication extends AbstractWebApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(AdhocManagerApplication.class, args); //.start();

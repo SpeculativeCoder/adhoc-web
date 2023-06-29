@@ -44,4 +44,26 @@ public class HostingState {
     private Set<String> kioskHosts;
 
     private Map<Long, ServerTask> serverTasks;
+
+    /**
+     * Information about a container running an Unreal server in the hosting service e.g. a task in an AWS ECS cluster.
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString(includeFieldNames = false)
+    public static class ServerTask {
+
+        /** Unique identifier of the task within the hosting service. */
+        private String taskId;
+
+        /** IP that is reachable within the hosting service but not externally. */
+        private String privateIp;
+
+        /** Public IP visible to users. */
+        private String publicIp;
+
+        /** Web socket port visible to users (typically 8898) */
+        private Integer publicWebSocketPort;
+    }
 }

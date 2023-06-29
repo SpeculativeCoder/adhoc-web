@@ -33,5 +33,5 @@ public interface HostingService {
 
     void startServerTask(Server server); //, Set<String> managerHosts);
 
-    void stopServerTask(ServerTask task);
+    void stopServerTask(HostingState.ServerTask task);
 }

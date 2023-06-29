@@ -22,7 +22,8 @@
 
 package adhoc.dns.route53;
 
-import adhoc.AdhocProperties;
+import adhoc.dns.route53.properties.Route53DnsProperties;
+import adhoc.properties.WebProperties;
 import adhoc.dns.DnsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class Route53DnsService implements DnsService {
 
-    private final AdhocProperties adhocProperties;
+    private final WebProperties webProperties;
 
     private final Route53DnsProperties route53DnsProperties;
 
@@ -63,6 +64,7 @@ public class Route53DnsService implements DnsService {
     public void createOrUpdateDnsRecord(String domain, Set<String> ips) {
         log.info("createOrUpdateDnsRecord: domain={} ips={}", domain, ips);
 
+        //  TODO
         if (domain.contains("localhost") || ips.isEmpty()) {
             log.warn("Ignoring attempt to set DNS! domain={} ips={}", domain, ips);
             return;
@@ -85,7 +87,7 @@ public class Route53DnsService implements DnsService {
 
     private String getHostedZoneId(Route53Client route53Client) {
         ListHostedZonesByNameRequest listHostedZonesByNameRequest = ListHostedZonesByNameRequest.builder()
-                .dnsName(adhocProperties.getAdhocDomain())
+                .dnsName(webProperties.getAdhocDomain())
                 .maxItems("1")
                 .build();
         log.debug("listHostedZonesByNameRequest: {}", listHostedZonesByNameRequest);
@@ -100,8 +102,8 @@ public class Route53DnsService implements DnsService {
         }
 
         HostedZone hostedZone = hostedZones.get(0);
-        if (!hostedZone.name().equals(adhocProperties.getAdhocDomain() + ".")) {
-            throw new IllegalStateException("expected hosted zone with name " + adhocProperties.getAdhocDomain() + ". but got: " + hostedZone.name());
+        if (!hostedZone.name().equals(webProperties.getAdhocDomain() + ".")) {
+            throw new IllegalStateException("expected hosted zone with name " + webProperties.getAdhocDomain() + ". but got: " + hostedZone.name());
         }
 
         String hostedZoneId = hostedZone.id().replace("/hostedzone/", "");

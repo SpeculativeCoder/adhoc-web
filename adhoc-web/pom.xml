@@ -289,6 +289,22 @@
                                 </configuration>
                             </execution>
                             <execution>
+                                <id>add-resource</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>add-resource</goal>
+                                </goals>
+                                <configuration>
+                                    <resources>
+                                        <resource>
+                                            <directory>
+                                                ../adhoc-extra/adhoc-web-extra/src/main/resources
+                                            </directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>add-test-source</id>
                                 <phase>generate-sources</phase>
                                 <goals>
@@ -298,6 +314,22 @@
                                     <sources>
                                         <source>../adhoc-extra/adhoc-web-extra/src/test/java</source>
                                     </sources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>add-test-resource</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>add-test-resource</goal>
+                                </goals>
+                                <configuration>
+                                    <resources>
+                                        <resource>
+                                            <directory>
+                                                ../adhoc-extra/adhoc-web-extra/src/test/resources
+                                            </directory>
+                                        </resource>
+                                    </resources>
                                 </configuration>
                             </execution>
                         </executions>

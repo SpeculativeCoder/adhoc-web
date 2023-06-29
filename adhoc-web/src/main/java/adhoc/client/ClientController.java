@@ -22,7 +22,7 @@
 
 package adhoc.client;
 
-import adhoc.AdhocProperties;
+import adhoc.properties.WebProperties;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class ClientController {
     private static final String PROJECT_NAME = "{unrealProjectName:[A-Za-z0-9]+}";
     private static final String VARIANT = "{variant:|-HTML5-Test|-HTML5-Shipping}";
 
-    private final AdhocProperties adhocProperties;
+    private final WebProperties webProperties;
 
     // the Angular app sends user to e.g. /Client.html (for now) so try to give them Shipping/Test variant if available
     @GetMapping(value = "/" + MAP_NAME + "/Client.html", produces = MimeTypeUtils.TEXT_HTML_VALUE)
@@ -52,17 +52,17 @@ public class ClientController {
 
         // TODO: would be better to have available variant set via property rather than checking for existence of each
 
-        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.html", mapName, adhocProperties.getUnrealProjectName(), "-HTML5-Shipping"));
+        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.html", mapName, webProperties.getUnrealProjectName(), "-HTML5-Shipping"));
         if (resource.exists()) {
             return resource;
         }
 
-        resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.html", mapName, adhocProperties.getUnrealProjectName(), "-HTML5-Test"));
+        resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.html", mapName, webProperties.getUnrealProjectName(), "-HTML5-Test"));
         if (resource.exists()) {
             return resource;
         }
 
-        resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.html", mapName, adhocProperties.getUnrealProjectName(), ""));
+        resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.html", mapName, webProperties.getUnrealProjectName(), ""));
         if (resource.exists()) {
             return resource;
         }
@@ -73,49 +73,49 @@ public class ClientController {
 
     @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".css", produces = "text/css")
     public ClassPathResource getClientCss(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
-        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.css.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
+        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.css.gz", mapName, webProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
 
     @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".UE4.js", produces = "text/javascript")
     public ClassPathResource getClientUE4Js(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
-        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.UE4.js.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
+        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.UE4.js.gz", mapName, webProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
 
     @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".data.js.gz", produces = "text/javascript")
     public ClassPathResource getClientDataJsGz(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
-        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.data.js.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
+        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.data.js.gz", mapName, webProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
 
     @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".data.gz", produces = MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE)
     public ClassPathResource getClientDataGz(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
-        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.data.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
+        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%s%s.data.gz", mapName, webProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
 
     @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".js.gz", produces = "text/javascript")
     public ClassPathResource getClientClientJsGz(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
-        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.js.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
+        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.js.gz", mapName, webProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
 
     @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".js.symbols.gz", produces = "text/javascript")
     public ClassPathResource getClientClientJsSymbolsGz(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
-        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.js.symbols.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
+        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.js.symbols.gz", mapName, webProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
 
     @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".wasm.gz", produces = "application/wasm")
     public ClassPathResource getClientClientWasmGz(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
-        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.wasm.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
+        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.wasm.gz", mapName, webProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }
@@ -123,7 +123,7 @@ public class ClientController {
     // worker js for multithreading builds only
     @GetMapping(value = "/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".worker.js.gz", produces = "text/javascript")
     public ClassPathResource getClientClientWorkerJsGz(@PathVariable(value = "mapName") String mapName, @PathVariable(value = "variant") String variant, HttpServletResponse response) {
-        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.worker.js.gz", mapName, adhocProperties.getUnrealProjectName(), variant));
+        ClassPathResource resource = new ClassPathResource(String.format("/Client/%s/HTML5/%sClient%s.worker.js.gz", mapName, webProperties.getUnrealProjectName(), variant));
         response.setHeader("Content-Encoding", "gzip");
         return resource;
     }

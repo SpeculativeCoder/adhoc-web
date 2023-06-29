@@ -22,7 +22,6 @@
 
 package adhoc.region;
 
-import adhoc.region.dto.RegionDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;

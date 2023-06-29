@@ -23,7 +23,9 @@
 package adhoc.pawn;
 
 import adhoc.server.Server;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -32,9 +34,11 @@ import java.util.stream.Stream;
 
 public interface PawnRepository extends JpaRepository<Pawn, Long> {
 
-    Optional<Pawn> findByServerAndIndex(Server server, Integer index);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Pawn> findWithPessimisticWriteLockByServerAndIndex(Server server, Integer index);
 
     void deleteByServerAndIdNotIn(Server server, Set<Long> ids);
 
-    Stream<Pawn> findBySeenBefore(LocalDateTime time);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Stream<Pawn> findWithPessimisticWriteLockBySeenBefore(LocalDateTime time);
 }

@@ -32,6 +32,8 @@ import java.util.Optional;
 
 public interface ServerRepository extends JpaRepository<Server, Long> {
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Server getWithPessimisticWriteLockById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Server> findWithPessimisticWriteLockBy();

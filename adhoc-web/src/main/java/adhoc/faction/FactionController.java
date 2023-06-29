@@ -22,7 +22,6 @@
 
 package adhoc.faction;
 
-import adhoc.faction.dto.FactionDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;

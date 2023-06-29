@@ -22,7 +22,7 @@
 
 package adhoc.db.hsqldb;
 
-import adhoc.AdhocProperties;
+import adhoc.properties.WebProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +40,7 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class KioskHsqldbConfig {
 
-    private final AdhocProperties adhocProperties;
+    private final WebProperties webProperties;
 
     @Value("${spring.datasource.username}")
     private String username;
@@ -53,7 +53,7 @@ public class KioskHsqldbConfig {
     @Primary
     public DataSource dataSource() {
         return DataSourceBuilder.create()
-                .url("jdbc:hsqldb:hsql://" + adhocProperties.getManagerHost() + ":9001/adhoc")
+                .url("jdbc:hsqldb:hsql://" + webProperties.getManagerHost() + ":9001/adhoc")
                 .username(username)
                 .password(password)
                 .build();

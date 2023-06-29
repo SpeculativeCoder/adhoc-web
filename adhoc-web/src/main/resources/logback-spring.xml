@@ -22,7 +22,7 @@
 
 <configuration>
 
-    <conversionRule conversionWord="acc" converterClass="adhoc.web.logging.AdhocColorConverter" />
+    <conversionRule conversionWord="acc" converterClass="adhoc.logging.AdhocColorConverter" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

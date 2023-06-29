@@ -26,10 +26,8 @@ import adhoc.area.AreaRepository;
 import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
 import adhoc.objective.event.ObjectiveTakenEvent;
-import adhoc.objective.dto.ObjectiveDto;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.user.User;
 import adhoc.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +39,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -64,7 +61,7 @@ public class ManagerObjectiveService {
                 toEntityStage2(objectiveDto));
     }
 
-    public List<ObjectiveDto> updateObjectives(List<ObjectiveDto> objectiveDtos) {
+    public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
         // NOTE: this is a two stage save to allow linked objectives to be set too
         objectiveDtos.stream()
                 .map(this::toEntityStage1)
@@ -84,8 +81,6 @@ public class ManagerObjectiveService {
 
         Faction initialFaction = objectiveDto.getInitialFactionIndex() == null ? null :
                 factionRepository.getByIndex(objectiveDto.getInitialFactionIndex());
-        Faction faction = objectiveDto.getFactionIndex() == null ? null :
-                factionRepository.getByIndex(objectiveDto.getFactionIndex());
 
         objective.setRegion(region);
         objective.setIndex(objectiveDto.getIndex());
@@ -109,7 +104,7 @@ public class ManagerObjectiveService {
 
     Objective toEntityStage2(ObjectiveDto objectiveDto) {
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
-        Objective objective = objectiveRepository.getByRegionAndIndex(region, objectiveDto.getIndex());
+        Objective objective = objectiveRepository.getWithPessimisticWriteLockByRegionAndIndex(region, objectiveDto.getIndex());
 
         objective.setLinkedObjectives(
                 objectiveDto.getLinkedObjectiveIndexes().stream().map(linkedObjectiveIndex ->
@@ -118,22 +113,23 @@ public class ManagerObjectiveService {
         return objective;
     }
 
-    public void processObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
-        Faction faction = factionRepository.getWithPessimisticWriteLockById(objectiveTakenEvent.getFactionId());
+    public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
         Objective objective = objectiveRepository.getWithPessimisticWriteLockById(objectiveTakenEvent.getObjectiveId());
+        Faction faction = factionRepository.getWithPessimisticWriteLockById(objectiveTakenEvent.getFactionId());
 
-        faction.setScore(faction.getScore() + 1);
         objective.setFaction(faction);
 
-        // TODO: do this without loading all users
-        Stream<User> friendlies = userRepository.streamUserByFaction(faction);
+        faction.setScore(faction.getScore() + 1);
+
         LocalDateTime now = LocalDateTime.now();
-        friendlies
-                .filter(friendly -> friendly.getLastLogin() != null && friendly.getLastLogin().until(now, ChronoUnit.MINUTES) < 15
-                        || friendly.getSeen() != null && friendly.getSeen().until(now, ChronoUnit.MINUTES) < 15)
-                .forEach(friendly -> {
-                    friendly.setScore(friendly.getScore() + 1);
-                });
+
+        // TODO: do this without going through all users
+        userRepository.streamUserWithPessimisticWriteLockByFaction(faction)
+                .filter(friendly ->
+                        friendly.getLastLogin() != null && friendly.getLastLogin().until(now, ChronoUnit.MINUTES) < 15
+                                || friendly.getSeen() != null && friendly.getSeen().until(now, ChronoUnit.MINUTES) < 15)
+                .forEach(friendly ->
+                        friendly.setScore(friendly.getScore() + 1));
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
     }

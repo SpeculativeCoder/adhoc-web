@@ -22,7 +22,6 @@
 
 package adhoc.area;
 
-import adhoc.area.dto.AreaDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +38,9 @@ public class ManagerAreaController {
 
     private final ManagerAreaService managerAreaService;
 
-    @PutMapping("/servers/{serverId}/areas")
+    @PostMapping("/servers/{serverId}/areas")
     @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> putServerAreas(@PathVariable Long serverId, @Valid @RequestBody List<AreaDto> areaDtos) {
-        return managerAreaService.updateServerAreas(serverId, areaDtos);
+    public List<AreaDto> postServerAreas(@PathVariable Long serverId, @Valid @RequestBody List<AreaDto> areaDtos) {
+        return managerAreaService.processServerAreas(serverId, areaDtos);
     }
 }

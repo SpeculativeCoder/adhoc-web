@@ -27,11 +27,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FactionRepository extends JpaRepository<Faction, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Faction getWithPessimisticWriteLockById(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Faction> findWithPessimisticWriteLockById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Faction> findWithPessimisticWriteLockBy();

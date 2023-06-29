@@ -22,15 +22,19 @@
 
 package adhoc.area;
 
-import adhoc.area.dto.AreaDto;
 import adhoc.objective.Objective;
+import adhoc.region.Region;
+import adhoc.region.RegionRepository;
+import adhoc.server.ServerRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,28 +44,55 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ManagerAreaService {
 
-    private final AreaRepository areaRepository;
     private final AreaService areaService;
 
-    public List<AreaDto> updateServerAreas(Long serverId, List<AreaDto> areaDtos) {
-        Set<Long> areaIds = new HashSet<>();
+    private final AreaRepository areaRepository;
+    private final RegionRepository regionRepository;
+    private final ServerRepository serverRepository;
+
+    private final EntityManager entityManager;
+
+    public List<AreaDto> processServerAreas(Long serverId, List<AreaDto> areaDtos) {
+        Set<Long> areaIds = new LinkedHashSet<>();
 
         List<AreaDto> result = areaDtos.stream()
-                .map(areaService::toEntity)
+                .map(this::toEntity)
                 .map(areaRepository::save)
                 .peek(area -> areaIds.add(area.getId()))
                 .map(areaService::toDto)
                 .toList();
 
         // TODO
-        Collection<Area> areasToDelete = areaRepository.findAllByIdNotIn(areaIds);
+        Collection<Area> areasToDelete = areaRepository.findAllWithPessimisticWriteLockByIdNotIn(areaIds);
         for (Area areaToDelete : areasToDelete) {
             for (Objective orphanedObjective : areaToDelete.getObjectives()) {
+                entityManager.lock(orphanedObjective, LockModeType.PESSIMISTIC_WRITE);
                 orphanedObjective.setArea(null);
             }
         }
         areaRepository.deleteAll(areasToDelete);
 
         return result;
+    }
+
+    Area toEntity(AreaDto areaDto) {
+        Region region = regionRepository.getReferenceById(areaDto.getRegionId());
+        Area area = areaRepository.findWithPessimisticWriteLockByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new);
+
+        area.setRegion(region);
+        area.setIndex(areaDto.getIndex());
+        area.setName(areaDto.getName());
+        area.setX(areaDto.getX());
+        area.setY(areaDto.getY());
+        area.setZ(areaDto.getZ());
+        area.setSizeX(areaDto.getSizeX());
+        area.setSizeY(areaDto.getSizeY());
+        area.setSizeZ(areaDto.getSizeZ());
+        //noinspection OptionalAssignedToNull
+        if (areaDto.getServerId() != null) {
+            area.setServer(areaDto.getServerId().isEmpty() ? null : serverRepository.getReferenceById(areaDto.getServerId().get()));
+        }
+
+        return area;
     }
 }

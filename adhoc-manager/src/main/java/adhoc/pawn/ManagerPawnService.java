@@ -23,7 +23,6 @@
 package adhoc.pawn;
 
 import adhoc.faction.FactionRepository;
-import adhoc.pawn.dto.PawnDto;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.server.event.ServerPawnsEvent;
@@ -49,14 +48,14 @@ public class ManagerPawnService {
     private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
 
-    public void processServerPawns(ServerPawnsEvent serverPawnsEvent) {
+    public void handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
         Server server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
         LocalDateTime now = LocalDateTime.now();
 
         Set<Long> seenPawnIds = new HashSet<>();
         for (PawnDto pawnDto : serverPawnsEvent.getPawns()) {
 
-            User user = pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId());
+            User user = pawnDto.getUserId() == null ? null : userRepository.getWithPessimisticWriteLockById(pawnDto.getUserId());
             if (user != null) {
                 user.setServer(server);
                 user.setSeen(now);
@@ -72,8 +71,19 @@ public class ManagerPawnService {
         pawnRepository.deleteByServerAndIdNotIn(server, seenPawnIds);
     }
 
+    public void purgeOldPawns() {
+        log.trace("Purging old pawns...");
+
+        pawnRepository
+                .findWithPessimisticWriteLockBySeenBefore(LocalDateTime.now().minusMinutes(1))
+                .forEach(oldPawn -> {
+                    log.debug("Purging old pawn: oldPawn={}", oldPawn);
+                    pawnRepository.delete(oldPawn);
+                });
+    }
+
     Pawn toEntity(PawnDto pawnDto, LocalDateTime seen, Server server, User user) {
-        Pawn pawn = pawnRepository.findByServerAndIndex(server, pawnDto.getIndex()).orElseGet(Pawn::new);
+        Pawn pawn = pawnRepository.findWithPessimisticWriteLockByServerAndIndex(server, pawnDto.getIndex()).orElseGet(Pawn::new);
 
         pawn.setName(pawnDto.getName());
         pawn.setServer(server);

@@ -22,16 +22,22 @@
 
 package adhoc.world.event;
 
-import adhoc.web.socket.event.Event;
-import adhoc.world.dto.WorldDto;
+import adhoc.event.Event;
+import adhoc.world.WorldDto;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 @Data
-@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder(toBuilder = true)
 @Jacksonized
-@ToString(includeFieldNames = false, callSuper = true)
-public class WorldUpdatedEvent extends WorldDto implements Event {
+@ToString(includeFieldNames = false)
+public class WorldUpdatedEvent implements Event {
+
+    private WorldDto world;
 }

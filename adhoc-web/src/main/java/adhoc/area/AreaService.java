@@ -22,10 +22,6 @@
 
 package adhoc.area;
 
-import adhoc.area.dto.AreaDto;
-import adhoc.region.Region;
-import adhoc.region.RegionRepository;
-import adhoc.server.ServerRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +40,6 @@ import java.util.stream.Collectors;
 public class AreaService {
 
     private final AreaRepository areaRepository;
-    private final RegionRepository regionRepository;
-    private final ServerRepository serverRepository;
 
     public List<AreaDto> getAreas() {
         return areaRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "id"))
@@ -66,26 +60,5 @@ public class AreaService {
                 area.getX(), area.getY(), area.getZ(),
                 area.getSizeX(), area.getSizeY(), area.getSizeZ(),
                 area.getServer() == null ? Optional.empty() : Optional.of(area.getServer().getId()));
-    }
-
-    Area toEntity(AreaDto areaDto) {
-        Region region = regionRepository.getReferenceById(areaDto.getRegionId());
-        Area area = areaRepository.findWithPessimisticWriteLockByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new);
-
-        area.setRegion(region);
-        area.setIndex(areaDto.getIndex());
-        area.setName(areaDto.getName());
-        area.setX(areaDto.getX());
-        area.setY(areaDto.getY());
-        area.setZ(areaDto.getZ());
-        area.setSizeX(areaDto.getSizeX());
-        area.setSizeY(areaDto.getSizeY());
-        area.setSizeZ(areaDto.getSizeZ());
-        //noinspection OptionalAssignedToNull
-        if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().isEmpty() ? null : serverRepository.getReferenceById(areaDto.getServerId().get()));
-        }
-
-        return area;
     }
 }

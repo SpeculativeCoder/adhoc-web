@@ -22,7 +22,6 @@
 
 package adhoc.faction;
 
-import adhoc.faction.dto.FactionDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,17 +57,5 @@ public class FactionService {
                 faction.getName(),
                 faction.getColor(),
                 faction.getScore());
-    }
-
-    Faction toEntity(FactionDto factionDto) {
-        Faction faction = factionRepository.findById(factionDto.getId()).orElseGet(Faction::new);
-
-        faction.setId(faction.getId());
-        faction.setIndex(faction.getIndex());
-        faction.setName(factionDto.getName());
-        faction.setColor(factionDto.getColor());
-        faction.setScore(factionDto.getScore());
-
-        return faction;
     }
 }

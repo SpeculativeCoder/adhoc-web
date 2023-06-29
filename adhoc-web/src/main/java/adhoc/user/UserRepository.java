@@ -51,7 +51,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	Optional<User> findByNameOrEmailAndPasswordIsNotNull(String name, String email);
 
-	Stream<User> streamUserByFaction(Faction faction);
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	Stream<User> streamUserWithPessimisticWriteLockByFaction(Faction faction);
 
 	boolean existsByName(String name);
 

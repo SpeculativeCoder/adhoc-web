@@ -22,11 +22,12 @@
 
 package adhoc.hosting.docker;
 
-import adhoc.ManagerProperties;
 import adhoc.area.Area;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
-import adhoc.hosting.ServerTask;
+import adhoc.hosting.docker.properties.DockerProperties;
+import adhoc.properties.ManagerProperties;
+import adhoc.properties.WebProperties;
 import adhoc.server.Server;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
@@ -40,7 +41,7 @@ import com.github.dockerjava.zerodep.ZerodepDockerHttpClient;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -72,31 +73,20 @@ public class DockerHostingService implements HostingService {
     private static final String DEFAULT_KIOSK_HOST = "host.docker.internal";
     private static final Pattern SERVER_ID_PATTERN = Pattern.compile("^SERVER_ID=([0-9]+)$");
 
+    private final WebProperties webProperties;
     private final ManagerProperties managerProperties;
+    private final DockerProperties dockerProperties;
 
-    @Value("${adhoc.feature-flags}")
-    private String featureFlags;
-
-    @Value("${adhoc.docker.host}")
-    private String dockerHost;
-
-    @Value("${server.ssl.trust-certificate}")
-    private Path caCertificate;
-
-    @Value("${server.ssl.certificate}")
-    private Path serverCertificate;
-
-    @Value("${server.ssl.certificate-private-key}")
-    private Path privateKey;
+    private final ServerProperties serverProperties;
 
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
-        log.info("dockerHost={}", dockerHost);
+        log.info("dockerHost={}", dockerProperties.getDockerHost());
     }
 
     private DockerClientConfig dockerClientConfig() {
         return new DefaultDockerClientConfig.Builder()
-                .withDockerHost(dockerHost)
+                .withDockerHost(dockerProperties.getDockerHost())
                 .withRegistryUsername("")
                 .withRegistryUrl("")
                 .withApiVersion("1.41")
@@ -169,7 +159,7 @@ public class DockerHostingService implements HostingService {
                     if (serverIdMatcher.matches()) {
                         Long serverId = parseServerId(serverIdMatcher.group(1));
 
-                        ServerTask task = new ServerTask();
+                        HostingState.ServerTask task = new HostingState.ServerTask();
                         task.setTaskId(inspectedContainer.getId());
                         //task.setServerId(serverId);
                         task.setPrivateIp(privateIp);
@@ -184,18 +174,6 @@ public class DockerHostingService implements HostingService {
         }
 
         return hostingState;
-    }
-
-    private static Long parseServerId(String serverIdString) {
-        try {
-            return Long.valueOf(serverIdString);
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("Failed to parse server ID", e);
-        }
-    }
-
-    private static int calculatePublicWebSocketPort(Long serverId) {
-        return PUBLIC_WEB_SOCKET_PORT_BASE + serverId.intValue();
     }
 
     @Override
@@ -224,10 +202,10 @@ public class DockerHostingService implements HostingService {
                         String.format("MAX_PAWNS=%d", managerProperties.getMaxPawns()),
                         String.format("MAX_PLAYERS=%d", managerProperties.getMaxPlayers()),
                         String.format("MAX_BOTS=%d", managerProperties.getMaxBots()),
-                        String.format("FEATURE_FLAGS=%s", featureFlags),
-                        String.format("CA_CERTIFICATE=%s", multilineEnvironmentVariable(caCertificate)),
-                        String.format("SERVER_CERTIFICATE=%s", multilineEnvironmentVariable(serverCertificate)),
-                        String.format("PRIVATE_KEY=%s", multilineEnvironmentVariable(privateKey)),
+                        String.format("FEATURE_FLAGS=%s", webProperties.getFeatureFlags()),
+                        String.format("CA_CERTIFICATE=%s", multilineEnvironmentVariable(serverProperties.getSsl().getTrustCertificate())),
+                        String.format("SERVER_CERTIFICATE=%s", multilineEnvironmentVariable(serverProperties.getSsl().getCertificate())),
+                        String.format("PRIVATE_KEY=%s", multilineEnvironmentVariable(serverProperties.getSsl().getCertificatePrivateKey())),
                         String.format("SERVER_BASIC_AUTH_PASSWORD=%s", managerProperties.getServerBasicAuthPassword())))
                 .withHostConfig(
                         HostConfig.newHostConfig()
@@ -243,20 +221,31 @@ public class DockerHostingService implements HostingService {
         dockerClient().startContainerCmd(createdContainer.getId()).exec();
     }
 
-    private String multilineEnvironmentVariable(Path path) {
-        try {
-            return Files.readString(path).replaceAll("\n", "\\\\n");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
-    public void stopServerTask(ServerTask task) {
+    public void stopServerTask(HostingState.ServerTask task) {
         dockerClient()
                 .removeContainerCmd(task.getTaskId())
                 .withForce(true)
                 .exec();
     }
 
+    private static Long parseServerId(String serverIdString) {
+        try {
+            return Long.valueOf(serverIdString);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Failed to parse server ID", e);
+        }
+    }
+
+    private static int calculatePublicWebSocketPort(Long serverId) {
+        return PUBLIC_WEB_SOCKET_PORT_BASE + serverId.intValue();
+    }
+
+    private String multilineEnvironmentVariable(String path) {
+        try {
+            return Files.readString(Path.of(path)).replaceAll("\n", "\\\\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

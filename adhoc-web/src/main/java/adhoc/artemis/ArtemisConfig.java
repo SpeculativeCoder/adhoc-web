@@ -22,7 +22,7 @@
 
 package adhoc.artemis;
 
-import adhoc.AdhocProperties;
+import adhoc.properties.WebProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
@@ -52,7 +52,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ArtemisConfig implements ArtemisConfigurationCustomizer {
 
-    private final AdhocProperties adhocProperties;
+    private final WebProperties webProperties;
 
     @Bean
     public TopicConfiguration eventsTopic() {
@@ -99,8 +99,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
     private Map<String, Object> stompProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-        props.put(TransportConstants.HOST_PROP_NAME, adhocProperties.getMessageBrokerHost());
-        props.put(TransportConstants.PORT_PROP_NAME, adhocProperties.getMessageBrokerStompPort());
+        props.put(TransportConstants.HOST_PROP_NAME, webProperties.getMessageBrokerHost());
+        props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerStompPort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "STOMP");
         props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "10");
         props.put(TransportConstants.CONNECTION_TTL, "600000");
@@ -111,8 +111,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
     private Map<String, Object> coreProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-        props.put(TransportConstants.HOST_PROP_NAME, adhocProperties.getMessageBrokerHost());
-        props.put(TransportConstants.PORT_PROP_NAME, adhocProperties.getMessageBrokerCorePort());
+        props.put(TransportConstants.HOST_PROP_NAME, webProperties.getMessageBrokerHost());
+        props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         log.info("coreProps: props={}", props);
         return props;
@@ -121,8 +121,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
     private Map<String, Object> managerCoreProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-        props.put(TransportConstants.HOST_PROP_NAME, adhocProperties.getManagerMessageBrokerHost());
-        props.put(TransportConstants.PORT_PROP_NAME, adhocProperties.getManagerMessageBrokerCorePort());
+        props.put(TransportConstants.HOST_PROP_NAME, webProperties.getManagerMessageBrokerHost());
+        props.put(TransportConstants.PORT_PROP_NAME, webProperties.getManagerMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         log.info("managerCoreProps: props={}", props);
         return props;
@@ -131,8 +131,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
     private Map<String, Object> kioskCoreProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-        props.put(TransportConstants.HOST_PROP_NAME, adhocProperties.getKioskMessageBrokerHost());
-        props.put(TransportConstants.PORT_PROP_NAME, adhocProperties.getKioskMessageBrokerCorePort());
+        props.put(TransportConstants.HOST_PROP_NAME, webProperties.getKioskMessageBrokerHost());
+        props.put(TransportConstants.PORT_PROP_NAME, webProperties.getKioskMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         log.warn("kioskCoreProps: props={}", props);
         return props;

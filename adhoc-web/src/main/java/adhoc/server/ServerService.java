@@ -23,7 +23,6 @@
 package adhoc.server;
 
 import adhoc.area.Area;
-import adhoc.server.dto.ServerDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

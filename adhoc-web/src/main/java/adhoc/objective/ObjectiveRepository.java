@@ -38,4 +38,7 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
     Optional<Objective> findWithPessimisticWriteLockByRegionAndIndex(Region region, Integer index);
 
     Objective getByRegionAndIndex(Region region, Integer index);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Objective getWithPessimisticWriteLockByRegionAndIndex(Region region, Integer index);
 }

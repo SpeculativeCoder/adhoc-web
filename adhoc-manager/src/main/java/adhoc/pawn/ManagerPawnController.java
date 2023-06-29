@@ -45,6 +45,6 @@ public class ManagerPawnController {
     public void handleServerPawns(@Valid @RequestBody ServerPawnsEvent serverPawnsEvent) {
         log.debug("Handling: {}", serverPawnsEvent);
 
-        managerPawnService.processServerPawns(serverPawnsEvent);
+        managerPawnService.handleServerPawns(serverPawnsEvent);
     }
 }

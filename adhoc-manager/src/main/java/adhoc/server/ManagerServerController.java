@@ -22,7 +22,6 @@
 
 package adhoc.server;
 
-import adhoc.server.dto.ServerDto;
 import adhoc.server.event.ServerStartedEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +50,6 @@ public class ManagerServerController {
     public void handleServerStarted(@Valid @RequestBody ServerStartedEvent serverStartedEvent) {
         log.info("Handling: {}", serverStartedEvent);
 
-        managerServerService.processServerStarted(serverStartedEvent);
+        managerServerService.handleServerStarted(serverStartedEvent);
     }
 }

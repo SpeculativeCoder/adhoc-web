@@ -24,7 +24,6 @@ package adhoc.hosting.local;
 
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
-import adhoc.hosting.ServerTask;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import jakarta.transaction.Transactional;
@@ -57,7 +56,7 @@ public class LocalHostingService implements HostingService {
         state.setManagerHosts(Collections.singleton("localhost"));
         state.setKioskHosts(Collections.singleton("localhost"));
 
-        Map<Long, ServerTask> tasks = new LinkedHashMap<>();
+        Map<Long, HostingState.ServerTask> tasks = new LinkedHashMap<>();
         state.setServerTasks(tasks);
 
         List<Server> servers = serverRepository.findAll();
@@ -65,7 +64,7 @@ public class LocalHostingService implements HostingService {
         for (Server server : servers) {
             if (serverIds.contains(server.getId())) {
 
-                ServerTask task = new ServerTask();
+                HostingState.ServerTask task = new HostingState.ServerTask();
 
                 task.setTaskId("local-task-" + server.getId());
                 //task.setServerId(server.getId());
@@ -88,7 +87,7 @@ public class LocalHostingService implements HostingService {
     }
 
     @Override
-    public void stopServerTask(ServerTask task) {
+    public void stopServerTask(HostingState.ServerTask task) {
         log.warn("Ignoring request to stop task {}", task);
     }
 

@@ -22,17 +22,21 @@
 
 package adhoc.objective.event;
 
-import adhoc.web.socket.event.Event;
+import adhoc.event.Event;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder(toBuilder = true)
+@Jacksonized
 @ToString(includeFieldNames = false)
 public class ObjectiveTakenEvent implements Event {
 

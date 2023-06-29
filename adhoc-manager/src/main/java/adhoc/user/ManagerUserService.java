@@ -24,12 +24,12 @@ package adhoc.user;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
-import adhoc.faction.FactionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import adhoc.user.dto.*;
+import adhoc.user.request.*;
 import adhoc.user.event.UserDefeatedBotEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
+import adhoc.user.response.UserNavigateResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,18 +45,22 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class ManagerUserService {
 
+    private final UserService userService;
+
     private final UserRepository userRepository;
-    private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
     private final AreaRepository areaRepository;
-    private final UserService userService;
 
     public UserDto updateUser(UserDto userDto) {
         return userService.toDto(
                 userRepository.save(userService.toEntity(userDto)));
     }
 
-    public ResponseEntity<UserNavigateResponse> navigate(UserNavigateRequest userNavigateRequest) {
+    public ResponseEntity<UserDetailDto> serverUserRegister(UserRegisterRequest userRegisterRequest, Authentication authentication) {
+        return userService.register(userRegisterRequest, authentication);
+    }
+
+    public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
         User user = userRepository.getWithPessimisticWriteLockById(userNavigateRequest.getUserId());
         Area area = areaRepository.getReferenceById(userNavigateRequest.getAreaId());
         Server server = area.getServer();
@@ -97,7 +101,7 @@ public class ManagerUserService {
         return ResponseEntity.ok(userService.toDetailDto(user));
     }
 
-    public UserDefeatedUserEvent processUserDefeatedUser(UserDefeatedUserEvent userDefeatedUserEvent) {
+    public UserDefeatedUserEvent handleUserDefeatedUser(UserDefeatedUserEvent userDefeatedUserEvent) {
         User user = userRepository.getWithPessimisticWriteLockById(userDefeatedUserEvent.getUserId());
         user.setScore(user.getScore() + 1);
 
@@ -107,7 +111,7 @@ public class ManagerUserService {
         return userDefeatedUserEvent;
     }
 
-    public UserDefeatedBotEvent processUserDefeatedBot(UserDefeatedBotEvent userDefeatedBotEvent) {
+    public UserDefeatedBotEvent handleUserDefeatedBot(UserDefeatedBotEvent userDefeatedBotEvent) {
         User user = userRepository.getWithPessimisticWriteLockById(userDefeatedBotEvent.getUserId());
         user.setScore(user.getScore() + 1);
 
@@ -117,7 +121,25 @@ public class ManagerUserService {
         return userDefeatedBotEvent;
     }
 
-    public ResponseEntity<UserDetailDto> serverUserRegister(UserRegisterRequest userRegisterRequest, Authentication authentication) {
-        return userService.register(userRegisterRequest, authentication);
+    public void decayUserScores() {
+        log.trace("Decaying user scores...");
+
+        // TODO: properties
+        userRepository.findWithPessimisticWriteLockBy().forEach(user -> user.setScore(user.getScore() * 0.999F));
+    }
+
+    //@Scheduled(cron="0 */1 * * * *")
+    public void purgeOldUsers() {
+        log.trace("Purging old users...");
+
+        userRepository
+                .findWithPessimisticWriteLockBySeenBeforeAndPasswordIsNull(LocalDateTime.now().minusDays(7)) //.minusMinutes(30))
+                .forEach(oldUser -> {
+                    log.info("Purging old auto-registered user - oldUser={}", oldUser);
+//                    for (Pawn pawn : oldUser.getPawns()) {
+//                        pawn.setUser(null);
+//                    }
+                    userRepository.delete(oldUser);
+                });
     }
 }

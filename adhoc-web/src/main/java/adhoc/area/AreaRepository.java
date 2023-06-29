@@ -32,7 +32,6 @@ import java.util.Optional;
 
 public interface AreaRepository extends JpaRepository<Area, Long> {
 
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Area getWithPessimisticWriteLockById(Long id);
 
@@ -41,5 +40,6 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
 
     Area getByRegionAndIndex(Region region, Integer index);
 
-    Collection<Area> findAllByIdNotIn(Collection<Long> ids);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Collection<Area> findAllWithPessimisticWriteLockByIdNotIn(Collection<Long> ids);
 }

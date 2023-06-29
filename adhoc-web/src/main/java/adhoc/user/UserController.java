@@ -22,9 +22,7 @@
 
 package adhoc.user;
 
-import adhoc.user.dto.UserDetailDto;
-import adhoc.user.dto.UserDto;
-import adhoc.user.dto.UserRegisterRequest;
+import adhoc.user.request.UserRegisterRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

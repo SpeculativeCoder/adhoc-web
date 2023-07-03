@@ -29,5 +29,5 @@ import org.springframework.data.jpa.repository.Lock;
 public interface WorldRepository extends JpaRepository<World, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    World getWithPessimisticWriteLockById(Long id);
+    World getWorldById(Long id);
 }

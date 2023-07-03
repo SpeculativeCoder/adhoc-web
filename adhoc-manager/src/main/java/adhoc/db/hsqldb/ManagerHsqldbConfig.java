@@ -48,7 +48,7 @@ public class ManagerHsqldbConfig {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     Server hsqldbServer() throws IOException {
-        System.setProperty("hsqldb.reconfig_logging", "false");
+        //System.setProperty("hsqldb.reconfig_logging", "false");
 
         Server server = new Server();
 

@@ -28,6 +28,7 @@ import adhoc.faction.FactionRepository;
 import adhoc.objective.event.ObjectiveTakenEvent;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
+import adhoc.user.User;
 import adhoc.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -76,7 +78,7 @@ public class ManagerObjectiveService {
     Objective toEntityStage1(ObjectiveDto objectiveDto) {
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
         Objective objective = objectiveRepository
-                .findWithPessimisticWriteLockByRegionAndIndex(region, objectiveDto.getIndex())
+                .findObjectiveByRegionAndIndex(region, objectiveDto.getIndex())
                 .orElseGet(Objective::new);
 
         Faction initialFaction = objectiveDto.getInitialFactionIndex() == null ? null :
@@ -104,32 +106,33 @@ public class ManagerObjectiveService {
 
     Objective toEntityStage2(ObjectiveDto objectiveDto) {
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
-        Objective objective = objectiveRepository.getWithPessimisticWriteLockByRegionAndIndex(region, objectiveDto.getIndex());
+        Objective objective = objectiveRepository.getObjectiveByRegionAndIndex(region, objectiveDto.getIndex());
 
         objective.setLinkedObjectives(
                 objectiveDto.getLinkedObjectiveIndexes().stream().map(linkedObjectiveIndex ->
-                        objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex)).collect(Collectors.toList()));
+                        objectiveRepository.getObjectiveByRegionAndIndex(region, linkedObjectiveIndex)).collect(Collectors.toList()));
 
         return objective;
     }
 
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
-        Objective objective = objectiveRepository.getWithPessimisticWriteLockById(objectiveTakenEvent.getObjectiveId());
-        Faction faction = factionRepository.getWithPessimisticWriteLockById(objectiveTakenEvent.getFactionId());
-
-        objective.setFaction(faction);
+        Faction faction = factionRepository.getFactionById(objectiveTakenEvent.getFactionId());
+        Objective objective = objectiveRepository.getObjectiveById(objectiveTakenEvent.getObjectiveId());
 
         faction.setScore(faction.getScore() + 1);
+        objective.setFaction(faction);
 
         LocalDateTime now = LocalDateTime.now();
 
         // TODO: do this without going through all users
-        userRepository.streamUserWithPessimisticWriteLockByFaction(faction)
-                .filter(friendly ->
-                        friendly.getLastLogin() != null && friendly.getLastLogin().until(now, ChronoUnit.MINUTES) < 15
-                                || friendly.getSeen() != null && friendly.getSeen().until(now, ChronoUnit.MINUTES) < 15)
-                .forEach(friendly ->
-                        friendly.setScore(friendly.getScore() + 1));
+        try (Stream<User> users = userRepository.streamUsersByFactionOrderById(faction)) {
+            users
+                    .filter(friendly ->
+                            friendly.getLastLogin() != null && friendly.getLastLogin().until(now, ChronoUnit.MINUTES) < 15
+                                    || friendly.getSeen() != null && friendly.getSeen().until(now, ChronoUnit.MINUTES) < 15)
+                    .forEach(friendly ->
+                            friendly.setScore(friendly.getScore() + 1));
+        }
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
     }

@@ -22,7 +22,7 @@
 
 package adhoc.faction.event;
 
-import adhoc.event.Event;
+import adhoc.Event;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;

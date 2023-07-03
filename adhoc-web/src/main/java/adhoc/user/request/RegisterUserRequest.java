@@ -20,26 +20,37 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.user.request;
 
-import adhoc.region.Region;
-import jakarta.persistence.LockModeType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import java.util.Collection;
-import java.util.Optional;
 
-public interface AreaRepository extends JpaRepository<Area, Long> {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(includeFieldNames = false)
+public class RegisterUserRequest {
 
-    Area getByRegionAndIndex(Region region, Integer index);
+	// at the moment we only allow auto-generated name
+	//@NotEmpty
+	//@Pattern(regexp = "Anon[0-9]{1,10}")
+	@Null
+	private String name;
 
-    void deleteAreasByIdNotIn(Collection<Long> ids);
+	@Email
+	private String email;
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Area getAreaById(Long id);
+	@Size(min = 1)
+	@ToString.Exclude
+	private String password;
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Area> findAreaByRegionAndIndex(Region region, Integer index);
+	@Min(1)
+	private Long factionId;
 
+	@Min(1)
+	private Long serverId;
 }

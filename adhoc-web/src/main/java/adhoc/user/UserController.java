@@ -22,7 +22,7 @@
 
 package adhoc.user;
 
-import adhoc.user.request.UserRegisterRequest;
+import adhoc.user.request.RegisterUserRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,18 +67,18 @@ public class UserController {
     }
 
     @PostMapping("/users/register")
-    public ResponseEntity<UserDetailDto> postUserRegister(@Valid @RequestBody UserRegisterRequest userRegisterRequest, Authentication authentication) {
+    public ResponseEntity<UserDetailDto> postRegisterUser(@Valid @RequestBody RegisterUserRequest registerUserRequest, Authentication authentication) {
         if (!featureFlags.contains("development")) {
-            if (userRegisterRequest.getEmail() != null) {
+            if (registerUserRequest.getEmail() != null) {
                 throw new UnsupportedOperationException("register email not supported yet");
             }
-            if (userRegisterRequest.getPassword() != null) {
+            if (registerUserRequest.getPassword() != null) {
                 throw new UnsupportedOperationException("register password not supported yet");
             }
-            if (userRegisterRequest.getName() != null) {
+            if (registerUserRequest.getName() != null) {
                 throw new UnsupportedOperationException("register name not supported yet");
             }
         }
-        return userService.register(userRegisterRequest, authentication);
+        return userService.registerUser(registerUserRequest, authentication);
     }
 }

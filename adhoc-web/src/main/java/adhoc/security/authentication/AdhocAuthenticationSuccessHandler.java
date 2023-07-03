@@ -54,7 +54,7 @@ public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessH
             throws IOException, ServletException {
         User principal = (User) authentication.getPrincipal();
 
-        User user = userRepository.getWithPessimisticWriteLockById(principal.getId());
+        User user = userRepository.getUserById(principal.getId());
 
         log.info("onAuthenticationSuccess: before: user={} token={}", user, user.getToken());
 

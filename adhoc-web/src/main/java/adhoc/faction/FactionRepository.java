@@ -31,14 +31,14 @@ import java.util.Optional;
 
 public interface FactionRepository extends JpaRepository<Faction, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Faction getWithPessimisticWriteLockById(Long id);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Faction> findWithPessimisticWriteLockById(Long id);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Faction> findWithPessimisticWriteLockBy();
-
     Faction getByIndex(Integer index);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Faction> findFactionsByOrderById();
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Faction getFactionById(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Faction> findFactionById(Long id);
 }

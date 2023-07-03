@@ -28,7 +28,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Transactional
@@ -51,29 +52,34 @@ public class ManagerFactionService {
         log.trace("Decaying faction scores...");
 
         // TODO: properties
-        factionRepository.findWithPessimisticWriteLockBy().forEach(faction -> faction.setScore(faction.getScore() * 0.98F));
+        for (Faction faction : factionRepository.findFactionsByOrderById()) {
+            faction.setScore(faction.getScore() * 0.98F);
+        }
     }
 
     public void awardFactionScores() {
         log.trace("Awarding faction scores...");
 
-        Map<Faction, Integer> factionAwardedScores = new LinkedHashMap<>();
+        List<Faction> factions = factionRepository.findFactionsByOrderById();
+
+        Map<Faction, Integer> factionAwardedScores = new HashMap<>();
 
         objectiveRepository.findAll().stream()
                 .filter(objective -> objective.getFaction() != null)
                 .forEach(objective ->
                         factionAwardedScores.merge(objective.getFaction(), 1, (awardedScore, o) -> awardedScore + 1));
 
-        factionRepository.findWithPessimisticWriteLockBy().stream()
-                .filter(factionAwardedScores::containsKey)
-                .forEach(faction ->
-                        faction.setScore(faction.getScore() + factionAwardedScores.get(faction)));
+        for (Faction faction : factions) {
+            if (factionAwardedScores.containsKey(faction)) {
+                faction.setScore(faction.getScore() + factionAwardedScores.get(faction));
+            }
+        }
 
         log.debug("Awarded faction scores: factionAwardedScores={}", factionAwardedScores);
     }
 
     Faction toEntity(FactionDto factionDto) {
-        Faction faction = factionRepository.findWithPessimisticWriteLockById(factionDto.getId()).orElseGet(Faction::new);
+        Faction faction = factionRepository.findFactionById(factionDto.getId()).orElseGet(Faction::new);
 
         faction.setId(faction.getId());
         faction.setIndex(faction.getIndex());

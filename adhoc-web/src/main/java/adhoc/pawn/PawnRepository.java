@@ -35,10 +35,10 @@ import java.util.stream.Stream;
 public interface PawnRepository extends JpaRepository<Pawn, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Pawn> findWithPessimisticWriteLockByServerAndIndex(Server server, Integer index);
-
-    void deleteByServerAndIdNotIn(Server server, Set<Long> ids);
+    Optional<Pawn> findPawnByServerAndIndex(Server server, Integer index);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Pawn> findWithPessimisticWriteLockBySeenBefore(LocalDateTime time);
+    Stream<Pawn> streamPawnsBySeenBeforeOrderById(LocalDateTime time);
+
+    void deleteByServerAndIdNotIn(Server server, Set<Long> ids);
 }

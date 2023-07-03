@@ -28,22 +28,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	User getWithPessimisticWriteLockById(Long id);
-
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Optional<User> findWithPessimisticWriteLockById(Long id);
-
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	List<User> findWithPessimisticWriteLockBy();
-
-	//public User findByEmail(String email);
+	boolean existsByName(String name);
 
 	Optional<User> findByName(String name);
 
@@ -52,10 +42,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByNameOrEmailAndPasswordIsNotNull(String name, String email);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Stream<User> streamUserWithPessimisticWriteLockByFaction(Faction faction);
-
-	boolean existsByName(String name);
+	User getUserById(Long id);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Stream<User> findWithPessimisticWriteLockBySeenBeforeAndPasswordIsNull(LocalDateTime time);
+	Optional<User> findUserById(Long id);
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	Stream<User> streamUsersByOrderById();
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	Stream<User> streamUsersByFactionOrderById(Faction faction);
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	Stream<User> streamUsersBySeenBeforeAndPasswordIsNullOrderById(LocalDateTime time);
 }

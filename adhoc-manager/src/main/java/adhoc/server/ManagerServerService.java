@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -72,7 +73,7 @@ public class ManagerServerService {
     }
 
     Server toEntity(ServerDto serverDto) {
-        Server server = serverDto.getId() == null ? new Server() : serverRepository.getReferenceById(serverDto.getId());
+        Server server = serverDto.getId() == null ? new Server() : serverRepository.getServerById(serverDto.getId());
 
         server.setName(serverDto.getName());
 
@@ -97,7 +98,7 @@ public class ManagerServerService {
     }
 
     public void handleServerStarted(ServerStartedEvent serverStartedEvent) {
-        Server server = serverRepository.getWithPessimisticWriteLockById(serverStartedEvent.getServerId());
+        Server server = serverRepository.getServerById(serverStartedEvent.getServerId());
 
         server.setStatus(ServerStatus.ACTIVE);
         server.setPrivateIp(serverStartedEvent.getPrivateIp());
@@ -150,7 +151,7 @@ public class ManagerServerService {
             for (List<Area> areaGroup : areaGroups) {
                 // TODO: other servers may already be hosting some of the other areas so can't just check first area (but we do for now)
                 Area firstArea = areaGroup.get(0);
-                Server server = serverRepository.findFirstWithPessimisticWriteLockByAreasContains(firstArea).orElseGet(Server::new);
+                Server server = serverRepository.findFirstServerByAreasContains(firstArea).orElseGet(Server::new);
 
                 if (server.getRegion() == null || !region.getId().equals(server.getRegion().getId())) {
                     server.setRegion(region);
@@ -210,74 +211,74 @@ public class ManagerServerService {
         managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
 
         Set<HostingState.ServerTask> tasksToKeep = Sets.newLinkedHashSet();
-        List<Server> servers = serverRepository.findWithPessimisticWriteLockBy();
+        try (Stream<Server> servers = serverRepository.streamServersByOrderById()) {
+            servers.forEach(server -> {
+                boolean sendEvent = false;
 
-        for (Server server : servers) {
-            boolean sendEvent = false;
+                HostingState.ServerTask task = hostingState.getServerTasks().get(server.getId());
+                if (task != null) {
+                    tasksToKeep.add(task);
+                    server.setSeen(LocalDateTime.now());
 
-            HostingState.ServerTask task = hostingState.getServerTasks().get(server.getId());
-            if (task != null) {
-                tasksToKeep.add(task);
-                server.setSeen(LocalDateTime.now());
-
-                if (!Objects.equals(server.getPrivateIp(), task.getPrivateIp())) {
-                    server.setPrivateIp(task.getPrivateIp());
-                    sendEvent = true;
-                }
-                if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
-                    if (task.getPublicIp() != null) {
-                        server.setStatus(ServerStatus.ACTIVE);
-                        String webSocketHost = server.getId() + "-" + managerProperties.getServerDomain();
-                        int webSocketPort = Objects.requireNonNull(task.getPublicWebSocketPort(),
-                                "web socket port not available from task when constructing url");
-                        server.setWebSocketUrl("wss://" + webSocketHost + ":" + webSocketPort);
-                        dnsService.createOrUpdateDnsRecord(webSocketHost, Collections.singleton(task.getPublicIp()));
-                    }
-                    server.setPublicIp(task.getPublicIp());
-                    sendEvent = true;
-                }
-                if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
-                    server.setPublicWebSocketPort(task.getPublicWebSocketPort());
-                    sendEvent = true;
-                }
-
-            } else if (task == null) {
-                if (server.getStatus() == ServerStatus.ACTIVE) {
-                    log.warn("Server {} seems to have stopped running!", server.getId());
-                    server.setStatus(ServerStatus.INACTIVE);
-
-                    server.setPrivateIp(null);
-                    server.setPublicIp(null);
-                    server.setPublicWebSocketPort(null);
-
-                    server.setInitiated(null);
-                    server.setSeen(null);
-                    sendEvent = true;
-
-                } else if (server.getStatus() == ServerStatus.INACTIVE) {
-                    // don't start a server unless it will be able to connect to a manager
-                    //if (hostingState.getManagerHosts().isEmpty()) {
-                    //    log.warn("Need to start server {} but no manager(s) available!", server.getId());
-                    //} else {
-                    log.info("Need to start server {}", server.getId());
-                    try {
-                        hostingService.startServerTask(server); //, hostingState.getManagerHosts());
-                        server.setStatus(ServerStatus.STARTING);
-                        server.setInitiated(LocalDateTime.now());
-                        //server.setManagerHost(hostingState.getManagerHosts().iterator().next());
+                    if (!Objects.equals(server.getPrivateIp(), task.getPrivateIp())) {
+                        server.setPrivateIp(task.getPrivateIp());
                         sendEvent = true;
-                    } catch (Exception e) {
-                        log.warn("Failed to start server {}!", server.getId(), e);
-                        server.setStatus(ServerStatus.ERROR);
-                        //throw new RuntimeException("Failed to start server "+server.getId(), e);
                     }
-                    //}
-                }
-            }
+                    if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
+                        if (task.getPublicIp() != null) {
+                            server.setStatus(ServerStatus.ACTIVE);
+                            String webSocketHost = server.getId() + "-" + managerProperties.getServerDomain();
+                            int webSocketPort = Objects.requireNonNull(task.getPublicWebSocketPort(),
+                                    "web socket port not available from task when constructing url");
+                            server.setWebSocketUrl("wss://" + webSocketHost + ":" + webSocketPort);
+                            dnsService.createOrUpdateDnsRecord(webSocketHost, Collections.singleton(task.getPublicIp()));
+                        }
+                        server.setPublicIp(task.getPublicIp());
+                        sendEvent = true;
+                    }
+                    if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
+                        server.setPublicWebSocketPort(task.getPublicWebSocketPort());
+                        sendEvent = true;
+                    }
 
-            if (sendEvent) {
-                sendServerUpdatedEvent(server);
-            }
+                } else if (task == null) {
+                    if (server.getStatus() == ServerStatus.ACTIVE) {
+                        log.warn("Server {} seems to have stopped running!", server.getId());
+                        server.setStatus(ServerStatus.INACTIVE);
+
+                        server.setPrivateIp(null);
+                        server.setPublicIp(null);
+                        server.setPublicWebSocketPort(null);
+
+                        server.setInitiated(null);
+                        server.setSeen(null);
+                        sendEvent = true;
+
+                    } else if (server.getStatus() == ServerStatus.INACTIVE) {
+                        // don't start a server unless it will be able to connect to a manager
+                        //if (hostingState.getManagerHosts().isEmpty()) {
+                        //    log.warn("Need to start server {} but no manager(s) available!", server.getId());
+                        //} else {
+                        log.info("Need to start server {}", server.getId());
+                        try {
+                            hostingService.startServerTask(server); //, hostingState.getManagerHosts());
+                            server.setStatus(ServerStatus.STARTING);
+                            server.setInitiated(LocalDateTime.now());
+                            //server.setManagerHost(hostingState.getManagerHosts().iterator().next());
+                            sendEvent = true;
+                        } catch (Exception e) {
+                            log.warn("Failed to start server {}!", server.getId(), e);
+                            server.setStatus(ServerStatus.ERROR);
+                            //throw new RuntimeException("Failed to start server "+server.getId(), e);
+                        }
+                        //}
+                    }
+                }
+
+                if (sendEvent) {
+                    sendServerUpdatedEvent(server);
+                }
+            });
         }
 
         for (HostingState.ServerTask task : hostingState.getServerTasks().values()) {

@@ -23,20 +23,20 @@
 package adhoc.area;
 
 import adhoc.objective.Objective;
+import adhoc.objective.ObjectiveRepository;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.ServerRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -49,6 +49,7 @@ public class ManagerAreaService {
     private final AreaRepository areaRepository;
     private final RegionRepository regionRepository;
     private final ServerRepository serverRepository;
+    private final ObjectiveRepository objectiveRepository;
 
     private final EntityManager entityManager;
 
@@ -62,22 +63,18 @@ public class ManagerAreaService {
                 .map(areaService::toDto)
                 .toList();
 
-        // TODO
-        Collection<Area> areasToDelete = areaRepository.findAllWithPessimisticWriteLockByIdNotIn(areaIds);
-        for (Area areaToDelete : areasToDelete) {
-            for (Objective orphanedObjective : areaToDelete.getObjectives()) {
-                entityManager.lock(orphanedObjective, LockModeType.PESSIMISTIC_WRITE);
-                orphanedObjective.setArea(null);
-            }
+        try (Stream<Objective> orphanedObjectives = objectiveRepository.streamObjectivesByAreaIdNotIn(areaIds)) {
+            orphanedObjectives.forEach(orphanedObjective -> orphanedObjective.setArea(null));
         }
-        areaRepository.deleteAll(areasToDelete);
+
+        areaRepository.deleteAreasByIdNotIn(areaIds);
 
         return result;
     }
 
     Area toEntity(AreaDto areaDto) {
         Region region = regionRepository.getReferenceById(areaDto.getRegionId());
-        Area area = areaRepository.findWithPessimisticWriteLockByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new);
+        Area area = areaRepository.findAreaByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new);
 
         area.setRegion(region);
         area.setIndex(areaDto.getIndex());

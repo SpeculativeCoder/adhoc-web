@@ -20,37 +20,15 @@
  * SOFTWARE.
  */
 
-package adhoc.user.request;
+package adhoc;
 
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+/**
+ * All our Stomp events will implement this interface to provide an easy mapping to an event type based on class name of the event.
+ */
+public interface Event {
 
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString(includeFieldNames = false)
-public class UserRegisterRequest {
-
-	// at the moment we only allow auto-generated name
-	//@NotEmpty
-	//@Pattern(regexp = "Anon[0-9]{1,10}")
-	@Null
-	private String name;
-
-	@Email
-	private String email;
-
-	@Size(min = 1)
-	@ToString.Exclude
-	private String password;
-
-	@Min(1)
-	private Long factionId;
-
-	@Min(1)
-	private Long serverId;
+    // for output in JSON
+    default String getEventType() {
+        return getClass().getSimpleName().replaceFirst("Event$", "");
+    }
 }

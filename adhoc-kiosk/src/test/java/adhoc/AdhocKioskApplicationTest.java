@@ -20,15 +20,21 @@
  * SOFTWARE.
  */
 
-package adhoc.event;
+package adhoc;
 
-/**
- * All our Stomp events will implement this interface to provide an easy mapping to an event type based on class name of the event.
- */
-public interface Event {
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
-    // for output in JSON
-    default String getEventType() {
-        return getClass().getSimpleName().replaceFirst("Event$", "");
+@Disabled
+@SpringBootTest(classes = AdhocKioskApplication.class)
+@TestPropertySource("classpath:application-test.properties")
+public class AdhocKioskApplicationTest {
+
+    // TODO
+    @Test
+    public void testContext() {
+        //
     }
 }

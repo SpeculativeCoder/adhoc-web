@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -55,7 +56,7 @@ public class ManagerPawnService {
         Set<Long> seenPawnIds = new HashSet<>();
         for (PawnDto pawnDto : serverPawnsEvent.getPawns()) {
 
-            User user = pawnDto.getUserId() == null ? null : userRepository.getWithPessimisticWriteLockById(pawnDto.getUserId());
+            User user = pawnDto.getUserId() == null ? null : userRepository.getUserById(pawnDto.getUserId());
             if (user != null) {
                 user.setServer(server);
                 user.setSeen(now);
@@ -74,16 +75,17 @@ public class ManagerPawnService {
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");
 
-        pawnRepository
-                .findWithPessimisticWriteLockBySeenBefore(LocalDateTime.now().minusMinutes(1))
-                .forEach(oldPawn -> {
-                    log.debug("Purging old pawn: oldPawn={}", oldPawn);
-                    pawnRepository.delete(oldPawn);
-                });
+        try (Stream<Pawn> pawnsToDelete = pawnRepository.streamPawnsBySeenBeforeOrderById(LocalDateTime.now().minusMinutes(1))) {
+            pawnsToDelete
+                    .forEach(oldPawn -> {
+                        log.debug("Purging old pawn: oldPawn={}", oldPawn);
+                        pawnRepository.delete(oldPawn);
+                    });
+        }
     }
 
     Pawn toEntity(PawnDto pawnDto, LocalDateTime seen, Server server, User user) {
-        Pawn pawn = pawnRepository.findWithPessimisticWriteLockByServerAndIndex(server, pawnDto.getIndex()).orElseGet(Pawn::new);
+        Pawn pawn = pawnRepository.findPawnByServerAndIndex(server, pawnDto.getIndex()).orElseGet(Pawn::new);
 
         pawn.setName(pawnDto.getName());
         pawn.setServer(server);

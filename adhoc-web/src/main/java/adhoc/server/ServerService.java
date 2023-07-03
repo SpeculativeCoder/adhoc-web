@@ -50,7 +50,6 @@ public class ServerService {
         return toDto(serverRepository.getReferenceById(serverId));
     }
 
-
     ServerDto toDto(Server server) {
         return new ServerDto(
                 server.getId(),

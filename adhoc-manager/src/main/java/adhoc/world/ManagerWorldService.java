@@ -342,7 +342,7 @@ public class ManagerWorldService {
     }
 
     public void updateManagerAndKioskHosts(Set<String> managerHosts, Set<String> kioskHosts) {
-        World world = worldRepository.getWithPessimisticWriteLockById(WorldService.WORLD_ID);
+        World world = worldRepository.getWorldById(WorldService.WORLD_ID);
 
         boolean emitEvent = false;
 

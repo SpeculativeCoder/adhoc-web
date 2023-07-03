@@ -58,10 +58,10 @@ public class ManagerUserController {
     @PostMapping("/servers/{serverId}/users/register")
     @PreAuthorize("hasRole('SERVER')")
     public ResponseEntity<UserDetailDto> postServerUserRegister(
-            @PathVariable("serverId") Long serverId, @Valid @RequestBody UserRegisterRequest userRegisterRequest, Authentication authentication) {
-        userRegisterRequest.setServerId(serverId);
+            @PathVariable("serverId") Long serverId, @Valid @RequestBody RegisterUserRequest registerUserRequest, Authentication authentication) {
+        registerUserRequest.setServerId(serverId);
 
-        return managerUserService.serverUserRegister(userRegisterRequest, authentication);
+        return managerUserService.serverUserRegister(registerUserRequest, authentication);
     }
 
     @PostMapping("/servers/{serverId}/users/{userId}/navigate")
@@ -75,12 +75,12 @@ public class ManagerUserController {
 
     @PostMapping("/servers/{serverId}/users/{userId}/join")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserDetailDto> postUserJoin(
+    public ResponseEntity<UserDetailDto> postServerUserJoin(
             @PathVariable("serverId") Long serverId, @PathVariable("userId") Long userId, @Valid @RequestBody UserJoinRequest userJoinRequest) {
         userJoinRequest.setServerId(serverId);
         userJoinRequest.setUserId(userId);
 
-        return managerUserService.userJoin(userJoinRequest);
+        return managerUserService.serverUserJoin(userJoinRequest);
     }
 
     @MessageMapping("UserDefeatedUser")

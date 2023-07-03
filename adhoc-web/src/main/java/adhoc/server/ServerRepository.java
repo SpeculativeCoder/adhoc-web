@@ -27,17 +27,17 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface ServerRepository extends JpaRepository<Server, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Server getWithPessimisticWriteLockById(Long id);
+    Server getServerById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Server> findWithPessimisticWriteLockBy();
+    Optional<Server> findFirstServerByAreasContains(Area area);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Server> findFirstWithPessimisticWriteLockByAreasContains(Area area);
+    Stream<Server> streamServersByOrderById();
 }

@@ -25,7 +25,7 @@ package adhoc.user;
 import com.google.common.collect.Sets;
 import adhoc.faction.FactionRepository;
 import adhoc.server.ServerRepository;
-import adhoc.user.request.UserRegisterRequest;
+import adhoc.user.request.RegisterUserRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -74,26 +74,26 @@ public class UserService {
         return toDetailDto(userRepository.getReferenceById(userId));
     }
 
-    public ResponseEntity<UserDetailDto> register(UserRegisterRequest userRegisterRequest, Authentication authentication) {
-        if (userRegisterRequest.getName() == null) {
-            userRegisterRequest.setName("Anon" + (int) Math.floor(Math.random() * 1000000000)); // TODO
+    public ResponseEntity<UserDetailDto> registerUser(RegisterUserRequest registerUserRequest, Authentication authentication) {
+        if (registerUserRequest.getName() == null) {
+            registerUserRequest.setName("Anon" + (int) Math.floor(Math.random() * 1000000000)); // TODO
         }
 
-        if (userRegisterRequest.getFactionId() == null) {
-            userRegisterRequest.setFactionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
+        if (registerUserRequest.getFactionId() == null) {
+            registerUserRequest.setFactionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
         }
 
         // TODO: think about email check before allowing email input (currently guarded at controller)
         Optional<User> optionalUser =
-                userRegisterRequest.getEmail() == null
-                        ? userRepository.findByName(userRegisterRequest.getName())
-                        : userRepository.findByNameOrEmail(userRegisterRequest.getName(), userRegisterRequest.getEmail());
+                registerUserRequest.getEmail() == null
+                        ? userRepository.findByName(registerUserRequest.getName())
+                        : userRepository.findByNameOrEmail(registerUserRequest.getName(), registerUserRequest.getEmail());
         if (optionalUser.isPresent()) {
-            log.warn("Can't register user as name or email already in use: name={} email={}", userRegisterRequest.getName(), userRegisterRequest.getEmail());
+            log.warn("Can't register user as name or email already in use: name={} email={}", registerUserRequest.getName(), registerUserRequest.getEmail());
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        User user = userRepository.save(toEntity(userRegisterRequest));
+        User user = userRepository.save(toEntity(registerUserRequest));
         log.info("register: user={} password={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
 
         // if not an auto-register from server - log them in too
@@ -148,7 +148,7 @@ public class UserService {
     }
 
     User toEntity(UserDto userDto) {
-        User user = userRepository.getReferenceById(userDto.getId());
+        User user = userRepository.getUserById(userDto.getId());
 
         // TODO
         //user.setName(userDto.getName());
@@ -159,13 +159,13 @@ public class UserService {
         return user;
     }
 
-    User toEntity(UserRegisterRequest userRegisterRequest) {
+    User toEntity(RegisterUserRequest registerUserRequest) {
         User user = new User();
 
-        user.setName(userRegisterRequest.getName());
-        user.setEmail(userRegisterRequest.getEmail());
-        user.setPassword(userRegisterRequest.getPassword() == null ? null : passwordEncoder.encode(userRegisterRequest.getPassword()));
-        user.setFaction(factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
+        user.setName(registerUserRequest.getName());
+        user.setEmail(registerUserRequest.getEmail());
+        user.setPassword(registerUserRequest.getPassword() == null ? null : passwordEncoder.encode(registerUserRequest.getPassword()));
+        user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
         user.setScore(0F);
         user.setCreated(LocalDateTime.now());
         user.setUpdated(user.getCreated());
@@ -173,10 +173,8 @@ public class UserService {
         user.setLastJoin(null);
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());
-        user.setServer(userRegisterRequest.getServerId() == null ? null : serverRepository.getReferenceById(userRegisterRequest.getServerId()));
+        user.setServer(registerUserRequest.getServerId() == null ? null : serverRepository.getReferenceById(registerUserRequest.getServerId()));
 
         return user;
     }
-
-
 }

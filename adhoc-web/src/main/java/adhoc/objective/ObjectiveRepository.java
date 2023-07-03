@@ -27,18 +27,23 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Objective getWithPessimisticWriteLockById(Long id);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Objective> findWithPessimisticWriteLockByRegionAndIndex(Region region, Integer index);
 
     Objective getByRegionAndIndex(Region region, Integer index);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Objective getWithPessimisticWriteLockByRegionAndIndex(Region region, Integer index);
+    Objective getObjectiveById(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Objective getObjectiveByRegionAndIndex(Region region, Integer index);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Objective> findObjectiveByRegionAndIndex(Region region, Integer index);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Stream<Objective> streamObjectivesByAreaIdNotIn(Collection<Long> areaIds);
 }

@@ -28,9 +28,9 @@ import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.event.UserDefeatedBotEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
+import adhoc.user.request.RegisterUserRequest;
 import adhoc.user.request.UserJoinRequest;
 import adhoc.user.request.UserNavigateRequest;
-import adhoc.user.request.RegisterUserRequest;
 import adhoc.user.response.UserNavigateResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -137,12 +137,9 @@ public class ManagerUserService {
     public void purgeOldUsers() {
         log.trace("Purging old users...");
 
-        try (Stream<User> users = userRepository.streamUsersBySeenBeforeAndPasswordIsNullOrderById(LocalDateTime.now().minusDays(7))) {
+        try (Stream<User> users = userRepository.streamUsersBySeenBeforeAndPasswordIsNullAndPawnsEmptyOrderById(LocalDateTime.now().minusDays(7))) {
             users.forEach(oldUser -> {
                 log.info("Purging old auto-registered user - oldUser={}", oldUser);
-//                    for (Pawn pawn : oldUser.getPawns()) {
-//                        pawn.setUser(null);
-//                    }
                 userRepository.delete(oldUser);
             });
         }

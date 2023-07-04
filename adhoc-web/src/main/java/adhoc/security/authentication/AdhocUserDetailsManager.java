@@ -81,7 +81,6 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
 
     @Override
     public void createUser(UserDetails user) {
-        // userRepository.save((User) user);
         throw new UnsupportedOperationException();
     }
 
@@ -100,10 +99,8 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         throw new UnsupportedOperationException();
     }
 
-
-    @Transactional(readOnly = true)
     @Override
     public boolean userExists(String username) {
-        return userRepository.existsByName(username);
+        throw new UnsupportedOperationException();
     }
 }

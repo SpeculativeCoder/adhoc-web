@@ -102,7 +102,7 @@ public class User implements UserDetails {
     @ManyToOne
     private Server server;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user")
     private List<Pawn> pawns;
 
     @Override

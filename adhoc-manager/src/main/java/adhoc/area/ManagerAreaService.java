@@ -63,7 +63,7 @@ public class ManagerAreaService {
                 .map(areaService::toDto)
                 .toList();
 
-        try (Stream<Objective> orphanedObjectives = objectiveRepository.streamObjectivesByAreaIdNotIn(areaIds)) {
+        try (Stream<Objective> orphanedObjectives = objectiveRepository.streamObjectivesByAreaIdNotInOrderById(areaIds)) {
             orphanedObjectives.forEach(orphanedObjective -> orphanedObjective.setArea(null));
         }
 

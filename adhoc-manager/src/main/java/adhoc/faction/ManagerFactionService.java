@@ -22,6 +22,7 @@
 
 package adhoc.faction;
 
+import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -52,7 +54,7 @@ public class ManagerFactionService {
         log.trace("Decaying faction scores...");
 
         // TODO: properties
-        for (Faction faction : factionRepository.findFactionsByOrderById()) {
+        for (Faction faction : factionRepository.findAllFactionsByOrderById()) {
             faction.setScore(faction.getScore() * 0.98F);
         }
     }
@@ -60,22 +62,22 @@ public class ManagerFactionService {
     public void awardFactionScores() {
         log.trace("Awarding faction scores...");
 
-        List<Faction> factions = factionRepository.findFactionsByOrderById();
+        List<Faction> factions = factionRepository.findAllFactionsByOrderById();
 
-        Map<Faction, Integer> factionAwardedScores = new HashMap<>();
+        Map<Long, Integer> factionIdToAwardedScore = new HashMap<>();
 
-        objectiveRepository.findAll().stream()
-                .filter(objective -> objective.getFaction() != null)
-                .forEach(objective ->
-                        factionAwardedScores.merge(objective.getFaction(), 1, (awardedScore, o) -> awardedScore + 1));
+        try (Stream<Objective> objectives = objectiveRepository.streamByFactionIsNotNullOrderById()) {
+            objectives.forEach(objective ->
+                    factionIdToAwardedScore.merge(objective.getFaction().getId(), 1, (awardedScore, o) -> awardedScore + 1));
+        }
 
         for (Faction faction : factions) {
-            if (factionAwardedScores.containsKey(faction)) {
-                faction.setScore(faction.getScore() + factionAwardedScores.get(faction));
+            if (factionIdToAwardedScore.containsKey(faction.getId())) {
+                faction.setScore(faction.getScore() + factionIdToAwardedScore.get(faction.getId()));
             }
         }
 
-        log.debug("Awarded faction scores: factionAwardedScores={}", factionAwardedScores);
+        log.debug("Awarded faction scores: factionAwardedScores={}", factionIdToAwardedScore);
     }
 
     Faction toEntity(FactionDto factionDto) {

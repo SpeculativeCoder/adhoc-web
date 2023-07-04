@@ -35,6 +35,8 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
 
     Objective getByRegionAndIndex(Region region, Integer index);
 
+    Stream<Objective> streamByFactionIsNotNullOrderById();
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Objective getObjectiveById(Long id);
 
@@ -45,5 +47,5 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
     Optional<Objective> findObjectiveByRegionAndIndex(Region region, Integer index);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Objective> streamObjectivesByAreaIdNotIn(Collection<Long> areaIds);
+    Stream<Objective> streamObjectivesByAreaIdNotInOrderById(Collection<Long> areaIds);
 }

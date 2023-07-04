@@ -54,5 +54,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Stream<User> streamUsersByFactionOrderById(Faction faction);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Stream<User> streamUsersBySeenBeforeAndPasswordIsNullOrderById(LocalDateTime time);
+	Stream<User> streamUsersBySeenBeforeAndPasswordIsNullAndPawnsEmptyOrderById(LocalDateTime time);
 }

@@ -116,11 +116,11 @@ public class ManagerObjectiveService {
     }
 
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
-        Faction faction = factionRepository.getFactionById(objectiveTakenEvent.getFactionId());
         Objective objective = objectiveRepository.getObjectiveById(objectiveTakenEvent.getObjectiveId());
+        Faction faction = factionRepository.getFactionById(objectiveTakenEvent.getFactionId());
 
-        faction.setScore(faction.getScore() + 1);
         objective.setFaction(faction);
+        faction.setScore(faction.getScore() + 1);
 
         LocalDateTime now = LocalDateTime.now();
 

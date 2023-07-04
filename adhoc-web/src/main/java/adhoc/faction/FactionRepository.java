@@ -34,7 +34,7 @@ public interface FactionRepository extends JpaRepository<Faction, Long> {
     Faction getByIndex(Integer index);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Faction> findFactionsByOrderById();
+    List<Faction> findAllFactionsByOrderById();
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Faction getFactionById(Long id);

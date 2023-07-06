@@ -27,8 +27,6 @@ import adhoc.pawn.Pawn;
 import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,8 +44,8 @@ import java.util.stream.Collectors;
  */
 @Entity(name = "AdhocUser")
 @SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 1)
-@DynamicInsert
-@DynamicUpdate
+//@DynamicInsert
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

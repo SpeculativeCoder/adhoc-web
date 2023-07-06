@@ -32,6 +32,8 @@ import java.util.Set;
  * Currently, we can only have one world per database.
  */
 @Entity
+//@DynamicInsert
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -35,6 +35,8 @@ import java.util.UUID;
  */
 @Entity
 @SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 1)
+//@DynamicInsert
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

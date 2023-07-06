@@ -27,8 +27,6 @@ import adhoc.region.Region;
 import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 
@@ -39,8 +37,8 @@ import java.util.List;
  */
 @Entity
 @SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 1)
-@DynamicInsert
-@DynamicUpdate
+//@DynamicInsert
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

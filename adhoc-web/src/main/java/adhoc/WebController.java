@@ -29,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
@@ -66,6 +67,13 @@ public class WebController {
     @GetMapping("/favicon.ico")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Void getFavicon() {
+        return null;
+    }
+
+    // cut down on log spam a bit for all attempts which are trying to POST to /
+    @PostMapping("/")
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public Void postIndex() {
         return null;
     }
 }

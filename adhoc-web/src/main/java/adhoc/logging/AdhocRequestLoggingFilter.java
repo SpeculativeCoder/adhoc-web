@@ -28,6 +28,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -84,14 +85,14 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
         } finally {
 
-            boolean logDebug = log.isDebugEnabled();
-
             boolean statusError =
                     response.getStatus() != HttpStatus.SWITCHING_PROTOCOLS.value() // 101 (websocket causes this)
                             && response.getStatus() != HttpStatus.OK.value() // 200
                             && response.getStatus() != HttpStatus.CREATED.value() // 201
                             && response.getStatus() != HttpStatus.NO_CONTENT.value() // 204
                             && response.getStatus() != HttpStatus.NOT_MODIFIED.value() // 304
+                            && response.getStatus() != HttpStatus.NOT_FOUND.value() // 404
+                            && response.getStatus() != HttpStatus.METHOD_NOT_ALLOWED.value() // 405
                     ;
 
             boolean methodGet = "GET".equals(request.getMethod());
@@ -103,11 +104,25 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
                         && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
             }
 
-            if (statusError || (logDebug && !methodGet && !userServer)) {
+            LoggingEventBuilder loggingEventBuilder = null;
 
-                String message = createMessage(requestWrapper, "", "");
+            if (log.isWarnEnabled() && statusError) {
+                loggingEventBuilder = log.atWarn();
 
-                log.debug("{}, status={}", message, response.getStatus());
+            } else if (log.isInfoEnabled() && isRegisterOrLoginRequest(request)) {
+                loggingEventBuilder = log.atInfo();
+
+            } else if (log.isDebugEnabled() && !methodGet && !userServer) {
+                loggingEventBuilder = log.atDebug();
+
+            } else if (log.isTraceEnabled() && !userServer) {
+                loggingEventBuilder = log.atTrace();
+            }
+
+            if (loggingEventBuilder != null) {
+                loggingEventBuilder.log("{}, status={}",
+                        createMessage(requestWrapper, "", ""),
+                        response.getStatus());
             }
 
             //responseWrapper.copyBodyToResponse();

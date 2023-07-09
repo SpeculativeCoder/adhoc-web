@@ -22,19 +22,18 @@
 
 package adhoc.hosting.ecs;
 
-import adhoc.properties.ManagerProperties;
 import adhoc.area.Area;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
+import adhoc.hosting.ecs.properties.EcsHostingProperties;
+import adhoc.properties.ManagerProperties;
+import adhoc.properties.WebProperties;
 import adhoc.server.Server;
 import com.google.common.collect.ImmutableList;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -61,48 +60,29 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EcsHostingService implements HostingService {
 
+    private final WebProperties webProperties;
+
     private final ManagerProperties managerProperties;
 
-    @Value("${adhoc.feature-flags}")
-    private String featureFlags;
-
-    @Value("${adhoc.server-container-service.aws-region}")
-    private String awsRegion;
-    @Value("${adhoc.server-container-service.aws-profile}")
-    private String awsProfile;
-    @Value("${adhoc.server-container-service.aws-availability-zone}")
-    private String awsAvailabilityZone;
-    @Value("${adhoc.server-container-service.aws-security-group-name}")
-    private String awsSecurityGroupName;
-    @Value("${adhoc.server-container-service.ecs-cluster}")
-    private String ecsCluster;
-
-    @EventListener
-    public void contextRefreshed(ContextRefreshedEvent event) {
-        log.info("awsRegion={}", awsRegion);
-        log.info("awsProfile={}", awsRegion);
-        log.info("awsAvailabilityZone={}", awsAvailabilityZone);
-        log.info("awsSecurityGroupName={}", awsSecurityGroupName);
-        log.info("ecsCluster={}", ecsCluster);
-    }
+    private final EcsHostingProperties ecsHostingProperties;
 
     private Ec2Client ec2Client() {
         return Ec2Client.builder()
-                .region(Region.of(awsRegion))
+                .region(Region.of(ecsHostingProperties.getAwsRegion()))
                 .credentialsProvider(credentialsProvider())
                 .build();
     }
 
     private EcsClient ecsClient() {
         return EcsClient.builder()
-                .region(Region.of(awsRegion))
+                .region(Region.of(ecsHostingProperties.getAwsRegion()))
                 .credentialsProvider(credentialsProvider())
                 .build();
     }
 
     private AwsCredentialsProvider credentialsProvider() {
         return DefaultCredentialsProvider.builder()
-                .profileName(awsProfile)
+                .profileName(ecsHostingProperties.getAwsProfile())
                 .build();
     }
 
@@ -122,8 +102,11 @@ public class EcsHostingService implements HostingService {
         try (EcsClient ecsClient = ecsClient();
              Ec2Client ec2Client = ec2Client()) {
 
-            ListTasksResponse listTasksResponse = ecsClient.listTasks(ListTasksRequest.builder().cluster(ecsCluster).build());
+            ListTasksResponse listTasksResponse =
+                    ecsClient.listTasks(ListTasksRequest.builder()
+                            .cluster(ecsHostingProperties.getEcsCluster()).build());
             log.trace("listTasksResponse: {}", listTasksResponse);
+
             if (!listTasksResponse.hasTaskArns() || listTasksResponse.taskArns().isEmpty()) {
                 log.debug("No tasks to examine");
                 return hostingState;
@@ -131,7 +114,7 @@ public class EcsHostingService implements HostingService {
 
             DescribeTasksResponse describeTasksResponse =
                     ecsClient.describeTasks(DescribeTasksRequest.builder()
-                            .cluster(ecsCluster).tasks(listTasksResponse.taskArns()).build());
+                            .cluster(ecsHostingProperties.getEcsCluster()).tasks(listTasksResponse.taskArns()).build());
             log.trace("describeTasksResponse: {}", describeTasksResponse);
 
             for (Task task : describeTasksResponse.tasks()) {
@@ -167,18 +150,22 @@ public class EcsHostingService implements HostingService {
                     log.trace("containerName: {}", containerName);
 
                     if (managerProperties.getManagerImage().equals(containerName) && networkInterfaceId != null) {
+                        log.trace("Found manager. networkInterfaceId={}", networkInterfaceId);
+
                         //log.trace("privateIp: {}", privateIp);
                         //hostingState.getManagerHosts().add(privateIp);
-                        log.trace("Found manager. networkInterfaceId={}", networkInterfaceId);
                         managerNetworkInterfaceIds.add(networkInterfaceId);
 
                     } else if (managerProperties.getKioskImage().equals(containerName) && networkInterfaceId != null) {
+                        log.trace("Found kiosk. networkInterfaceId={}", networkInterfaceId);
+
                         //log.trace("privateIp: {}", privateIp);
                         //hostingState.getKioskHosts().add(privateIp);
-                        log.trace("Found kiosk. networkInterfaceId={}", networkInterfaceId);
                         kioskNetworkInterfaceIds.add(networkInterfaceId);
 
                     } else if (managerProperties.getServerImage().equals(containerName)) {
+                        log.trace("Found server. networkInterfaceId={}", networkInterfaceId);
+
                         // get the environment variable for server ID that was set when the container was launched
                         for (ContainerOverride containerOverride : task.overrides().containerOverrides()) {
                             log.trace("containerOverride: {}", containerOverride);
@@ -266,7 +253,7 @@ public class EcsHostingService implements HostingService {
 
             DescribeSecurityGroupsRequest describeSecurityGroupsRequest = DescribeSecurityGroupsRequest.builder()
                     .filters(
-                            Filter.builder().name("group-name").values(awsSecurityGroupName).build())
+                            Filter.builder().name("group-name").values(ecsHostingProperties.getAwsSecurityGroupName()).build())
                     .build();
             log.debug("describeSecurityGroupsRequest: {}", describeSecurityGroupsRequest);
 
@@ -280,8 +267,8 @@ public class EcsHostingService implements HostingService {
 
             SecurityGroup securityGroup = describeSecurityGroupsResponse.securityGroups().get(0);
 
-            if (!securityGroup.groupName().equals(awsSecurityGroupName)) {
-                throw new IllegalStateException("expected security group with name " + awsSecurityGroupName + " but got: " +
+            if (!securityGroup.groupName().equals(ecsHostingProperties.getAwsSecurityGroupName())) {
+                throw new IllegalStateException("expected security group with name " + ecsHostingProperties.getAwsSecurityGroupName() + " but got: " +
                         securityGroup.groupName());
             }
 
@@ -292,7 +279,7 @@ public class EcsHostingService implements HostingService {
             DescribeSubnetsRequest describeSubnetsRequest = DescribeSubnetsRequest.builder()
                     .filters(
                             Filter.builder().name("vpc-id").values(securityGroup.vpcId()).build(),
-                            Filter.builder().name("availability-zone").values(awsAvailabilityZone).build())
+                            Filter.builder().name("availability-zone").values(ecsHostingProperties.getAwsAvailabilityZone()).build())
                     .build();
             log.debug("describeSubnetsRequest: {}", describeSubnetsRequest);
 
@@ -305,8 +292,8 @@ public class EcsHostingService implements HostingService {
                 throw new IllegalStateException("expected 1 subnet but got: " + describeSubnetsResponse.subnets());
             }
 
-            if (!describeSubnetsResponse.subnets().get(0).availabilityZone().equals(awsAvailabilityZone)) {
-                throw new IllegalStateException("expected subnet with availability zone " + awsAvailabilityZone + " but got: " +
+            if (!describeSubnetsResponse.subnets().get(0).availabilityZone().equals(ecsHostingProperties.getAwsAvailabilityZone())) {
+                throw new IllegalStateException("expected subnet with availability zone " + ecsHostingProperties.getAwsAvailabilityZone() + " but got: " +
                         describeSubnetsResponse.subnets().get(0).availabilityZone());
             }
 
@@ -338,9 +325,9 @@ public class EcsHostingService implements HostingService {
                                     KeyValuePair.builder().name("MAX_PAWNS").value(managerProperties.getMaxPawns().toString()).build(),
                                     KeyValuePair.builder().name("MAX_PLAYERS").value(managerProperties.getMaxPlayers().toString()).build(),
                                     KeyValuePair.builder().name("MAX_BOTS").value(managerProperties.getMaxBots().toString()).build(),
-                                    KeyValuePair.builder().name("FEATURE_FLAGS").value(featureFlags).build())
+                                    KeyValuePair.builder().name("FEATURE_FLAGS").value(webProperties.getFeatureFlags()).build())
                             .build()).build())
-                    .cluster(ecsCluster)
+                    .cluster(ecsHostingProperties.getEcsCluster())
                     .count(1)
                     .networkConfiguration(
                             NetworkConfiguration.builder()
@@ -369,7 +356,7 @@ public class EcsHostingService implements HostingService {
         log.info("Stopping task {}", task.getTaskId());
 
         try (EcsClient ecsClient = ecsClient()) {
-            ecsClient.stopTask(StopTaskRequest.builder().task(task.getTaskId()).cluster(ecsCluster).build());
+            ecsClient.stopTask(StopTaskRequest.builder().task(task.getTaskId()).cluster(ecsHostingProperties.getEcsCluster()).build());
         }
     }
 }

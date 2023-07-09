@@ -25,7 +25,7 @@ package adhoc.hosting.docker;
 import adhoc.area.Area;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
-import adhoc.hosting.docker.properties.DockerProperties;
+import adhoc.hosting.docker.properties.DockerHostingProperties;
 import adhoc.properties.ManagerProperties;
 import adhoc.properties.WebProperties;
 import adhoc.server.Server;
@@ -71,22 +71,23 @@ public class DockerHostingService implements HostingService {
 
     private static final String DEFAULT_MANAGER_HOST = "host.docker.internal";
     private static final String DEFAULT_KIOSK_HOST = "host.docker.internal";
+
     private static final Pattern SERVER_ID_PATTERN = Pattern.compile("^SERVER_ID=([0-9]+)$");
 
     private final WebProperties webProperties;
     private final ManagerProperties managerProperties;
-    private final DockerProperties dockerProperties;
+    private final DockerHostingProperties dockerHostingProperties;
 
     private final ServerProperties serverProperties;
 
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
-        log.info("dockerHost={}", dockerProperties.getDockerHost());
+        log.info("dockerHost={}", dockerHostingProperties.getDockerHost());
     }
 
     private DockerClientConfig dockerClientConfig() {
         return new DefaultDockerClientConfig.Builder()
-                .withDockerHost(dockerProperties.getDockerHost())
+                .withDockerHost(dockerHostingProperties.getDockerHost())
                 .withRegistryUsername("")
                 .withRegistryUrl("")
                 .withApiVersion("1.41")

@@ -20,41 +20,29 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.hosting.docker.properties;
 
-import adhoc.faction.Faction;
-import jakarta.persistence.LockModeType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.stream.Stream;
+@Component
+@Profile("hosting-docker")
+@Slf4j
+@Getter
+public class DockerHostingProperties {
 
-public interface UserRepository extends JpaRepository<User, Long> {
-
-	boolean existsBy();
-
-	boolean existsByName(String name);
-
-	Optional<User> findByName(String name);
-
-	Optional<User> findByNameOrEmail(String name, String email);
-
-	Optional<User> findByNameOrEmailAndPasswordIsNotNull(String name, String email);
-
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	User getUserById(Long id);
-
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Optional<User> findUserById(Long id);
-
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Stream<User> streamUsersByOrderById();
-
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Stream<User> streamUsersByFactionOrderById(Faction faction);
-
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Stream<User> streamUsersBySeenBeforeAndPasswordIsNullAndPawnsEmptyOrderById(LocalDateTime time);
+    @Value("${adhoc.docker.host}")
+    private String dockerHost;
 }
+
+//    @Value("${server.ssl.trust-certificate}")
+//    private Path caCertificate;
+//
+//    @Value("${server.ssl.certificate}")
+//    private Path serverCertificate;
+//
+//    @Value("${server.ssl.certificate-private-key}")
+//    private Path privateKey;

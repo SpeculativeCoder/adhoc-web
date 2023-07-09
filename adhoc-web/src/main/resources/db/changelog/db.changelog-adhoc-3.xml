@@ -26,7 +26,37 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
-    <changeSet author="adhoc" id="1">
+    <!-- until the schema / architecture settles down we are nuking all tables/data (except user information) on every run -->
+    <changeSet author="adhoc" id="3" runOnChange="true">
+
+        <sql dbms="postgresql">
+            truncate
+                qrtz_simple_triggers,
+                qrtz_cron_triggers,
+                qrtz_simprop_triggers,
+                qrtz_blob_triggers,
+                qrtz_triggers,
+                qrtz_job_details,
+                qrtz_calendars,
+                qrtz_paused_trigger_grps,
+                qrtz_fired_triggers,
+                qrtz_scheduler_state,
+                qrtz_locks;
+        </sql>
+
+        <sql dbms="postgresql">
+            drop table if exists world_manager_hosts;
+            drop table if exists world_kiosk_hosts;
+            drop table if exists world;
+            drop table if exists objective_linked_objectives;
+            drop table if exists objective;
+            drop table if exists area;
+            drop table if exists pawn;
+            drop table if exists server;
+            drop table if exists structure;
+            drop table if exists faction;
+            drop table if exists region;
+        </sql>
 
         <createTable tableName="world">
             <column name="id" type="BIGINT">
@@ -230,57 +260,6 @@
         <addForeignKeyConstraint baseTableName="objective_linked_objectives" baseColumnNames="linked_objectives_id" constraintName="fkhsrfeev6vp2hfqnwfk48qj71t"
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
                                  referencedTableName="objective" validate="true"/>
-
-        <createSequence sequenceName="user_id_sequence" startValue="1"/>
-        <createTable tableName="adhoc_user">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="adhoc_user_pkey"/>
-            </column>
-            <column name="version" type="BIGINT"/>
-            <column name="name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="email" type="VARCHAR(255)"/>
-            <column name="password" type="VARCHAR(255)"/>
-            <column name="faction_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="score" type="FLOAT(24)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="x" type="FLOAT(24)"/>
-            <column name="y" type="FLOAT(24)"/>
-            <column name="z" type="FLOAT(24)"/>
-            <column name="pitch" type="FLOAT(24)"/>
-            <column name="yaw" type="FLOAT(24)"/>
-            <column name="created" type="TIMESTAMP WITHOUT TIME ZONE">
-                <constraints nullable="false"/>
-            </column>
-            <column name="updated" type="TIMESTAMP WITHOUT TIME ZONE">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_login" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="last_join" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="seen" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="token" type="UUID"/>
-            <column name="server_id" type="BIGINT"/>
-        </createTable>
-        <addForeignKeyConstraint baseTableName="adhoc_user" baseColumnNames="faction_id" constraintName="fks8beh8jbi10ep37shuw6glpwt" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
-                                 validate="true"/>
-        <addForeignKeyConstraint baseTableName="adhoc_user" baseColumnNames="server_id" constraintName="fkgg1e86vvf7mmostuh72ib3htc" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="server"
-                                 validate="true"/>
-
-        <createTable tableName="adhoc_user_roles">
-            <column name="adhoc_user_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="roles" type="TINYINT"/>
-        </createTable>
-        <addForeignKeyConstraint baseTableName="adhoc_user_roles" baseColumnNames="adhoc_user_id" constraintName="fkbpj40nowvqa5m1p39ceopxbcp"
-                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
-                                 referencedTableName="adhoc_user" validate="true"/>
 
         <createSequence sequenceName="pawn_id_sequence" startValue="1"/>
         <createTable tableName="pawn">

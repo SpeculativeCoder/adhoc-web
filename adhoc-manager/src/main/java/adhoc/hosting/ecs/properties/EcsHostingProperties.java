@@ -20,29 +20,43 @@
  * SOFTWARE.
  */
 
-package adhoc.hosting.docker.properties;
+package adhoc.hosting.ecs.properties;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("hosting-docker")
+@Profile("hosting-ecs")
 @Slf4j
 @Getter
-public class DockerProperties {
+public class EcsHostingProperties {
 
-    @Value("${adhoc.docker.host}")
-    private String dockerHost;
+    @Value("${adhoc.server-container-service.aws-region}")
+    private String awsRegion;
+
+    @Value("${adhoc.server-container-service.aws-profile}")
+    private String awsProfile;
+
+    @Value("${adhoc.server-container-service.aws-availability-zone}")
+    private String awsAvailabilityZone;
+
+    @Value("${adhoc.server-container-service.aws-security-group-name}")
+    private String awsSecurityGroupName;
+
+    @Value("${adhoc.server-container-service.ecs-cluster}")
+    private String ecsCluster;
+
+    @EventListener
+    public void contextRefreshed(ContextRefreshedEvent event) {
+        log.info("awsRegion={}", awsRegion);
+        log.info("awsProfile={}", awsProfile);
+        log.info("awsAvailabilityZone={}", awsAvailabilityZone);
+        log.info("awsSecurityGroupName={}", awsSecurityGroupName);
+        log.info("ecsCluster={}", ecsCluster);
+    }
 }
-
-//    @Value("${server.ssl.trust-certificate}")
-//    private Path caCertificate;
-//
-//    @Value("${server.ssl.certificate}")
-//    private Path serverCertificate;
-//
-//    @Value("${server.ssl.certificate-private-key}")
-//    private Path privateKey;

@@ -87,7 +87,6 @@ public class ManagerWorldService {
     //@PostConstruct
     @EventListener(ApplicationStartedEvent.class)
     public void initializeDefaultWorld() {
-        //TransactionStatus transaction = platformTransactionManager.getTransaction(TransactionDefinition.withDefaults());
 
         if (worldRepository.existsById(WorldService.WORLD_ID)) {
             return; // already initialised the world - no need to do anything
@@ -269,7 +268,7 @@ public class ManagerWorldService {
 
         // admin user and some faction specific users for testing
 
-        if (webProperties.getFeatureFlags().contains("development")) {
+        if (userRepository.count() < 1 && webProperties.getFeatureFlags().contains("development")) {
             User u0 = new User();
             u0.setName("admin");
             u0.setEmail("admin@" + webProperties.getAdhocDomain());
@@ -337,8 +336,6 @@ public class ManagerWorldService {
             //pawn1.setUser(u1);
             //pawn1 = pawnRepository.save(pawn1);
         }
-
-        //platformTransactionManager.commit(transaction);
     }
 
     public void updateManagerAndKioskHosts(Set<String> managerHosts, Set<String> kioskHosts) {

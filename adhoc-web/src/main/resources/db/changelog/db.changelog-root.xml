@@ -26,8 +26,8 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
-    <include file="db/changelog/db.changelog-1.xml"/>
-
-    <include file="db/changelog/db.changelog-2.xml"/>
+    <include file="db/changelog/db.changelog-adhoc-1.xml"/>
+    <include file="db/changelog/db.changelog-adhoc-2.xml"/>
+    <include file="db/changelog/db.changelog-adhoc-3.xml"/>
 
 </databaseChangeLog>

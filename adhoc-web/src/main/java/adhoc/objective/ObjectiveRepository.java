@@ -22,20 +22,21 @@
 
 package adhoc.objective;
 
+import adhoc.faction.Faction;
 import adhoc.region.Region;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
 
-    Objective getByRegionAndIndex(Region region, Integer index);
-
-    Stream<Objective> streamByFactionIsNotNullOrderById();
+    int countByFaction(Faction faction);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Objective getObjectiveById(Long id);
@@ -46,6 +47,7 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Objective> findObjectiveByRegionAndIndex(Region region, Integer index);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Objective> streamObjectivesByAreaIdNotInOrderById(Collection<Long> areaIds);
+    @Modifying
+    @Query("update Objective o set o.version = o.version + 1, o.area = null where o.region = :region and o.area.id not in :areaIds")
+    void updateObjectivesSetAreaNullByRegionAndAreaIdNotIn(@Param("region") Region region, @Param("areaIds") Collection<Long> areaIds);
 }

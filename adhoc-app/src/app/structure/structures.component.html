@@ -30,8 +30,8 @@
       <thead>
       <tr>
         <th scope="col" sortable="id">ID</th>
-        <th scope="col" sortable="name">Name</th>
         <th scope="col" sortable="uuid">UUID</th>
+        <th scope="col" sortable="name">Name</th>
         <th scope="col" sortable="type">Type</th>
         <th scope="col" sortable="region">Region</th>
         <th scope="col" sortable="x">X</th>
@@ -50,8 +50,8 @@
       <tbody>
       <tr *ngFor="let structure of structures">
         <th scope="row"><a routerLink="/structures/{{ structure.id }}">{{ structure.id }}</a></th>
-        <td>{{ structure.name }}</td>
         <td>{{ structure.uuid }}</td>
+        <td>{{ structure.name }}</td>
         <td>{{ structure.type }}</td>
         <td>{{ structure.regionId }}</td>
         <td>{{ structure.x }}</td>

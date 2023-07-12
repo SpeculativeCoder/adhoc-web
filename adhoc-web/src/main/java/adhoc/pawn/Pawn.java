@@ -29,6 +29,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * A pawn is either a bot or user on an Unreal server.
@@ -54,6 +55,9 @@ public class Pawn {
     @Version
     @Basic(optional = false)
     private Long version;
+
+    @Basic(optional = false)
+    private UUID uuid;
 
     @ManyToOne(optional = false)
     private Server server;

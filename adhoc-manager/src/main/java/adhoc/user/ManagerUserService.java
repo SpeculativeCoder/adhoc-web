@@ -40,7 +40,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -56,7 +55,7 @@ public class ManagerUserService {
 
     public UserDto updateUser(UserDto userDto) {
         return userService.toDto(
-                userRepository.save(userService.toEntity(userDto)));
+                toEntity(userDto, userRepository.getUserById(userDto.getId())));
     }
 
     public ResponseEntity<UserDetailDto> serverUserRegister(RegisterUserRequest registerUserRequest, Authentication authentication) {
@@ -108,9 +107,6 @@ public class ManagerUserService {
         User user = userRepository.getUserById(userDefeatedUserEvent.getUserId());
         user.setScore(user.getScore() + 1);
 
-//		FactionEntity faction = user.getFaction();
-//		faction.setScore(faction.getScore() + 1);
-
         return userDefeatedUserEvent;
     }
 
@@ -118,30 +114,32 @@ public class ManagerUserService {
         User user = userRepository.getUserById(userDefeatedBotEvent.getUserId());
         user.setScore(user.getScore() + 1);
 
-//		FactionEntity faction = user.getFaction();
-//		faction.setScore(faction.getScore() + 1);
-
         return userDefeatedBotEvent;
     }
 
     public void decayUserScores() {
         log.trace("Decaying user scores...");
 
-        // TODO: properties
-        try (Stream<User> users = userRepository.streamUsersByOrderById()) {
-            users.forEach(user -> user.setScore(user.getScore() * 0.999F));
-        }
+        // TODO: multiplier property
+        userRepository.updateUsersMultiplyScore(0.999F);
     }
 
     //@Scheduled(cron="0 */1 * * * *")
     public void purgeOldUsers() {
         log.trace("Purging old users...");
 
-        try (Stream<User> users = userRepository.streamUsersBySeenBeforeAndPasswordIsNullAndPawnsEmptyOrderById(LocalDateTime.now().minusDays(7))) {
-            users.forEach(oldUser -> {
-                log.info("Purging old auto-registered user - oldUser={}", oldUser);
-                userRepository.delete(oldUser);
-            });
-        }
+        userRepository.deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsEmpty(LocalDateTime.now().minusDays(7));
     }
+
+    private User toEntity(UserDto userDto, User user) {
+
+        // TODO
+        //user.setName(userDto.getName());
+        //user.setFaction(user.getFaction());
+
+        user.setUpdated(LocalDateTime.now());
+
+        return user;
+    }
+
 }

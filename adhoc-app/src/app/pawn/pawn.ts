@@ -23,6 +23,7 @@
 export class Pawn {
   id?: number;
   version?: number;
+  uuid?: string;
   serverId?: number;
   index?: number;
   name?: string;

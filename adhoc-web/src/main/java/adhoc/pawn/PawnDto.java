@@ -30,6 +30,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -44,6 +45,9 @@ public class PawnDto {
 
     @Min(0)
     private Long version;
+
+    @NotNull
+    private UUID uuid;
 
     @NotNull
     @Min(1)

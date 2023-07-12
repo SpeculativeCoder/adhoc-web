@@ -22,21 +22,19 @@
 
 package adhoc.area;
 
-import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
+import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.TreeSet;
 
 @Transactional
 @Service
@@ -51,32 +49,30 @@ public class ManagerAreaService {
     private final ServerRepository serverRepository;
     private final ObjectiveRepository objectiveRepository;
 
-    private final EntityManager entityManager;
-
     public List<AreaDto> processServerAreas(Long serverId, List<AreaDto> areaDtos) {
-        Set<Long> areaIds = new LinkedHashSet<>();
+        Server server = serverRepository.getReferenceById(serverId);
+        Region region = server.getRegion();
+
+        Set<Long> areaIds = new TreeSet<>();
 
         List<AreaDto> result = areaDtos.stream()
-                .map(this::toEntity)
+                .map(areaDto -> toEntity(areaDto, areaRepository.findAreaByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
                 .map(areaRepository::save)
                 .peek(area -> areaIds.add(area.getId()))
                 .map(areaService::toDto)
                 .toList();
 
-        try (Stream<Objective> orphanedObjectives = objectiveRepository.streamObjectivesByAreaIdNotInOrderById(areaIds)) {
-            orphanedObjectives.forEach(orphanedObjective -> orphanedObjective.setArea(null));
+        if (!areaIds.isEmpty()) {
+            objectiveRepository.updateObjectivesSetAreaNullByRegionAndAreaIdNotIn(region, areaIds);
+
+            areaRepository.deleteAreasByRegionAndIdNotIn(region, areaIds);
         }
-
-        areaRepository.deleteAreasByIdNotIn(areaIds);
-
         return result;
     }
 
-    Area toEntity(AreaDto areaDto) {
-        Region region = regionRepository.getReferenceById(areaDto.getRegionId());
-        Area area = areaRepository.findAreaByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new);
+    Area toEntity(AreaDto areaDto, Area area) {
 
-        area.setRegion(region);
+        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
         area.setIndex(areaDto.getIndex());
         area.setName(areaDto.getName());
         area.setX(areaDto.getX());

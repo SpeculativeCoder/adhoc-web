@@ -25,20 +25,23 @@ package adhoc.faction;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface FactionRepository extends JpaRepository<Faction, Long> {
 
     Faction getByIndex(Integer index);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Faction> findAllFactionsByOrderById();
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     Faction getFactionById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Faction> findFactionById(Long id);
+    List<Faction> findAllFactionsBy();
+
+    @Modifying
+    @Query("update Faction f set f.version = f.version + 1, f.score = f.score * :multiplier")
+    void updateFactionsMultiplyScore(@Param("multiplier") float multiplier);
 }

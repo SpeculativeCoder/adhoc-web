@@ -267,6 +267,9 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pawn_pkey"/>
             </column>
             <column name="version" type="BIGINT"/>
+            <column name="uuid" type="UUID">
+                <constraints nullable="false"/>
+            </column>
             <column name="server_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>

@@ -147,18 +147,6 @@ public class UserService {
                 .build();
     }
 
-    User toEntity(UserDto userDto) {
-        User user = userRepository.getUserById(userDto.getId());
-
-        // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
-    }
-
     User toEntity(RegisterUserRequest registerUserRequest) {
         User user = new User();
 

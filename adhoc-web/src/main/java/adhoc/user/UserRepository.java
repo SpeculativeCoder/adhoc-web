@@ -26,35 +26,31 @@ import adhoc.faction.Faction;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	boolean existsBy();
+    Optional<User> findByName(String name);
 
-	boolean existsByName(String name);
+    Optional<User> findByNameOrEmail(String name, String email);
 
-	Optional<User> findByName(String name);
+    Optional<User> findByNameOrEmailAndPasswordIsNotNull(String name, String email);
 
-	Optional<User> findByNameOrEmail(String name, String email);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    User getUserById(Long id);
 
-	Optional<User> findByNameOrEmailAndPasswordIsNotNull(String name, String email);
+    @Modifying
+    @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score + :score where u.faction = :faction and u.seen > :cutoffTime")
+    void updateUsersAddScoreByFactionAndSeenAfter(@Param("score") float score, @Param("faction") Faction faction, @Param("cutoffTime") LocalDateTime cutoffTime);
 
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	User getUserById(Long id);
+    @Modifying
+    @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score * :multiplier")
+    void updateUsersMultiplyScore(@Param("multiplier") float multiplier);
 
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Optional<User> findUserById(Long id);
-
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Stream<User> streamUsersByOrderById();
-
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Stream<User> streamUsersByFactionOrderById(Faction faction);
-
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	Stream<User> streamUsersBySeenBeforeAndPasswordIsNullAndPawnsEmptyOrderById(LocalDateTime time);
+    void deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsEmpty(LocalDateTime time);
 }

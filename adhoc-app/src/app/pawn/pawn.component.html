@@ -33,6 +33,12 @@
     </div>
     <div class="row">
       <div class="mb-3">
+        <label class="form-label" for="uuidInput">UUID</label>
+        <input class="form-control" id="uuidInput" name="uuid" type="text" readonly [(ngModel)]="pawn.uuid"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mb-3">
         <label class="form-label" for="serverIdInput">Server</label>
         <input class="form-control" id="serverIdInput" name="serverId" type="number" readonly [(ngModel)]="pawn.serverId"/>
       </div>

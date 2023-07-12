@@ -53,6 +53,7 @@ public class PawnService {
         return new PawnDto(
                 pawn.getId(),
                 pawn.getVersion(),
+                pawn.getUuid(),
                 pawn.getServer().getId(),
                 pawn.getIndex(),
                 pawn.getName(),

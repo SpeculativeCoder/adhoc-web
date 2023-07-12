@@ -30,15 +30,14 @@ import org.springframework.data.jpa.repository.Lock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.UUID;
 
 public interface PawnRepository extends JpaRepository<Pawn, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Pawn> findPawnByServerAndIndex(Server server, Integer index);
+    Optional<Pawn> findPawnByUuid(UUID uuid);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Pawn> streamPawnsBySeenBeforeOrderById(LocalDateTime time);
+    void deletePawnsBySeenBefore(LocalDateTime time);
 
-    void deleteByServerAndIdNotIn(Server server, Set<Long> ids);
+    void deletePawnsByServerAndIdNotIn(Server server, Set<Long> ids);
 }

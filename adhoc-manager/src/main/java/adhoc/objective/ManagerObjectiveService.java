@@ -28,25 +28,26 @@ import adhoc.faction.FactionRepository;
 import adhoc.objective.event.ObjectiveTakenEvent;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.user.User;
+import adhoc.server.Server;
+import adhoc.server.ServerRepository;
 import adhoc.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerObjectiveService {
+    private final ServerRepository serverRepository;
 
     private final ObjectiveRepository objectiveRepository;
     private final RegionRepository regionRepository;
@@ -57,32 +58,33 @@ public class ManagerObjectiveService {
 
     public ObjectiveDto updateObjective(ObjectiveDto objectiveDto) {
         // NOTE: this is a two stage save to allow linked objectives to be set too
-        objectiveRepository.save(toEntityStage1(objectiveDto));
-
         return objectiveService.toDto(
-                toEntityStage2(objectiveDto));
+                toEntityStage2(objectiveDto,
+                        toEntityStage1(objectiveDto, objectiveRepository.getObjectiveById(objectiveDto.getId()))));
     }
 
     public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
-        // NOTE: this is a two stage save to allow linked objectives to be set too
-        objectiveDtos.stream()
-                .map(this::toEntityStage1)
-                .forEach(objectiveRepository::save);
+        Server server = serverRepository.getReferenceById(serverId);
+        Region region = server.getRegion();
 
-        return objectiveDtos.stream()
-                .map(this::toEntityStage2)
+        // NOTE: this is a two stage save to allow linked objectives to be set too (they need to be saved in the first pass to get ids)
+        List<Pair<ObjectiveDto, Objective>> pairs = objectiveDtos.stream()
+                .map(objectiveDto -> {
+                    Objective objective = objectiveRepository.save(toEntityStage1(objectiveDto,
+                            objectiveRepository.findObjectiveByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)));
+                    return Pair.of(objectiveDto, objective);
+                })
+                .toList();
+
+        return pairs.stream()
+                .map(pair -> toEntityStage2(pair.getLeft(), pair.getRight()))
                 .map(objectiveService::toDto)
                 .collect(Collectors.toList());
     }
 
-    Objective toEntityStage1(ObjectiveDto objectiveDto) {
-        Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
-        Objective objective = objectiveRepository
-                .findObjectiveByRegionAndIndex(region, objectiveDto.getIndex())
-                .orElseGet(Objective::new);
+    Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
 
-        Faction initialFaction = objectiveDto.getInitialFactionIndex() == null ? null :
-                factionRepository.getByIndex(objectiveDto.getInitialFactionIndex());
+        Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         objective.setRegion(region);
         objective.setIndex(objectiveDto.getIndex());
@@ -92,6 +94,9 @@ public class ManagerObjectiveService {
         objective.setX(objectiveDto.getX());
         objective.setY(objectiveDto.getY());
         objective.setZ(objectiveDto.getZ());
+
+        Faction initialFaction = objectiveDto.getInitialFactionIndex() == null ? null :
+                factionRepository.getByIndex(objectiveDto.getInitialFactionIndex());
 
         objective.setInitialFaction(initialFaction);
         // NOTE: we never change existing non-null faction (if admin wishes to do this - they can send an objective taken event)
@@ -104,9 +109,9 @@ public class ManagerObjectiveService {
         return objective;
     }
 
-    Objective toEntityStage2(ObjectiveDto objectiveDto) {
+    Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
+
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
-        Objective objective = objectiveRepository.getObjectiveByRegionAndIndex(region, objectiveDto.getIndex());
 
         objective.setLinkedObjectives(
                 objectiveDto.getLinkedObjectiveIndexes().stream().map(linkedObjectiveIndex ->
@@ -122,17 +127,7 @@ public class ManagerObjectiveService {
         objective.setFaction(faction);
         faction.setScore(faction.getScore() + 1);
 
-        LocalDateTime now = LocalDateTime.now();
-
-        // TODO: do this without going through all users
-        try (Stream<User> users = userRepository.streamUsersByFactionOrderById(faction)) {
-            users
-                    .filter(friendly ->
-                            friendly.getLastLogin() != null && friendly.getLastLogin().until(now, ChronoUnit.MINUTES) < 15
-                                    || friendly.getSeen() != null && friendly.getSeen().until(now, ChronoUnit.MINUTES) < 15)
-                    .forEach(friendly ->
-                            friendly.setScore(friendly.getScore() + 1));
-        }
+        userRepository.updateUsersAddScoreByFactionAndSeenAfter(1, faction, LocalDateTime.now().minusMinutes(15));
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
     }

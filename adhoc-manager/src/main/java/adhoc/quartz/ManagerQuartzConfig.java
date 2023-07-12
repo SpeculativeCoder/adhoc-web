@@ -131,18 +131,3 @@ public class ManagerQuartzConfig {
         return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(PURGE_OLD_PAWNS).storeDurably().build();
     }
 }
-
-//    @Bean
-//    public JobDetail manageHostingServiceTasksJobDetail() {
-//        return JobBuilder.newJob(QuartzService.class)
-//                .withIdentity("manageServerTasks").storeDurably().build();
-//    }
-
-//    @Bean
-//    public Trigger manageHostingServiceTasksTrigger() {
-//        return TriggerBuilder.newTrigger()
-//                .forJob("manageServerTasks")
-//                .withIdentity("manageServerTasks")
-//                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-//                        .repeatForever().withIntervalInSeconds(30)).startAt(Date.from(Instant.now().plusSeconds(10))).build();
-//    }

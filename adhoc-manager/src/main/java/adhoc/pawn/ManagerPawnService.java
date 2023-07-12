@@ -34,9 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.TreeSet;
 
 @Transactional
 @Service
@@ -51,51 +50,51 @@ public class ManagerPawnService {
 
     public void handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
         Server server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
-        LocalDateTime now = LocalDateTime.now();
 
-        Set<Long> seenPawnIds = new HashSet<>();
+        LocalDateTime seen = LocalDateTime.now();
+
+        Set<Long> seenPawnIds = new TreeSet<>();
+
         for (PawnDto pawnDto : serverPawnsEvent.getPawns()) {
+            pawnDto.setServerId(server.getId());
+            pawnDto.setSeen(seen);
 
             User user = pawnDto.getUserId() == null ? null : userRepository.getUserById(pawnDto.getUserId());
             if (user != null) {
                 user.setServer(server);
-                user.setSeen(now);
+                user.setSeen(seen);
             }
 
-            Pawn pawn = toEntity(pawnDto, now, server, user);
+            Pawn pawn = pawnRepository.save(
+                    toEntity(pawnDto, pawnRepository.findPawnByUuid(pawnDto.getUuid()).orElseGet(Pawn::new)));
 
-            pawn = pawnRepository.save(pawn);
             seenPawnIds.add(pawn.getId());
         }
 
         // clean up anything we didn't update for this server
-        pawnRepository.deleteByServerAndIdNotIn(server, seenPawnIds);
+        if (!seenPawnIds.isEmpty()) {
+            pawnRepository.deletePawnsByServerAndIdNotIn(server, seenPawnIds);
+        }
     }
 
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");
 
-        try (Stream<Pawn> pawnsToDelete = pawnRepository.streamPawnsBySeenBeforeOrderById(LocalDateTime.now().minusMinutes(1))) {
-            pawnsToDelete
-                    .forEach(oldPawn -> {
-                        log.debug("Purging old pawn: oldPawn={}", oldPawn);
-                        pawnRepository.delete(oldPawn);
-                    });
-        }
+        pawnRepository.deletePawnsBySeenBefore(LocalDateTime.now().minusMinutes(5));
     }
 
-    Pawn toEntity(PawnDto pawnDto, LocalDateTime seen, Server server, User user) {
-        Pawn pawn = pawnRepository.findPawnByServerAndIndex(server, pawnDto.getIndex()).orElseGet(Pawn::new);
+    Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
 
-        pawn.setName(pawnDto.getName());
-        pawn.setServer(server);
+        pawn.setUuid(pawnDto.getUuid());
+        pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
         pawn.setIndex(pawnDto.getIndex());
+        pawn.setName(pawnDto.getName());
         pawn.setFaction(factionRepository.getByIndex(pawnDto.getFactionIndex()));
         pawn.setX(pawnDto.getX());
         pawn.setY(pawnDto.getY());
         pawn.setZ(pawnDto.getZ());
-        pawn.setSeen(seen);
-        pawn.setUser(user);
+        pawn.setSeen(pawnDto.getSeen());
+        pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
 
         return pawn;
     }

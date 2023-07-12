@@ -30,9 +30,10 @@
       <thead>
       <tr>
         <th scope="col" sortable="id">ID</th>
-        <th scope="col" sortable="name">Name</th>
+        <th scope="col" sortable="uuid">UUID</th>
         <th scope="col" sortable="serverId">Server ID</th>
         <th scope="col" sortable="index">Index</th>
+        <th scope="col" sortable="name">Name</th>
         <th scope="col" sortable="factionId">Faction</th>
         <th scope="col" sortable="x">X</th>
         <th scope="col" sortable="y">Y</th>
@@ -44,9 +45,10 @@
       <tbody>
       <tr *ngFor="let pawn of pawns">
         <th scope="row"><a routerLink="/pawns/{{ pawn.id }}">{{ pawn.id }}</a></th>
-        <td>{{ pawn.name }}</td>
+        <td>{{ pawn.uuid }}</td>
         <td>{{ pawn.serverId }}</td>
         <td>{{ pawn.index }}</td>
+        <td>{{ pawn.name }}</td>
         <td>{{ getFaction(pawn.factionId)?.name }}</td>
         <td>{{ pawn.x }}</td>
         <td>{{ pawn.y }}</td>

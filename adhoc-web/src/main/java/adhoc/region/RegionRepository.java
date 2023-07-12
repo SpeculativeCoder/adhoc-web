@@ -22,14 +22,7 @@
 
 package adhoc.region;
 
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-
-import java.util.stream.Stream;
 
 public interface RegionRepository extends JpaRepository<Region, Long> {
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Region> streamRegionsByOrderById();
 }

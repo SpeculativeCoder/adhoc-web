@@ -34,12 +34,8 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
 
     Area getByRegionAndIndex(Region region, Integer index);
 
-    void deleteAreasByIdNotIn(Collection<Long> ids);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Area getAreaById(Long id);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Area> findAreaByRegionAndIndex(Region region, Integer index);
 
+    void deleteAreasByRegionAndIdNotIn(Region region, Collection<Long> ids);
 }

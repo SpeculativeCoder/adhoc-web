@@ -51,22 +51,30 @@ public class ManagerAreaService {
 
     public List<AreaDto> processServerAreas(Long serverId, List<AreaDto> areaDtos) {
         Server server = serverRepository.getReferenceById(serverId);
-        Region region = server.getRegion();
+        Region region = regionRepository.getRegionById(server.getRegion().getId());
 
         Set<Long> areaIds = new TreeSet<>();
 
         List<AreaDto> result = areaDtos.stream()
-                .map(areaDto -> toEntity(areaDto, areaRepository.findAreaByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
+                .peek(areaDto -> areaDto.setRegionId(region.getId())) // TODO
+                .map(areaDto -> toEntity(areaDto,
+                        areaRepository.findAreaByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
                 .map(areaRepository::save)
                 .peek(area -> areaIds.add(area.getId()))
                 .map(areaService::toDto)
                 .toList();
 
+        //try (Stream<Objective> orphanedObjectives = objectiveRepository.streamObjectivesByRegionAndAreaIdNotIn(region, areaIds)) {
+        //    orphanedObjectives.forEach(orphanedObjective -> orphanedObjective.setArea(null));
+        //}
+
         if (!areaIds.isEmpty()) {
+            // before deleting areas we must unlink any objectives that will become orphaned
             objectiveRepository.updateObjectivesSetAreaNullByRegionAndAreaIdNotIn(region, areaIds);
 
             areaRepository.deleteAreasByRegionAndIdNotIn(region, areaIds);
         }
+
         return result;
     }
 

@@ -31,12 +31,14 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.NettyAcceptorFactory
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.apache.activemq.artemis.core.server.cluster.impl.MessageLoadBalancingType;
+import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
 import org.apache.activemq.artemis.jms.server.config.TopicConfiguration;
 import org.apache.activemq.artemis.jms.server.config.impl.TopicConfigurationImpl;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -64,6 +66,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
 
     @Override
     public void customize(org.apache.activemq.artemis.core.config.Configuration configuration) {
+        configuration.addAddressSetting("/topic/events", eventsAddressSettings());
+
         configuration.addAcceptorConfiguration(
                 new TransportConfiguration(NettyAcceptorFactory.class.getName(), stompProps(), "stomp-acceptor"));
         configuration.addAcceptorConfiguration(
@@ -84,16 +88,31 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         clusterConnection.setName("adhoc-cluster-connection");
         clusterConnection.setAddress("");
         clusterConnection.setConnectorName("core-connector");
-        clusterConnection.setRetryInterval(60000);
+        clusterConnection.setClientFailureCheckPeriod(Duration.ofMinutes(1).toMillis());
+        clusterConnection.setConnectionTTL(Duration.ofMinutes(2).toMillis());
+        clusterConnection.setCallTimeout(Duration.ofMinutes(1).toMillis());
+        clusterConnection.setRetryInterval(Duration.ofSeconds(1).toMillis());
+        clusterConnection.setRetryIntervalMultiplier(2);
+        clusterConnection.setMaxRetryInterval(Duration.ofMinutes(30).toMillis());
         clusterConnection.setDuplicateDetection(true);
         clusterConnection.setMessageLoadBalancingType(MessageLoadBalancingType.STRICT);
         clusterConnection.setMaxHops(1);
+        //clusterConnection.setCallFailoverTimeout(Duration.ofMinutes(5).toMillis());
+        clusterConnection.setClusterNotificationInterval(Duration.ofSeconds(2).toMillis());
         //clusterConnection.setAllowDirectConnectionsOnly(true);
         //clusterConnection.setReconnectAttempts(1);
         //clusterConnection.setInitialConnectAttempts(1);
         clusterConnection.setStaticConnectors(Arrays.asList("manager-core-connector", "core-connector"));
-        //clusterConnection.setClientFailureCheckPeriod(10000);
         configuration.addClusterConfiguration(clusterConnection);
+    }
+
+    private AddressSettings eventsAddressSettings() {
+        AddressSettings addressSettings = new AddressSettings();
+        addressSettings.setAutoCreateAddresses(true);
+        addressSettings.setAutoCreateQueues(false);
+        addressSettings.setAutoDeleteAddresses(false);
+        addressSettings.setAutoDeleteQueues(false);
+        return addressSettings;
     }
 
     private Map<String, Object> stompProps() {
@@ -102,8 +121,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.HOST_PROP_NAME, webProperties.getMessageBrokerHost());
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerStompPort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "STOMP");
-        props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "10");
-        props.put(TransportConstants.CONNECTION_TTL, "600000");
+        //props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "2");
+        props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         log.info("stompProps: props={}", props);
         return props;
     }

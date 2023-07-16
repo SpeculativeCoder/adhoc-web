@@ -23,14 +23,30 @@
 <configuration>
 
     <conversionRule conversionWord="acc" converterClass="adhoc.logging.AdhocColorConverter" />
+    <conversionRule conversionWord="ewtpc" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+
+        <!-- quick/handy way to only show mutating SQL if chasing something down when hibernate SQL is being logged - note: depends on janino being enabled in pom -->
+        <!--
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>!"org.hibernate.SQL".equals(logger) ||
+                    ("org.hibernate.SQL".equals(logger) &amp;&amp;
+                        (message.startsWith("update") || message.startsWith("insert") || message.startsWith("delete")))</expression>
+            </evaluator>
+            <onMismatch>DENY</onMismatch>
+            <onMatch>NEUTRAL</onMatch>
+        </filter>
+        -->
+
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->
             <!--<pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%5p){bright_black} %acc([%15.15t]){bright_black} %acc(%40.40logger{39}){cyan}: %acc(%m%n)</pattern>-->
-            <pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%-5p){bright_black} %acc([%15.15t]){bright_black} %acc(%logger){cyan}: %acc(%m%n)</pattern>
+            <pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%-5p){bright_black} %acc([%15.15t]){bright_black} %acc(%40.40logger){cyan}: %acc(%m%n%ewtpc)</pattern>
             <charset>UTF-8</charset>
         </encoder>
+
     </appender>
 
     <root level="debug">

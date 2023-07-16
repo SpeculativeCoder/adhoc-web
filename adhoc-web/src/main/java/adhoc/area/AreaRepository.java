@@ -37,5 +37,6 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Area> findAreaByRegionAndIndex(Region region, Integer index);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     void deleteAreasByRegionAndIdNotIn(Region region, Collection<Long> ids);
 }

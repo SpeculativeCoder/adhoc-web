@@ -27,6 +27,8 @@ import adhoc.faction.Faction;
 import adhoc.region.Region;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 
@@ -34,8 +36,8 @@ import java.util.List;
  * An objective that can be taken by a faction.
  */
 @Entity
-//@DynamicInsert
-//@DynamicUpdate
+@DynamicInsert
+@DynamicUpdate
 @SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 1)
 @NoArgsConstructor
 @AllArgsConstructor

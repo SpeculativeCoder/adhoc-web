@@ -164,6 +164,14 @@
             <version>${guava.version}</version>
         </dependency>
 
+        <!-- TODO -->
+        <!--
+        <dependency>
+            <groupId>org.codehaus.janino</groupId>
+            <artifactId>janino</artifactId>
+        </dependency>
+        -->
+
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>ecs</artifactId>

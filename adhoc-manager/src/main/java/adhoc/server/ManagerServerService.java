@@ -77,7 +77,7 @@ public class ManagerServerService {
         server.setName(serverDto.getName());
 
         server.setRegion(regionRepository.getReferenceById(serverDto.getRegionId()));
-        server.setAreas(serverDto.getAreaIds().stream().map(areaRepository::getReferenceById).collect(Collectors.toList()));
+        server.setAreas(serverDto.getAreaIds().stream().map(areaRepository::getReferenceById).collect(Collectors.toList())); // TODO
 
         server.setMapName(serverDto.getMapName());
 

@@ -133,7 +133,6 @@
       }
     }
   },
-  "defaultProject": "adhoc-app",
   "cli": {
     "analytics": false
   }

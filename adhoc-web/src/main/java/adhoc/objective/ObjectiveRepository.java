@@ -25,6 +25,7 @@ package adhoc.objective;
 import adhoc.faction.Faction;
 import adhoc.region.Region;
 import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
@@ -47,7 +48,11 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Objective> findObjectiveByRegionAndIndex(Region region, Integer index);
 
+    @Transactional
     @Modifying
     @Query("update Objective o set o.version = o.version + 1, o.area = null where o.region = :region and o.area.id not in :areaIds")
     void updateObjectivesSetAreaNullByRegionAndAreaIdNotIn(@Param("region") Region region, @Param("areaIds") Collection<Long> areaIds);
+
+    //@Lock(LockModeType.PESSIMISTIC_WRITE)
+    //Stream<Objective> streamObjectivesByRegionAndAreaIdNotIn(Region region, Collection<Long> areaIds);
 }

@@ -27,6 +27,8 @@ import adhoc.region.Region;
 import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.UUID;
 
@@ -35,8 +37,8 @@ import java.util.UUID;
  */
 @Entity
 @SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 1)
-//@DynamicInsert
-//@DynamicUpdate
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -23,7 +23,9 @@
 package adhoc.user;
 
 import adhoc.faction.Faction;
+import adhoc.server.Server;
 import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
@@ -31,6 +33,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -44,13 +47,24 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     User getUserById(Long id);
 
+    @Transactional
+    @Modifying
+    @Query("update AdhocUser u set u.version = u.version + 1, u.server = :server, u.seen = :seen where u.id in :ids")
+    void updateUsersServerAndSeenByIdIn(@Param("server") Server server, @Param("seen") LocalDateTime seen, @Param("ids") Collection<Long> ids);
+
+    @Transactional
     @Modifying
     @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score + :score where u.faction = :faction and u.seen > :cutoffTime")
     void updateUsersAddScoreByFactionAndSeenAfter(@Param("score") float score, @Param("faction") Faction faction, @Param("cutoffTime") LocalDateTime cutoffTime);
 
+    @Transactional
     @Modifying
     @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score * :multiplier")
     void updateUsersMultiplyScore(@Param("multiplier") float multiplier);
 
-    void deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsEmpty(LocalDateTime time);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    void deleteUsersByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsEmpty(LocalDateTime createdBefore);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    void deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsEmpty(LocalDateTime seenBefore);
 }

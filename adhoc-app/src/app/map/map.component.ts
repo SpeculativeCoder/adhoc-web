@@ -109,7 +109,7 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
     });
 
     this.refreshData();
-    this.timer.subscribe(() => {
+    this.timerSubscription = this.timer.subscribe(() => {
       this.refreshData();
     });
   }

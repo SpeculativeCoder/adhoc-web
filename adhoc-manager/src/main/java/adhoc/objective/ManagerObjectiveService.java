@@ -38,7 +38,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,19 +64,19 @@ public class ManagerObjectiveService {
 
     public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
         Server server = serverRepository.getReferenceById(serverId);
-        Region region = server.getRegion();
+        Region region = regionRepository.getRegionById(server.getRegion().getId());
 
         // NOTE: this is a two stage save to allow linked objectives to be set too (they need to be saved in the first pass to get ids)
-        List<Pair<ObjectiveDto, Objective>> pairs = objectiveDtos.stream()
-                .map(objectiveDto -> {
-                    Objective objective = objectiveRepository.save(toEntityStage1(objectiveDto,
-                            objectiveRepository.findObjectiveByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)));
-                    return Pair.of(objectiveDto, objective);
-                })
+        List<Pair<ObjectiveDto, Objective>> dtoEntityPairs = objectiveDtos.stream()
+                .peek(objectiveDto -> objectiveDto.setRegionId(region.getId())) // TODO
+                .map(objectiveDto -> Pair.of(objectiveDto,
+                        objectiveRepository.save(toEntityStage1(objectiveDto,
+                                objectiveRepository.findObjectiveByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)))))
                 .toList();
 
-        return pairs.stream()
-                .map(pair -> toEntityStage2(pair.getLeft(), pair.getRight()))
+        return dtoEntityPairs.stream()
+                .map(dtoEntityPair ->
+                        toEntityStage2(dtoEntityPair.getLeft(), dtoEntityPair.getRight()))
                 .map(objectiveService::toDto)
                 .collect(Collectors.toList());
     }
@@ -95,14 +94,13 @@ public class ManagerObjectiveService {
         objective.setY(objectiveDto.getY());
         objective.setZ(objectiveDto.getZ());
 
-        Faction initialFaction = objectiveDto.getInitialFactionIndex() == null ? null :
-                factionRepository.getByIndex(objectiveDto.getInitialFactionIndex());
+        objective.setInitialFaction(objectiveDto.getInitialFactionIndex() == null ? null :
+                factionRepository.getByIndex(objectiveDto.getInitialFactionIndex()));
 
-        objective.setInitialFaction(initialFaction);
         // NOTE: we never change existing non-null faction (if admin wishes to do this - they can send an objective taken event)
-        objective.setFaction(objective.getFaction() == null ? initialFaction : objective.getFaction());
+        objective.setFaction(objective.getFaction() == null ? objective.getInitialFaction() : objective.getFaction());
 
-        objective.setLinkedObjectives(Collections.emptyList()); // NOTE: will be set in stage 2
+        //objective.setLinkedObjectives(Collections.emptyList()); // NOTE: will be updated/set in stage 2
 
         objective.setArea(areaRepository.getByRegionAndIndex(region, objectiveDto.getAreaIndex()));
 
@@ -113,9 +111,15 @@ public class ManagerObjectiveService {
 
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
-        objective.setLinkedObjectives(
-                objectiveDto.getLinkedObjectiveIndexes().stream().map(linkedObjectiveIndex ->
-                        objectiveRepository.getObjectiveByRegionAndIndex(region, linkedObjectiveIndex)).collect(Collectors.toList()));
+        List<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
+                .map(linkedObjectiveIndex ->
+                        objectiveRepository.getObjectiveByRegionAndIndex(region, linkedObjectiveIndex)).collect(Collectors.toList());
+
+        if (objective.getLinkedObjectives() == null ||
+                !objective.getLinkedObjectives().stream().map(Objective::getId).collect(Collectors.toSet())
+                        .equals(linkedObjectives.stream().map(Objective::getId).collect(Collectors.toSet()))) {
+            objective.setLinkedObjectives(linkedObjectives);
+        }
 
         return objective;
     }

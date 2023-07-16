@@ -54,6 +54,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "https://*." + webProperties.getAdhocDomain(),
                         "http://*." + webProperties.getAdhocDomain())
                 .withSockJS();
+                //.setHeartbeatTime(Duration.ofSeconds(15).toMillis());
     }
 
     @Override
@@ -66,6 +67,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.enableStompBrokerRelay("/queue", "/topic")
                 .setRelayHost(webProperties.getMessageBrokerHost())
                 .setRelayPort(webProperties.getMessageBrokerStompPort());
+                //.setSystemHeartbeatReceiveInterval(Duration.ofSeconds(10).toMillis())
+                //.setSystemHeartbeatSendInterval(Duration.ofSeconds(10).toMillis());
     }
 }
 

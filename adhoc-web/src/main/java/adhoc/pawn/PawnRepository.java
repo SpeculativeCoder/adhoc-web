@@ -37,7 +37,9 @@ public interface PawnRepository extends JpaRepository<Pawn, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Pawn> findPawnByUuid(UUID uuid);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     void deletePawnsBySeenBefore(LocalDateTime time);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     void deletePawnsByServerAndIdNotIn(Server server, Set<Long> ids);
 }

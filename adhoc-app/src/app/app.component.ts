@@ -31,6 +31,7 @@ import {HeaderInterceptor} from "./http-interceptor/header-interceptor";
 import {ConfigService} from "./config/config.service";
 import {Faction} from "./faction/faction";
 import {appEnvironment} from "../environments/app-environment";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -51,7 +52,9 @@ export class AppComponent implements OnInit {
               private userService: UserService,
               private headerInterceptor: HeaderInterceptor,
               private elementRef: ElementRef,
-              private configService: ConfigService) {
+              private configService: ConfigService,
+              private route: ActivatedRoute,
+              private router: Router) {
   }
 
   ngOnInit() {

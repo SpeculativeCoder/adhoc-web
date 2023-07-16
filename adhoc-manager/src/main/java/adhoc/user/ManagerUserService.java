@@ -128,6 +128,9 @@ public class ManagerUserService {
     public void purgeOldUsers() {
         log.trace("Purging old users...");
 
+        // regular cleanup of anon users who had a temp account created but never were seen in a server
+        userRepository.deleteUsersByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsEmpty(LocalDateTime.now().minusHours(6));
+        // regular cleanup of anon users who were last seen in a server a long time ago
         userRepository.deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsEmpty(LocalDateTime.now().minusDays(7));
     }
 

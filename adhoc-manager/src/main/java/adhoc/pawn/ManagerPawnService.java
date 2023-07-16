@@ -26,7 +26,6 @@ import adhoc.faction.FactionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.server.event.ServerPawnsEvent;
-import adhoc.user.User;
 import adhoc.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -53,17 +52,24 @@ public class ManagerPawnService {
 
         LocalDateTime seen = LocalDateTime.now();
 
+        Set<Long> seenUserIds = new TreeSet<>();
+
+        for (PawnDto pawnDto : serverPawnsEvent.getPawns()) {
+            if (pawnDto.getUserId() != null) {
+                seenUserIds.add(pawnDto.getUserId());
+            }
+        }
+
+        if (!seenUserIds.isEmpty()) {
+            userRepository.updateUsersServerAndSeenByIdIn(server, seen, seenUserIds);
+        }
+
         Set<Long> seenPawnIds = new TreeSet<>();
 
         for (PawnDto pawnDto : serverPawnsEvent.getPawns()) {
+            // TODO
             pawnDto.setServerId(server.getId());
             pawnDto.setSeen(seen);
-
-            User user = pawnDto.getUserId() == null ? null : userRepository.getUserById(pawnDto.getUserId());
-            if (user != null) {
-                user.setServer(server);
-                user.setSeen(seen);
-            }
 
             Pawn pawn = pawnRepository.save(
                     toEntity(pawnDto, pawnRepository.findPawnByUuid(pawnDto.getUuid()).orElseGet(Pawn::new)));
@@ -71,7 +77,7 @@ public class ManagerPawnService {
             seenPawnIds.add(pawn.getId());
         }
 
-        // clean up anything we didn't update for this server
+        // clean up any pawns we didn't update for this server
         if (!seenPawnIds.isEmpty()) {
             pawnRepository.deletePawnsByServerAndIdNotIn(server, seenPawnIds);
         }

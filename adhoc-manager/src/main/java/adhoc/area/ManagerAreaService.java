@@ -66,6 +66,8 @@ public class ManagerAreaService {
                 .map(areaService::toDto)
                 .toList();
 
+        areaRepository.flush();
+
         if (!areaIds.isEmpty() && areaRepository.existsByRegionAndIdNotIn(region, areaIds)) {
 
             // before deleting areas we must unlink any objectives that will become orphaned

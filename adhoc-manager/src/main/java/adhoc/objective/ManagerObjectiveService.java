@@ -76,11 +76,15 @@ public class ManagerObjectiveService {
                                 objectiveRepository.findObjectiveByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)))))
                 .toList();
 
+        objectiveRepository.flush();
+
         return dtoEntityPairs.stream()
                 .map(dtoEntityPair ->
                         toEntityStage2(dtoEntityPair.getLeft(), dtoEntityPair.getRight()))
                 .map(objectiveService::toDto)
                 .collect(Collectors.toList());
+
+        // TODO: delete unused objectives in region
     }
 
     Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {

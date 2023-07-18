@@ -23,7 +23,6 @@
 package adhoc.faction;
 
 import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
@@ -40,10 +39,9 @@ public interface FactionRepository extends JpaRepository<Faction, Long> {
     Faction getFactionById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Faction> findAllFactionsBy();
+    List<Faction> findFactionsBy();
 
-    @Transactional
     @Modifying
-    @Query("update Faction f set f.version = f.version + 1, f.score = f.score * :multiplier")
-    void updateFactionsMultiplyScore(@Param("multiplier") float multiplier);
+    @Query("update Faction set version = version + 1, score = score * :scoreMultiplier")
+    void updateFactionsMultiplyScore(@Param("scoreMultiplier") float scoreMultiplier);
 }

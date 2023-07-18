@@ -23,12 +23,15 @@
 package adhoc.server;
 
 import adhoc.server.event.ServerStartedEvent;
+import com.google.common.base.Verify;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -40,14 +43,20 @@ public class ManagerServerController {
 
     @PutMapping("/servers/{serverId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ServerDto putServer(@PathVariable("serverId") Long serverId, @Valid @RequestBody ServerDto serverDto) {
-        serverDto.setId(serverId);
+    public ServerDto putServer(
+            @PathVariable("serverId") Long serverId,
+            @Valid @RequestBody ServerDto serverDto) {
+
+        Verify.verify(Objects.equals(serverId, serverDto.getId()));
 
         return managerServerService.updateServer(serverDto);
     }
+
     @MessageMapping("ServerStarted")
     @PreAuthorize("hasRole('SERVER')")
-    public void handleServerStarted(@Valid @RequestBody ServerStartedEvent serverStartedEvent) {
+    public void handleServerStarted(
+            @Valid @RequestBody ServerStartedEvent serverStartedEvent) {
+
         log.info("Handling: {}", serverStartedEvent);
 
         managerServerService.handleServerStarted(serverStartedEvent);

@@ -25,7 +25,6 @@ package adhoc.objective;
 import adhoc.faction.Faction;
 import adhoc.region.Region;
 import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
@@ -39,20 +38,17 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
 
     int countByFaction(Faction faction);
 
+    Objective getByRegionAndIndex(Region region, Integer index);
+
+    boolean existsByRegionAndAreaIdNotIn(Region region, Collection<Long> areaIdNotIn);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Objective getObjectiveById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Objective getObjectiveByRegionAndIndex(Region region, Integer index);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Objective> findObjectiveByRegionAndIndex(Region region, Integer index);
 
-    @Transactional
     @Modifying
-    @Query("update Objective o set o.version = o.version + 1, o.area = null where o.region = :region and o.area.id not in :areaIds")
-    void updateObjectivesSetAreaNullByRegionAndAreaIdNotIn(@Param("region") Region region, @Param("areaIds") Collection<Long> areaIds);
-
-    //@Lock(LockModeType.PESSIMISTIC_WRITE)
-    //Stream<Objective> streamObjectivesByRegionAndAreaIdNotIn(Region region, Collection<Long> areaIds);
+    @Query("update Objective set version = version + 1, area = null where region = :region and area.id not in :areaIdNotIn")
+    void updateObjectivesAreaNullByRegionAndAreaIdNotIn(@Param("region") Region region, @Param("areaIdNotIn") Collection<Long> areaIdNotIn);
 }

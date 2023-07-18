@@ -22,7 +22,7 @@
 
 package adhoc.area;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -41,11 +41,13 @@ public class AreaService {
 
     private final AreaRepository areaRepository;
 
+    @Transactional(readOnly = true)
     public List<AreaDto> getAreas() {
         return areaRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "id"))
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public AreaDto getArea(Long areaId) {
         return toDto(areaRepository.getReferenceById(areaId));
     }

@@ -33,7 +33,7 @@
             <evaluator>
                 <expression>!"org.hibernate.SQL".equals(logger) ||
                     ("org.hibernate.SQL".equals(logger) &amp;&amp;
-                        (message.startsWith("update") || message.startsWith("insert") || message.startsWith("delete")))</expression>
+                        (message.startsWith("update") || message.startsWith("insert") || message.startsWith("delete") || message.endsWith("for update")))</expression>
             </evaluator>
             <onMismatch>DENY</onMismatch>
             <onMatch>NEUTRAL</onMatch>

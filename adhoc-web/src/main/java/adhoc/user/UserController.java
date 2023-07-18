@@ -47,17 +47,21 @@ public class UserController {
 
     @GetMapping("/users")
     public List<UserDto> getUsers() {
+
         // TODO: sorting
         return userService.getUsers();
     }
 
     @GetMapping("/users/{userId}")
-    public UserDto getUser(@PathVariable("userId") Long userId) {
+    public UserDto getUser(
+            @PathVariable("userId") Long userId) {
+
         return userService.getUser(userId);
     }
 
     @GetMapping("/users/current")
     public ResponseEntity<UserDetailDto> getCurrentUser() {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication.getPrincipal() instanceof User user)) {
             return ResponseEntity.noContent().build();
@@ -67,7 +71,10 @@ public class UserController {
     }
 
     @PostMapping("/users/register")
-    public ResponseEntity<UserDetailDto> postRegisterUser(@Valid @RequestBody RegisterUserRequest registerUserRequest, Authentication authentication) {
+    public ResponseEntity<UserDetailDto> postRegisterUser(
+            @Valid @RequestBody RegisterUserRequest registerUserRequest,
+            Authentication authentication) {
+
         if (!featureFlags.contains("development")) {
             if (registerUserRequest.getEmail() != null) {
                 throw new UnsupportedOperationException("register email not supported yet");
@@ -79,6 +86,7 @@ public class UserController {
                 throw new UnsupportedOperationException("register name not supported yet");
             }
         }
+
         return userService.registerUser(registerUserRequest, authentication);
     }
 }

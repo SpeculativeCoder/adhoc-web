@@ -35,13 +35,10 @@ import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import adhoc.server.ServerStatus;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
-import adhoc.user.UserRole;
 import adhoc.world.event.WorldUpdatedEvent;
 import com.google.common.collect.Sets;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -49,6 +46,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -82,9 +80,6 @@ public class ManagerWorldService {
     /**
      * Inserts some initial data to set up the world e.g. factions.
      */
-    //@EventListener(ContextRefreshedEvent.class)
-    //@Order(Ordered.HIGHEST_PRECEDENCE)
-    //@PostConstruct
     @EventListener(ApplicationStartedEvent.class)
     public void initializeDefaultWorld() {
 
@@ -174,7 +169,7 @@ public class ManagerWorldService {
         server1.setZ(region1.getZ());
         server1.setRegion(region1);
         server1.setAreas(Arrays.asList(area1));
-        server1.setStatus(ServerStatus.INACTIVE);
+        server1.setStatus(Server.Status.INACTIVE);
         server1 = serverRepository.save(server1);
 
         area1.setServer(server1);
@@ -212,7 +207,7 @@ public class ManagerWorldService {
         Objective objectiveA2 = new Objective();
         objectiveA2.setRegion(region1);
         objectiveA2.setIndex(1);
-        objectiveA2.setName("A2"); // "Training Yard");
+        objectiveA2.setName("A2");
         objectiveA2.setX(500F);
         objectiveA2.setY(2000F);
         objectiveA2.setZ(0F);
@@ -224,7 +219,7 @@ public class ManagerWorldService {
         Objective objectiveA3 = new Objective();
         objectiveA3.setRegion(region1);
         objectiveA3.setIndex(2);
-        objectiveA3.setName("A3"); // "Supply Building");
+        objectiveA3.setName("A3");
         objectiveA3.setX(2000F);
         objectiveA3.setY(1800F);
         objectiveA3.setZ(0F);
@@ -236,7 +231,7 @@ public class ManagerWorldService {
         Objective objectiveB1 = new Objective();
         objectiveB1.setRegion(region1);
         objectiveB1.setIndex(3);
-        objectiveB1.setName("B1"); // "Barracks");
+        objectiveB1.setName("B1");
         objectiveB1.setX(1200F);
         objectiveB1.setY(1000F);
         objectiveB1.setZ(0F);
@@ -248,7 +243,7 @@ public class ManagerWorldService {
         Objective objectiveB2 = new Objective();
         objectiveB2.setRegion(region1);
         objectiveB2.setIndex(4);
-        objectiveB2.setName("B2"); // "Bunker");
+        objectiveB2.setName("B2");
         objectiveB2.setX(1800F);
         objectiveB2.setY(500F);
         objectiveB2.setZ(0F);
@@ -268,16 +263,24 @@ public class ManagerWorldService {
 
         // admin user and some faction specific users for testing
 
-        if (userRepository.count() < 1 && webProperties.getFeatureFlags().contains("development")) {
+        if (userRepository.count() < 1) {
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime created = now.minusMinutes(30);
+            LocalDateTime seen = now.minusMinutes(5);
+
             User u0 = new User();
             u0.setName("admin");
             u0.setEmail("admin@" + webProperties.getAdhocDomain());
             u0.setFaction(team1);
             u0.setScore(0F);
             u0.setPassword(passwordEncoder.encode(managerProperties.getDefaultAdminPassword()));
-            u0.setCreated(LocalDateTime.now());
-            u0.setUpdated(u0.getCreated());
-            u0.setRoles(Sets.newHashSet(UserRole.USER)); // TODO: restore User.Role.ADMIN,
+            u0.setCreated(created);
+            u0.setUpdated(created);
+            u0.setSeen(seen);
+            //if (webProperties.getFeatureFlags().contains("development")) {
+            u0.setRoles(Sets.newHashSet(User.Role.USER)); // TODO: restore User.Role.ADMIN,
+            //}
             u0 = userRepository.save(u0);
 
             User u1 = new User();
@@ -286,9 +289,10 @@ public class ManagerWorldService {
             u1.setFaction(team1);
             u1.setScore(0F);
             u1.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
-            u1.setCreated(LocalDateTime.now());
-            u1.setUpdated(u1.getCreated());
-            u1.setRoles(Sets.newHashSet(UserRole.USER));
+            u1.setCreated(created);
+            u1.setUpdated(created);
+            u1.setSeen(seen);
+            u1.setRoles(Sets.newHashSet(User.Role.USER));
             u1 = userRepository.save(u1);
 
             User u2 = new User();
@@ -297,9 +301,10 @@ public class ManagerWorldService {
             u2.setFaction(team2);
             u2.setScore(10F);
             u2.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
-            u2.setCreated(LocalDateTime.now());
-            u2.setUpdated(u2.getCreated());
-            u2.setRoles(Sets.newHashSet(UserRole.USER));
+            u2.setCreated(created);
+            u2.setUpdated(created);
+            u2.setSeen(seen);
+            u2.setRoles(Sets.newHashSet(User.Role.USER));
             u2 = userRepository.save(u2);
 
             User u3 = new User();
@@ -308,9 +313,10 @@ public class ManagerWorldService {
             u3.setFaction(team3);
             u3.setScore(20F);
             u3.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
-            u3.setCreated(LocalDateTime.now());
-            u3.setUpdated(u3.getCreated());
-            u3.setRoles(Sets.newHashSet(UserRole.USER));
+            u3.setCreated(created);
+            u3.setUpdated(created);
+            //u3.setSeen(seen);
+            u3.setRoles(Sets.newHashSet(User.Role.USER));
             u3 = userRepository.save(u3);
 
             User u4 = new User();
@@ -319,9 +325,10 @@ public class ManagerWorldService {
             u4.setFaction(team4);
             u4.setScore(30F);
             u4.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
-            u4.setCreated(LocalDateTime.now());
-            u4.setUpdated(u4.getCreated());
-            u4.setRoles(Sets.newHashSet(UserRole.USER));
+            u4.setCreated(created);
+            u4.setUpdated(created);
+            //u4.setSeen(seen);
+            u4.setRoles(Sets.newHashSet(User.Role.USER));
             u4 = userRepository.save(u4);
 
             //Pawn pawn1 = new Pawn();

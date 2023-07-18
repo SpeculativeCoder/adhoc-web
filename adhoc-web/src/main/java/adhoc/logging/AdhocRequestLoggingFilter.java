@@ -85,15 +85,23 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
         } finally {
 
-            boolean statusError =
-                    response.getStatus() != HttpStatus.SWITCHING_PROTOCOLS.value() // 101 (websocket causes this)
-                            && response.getStatus() != HttpStatus.OK.value() // 200
-                            && response.getStatus() != HttpStatus.CREATED.value() // 201
-                            && response.getStatus() != HttpStatus.NO_CONTENT.value() // 204
-                            && response.getStatus() != HttpStatus.NOT_MODIFIED.value() // 304
-                            && response.getStatus() != HttpStatus.NOT_FOUND.value() // 404
-                            && response.getStatus() != HttpStatus.METHOD_NOT_ALLOWED.value() // 405
-                    ;
+//                            response.getStatus() != HttpStatus.SWITCHING_PROTOCOLS.value() // 101 (websocket causes this)
+//                            && response.getStatus() != HttpStatus.OK.value() // 200
+//                            && response.getStatus() != HttpStatus.CREATED.value() // 201
+//                            && response.getStatus() != HttpStatus.NO_CONTENT.value() // 204
+//                            && response.getStatus() != HttpStatus.NOT_MODIFIED.value() // 304
+//                            && response.getStatus() != HttpStatus.NOT_FOUND.value() // 404
+//                            && response.getStatus() != HttpStatus.METHOD_NOT_ALLOWED.value() // 405
+
+            boolean statusError;
+            try {
+                HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
+                statusError = httpStatus.is5xxServerError();
+
+            } catch (
+                    IllegalArgumentException e) {
+                statusError = true;
+            }
 
             boolean methodGet = "GET".equals(request.getMethod());
 

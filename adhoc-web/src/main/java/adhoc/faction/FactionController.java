@@ -41,12 +41,15 @@ public class FactionController {
 
     @GetMapping("/factions")
     public List<FactionDto> getFactions() {
+
         // TODO: sorting
         return factionService.getFactions();
     }
 
     @GetMapping("/factions/{factionId}")
-    public FactionDto getFaction(@PathVariable("factionId") Long factionId) {
+    public FactionDto getFaction(
+            @PathVariable("factionId") Long factionId) {
+
         return factionService.getFaction(factionId);
     }
 }

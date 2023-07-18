@@ -31,14 +31,16 @@ import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.UserRepository;
-import jakarta.transaction.Transactional;
+import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -64,11 +66,11 @@ public class ManagerObjectiveService {
 
     public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
         Server server = serverRepository.getReferenceById(serverId);
-        Region region = regionRepository.getRegionById(server.getRegion().getId());
+        Region region = server.getRegion();
 
         // NOTE: this is a two stage save to allow linked objectives to be set too (they need to be saved in the first pass to get ids)
         List<Pair<ObjectiveDto, Objective>> dtoEntityPairs = objectiveDtos.stream()
-                .peek(objectiveDto -> objectiveDto.setRegionId(region.getId())) // TODO
+                .peek(objectiveDto -> Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId())))
                 .map(objectiveDto -> Pair.of(objectiveDto,
                         objectiveRepository.save(toEntityStage1(objectiveDto,
                                 objectiveRepository.findObjectiveByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)))))
@@ -82,7 +84,6 @@ public class ManagerObjectiveService {
     }
 
     Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
-
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         objective.setRegion(region);
@@ -108,12 +109,11 @@ public class ManagerObjectiveService {
     }
 
     Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
-
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         List<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
                 .map(linkedObjectiveIndex ->
-                        objectiveRepository.getObjectiveByRegionAndIndex(region, linkedObjectiveIndex)).collect(Collectors.toList());
+                        objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex)).collect(Collectors.toList());
 
         if (objective.getLinkedObjectives() == null ||
                 !objective.getLinkedObjectives().stream().map(Objective::getId).collect(Collectors.toSet())
@@ -125,13 +125,22 @@ public class ManagerObjectiveService {
     }
 
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
-        Objective objective = objectiveRepository.getObjectiveById(objectiveTakenEvent.getObjectiveId());
-        Faction faction = factionRepository.getFactionById(objectiveTakenEvent.getFactionId());
 
-        objective.setFaction(faction);
+        Faction faction = factionRepository.getFactionById(objectiveTakenEvent.getFactionId());
         faction.setScore(faction.getScore() + 1);
 
-        userRepository.updateUsersAddScoreByFactionAndSeenAfter(1, faction, LocalDateTime.now().minusMinutes(15));
+        factionRepository.flush();
+
+        Objective objective = objectiveRepository.getObjectiveById(objectiveTakenEvent.getObjectiveId());
+        objective.setFaction(faction);
+
+        objectiveRepository.flush();
+
+        LocalDateTime recentUserSeenDateTime = LocalDateTime.now().minusMinutes(15);
+
+        if (userRepository.existsByFactionAndSeenAfter(faction, recentUserSeenDateTime)) {
+            userRepository.updateUsersAddScoreByFactionAndSeenAfter(1, faction, recentUserSeenDateTime);
+        }
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
     }

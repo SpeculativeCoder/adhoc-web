@@ -41,12 +41,15 @@ public class ObjectiveController {
 
     @GetMapping("/objectives")
     public List<ObjectiveDto> getObjectives() {
+
         // TODO: sorting
         return objectiveService.getObjectives();
     }
 
     @GetMapping("/objectives/{objectiveId}")
-    public ObjectiveDto getObjective(@PathVariable("objectiveId") Long objectiveId) {
+    public ObjectiveDto getObjective(
+            @PathVariable("objectiveId") Long objectiveId) {
+
         return objectiveService.getObjective(objectiveId);
     }
 }

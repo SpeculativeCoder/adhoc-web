@@ -27,7 +27,7 @@ import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.server.event.ServerPawnsEvent;
 import adhoc.user.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -78,19 +78,22 @@ public class ManagerPawnService {
         }
 
         // clean up any pawns we didn't update for this server
-        if (!seenPawnIds.isEmpty()) {
-            pawnRepository.deletePawnsByServerAndIdNotIn(server, seenPawnIds);
+        if (!seenPawnIds.isEmpty() && pawnRepository.existsByServerAndIdNotIn(server, seenPawnIds)) {
+            pawnRepository.deleteByServerAndIdNotIn(server, seenPawnIds);
         }
     }
 
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");
 
-        pawnRepository.deletePawnsBySeenBefore(LocalDateTime.now().minusMinutes(5));
+        LocalDateTime oldPawnsDateTime = LocalDateTime.now().minusMinutes(5);
+
+        if (pawnRepository.existsBySeenBefore(oldPawnsDateTime)) {
+            pawnRepository.deleteBySeenBefore(oldPawnsDateTime);
+        }
     }
 
     Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
-
         pawn.setUuid(pawnDto.getUuid());
         pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
         pawn.setIndex(pawnDto.getIndex());

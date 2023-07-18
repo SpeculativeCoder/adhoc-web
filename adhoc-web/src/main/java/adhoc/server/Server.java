@@ -76,7 +76,7 @@ public class Server {
     private Float z;
 
     @Basic(optional = false)
-    private ServerStatus status;
+    private Status status;
 
     private String managerHost;
 
@@ -89,4 +89,11 @@ public class Server {
     private LocalDateTime initiated;
 
     private LocalDateTime seen;
+
+    public enum Status {
+        INACTIVE,
+        STARTING,
+        ACTIVE,
+        ERROR
+    }
 }

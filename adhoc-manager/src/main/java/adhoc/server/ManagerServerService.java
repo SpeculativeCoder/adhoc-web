@@ -36,7 +36,7 @@ import adhoc.world.ManagerWorldService;
 import com.google.common.collect.Sets;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -69,11 +69,10 @@ public class ManagerServerService {
 
     public ServerDto updateServer(ServerDto serverDto) {
         return serverService.toDto(
-                toEntity(serverDto, serverRepository.getServerById(serverDto.getId())));
+                toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId())));
     }
 
     Server toEntity(ServerDto serverDto, Server server) {
-
         server.setName(serverDto.getName());
 
         server.setRegion(regionRepository.getReferenceById(serverDto.getRegionId()));
@@ -85,7 +84,7 @@ public class ManagerServerService {
         server.setY(server.getY());
         server.setZ(server.getZ());
 
-        server.setStatus(ServerStatus.INACTIVE);
+        server.setStatus(Server.Status.INACTIVE);
 
         server.setManagerHost(server.getManagerHost());
         server.setPrivateIp(server.getPrivateIp());
@@ -99,14 +98,14 @@ public class ManagerServerService {
     public void handleServerStarted(ServerStartedEvent serverStartedEvent) {
         Server server = serverRepository.getServerById(serverStartedEvent.getServerId());
 
-        server.setStatus(ServerStatus.ACTIVE);
+        server.setStatus(Server.Status.ACTIVE);
         //server.setPrivateIp(serverStartedEvent.getPrivateIp());
         //server.setManagerHost(server.getManagerHost());
 
         sendServerUpdatedEvent(server);
     }
 
-    public void sendServerUpdatedEvent(Server server) {
+    private void sendServerUpdatedEvent(Server server) {
         log.trace("Sending server info event for server {}", server.getId());
 
         ServerUpdatedEvent event = new ServerUpdatedEvent(
@@ -131,7 +130,6 @@ public class ManagerServerService {
      * Manage the needed servers to represent areas within each region.
      * This will typically be based on number of players in each area.
      */
-    //@Scheduled(cron="0 */1 * * * *")
     public void manageNeededServers() {
         log.trace("Managing needed servers...");
 
@@ -185,7 +183,7 @@ public class ManagerServerService {
 
         if (server.getId() == null) {
             server.setName(""); // the id will be added after insert (see below)
-            server.setStatus(ServerStatus.INACTIVE);
+            server.setStatus(Server.Status.INACTIVE);
 
             server = serverRepository.save(server);
 
@@ -200,7 +198,6 @@ public class ManagerServerService {
      * Manage the tasks in the hosting service, creating new ones and/or tearing down old ones as required
      * by the current needed servers.
      */
-    //@Scheduled(cron="0 */1 * * * *")
     public void manageHostingTasks() {
         log.trace("Managing hosting tasks...");
 
@@ -242,7 +239,7 @@ public class ManagerServerService {
             }
             if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
                 if (task.getPublicIp() != null) {
-                    server.setStatus(ServerStatus.ACTIVE);
+                    server.setStatus(Server.Status.ACTIVE);
                     String webSocketHost = server.getId() + "-" + managerProperties.getServerDomain();
                     int webSocketPort = Objects.requireNonNull(task.getPublicWebSocketPort(),
                             "web socket port not available from task when constructing url");
@@ -258,9 +255,9 @@ public class ManagerServerService {
             }
 
         } else if (task == null) {
-            if (server.getStatus() == ServerStatus.ACTIVE) {
+            if (server.getStatus() == Server.Status.ACTIVE) {
                 log.warn("Server {} seems to have stopped running!", server.getId());
-                server.setStatus(ServerStatus.INACTIVE);
+                server.setStatus(Server.Status.INACTIVE);
 
                 server.setPrivateIp(null);
                 server.setPublicIp(null);
@@ -270,7 +267,7 @@ public class ManagerServerService {
                 server.setSeen(null);
                 sendEvent = true;
 
-            } else if (server.getStatus() == ServerStatus.INACTIVE) {
+            } else if (server.getStatus() == Server.Status.INACTIVE) {
                 // don't start a server unless it will be able to connect to a manager
                 //if (hostingState.getManagerHosts().isEmpty()) {
                 //    log.warn("Need to start server {} but no manager(s) available!", server.getId());
@@ -278,13 +275,13 @@ public class ManagerServerService {
                 log.info("Need to start server {}", server.getId());
                 try {
                     hostingService.startServerTask(server); //, hostingState.getManagerHosts());
-                    server.setStatus(ServerStatus.STARTING);
+                    server.setStatus(Server.Status.STARTING);
                     server.setInitiated(LocalDateTime.now());
                     //server.setManagerHost(hostingState.getManagerHosts().iterator().next());
                     sendEvent = true;
                 } catch (Exception e) {
                     log.warn("Failed to start server {}!", server.getId(), e);
-                    server.setStatus(ServerStatus.ERROR);
+                    server.setStatus(Server.Status.ERROR);
                     //throw new RuntimeException("Failed to start server "+server.getId(), e);
                 }
                 //}

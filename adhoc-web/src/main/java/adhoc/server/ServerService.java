@@ -23,7 +23,7 @@
 package adhoc.server;
 
 import adhoc.area.Area;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -41,11 +41,13 @@ public class ServerService {
 
     private final ServerRepository serverRepository;
 
+    @Transactional(readOnly = true)
     public List<ServerDto> getServers() {
         return serverRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "id"))
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public ServerDto getServer(Long serverId) {
         return toDto(serverRepository.getReferenceById(serverId));
     }

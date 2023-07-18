@@ -27,12 +27,14 @@ import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import jakarta.transaction.Transactional;
+import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -51,12 +53,12 @@ public class ManagerAreaService {
 
     public List<AreaDto> processServerAreas(Long serverId, List<AreaDto> areaDtos) {
         Server server = serverRepository.getReferenceById(serverId);
-        Region region = regionRepository.getRegionById(server.getRegion().getId());
+        Region region = server.getRegion();
 
         Set<Long> areaIds = new TreeSet<>();
 
         List<AreaDto> result = areaDtos.stream()
-                .peek(areaDto -> areaDto.setRegionId(region.getId())) // TODO
+                .peek(areaDto -> Verify.verify(Objects.equals(region.getId(), areaDto.getRegionId())))
                 .map(areaDto -> toEntity(areaDto,
                         areaRepository.findAreaByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
                 .map(areaRepository::save)
@@ -64,22 +66,20 @@ public class ManagerAreaService {
                 .map(areaService::toDto)
                 .toList();
 
-        //try (Stream<Objective> orphanedObjectives = objectiveRepository.streamObjectivesByRegionAndAreaIdNotIn(region, areaIds)) {
-        //    orphanedObjectives.forEach(orphanedObjective -> orphanedObjective.setArea(null));
-        //}
+        if (!areaIds.isEmpty() && areaRepository.existsByRegionAndIdNotIn(region, areaIds)) {
 
-        if (!areaIds.isEmpty()) {
             // before deleting areas we must unlink any objectives that will become orphaned
-            objectiveRepository.updateObjectivesSetAreaNullByRegionAndAreaIdNotIn(region, areaIds);
+            if (objectiveRepository.existsByRegionAndAreaIdNotIn(region, areaIds)) {
+                objectiveRepository.updateObjectivesAreaNullByRegionAndAreaIdNotIn(region, areaIds);
+            }
 
-            areaRepository.deleteAreasByRegionAndIdNotIn(region, areaIds);
+            areaRepository.deleteByRegionAndIdNotIn(region, areaIds);
         }
 
         return result;
     }
 
     Area toEntity(AreaDto areaDto, Area area) {
-
         area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
         area.setIndex(areaDto.getIndex());
         area.setName(areaDto.getName());

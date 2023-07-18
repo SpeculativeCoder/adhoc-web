@@ -41,12 +41,15 @@ public class ServerController {
 
     @GetMapping("/servers")
     public List<ServerDto> getServers() {
+
         // TODO: sorting
         return serverService.getServers();
     }
 
     @GetMapping("/servers/{serverId}")
-    public ServerDto getServer(@PathVariable("serverId") Long serverId) {
+    public ServerDto getServer(
+            @PathVariable("serverId") Long serverId) {
+
         return serverService.getServer(serverId);
     }
 }

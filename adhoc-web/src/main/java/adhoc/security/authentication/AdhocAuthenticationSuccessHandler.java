@@ -23,11 +23,10 @@
 package adhoc.security.authentication;
 
 import adhoc.user.User;
-import adhoc.user.UserRepository;
+import adhoc.user.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -35,7 +34,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * Sets a new "token" every time a user logs in.
@@ -46,21 +44,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    @Transactional
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
-        User principal = (User) authentication.getPrincipal();
-
-        User user = userRepository.getUserById(principal.getId());
+        User user = (User) authentication.getPrincipal();
 
         log.info("onAuthenticationSuccess: before: user={} token={}", user, user.getToken());
 
-        UUID newToken = UUID.randomUUID();
-        principal.setToken(newToken);
-        user.setToken(newToken);
+        user = userService.regenerateUserToken(user);
+
+        // TODO: set auth principal?
 
         log.info("onAuthenticationSuccess: after: user={} token={}", user, user.getToken());
     }

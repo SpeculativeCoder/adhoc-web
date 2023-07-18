@@ -25,7 +25,6 @@ package adhoc.user;
 import adhoc.faction.Faction;
 import adhoc.server.Server;
 import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
@@ -44,27 +43,32 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByNameOrEmailAndPasswordIsNotNull(String name, String email);
 
+    boolean existsByFactionAndSeenAfter(Faction faction, LocalDateTime seenAfter);
+
+    boolean existsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
+
+    boolean existsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     User getUserById(Long id);
 
-    @Transactional
     @Modifying
-    @Query("update AdhocUser u set u.version = u.version + 1, u.server = :server, u.seen = :seen where u.id in :ids")
-    void updateUsersServerAndSeenByIdIn(@Param("server") Server server, @Param("seen") LocalDateTime seen, @Param("ids") Collection<Long> ids);
+    @Query("update AdhocUser set version = version + 1, server = :server, seen = :seen where id in :idIn")
+    void updateUsersServerAndSeenByIdIn(@Param("server") Server server, @Param("seen") LocalDateTime seen, @Param("idIn") Collection<Long> idIn);
 
-    @Transactional
     @Modifying
-    @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score + :score where u.faction = :faction and u.seen > :cutoffTime")
-    void updateUsersAddScoreByFactionAndSeenAfter(@Param("score") float score, @Param("faction") Faction faction, @Param("cutoffTime") LocalDateTime cutoffTime);
+    @Query("update AdhocUser set version = version + 1, score = score + :addScore where faction = :faction and seen > :seenAfter")
+    void updateUsersAddScoreByFactionAndSeenAfter(@Param("addScore") float score, @Param("faction") Faction faction, @Param("seenAfter") LocalDateTime seenAfter);
 
-    @Transactional
     @Modifying
-    @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score * :multiplier")
-    void updateUsersMultiplyScore(@Param("multiplier") float multiplier);
+    @Query("update AdhocUser set version = version + 1, score = score * :multiplyScore")
+    void updateUsersMultiplyScore(@Param("multiplyScore") float multiplyScore);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    void deleteUsersByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsEmpty(LocalDateTime createdBefore);
+    @Modifying
+    @Query("delete AdhocUser where created < :createdBefore and seen is null and password is null and pawns is empty")
+    void deleteUsersByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(@Param("createdBefore") LocalDateTime createdBefore);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    void deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsEmpty(LocalDateTime seenBefore);
+    @Modifying
+    @Query("delete AdhocUser where seen < :seenBefore and password is null and pawns is empty")
+    void deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(@Param("seenBefore") LocalDateTime seenBefore);
 }

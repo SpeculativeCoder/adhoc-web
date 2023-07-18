@@ -30,7 +30,6 @@ import adhoc.properties.ManagerProperties;
 import adhoc.properties.WebProperties;
 import adhoc.server.Server;
 import com.google.common.collect.ImmutableList;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -53,7 +52,6 @@ import java.util.stream.Collectors;
 /**
  * Implementation of hosting service using AWS ECS.
  */
-@Transactional
 @Service
 @Profile("hosting-ecs")
 @Slf4j

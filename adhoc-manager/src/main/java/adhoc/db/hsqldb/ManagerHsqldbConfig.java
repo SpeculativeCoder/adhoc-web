@@ -46,10 +46,12 @@ public class ManagerHsqldbConfig {
     @Value("${spring.datasource.password}")
     private String password;
 
+    static {
+        System.setProperty("hsqldb.reconfig_logging", "false");
+    }
+
     @Bean(initMethod = "start", destroyMethod = "stop")
     Server hsqldbServer() throws IOException {
-        //System.setProperty("hsqldb.reconfig_logging", "false");
-
         Server server = new Server();
 
         //server.setAddress("localhost"); //"0.0.0.0");
@@ -58,6 +60,8 @@ public class ManagerHsqldbConfig {
                 ";user=" + username + ";password=" + password +
                 ";hsqldb.tx=locks" + // locks/mvlocks
                 ";check_props=true" +
+                ";sql.restrict_exec=true" +
+                ";sql.enforce_names=true" +
                 ";sql.enforce_types=true");
         server.setNoSystemExit(true);
         server.setSilent(true); // TODO

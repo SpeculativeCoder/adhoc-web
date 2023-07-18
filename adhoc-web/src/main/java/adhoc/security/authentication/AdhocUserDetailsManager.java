@@ -23,8 +23,7 @@
 package adhoc.security.authentication;
 
 import adhoc.user.User;
-import adhoc.user.UserRepository;
-import adhoc.user.UserRole;
+import adhoc.user.UserService;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -52,11 +50,10 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
     @Value("${adhoc.server.basic-auth.password:#{null}}")
     private Optional<String> serverBasicAuthPassword;
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         if (serverBasicAuthUsername.isPresent()
@@ -65,14 +62,14 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
             User user = new User();
             user.setName(serverBasicAuthUsername.get());
             user.setPassword(passwordEncoder.encode(serverBasicAuthPassword.get()));
-            user.setRoles(Sets.newHashSet(UserRole.SERVER));
+            user.setRoles(Sets.newHashSet(User.Role.SERVER));
             return user;
         }
 
         log.debug("loadUserByUsername: username={}", username);
 
-        User user = userRepository.findByNameOrEmailAndPasswordIsNotNull(username, username).orElseThrow(() ->
-                new UsernameNotFoundException("Failed to enabled user with name or email: " + username));
+        User user = userService.findUser(username).orElseThrow(() ->
+                new UsernameNotFoundException("Failed to find enabled user with name or email: " + username));
 
         log.debug("loadUserByUsername: user={} token={}", user, user.getToken());
 

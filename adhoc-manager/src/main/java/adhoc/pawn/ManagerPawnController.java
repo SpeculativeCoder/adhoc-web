@@ -42,7 +42,9 @@ public class ManagerPawnController {
 
     @MessageMapping("ServerPawns")
     @PreAuthorize("hasRole('SERVER')")
-    public void handleServerPawns(@Valid @RequestBody ServerPawnsEvent serverPawnsEvent) {
+    public void handleServerPawns(
+            @Valid @RequestBody ServerPawnsEvent serverPawnsEvent) {
+
         log.debug("Handling: {}", serverPawnsEvent);
 
         managerPawnService.handleServerPawns(serverPawnsEvent);

@@ -23,6 +23,7 @@
 package adhoc.objective;
 
 import adhoc.objective.event.ObjectiveTakenEvent;
+import com.google.common.base.Verify;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -43,22 +45,30 @@ public class ManagerObjectiveController {
 
     @PutMapping("/objectives/{objectiveId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ObjectiveDto putObjective(@PathVariable("objectiveId") Long objectiveId, @Valid @RequestBody ObjectiveDto objectiveDto) {
-        objectiveDto.setId(objectiveId);
+    public ObjectiveDto putObjective(
+            @PathVariable("objectiveId") Long objectiveId,
+            @Valid @RequestBody ObjectiveDto objectiveDto) {
+
+        Verify.verify(Objects.equals(objectiveId, objectiveDto.getId()));
 
         return managerObjectiveService.updateObjective(objectiveDto);
     }
 
     @PostMapping("/servers/{serverId}/objectives")
     @PreAuthorize("hasRole('SERVER')")
-    public List<ObjectiveDto> postServerObjectives(@PathVariable Long serverId, @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
+    public List<ObjectiveDto> postServerObjectives(
+            @PathVariable Long serverId,
+            @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
+
         return managerObjectiveService.processServerObjectives(serverId, objectiveDtos);
     }
 
     @MessageMapping("ObjectiveTaken")
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public ObjectiveTakenEvent handleObjectiveTaken(@Valid @RequestBody ObjectiveTakenEvent objectiveTakenEvent) {
+    public ObjectiveTakenEvent handleObjectiveTaken(
+            @Valid @RequestBody ObjectiveTakenEvent objectiveTakenEvent) {
+
         log.debug("Handling: {}", objectiveTakenEvent);
 
         managerObjectiveService.handleObjectiveTaken(objectiveTakenEvent);

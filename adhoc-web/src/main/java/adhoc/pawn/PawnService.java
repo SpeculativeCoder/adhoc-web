@@ -22,7 +22,7 @@
 
 package adhoc.pawn;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -40,11 +40,13 @@ public class PawnService {
 
     private final PawnRepository pawnRepository;
 
+    @Transactional(readOnly = true)
     public List<PawnDto> getPawns() {
         return pawnRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "serverId", "index"))
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public PawnDto getPawn(Long pawnId) {
         return toDto(pawnRepository.getReferenceById(pawnId));
     }

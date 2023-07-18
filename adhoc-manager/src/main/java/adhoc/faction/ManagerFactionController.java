@@ -22,11 +22,14 @@
 
 package adhoc.faction;
 
+import com.google.common.base.Verify;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -38,8 +41,11 @@ public class ManagerFactionController {
 
     @PutMapping("/factions/{factionId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public FactionDto putFaction(@PathVariable("factionId") Long factionId, @Valid @RequestBody FactionDto factionDto) {
-        factionDto.setId(factionId);
+    public FactionDto putFaction(
+            @PathVariable("factionId") Long factionId,
+            @Valid @RequestBody FactionDto factionDto) {
+
+        Verify.verify(Objects.equals(factionId, factionDto.getId()));
 
         return managerFactionService.updateFaction(factionDto);
     }

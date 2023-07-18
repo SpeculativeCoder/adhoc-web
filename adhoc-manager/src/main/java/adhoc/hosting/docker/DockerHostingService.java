@@ -38,7 +38,6 @@ import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.transport.DockerHttpClient;
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -60,7 +59,6 @@ import java.util.stream.Collectors;
  * Implementation of hosting service using local Docker.
  * Good for locally testing multiple Unreal servers running at the same time.
  */
-@Transactional
 @Service
 @Profile("hosting-docker")
 @Slf4j
@@ -214,8 +212,8 @@ public class DockerHostingService implements HostingService {
                                         new PortBinding(
                                                 new Ports.Binding("0.0.0.0", Integer.toString(publicWebSocketPort)),
                                                 ExposedPort.tcp(8889)))
-                                //.withAutoRemove(false))
-                                .withAutoRemove(true))
+                                .withAutoRemove(false))
+                                //.withAutoRemove(true))
                 .exec();
         log.trace("createdContainer: {}", createdContainer);
 

@@ -23,7 +23,7 @@
 package adhoc.faction;
 
 import adhoc.objective.ObjectiveRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -54,13 +54,12 @@ public class ManagerFactionService {
     public void awardFactionScores() {
         log.trace("Awarding faction scores...");
 
-        for (Faction faction : factionRepository.findAllFactionsBy()) {
+        for (Faction faction : factionRepository.findFactionsBy()) {
             faction.setScore(faction.getScore() + objectiveRepository.countByFaction(faction));
         }
     }
 
     Faction toEntity(FactionDto factionDto, Faction faction) {
-
         faction.setId(faction.getId());
         faction.setIndex(faction.getIndex());
         faction.setName(factionDto.getName());

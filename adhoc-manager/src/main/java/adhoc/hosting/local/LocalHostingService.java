@@ -26,7 +26,6 @@ import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.artemis.utils.collections.ConcurrentHashSet;
@@ -39,7 +38,6 @@ import java.util.*;
  * Treats whatever server is running on 127.0.0.1 as the task for ALL servers.
  * Useful for testing i.e. if you are running the server locally in the editor.
  */
-@Transactional
 @Service
 @Profile("hosting-local")
 @Slf4j

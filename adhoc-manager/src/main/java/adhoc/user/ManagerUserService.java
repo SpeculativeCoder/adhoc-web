@@ -32,12 +32,12 @@ import adhoc.user.request.RegisterUserRequest;
 import adhoc.user.request.UserJoinRequest;
 import adhoc.user.request.UserNavigateRequest;
 import adhoc.user.response.UserNavigateResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -55,7 +55,7 @@ public class ManagerUserService {
 
     public UserDto updateUser(UserDto userDto) {
         return userService.toDto(
-                toEntity(userDto, userRepository.getUserById(userDto.getId())));
+                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }
 
     public ResponseEntity<UserDetailDto> serverUserRegister(RegisterUserRequest registerUserRequest, Authentication authentication) {
@@ -124,18 +124,25 @@ public class ManagerUserService {
         userRepository.updateUsersMultiplyScore(0.999F);
     }
 
-    //@Scheduled(cron="0 */1 * * * *")
     public void purgeOldUsers() {
         log.trace("Purging old users...");
 
+        LocalDateTime oldSeenUserCreatedTime = LocalDateTime.now().minusHours(6);
+
         // regular cleanup of anon users who had a temp account created but never were seen in a server
-        userRepository.deleteUsersByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsEmpty(LocalDateTime.now().minusHours(6));
+        if (userRepository.existsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(oldSeenUserCreatedTime)) {
+            userRepository.deleteUsersByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(oldSeenUserCreatedTime);
+        }
+
+        LocalDateTime oldUserSeenDateTime = LocalDateTime.now().minusDays(7);
+
         // regular cleanup of anon users who were last seen in a server a long time ago
-        userRepository.deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsEmpty(LocalDateTime.now().minusDays(7));
+        if (userRepository.existsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(oldUserSeenDateTime)) {
+            userRepository.deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(oldUserSeenDateTime);
+        }
     }
 
     private User toEntity(UserDto userDto, User user) {
-
         // TODO
         //user.setName(userDto.getName());
         //user.setFaction(user.getFaction());

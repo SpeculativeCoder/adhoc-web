@@ -121,8 +121,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.HOST_PROP_NAME, webProperties.getMessageBrokerHost());
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerStompPort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "STOMP");
-        //props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "2");
         props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "4");
         log.info("stompProps: props={}", props);
         return props;
     }
@@ -133,6 +133,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.HOST_PROP_NAME, webProperties.getMessageBrokerHost());
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
+        props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         log.info("coreProps: props={}", props);
         return props;
     }
@@ -143,6 +144,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.HOST_PROP_NAME, webProperties.getManagerMessageBrokerHost());
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getManagerMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
+        props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         log.info("managerCoreProps: props={}", props);
         return props;
     }
@@ -153,7 +155,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.HOST_PROP_NAME, webProperties.getKioskMessageBrokerHost());
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getKioskMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
-        log.warn("kioskCoreProps: props={}", props);
+        props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        log.info("kioskCoreProps: props={}", props);
         return props;
     }
 }

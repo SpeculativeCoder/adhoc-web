@@ -22,12 +22,12 @@
 
 package adhoc.objective;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,11 +40,13 @@ public class ObjectiveService {
 
     private final ObjectiveRepository objectiveRepository;
 
+    @Transactional(readOnly = true)
     public List<ObjectiveDto> getObjectives() {
         return objectiveRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "id"))
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public ObjectiveDto getObjective(Long objectiveId) {
         return toDto(objectiveRepository.getReferenceById(objectiveId));
     }

@@ -41,12 +41,15 @@ public class PawnController {
 
     @GetMapping("/pawns")
     public List<PawnDto> getPawns() {
+
         // TODO: sorting
         return pawnService.getPawns();
     }
 
     @GetMapping("/pawns/{pawnId}")
-    public PawnDto getPawn(@PathVariable("pawnId") Long pawnId) {
+    public PawnDto getPawn(
+            @PathVariable("pawnId") Long pawnId) {
+
         return pawnService.getPawn(pawnId);
     }
 }

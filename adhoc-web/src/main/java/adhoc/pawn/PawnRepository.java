@@ -26,6 +26,9 @@ import adhoc.server.Server;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -34,12 +37,18 @@ import java.util.UUID;
 
 public interface PawnRepository extends JpaRepository<Pawn, Long> {
 
+    boolean existsBySeenBefore(@Param("seenBefore") LocalDateTime seenBefore);
+
+    boolean existsByServerAndIdNotIn(Server server, Set<Long> idNotIn);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Pawn> findPawnByUuid(UUID uuid);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    void deletePawnsBySeenBefore(LocalDateTime time);
+    @Modifying
+    @Query("delete Pawn where seen < :seenBefore")
+    void deleteBySeenBefore(@Param("seenBefore") LocalDateTime seenBefore);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    void deletePawnsByServerAndIdNotIn(Server server, Set<Long> ids);
+    @Modifying
+    @Query("delete Pawn where server = :server and id not in :idNotIn")
+    void deleteByServerAndIdNotIn(@Param("server") Server server, @Param("idNotIn") Set<Long> idNotIn);
 }

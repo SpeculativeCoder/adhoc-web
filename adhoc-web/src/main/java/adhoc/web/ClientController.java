@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.client;
+package adhoc.web;
 
-import adhoc.properties.WebProperties;
+import adhoc.web.properties.WebProperties;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

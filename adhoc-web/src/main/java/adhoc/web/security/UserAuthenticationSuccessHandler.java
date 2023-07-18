@@ -20,37 +20,43 @@
  * SOFTWARE.
  */
 
-package adhoc.security.channel_interceptor;
+package adhoc.web.security;
 
+import adhoc.user.User;
+import adhoc.user.UserService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.messaging.web.csrf.CsrfChannelInterceptor;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 /**
- * Web socket communication with Unreal server does not require CSRF.
+ * Sets a new "token" every time a user logs in.
+ * The "token" is used when logging into an Unreal server to make sure the user is who they say they are.
  */
+@Component
 @Slf4j
 @RequiredArgsConstructor
-public class ServerIgnoreCsrfChannelInterceptor implements ChannelInterceptor {
+public class UserAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final CsrfChannelInterceptor delegate;
+    private final UserService userService;
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+            throws IOException, ServletException {
+        User user = (User) authentication.getPrincipal();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken &&
-                authenticationToken.getAuthorities()
-                        .stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()))) {
-            return message;
-        }
+        log.info("onAuthenticationSuccess: before: user={} token={}", user, user.getToken());
 
-        return delegate.preSend(message, channel);
+        user = userService.regenerateUserToken(user);
+
+        // TODO: set auth principal?
+
+        log.info("onAuthenticationSuccess: after: user={} token={}", user, user.getToken());
     }
 }

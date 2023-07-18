@@ -30,7 +30,7 @@ import adhoc.faction.FactionRepository;
 import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
 import adhoc.properties.ManagerProperties;
-import adhoc.properties.WebProperties;
+import adhoc.web.properties.WebProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;

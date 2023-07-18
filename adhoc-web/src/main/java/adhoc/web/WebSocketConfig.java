@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc;
+package adhoc.web;
 
-import adhoc.properties.WebProperties;
+import adhoc.web.properties.WebProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

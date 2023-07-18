@@ -20,11 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.security;
+package adhoc.web.security;
 
-import adhoc.security.authentication.AdhocWebAuthenticationDetailsSource;
-import adhoc.security.authentication.AdhocAuthenticationSuccessHandler;
-import adhoc.security.request_matcher.ServerRequestMatcher;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -43,9 +40,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
+    private final UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
 
-    private final AdhocWebAuthenticationDetailsSource adhocWebAuthenticationDetailsSource;
+    private final ServerAuthenticationDetailsSource serverAuthenticationDetailsSource;
 
     private final ServerRequestMatcher serverRequestMatcher;
 
@@ -89,10 +86,10 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .failureHandler((request, response, exception) -> response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
-                        .successHandler(adhocAuthenticationSuccessHandler))
+                        .successHandler(userAuthenticationSuccessHandler))
                 // allow basic auth (Authorization header) - used by the server
                 .httpBasic(basic -> basic
-                        .authenticationDetailsSource(adhocWebAuthenticationDetailsSource))
+                        .authenticationDetailsSource(serverAuthenticationDetailsSource))
                 .build();
     }
 

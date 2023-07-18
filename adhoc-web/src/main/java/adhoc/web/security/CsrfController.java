@@ -20,28 +20,24 @@
  * SOFTWARE.
  */
 
-package adhoc.security.request_matcher;
+package adhoc.web.security;
 
-import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Communication with Unreal server does not require CSRF so this matcher provides a way to identify server requests so that we can ignore CSRF for them.
- */
+@RestController
 @Slf4j
-@Component
-public class ServerRequestMatcher implements RequestMatcher {
+@RequiredArgsConstructor
+public class CsrfController {
 
-    @Override
-    public boolean matches(HttpServletRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null // TODO
-                || (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken &&
-                authenticationToken.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority())));
+    /**
+     * Allow access to CSRF token for the Angular app.
+     */
+    @GetMapping("/csrf")
+    public CsrfToken csrf(CsrfToken token) {
+        return token;
     }
 }

@@ -27,7 +27,7 @@ import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.hosting.ecs.properties.EcsHostingProperties;
 import adhoc.properties.ManagerProperties;
-import adhoc.properties.WebProperties;
+import adhoc.web.properties.WebProperties;
 import adhoc.server.Server;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;

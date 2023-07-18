@@ -23,7 +23,7 @@
 package adhoc.dns.route53;
 
 import adhoc.dns.route53.properties.Route53DnsProperties;
-import adhoc.properties.WebProperties;
+import adhoc.web.properties.WebProperties;
 import adhoc.dns.DnsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

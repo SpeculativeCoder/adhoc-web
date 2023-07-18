@@ -20,43 +20,19 @@
  * SOFTWARE.
  */
 
-package adhoc.security.authentication;
+package adhoc.web.security;
 
-import adhoc.user.User;
-import adhoc.user.UserService;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
-/**
- * Sets a new "token" every time a user logs in.
- * The "token" is used when logging into an Unreal server to make sure the user is who they say they are.
- */
 @Component
-@Slf4j
-@RequiredArgsConstructor
-public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
-    private final UserService userService;
+public class ServerAuthenticationDetailsSource extends WebAuthenticationDetailsSource {
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-            throws IOException, ServletException {
-        User user = (User) authentication.getPrincipal();
-
-        log.info("onAuthenticationSuccess: before: user={} token={}", user, user.getToken());
-
-        user = userService.regenerateUserToken(user);
-
-        // TODO: set auth principal?
-
-        log.info("onAuthenticationSuccess: after: user={} token={}", user, user.getToken());
+    public WebAuthenticationDetails buildDetails(HttpServletRequest context) {
+        context.getSession().setMaxInactiveInterval(60 * 60 * 24); // TODO: FIXME: server should have a different timeout to user
+        return super.buildDetails(context);
     }
 }

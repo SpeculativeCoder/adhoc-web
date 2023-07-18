@@ -20,19 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc;
+package adhoc.web;
 
-import adhoc.properties.WebProperties;
+import adhoc.web.properties.WebProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.Connector;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -42,18 +39,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final WebProperties webProperties;
-
-    @Value("${server.port}")
-    private Integer serverPort;
-
-    @Value("${server.port-2}")
-    private Integer serverPort2;
-
-    @EventListener
-    public void contextRefreshed(ContextRefreshedEvent event) {
-        log.info("serverPort={}", serverPort);
-        log.info("serverPort2={}", serverPort2);
-    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -74,7 +59,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer() {
         return (TomcatServletWebServerFactory factory) -> {
             final Connector connector = new Connector();
-            connector.setPort(serverPort2);
+            connector.setPort(webProperties.getServerPort2());
             factory.addAdditionalTomcatConnectors(connector);
         };
     }

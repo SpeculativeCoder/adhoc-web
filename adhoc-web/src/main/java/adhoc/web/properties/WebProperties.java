@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.properties;
+package adhoc.web.properties;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +38,11 @@ public class WebProperties {
         MANAGER,
         KIOSK
     }
+
+    @Value("${server.port}")
+    private Integer serverPort;
+    @Value("${server.port-2}")
+    private Integer serverPort2;
 
     @Value("${adhoc.application.mode}")
     private ApplicationMode mode;
@@ -74,6 +79,7 @@ public class WebProperties {
 
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
+        log.info("serverPort={} serverPort2={}", serverPort, serverPort2);
         log.info("mode={} featureFlags={}", mode, featureFlags);
         log.info("messageBrokerHost={} messageBrokerStompPort={} messageBrokerCorePort={}", messageBrokerHost, messageBrokerStompPort, messageBrokerCorePort);
         log.info("managerMessageBrokerHost={} managerMessageBrokerCorePort={}", managerMessageBrokerHost, managerMessageBrokerCorePort);

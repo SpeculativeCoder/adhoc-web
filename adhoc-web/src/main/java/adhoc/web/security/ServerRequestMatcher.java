@@ -20,19 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.security.authentication;
+package adhoc.web.security;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 
+/**
+ * Communication with Unreal server does not require CSRF so this matcher provides a way to identify server requests so that we can ignore CSRF for them.
+ */
+@Slf4j
 @Component
-public class AdhocWebAuthenticationDetailsSource extends WebAuthenticationDetailsSource {
+public class ServerRequestMatcher implements RequestMatcher {
 
     @Override
-    public WebAuthenticationDetails buildDetails(HttpServletRequest context) {
-        context.getSession().setMaxInactiveInterval(60 * 60 * 24); // TODO: FIXME: server should have a different timeout to user
-        return super.buildDetails(context);
+    public boolean matches(HttpServletRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication == null // TODO
+                || (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken &&
+                authenticationToken.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority())));
     }
 }

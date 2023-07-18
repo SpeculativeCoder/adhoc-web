@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-package adhoc.logging;
+package adhoc.web.logging;
 
 
 import ch.qos.logback.classic.Level;

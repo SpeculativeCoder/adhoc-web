@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.logging;
+package adhoc.web.logging;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;

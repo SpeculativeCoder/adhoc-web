@@ -42,7 +42,7 @@ public interface PawnRepository extends JpaRepository<Pawn, Long> {
     boolean existsByServerAndIdNotIn(Server server, Set<Long> idNotIn);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Pawn> findPawnByUuid(UUID uuid);
+    Optional<Pawn> findPawnByServerAndUuid(Server server, UUID uuid);
 
     @Modifying
     @Query("delete Pawn where seen < :seenBefore")

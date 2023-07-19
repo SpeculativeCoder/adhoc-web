@@ -76,8 +76,6 @@ public class ManagerObjectiveService {
                                 objectiveRepository.findObjectiveByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)))))
                 .toList();
 
-        objectiveRepository.flush();
-
         return dtoEntityPairs.stream()
                 .map(dtoEntityPair ->
                         toEntityStage2(dtoEntityPair.getLeft(), dtoEntityPair.getRight()))
@@ -119,11 +117,7 @@ public class ManagerObjectiveService {
                 .map(linkedObjectiveIndex ->
                         objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex)).collect(Collectors.toList());
 
-        if (objective.getLinkedObjectives() == null ||
-                !objective.getLinkedObjectives().stream().map(Objective::getId).collect(Collectors.toSet())
-                        .equals(linkedObjectives.stream().map(Objective::getId).collect(Collectors.toSet()))) {
-            objective.setLinkedObjectives(linkedObjectives);
-        }
+        objective.setLinkedObjectives(linkedObjectives);
 
         return objective;
     }
@@ -133,18 +127,12 @@ public class ManagerObjectiveService {
         Faction faction = factionRepository.getFactionById(objectiveTakenEvent.getFactionId());
         faction.setScore(faction.getScore() + 1);
 
-        factionRepository.flush();
-
         Objective objective = objectiveRepository.getObjectiveById(objectiveTakenEvent.getObjectiveId());
         objective.setFaction(faction);
 
-        objectiveRepository.flush();
-
         LocalDateTime recentUserSeenDateTime = LocalDateTime.now().minusMinutes(15);
 
-        if (userRepository.existsByFactionAndSeenAfter(faction, recentUserSeenDateTime)) {
-            userRepository.updateUsersAddScoreByFactionAndSeenAfter(1, faction, recentUserSeenDateTime);
-        }
+        userRepository.updateUsersAddScoreByFactionAndSeenAfter(1, faction, recentUserSeenDateTime);
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
     }

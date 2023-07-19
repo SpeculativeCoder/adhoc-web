@@ -64,8 +64,6 @@ public class ManagerPawnService {
             userRepository.updateUsersServerAndSeenByIdIn(server, seen, seenUserIds);
         }
 
-        serverRepository.flush();
-
         Set<Long> seenPawnIds = new TreeSet<>();
 
         for (PawnDto pawnDto : serverPawnsEvent.getPawns()) {
@@ -74,12 +72,10 @@ public class ManagerPawnService {
             pawnDto.setSeen(seen);
 
             Pawn pawn = pawnRepository.save(
-                    toEntity(pawnDto, pawnRepository.findPawnByUuid(pawnDto.getUuid()).orElseGet(Pawn::new)));
+                    toEntity(pawnDto, pawnRepository.findPawnByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
 
             seenPawnIds.add(pawn.getId());
         }
-
-        pawnRepository.flush();
 
         // clean up any pawns we didn't update for this server
         if (!seenPawnIds.isEmpty() && pawnRepository.existsByServerAndIdNotIn(server, seenPawnIds)) {

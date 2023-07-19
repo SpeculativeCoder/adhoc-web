@@ -43,8 +43,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByNameOrEmailAndPasswordIsNotNull(String name, String email);
 
-    boolean existsByFactionAndSeenAfter(Faction faction, LocalDateTime seenAfter);
-
     boolean existsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
 
     boolean existsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);

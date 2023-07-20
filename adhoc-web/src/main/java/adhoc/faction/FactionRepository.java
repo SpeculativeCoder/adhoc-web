@@ -29,7 +29,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 public interface FactionRepository extends JpaRepository<Faction, Long> {
 
@@ -39,9 +39,9 @@ public interface FactionRepository extends JpaRepository<Faction, Long> {
     Faction getFactionById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Faction> findFactionsBy();
+    Stream<Faction> streamFactionsBy();
 
     @Modifying
-    @Query("update Faction set version = version + 1, score = score * :scoreMultiplier")
-    void updateFactionsMultiplyScore(@Param("scoreMultiplier") float scoreMultiplier);
+    @Query("update Faction set version = version + 1, score = score * :multiplyScore")
+    void updateFactionsMultiplyScore(@Param("multiplyScore") float multiplyScore);
 }

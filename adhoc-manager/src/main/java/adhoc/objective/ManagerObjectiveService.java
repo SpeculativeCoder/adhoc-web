@@ -32,6 +32,7 @@ import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.UserRepository;
 import com.google.common.base.Verify;
+import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -103,7 +104,8 @@ public class ManagerObjectiveService {
         // NOTE: we never change existing non-null faction (if admin wishes to do this - they can send an objective taken event)
         objective.setFaction(objective.getFaction() == null ? objective.getInitialFaction() : objective.getFaction());
 
-        //objective.setLinkedObjectives(Collections.emptyList()); // NOTE: will be updated/set in stage 2
+        // NOTE: linked objectives will be set in stage 2
+        //objective.setLinkedObjectives(new ArrayList<>());
 
         objective.setArea(areaRepository.getByRegionAndIndex(region, objectiveDto.getAreaIndex()));
 
@@ -113,26 +115,29 @@ public class ManagerObjectiveService {
     Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
-        List<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
-                .map(linkedObjectiveIndex ->
-                        objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex)).collect(Collectors.toList());
+        // update the linked objectives if not set yet or the objective indexes have changed
+        if (objective.getLinkedObjectives() == null ||
+                !objective.getLinkedObjectives().stream().map(Objective::getIndex).collect(Collectors.toSet())
+                        .equals(Sets.newHashSet(objectiveDto.getLinkedObjectiveIndexes()))) {
 
-        objective.setLinkedObjectives(linkedObjectives);
+            objective.setLinkedObjectives(
+                    objectiveDto.getLinkedObjectiveIndexes().stream()
+                            .map(linkedObjectiveIndex ->
+                                    objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex)).toList());
+        }
 
         return objective;
     }
 
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
 
+        Objective objective = objectiveRepository.getObjectiveById(objectiveTakenEvent.getObjectiveId());
         Faction faction = factionRepository.getFactionById(objectiveTakenEvent.getFactionId());
+
+        objective.setFaction(faction);
         faction.setScore(faction.getScore() + 1);
 
-        Objective objective = objectiveRepository.getObjectiveById(objectiveTakenEvent.getObjectiveId());
-        objective.setFaction(faction);
-
-        LocalDateTime recentUserSeenDateTime = LocalDateTime.now().minusMinutes(15);
-
-        userRepository.updateUsersAddScoreByFactionAndSeenAfter(1, faction, recentUserSeenDateTime);
+        userRepository.updateUsersAddScoreByFactionAndSeenAfter(1, faction, LocalDateTime.now().minusMinutes(15));
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
     }

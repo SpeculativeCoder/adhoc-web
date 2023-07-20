@@ -23,10 +23,12 @@
 package adhoc.faction;
 
 import adhoc.objective.ObjectiveRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -44,19 +46,20 @@ public class ManagerFactionService {
                 toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId())));
     }
 
+    public void awardFactionScores() {
+        log.trace("Awarding faction scores...");
+
+        try (Stream<Faction> factions = factionRepository.streamFactionsBy()) {
+            factions.forEach(faction ->
+                    faction.setScore(faction.getScore() + objectiveRepository.countByFaction(faction)));
+        }
+    }
+
     public void decayFactionScores() {
         log.trace("Decaying faction scores...");
 
         // TODO: multiplier property
         factionRepository.updateFactionsMultiplyScore(0.98F);
-    }
-
-    public void awardFactionScores() {
-        log.trace("Awarding faction scores...");
-
-        for (Faction faction : factionRepository.findFactionsBy()) {
-            faction.setScore(faction.getScore() + objectiveRepository.countByFaction(faction));
-        }
     }
 
     Faction toEntity(FactionDto factionDto, Faction faction) {

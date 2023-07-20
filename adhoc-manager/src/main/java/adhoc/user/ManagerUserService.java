@@ -40,6 +40,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Transactional
 @Service
@@ -127,19 +129,15 @@ public class ManagerUserService {
     public void purgeOldUsers() {
         log.trace("Purging old users...");
 
-        LocalDateTime oldSeenUserCreatedTime = LocalDateTime.now().minusHours(6);
+        Set<Long> oldUserIds = new TreeSet<>();
 
         // regular cleanup of anon users who had a temp account created but never were seen in a server
-        if (userRepository.existsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(oldSeenUserCreatedTime)) {
-            userRepository.deleteUsersByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(oldSeenUserCreatedTime);
-        }
-
-        LocalDateTime oldUserSeenDateTime = LocalDateTime.now().minusDays(7);
+        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
 
         // regular cleanup of anon users who were last seen in a server a long time ago
-        if (userRepository.existsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(oldUserSeenDateTime)) {
-            userRepository.deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(oldUserSeenDateTime);
-        }
+        oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
+
+        userRepository.deleteAllByIdInBatch(oldUserIds);
     }
 
     private User toEntity(UserDto userDto, User user) {

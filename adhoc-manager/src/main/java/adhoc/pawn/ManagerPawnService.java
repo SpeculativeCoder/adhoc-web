@@ -27,14 +27,15 @@ import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.server.event.ServerPawnsEvent;
 import adhoc.user.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -52,22 +53,11 @@ public class ManagerPawnService {
 
         LocalDateTime seen = LocalDateTime.now();
 
+        Set<Long> seenPawnIds = new TreeSet<>();
         Set<Long> seenUserIds = new TreeSet<>();
 
         for (PawnDto pawnDto : serverPawnsEvent.getPawns()) {
-            if (pawnDto.getUserId() != null) {
-                seenUserIds.add(pawnDto.getUserId());
-            }
-        }
 
-        if (!seenUserIds.isEmpty()) {
-            userRepository.updateUsersServerAndSeenByIdIn(server, seen, seenUserIds);
-        }
-
-        Set<Long> seenPawnIds = new TreeSet<>();
-
-        for (PawnDto pawnDto : serverPawnsEvent.getPawns()) {
-            // TODO
             pawnDto.setServerId(server.getId());
             pawnDto.setSeen(seen);
 
@@ -75,21 +65,29 @@ public class ManagerPawnService {
                     toEntity(pawnDto, pawnRepository.findPawnByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
 
             seenPawnIds.add(pawn.getId());
+
+            if (pawnDto.getUserId() != null) {
+                seenUserIds.add(pawnDto.getUserId());
+            }
         }
 
         // clean up any pawns we didn't update for this server
-        if (!seenPawnIds.isEmpty() && pawnRepository.existsByServerAndIdNotIn(server, seenPawnIds)) {
-            pawnRepository.deleteByServerAndIdNotIn(server, seenPawnIds);
+        if (!seenPawnIds.isEmpty()) {
+            try (Stream<Pawn> pawnsToDelete = pawnRepository.streamByServerAndIdNotIn(server, seenPawnIds)) {
+                pawnsToDelete.forEach(pawnRepository::delete);
+            }
+        }
+
+        if (!seenUserIds.isEmpty()) {
+            userRepository.updateUsersServerAndSeenByIdIn(server, seen, seenUserIds);
         }
     }
 
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");
 
-        LocalDateTime oldPawnsDateTime = LocalDateTime.now().minusMinutes(5);
-
-        if (pawnRepository.existsBySeenBefore(oldPawnsDateTime)) {
-            pawnRepository.deleteBySeenBefore(oldPawnsDateTime);
+        try (Stream<Pawn> oldPawns = pawnRepository.streamBySeenBefore( LocalDateTime.now().minusMinutes(5))) {
+            oldPawns.forEach(pawnRepository::delete);
         }
     }
 

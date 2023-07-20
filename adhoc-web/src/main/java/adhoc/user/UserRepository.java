@@ -33,6 +33,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -43,30 +44,24 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByNameOrEmailAndPasswordIsNotNull(String name, String email);
 
-    boolean existsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
-
-    boolean existsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     User getUserById(Long id);
 
+    @Query("select id from AdhocUser where created < :createdBefore and seen is null and password is null and pawns is empty")
+    List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(@Param("createdBefore") LocalDateTime createdBefore);
+
+    @Query("select id from AdhocUser where seen < :seenBefore and password is null and pawns is empty")
+    List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(@Param("seenBefore") LocalDateTime seenBefore);
+
     @Modifying
     @Query("update AdhocUser set version = version + 1, server = :server, seen = :seen where id in :idIn")
-    void updateUsersServerAndSeenByIdIn(@Param("server") Server server, @Param("seen") LocalDateTime seen, @Param("idIn") Collection<Long> idIn);
+    void updateUsersServerAndSeenByIdIn(@Param("server") Server server, @Param("seen") LocalDateTime seen,@Param("idIn") Collection<Long> idIn);
 
     @Modifying
     @Query("update AdhocUser set version = version + 1, score = score + :addScore where faction = :faction and seen > :seenAfter")
-    void updateUsersAddScoreByFactionAndSeenAfter(@Param("addScore") float score, @Param("faction") Faction faction, @Param("seenAfter") LocalDateTime seenAfter);
+    void updateUsersAddScoreByFactionAndSeenAfter( @Param("addScore") float addScore, @Param("faction") Faction faction,@Param("seenAfter") LocalDateTime seenAfter);
 
     @Modifying
     @Query("update AdhocUser set version = version + 1, score = score * :multiplyScore")
     void updateUsersMultiplyScore(@Param("multiplyScore") float multiplyScore);
-
-    @Modifying
-    @Query("delete AdhocUser where created < :createdBefore and seen is null and password is null and pawns is empty")
-    void deleteUsersByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(@Param("createdBefore") LocalDateTime createdBefore);
-
-    @Modifying
-    @Query("delete AdhocUser where seen < :seenBefore and password is null and pawns is empty")
-    void deleteUsersBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(@Param("seenBefore") LocalDateTime seenBefore);
 }

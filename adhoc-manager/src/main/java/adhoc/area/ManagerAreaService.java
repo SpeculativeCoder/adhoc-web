@@ -22,6 +22,7 @@
 
 package adhoc.area;
 
+import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -66,14 +68,20 @@ public class ManagerAreaService {
                 .map(areaService::toDto)
                 .toList();
 
-        if (!areaIds.isEmpty() && areaRepository.existsByRegionAndIdNotIn(region, areaIds)) {
+        if (!areaIds.isEmpty()) {
 
-            // before deleting areas we must unlink any objectives that will become orphaned
-            if (objectiveRepository.existsByRegionAndAreaIdNotIn(region, areaIds)) {
-                objectiveRepository.updateObjectivesAreaNullByRegionAndAreaIdNotIn(region, areaIds);
+            try (Stream<Area> areasToDelete = areaRepository.streamAreaByRegionAndIdNotIn(region, areaIds)) {
+                areasToDelete.forEach(areaToDelete -> {
+
+                    // before deleting areas we must unlink any objectives that will become orphaned
+                    for (Objective orphanedObjective : areaToDelete.getObjectives()) {
+                        orphanedObjective = objectiveRepository.getObjectiveById(orphanedObjective.getId());
+                        orphanedObjective.setArea(null);
+                    }
+
+                    areaRepository.delete(areaToDelete);
+                });
             }
-
-            areaRepository.deleteByRegionAndIdNotIn(region, areaIds);
         }
 
         return result;

@@ -26,23 +26,18 @@ import adhoc.region.Region;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface AreaRepository extends JpaRepository<Area, Long> {
 
     Area getByRegionAndIndex(Region region, Integer index);
 
-    boolean existsByRegionAndIdNotIn(Region region, Collection<Long> idNotIn);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Area> findAreaByRegionAndIndex(Region region, Integer index);
 
-    @Modifying
-    @Query("delete Area where region = :region and id not in :idNotIn")
-    void deleteByRegionAndIdNotIn(@Param("region") Region region, @Param("idNotIn") Collection<Long> idNotIn);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Stream<Area> streamAreaByRegionAndIdNotIn(Region region, Collection<Long> idNotIn);
 }

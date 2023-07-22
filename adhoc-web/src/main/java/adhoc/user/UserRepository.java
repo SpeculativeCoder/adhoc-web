@@ -48,10 +48,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User getUserById(Long id);
 
     @Query("select id from AdhocUser where created < :createdBefore and seen is null and password is null and pawns is empty")
-    List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(@Param("createdBefore") LocalDateTime createdBefore);
+    List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmptyOrderById(@Param("createdBefore") LocalDateTime createdBefore);
 
     @Query("select id from AdhocUser where seen < :seenBefore and password is null and pawns is empty")
-    List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(@Param("seenBefore") LocalDateTime seenBefore);
+    List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmptyOrderById(@Param("seenBefore") LocalDateTime seenBefore);
 
     @Modifying
     @Query("update AdhocUser set version = version + 1, server = :server, seen = :seen where id in :idIn")

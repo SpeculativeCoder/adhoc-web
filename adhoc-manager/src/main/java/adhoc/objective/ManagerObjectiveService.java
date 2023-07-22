@@ -131,11 +131,11 @@ public class ManagerObjectiveService {
 
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
 
-        Objective objective = objectiveRepository.getObjectiveById(objectiveTakenEvent.getObjectiveId());
         Faction faction = factionRepository.getFactionById(objectiveTakenEvent.getFactionId());
+        Objective objective = objectiveRepository.getObjectiveById(objectiveTakenEvent.getObjectiveId());
 
-        objective.setFaction(faction);
         faction.setScore(faction.getScore() + 1);
+        objective.setFaction(faction);
 
         userRepository.updateUsersAddScoreByFactionAndSeenAfter(1, faction, LocalDateTime.now().minusMinutes(15));
 

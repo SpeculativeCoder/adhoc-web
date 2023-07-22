@@ -70,7 +70,7 @@ public class ManagerAreaService {
 
         if (!areaIds.isEmpty()) {
 
-            try (Stream<Area> areasToDelete = areaRepository.streamAreaByRegionAndIdNotIn(region, areaIds)) {
+            try (Stream<Area> areasToDelete = areaRepository.streamAreaByRegionAndIdNotInOrderById(region, areaIds)) {
                 areasToDelete.forEach(areaToDelete -> {
 
                     // before deleting areas we must unlink any objectives that will become orphaned

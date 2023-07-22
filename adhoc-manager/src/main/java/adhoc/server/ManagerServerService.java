@@ -211,7 +211,7 @@ public class ManagerServerService {
         managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
 
         Set<HostingState.ServerTask> tasksToKeep = Sets.newLinkedHashSet();
-        try (Stream<Server> servers = serverRepository.streamAllServersBy()) {
+        try (Stream<Server> servers = serverRepository.streamAllServersByOrderById()) {
             servers.forEach(server -> {
                 manageHostingTask(hostingState, tasksToKeep, server);
             });

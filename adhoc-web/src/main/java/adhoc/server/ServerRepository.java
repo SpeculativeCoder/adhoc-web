@@ -39,5 +39,5 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
     Optional<Server> findFirstServerByAreasContains(Area area);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Server> streamAllServersBy();
+    Stream<Server> streamAllServersByOrderById();
 }

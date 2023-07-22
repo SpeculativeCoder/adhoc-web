@@ -49,7 +49,7 @@ public class ManagerFactionService {
     public void awardFactionScores() {
         log.trace("Awarding faction scores...");
 
-        try (Stream<Faction> factions = factionRepository.streamFactionsBy()) {
+        try (Stream<Faction> factions = factionRepository.streamFactionsByOrderById()) {
             factions.forEach(faction ->
                     faction.setScore(faction.getScore() + objectiveRepository.countByFaction(faction)));
         }

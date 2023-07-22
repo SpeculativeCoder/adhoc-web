@@ -58,7 +58,7 @@ public class ManagerHsqldbConfig {
         server.setDatabaseName(0, "adhoc");
         server.setDatabasePath(0, "file:" + Files.createTempFile("adhoc_hsqldb_", ".dat").toString() +
                 ";user=" + username + ";password=" + password +
-                ";hsqldb.tx=locks" + // locks/mvlocks
+                ";hsqldb.tx=mvlocks" + // locks/mvlocks
                 ";check_props=true" +
                 ";sql.restrict_exec=true" +
                 ";sql.enforce_names=true" +

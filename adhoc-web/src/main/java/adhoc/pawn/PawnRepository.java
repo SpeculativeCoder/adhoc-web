@@ -39,8 +39,8 @@ public interface PawnRepository extends JpaRepository<Pawn, Long> {
     Optional<Pawn> findPawnByServerAndUuid(Server server, UUID uuid);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Pawn> streamByServerAndIdNotIn(Server server, Set<Long> idNotIn);
+    Stream<Pawn> streamByServerAndIdNotInOrderById(Server server, Set<Long> idNotIn);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Pawn> streamBySeenBefore(LocalDateTime seenBefore);
+    Stream<Pawn> streamBySeenBeforeOrderById(LocalDateTime seenBefore);
 }

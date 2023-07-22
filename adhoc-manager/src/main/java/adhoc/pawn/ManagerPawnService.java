@@ -73,7 +73,7 @@ public class ManagerPawnService {
 
         // clean up any pawns we didn't update for this server
         if (!seenPawnIds.isEmpty()) {
-            try (Stream<Pawn> pawnsToDelete = pawnRepository.streamByServerAndIdNotIn(server, seenPawnIds)) {
+            try (Stream<Pawn> pawnsToDelete = pawnRepository.streamByServerAndIdNotInOrderById(server, seenPawnIds)) {
                 pawnsToDelete.forEach(pawnRepository::delete);
             }
         }
@@ -86,7 +86,7 @@ public class ManagerPawnService {
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");
 
-        try (Stream<Pawn> oldPawns = pawnRepository.streamBySeenBefore( LocalDateTime.now().minusMinutes(5))) {
+        try (Stream<Pawn> oldPawns = pawnRepository.streamBySeenBeforeOrderById( LocalDateTime.now().minusMinutes(5))) {
             oldPawns.forEach(pawnRepository::delete);
         }
     }

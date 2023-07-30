@@ -29,20 +29,27 @@ set -e # bail on ANY error
 export CLIENT_UNREAL_CONFIGURATION=${CLIENT_UNREAL_CONFIGURATION:-Development}
 
 export UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME:-MyProject}
+export UNREAL_PROJECT_REGION_MAPS=${UNREAL_PROJECT_REGION_MAPS:-Region0001}
+export UNREAL_PROJECT_TRANSITION_MAP=${UNREAL_PROJECT_TRANSITION_MAP:-Entry}
 # TODO: better default due to risk of long path?
 export UNREAL_PROJECT_DIR=${UNREAL_PROJECT_DIR:-${HOME}/Unreal\ Projects/${UNREAL_PROJECT_NAME}}
 export UNREAL_ENGINE_DIR=${UNREAL_ENGINE_DIR:-${HOME}/ue-4.27-html5-es3}
 
-package_dir=$(realpath -e $(dirname "$0")/Package)
+web_project_dir=$(realpath -e $(dirname "$0"))
 
-mkdir -p ${package_dir}/${CLIENT_UNREAL_CONFIGURATION}/Region0001
-#mkdir -p ${package_dir}/${CLIENT_UNREAL_CONFIGURATION}/Region0002
+# TODO: array split
+for map in ${UNREAL_PROJECT_REGION_MAPS}
+do
+  package_dir=${web_project_dir}/Package/${CLIENT_UNREAL_CONFIGURATION}/HTML5Client/${map}
 
-${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
- -Project=${UNREAL_PROJECT_DIR}/${UNREAL_PROJECT_NAME}.uproject \
- -Target=${UNREAL_PROJECT_NAME}Client -TargetPlatform=HTML5 -ClientConfig=${CLIENT_UNREAL_CONFIGURATION} \
- -Build -Cook -Stage -Package -Archive \
- -MapsToCook=Transition+Region0001 -Map=Transition \
- -ArchiveDirectory=${package_dir}/${CLIENT_UNREAL_CONFIGURATION}/Region0001 \
- -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
- -NoP4 -UTF8Output -NoDebugInfo
+  mkdir -p ${package_dir}
+
+  ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
+   -Project=${UNREAL_PROJECT_DIR}/${UNREAL_PROJECT_NAME}.uproject \
+   -Target=${UNREAL_PROJECT_NAME}Client -TargetPlatform=HTML5 -ClientConfig=${CLIENT_UNREAL_CONFIGURATION} \
+   -Build -Cook -Stage -Package -Archive \
+   -MapsToCook=${map}+${UNREAL_PROJECT_TRANSITION_MAP} -Map=${UNREAL_PROJECT_TRANSITION_MAP} \
+   -ArchiveDirectory=${package_dir} \
+   -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
+   -NoP4 -UTF8Output -NoDebugInfo
+done

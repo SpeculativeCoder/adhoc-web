@@ -30,9 +30,13 @@ ARG FEATURE_FLAGS=development
 
 ARG MANAGER_HOST=host.docker.internal
 
+ARG UNREAL_PROJECT_NAME=MyProject
+
 ARG SERVER_AUTH_BASIC_PASSWORD
 
+ENV FEATURE_FLAGS=${FEATURE_FLAGS}
 ENV MANAGER_HOST=${MANAGER_HOST}
+ENV UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME}
 ENV SERVER_BASIC_AUTH_PASSWORD=${SERVER_BASIC_AUTH_PASSWORD}
 ENV MAP_NAME=Region0001
 ENV SERVER_ID=1
@@ -61,4 +65,4 @@ RUN chown -R combat /LinuxServer
 
 USER combat
 
-ENTRYPOINT ./adhoc_container_init.sh && cat /etc/hosts && ./CombatServer.sh ${MAP_NAME}?MaxPlayers=${MAX_PLAYERS} MaxPawns=${MAX_PAWNS} MaxBots=${MAX_BOTS} ServerID=${SERVER_ID} RegionID=${REGION_ID} InitialAreaIndexes=${INITIAL_AREA_INDEXES} PrivateIP=$(cat /etc/hosts | tail -1 | awk {'print $1'}) ManagerHost=${MANAGER_HOST} FeatureFlags=${FEATURE_FLAGS}
+ENTRYPOINT ./adhoc_container_init.sh && cat /etc/hosts && ./${UNREAL_PROJECT_NAME}Server.sh ${MAP_NAME}?MaxPlayers=${MAX_PLAYERS} MaxPawns=${MAX_PAWNS} MaxBots=${MAX_BOTS} ServerID=${SERVER_ID} RegionID=${REGION_ID} InitialAreaIndexes=${INITIAL_AREA_INDEXES} PrivateIP=$(cat /etc/hosts | tail -1 | awk {'print $1'}) ManagerHost=${MANAGER_HOST} FeatureFlags=${FEATURE_FLAGS}

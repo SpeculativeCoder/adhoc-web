@@ -305,6 +305,7 @@ public class EcsHostingService implements HostingService {
                     .overrides(TaskOverride.builder().containerOverrides(ContainerOverride.builder()
                             .name(managerProperties.getServerImage())
                             .environment(
+                                    KeyValuePair.builder().name("MAP_NAME").value(server.getMapName()).build(),
                                     KeyValuePair.builder().name("SERVER_ID").value(server.getId().toString()).build(),
                                     //KeyValuePair.builder().name("MANAGER_HOST").value(managerHosts.iterator().next()).build(),
                                     //KeyValuePair.builder().name("INITIAL_MANAGER_HOSTS")

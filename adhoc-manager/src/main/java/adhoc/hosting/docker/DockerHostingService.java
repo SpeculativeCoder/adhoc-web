@@ -183,6 +183,7 @@ public class DockerHostingService implements HostingService {
         CreateContainerResponse createdContainer = dockerClient()
                 .createContainerCmd(managerProperties.getServerImage() + ":latest")
                 .withEnv(Arrays.asList(
+                        String.format("MAP_NAME=%s", server.getMapName()),
                         String.format("SERVER_ID=%d", server.getId()),
                         String.format("MANAGER_HOST=%s", "host.docker.internal"), // TODO
                         //String.format("MANAGER_HOST=%s", managerHosts.iterator().next()),
@@ -202,9 +203,9 @@ public class DockerHostingService implements HostingService {
                         String.format("MAX_PLAYERS=%d", managerProperties.getMaxPlayers()),
                         String.format("MAX_BOTS=%d", managerProperties.getMaxBots()),
                         String.format("FEATURE_FLAGS=%s", webProperties.getFeatureFlags()),
-                        String.format("CA_CERTIFICATE=%s", multilineEnvironmentVariable(serverProperties.getSsl().getTrustCertificate())),
-                        String.format("SERVER_CERTIFICATE=%s", multilineEnvironmentVariable(serverProperties.getSsl().getCertificate())),
-                        String.format("PRIVATE_KEY=%s", multilineEnvironmentVariable(serverProperties.getSsl().getCertificatePrivateKey())),
+                        String.format("CA_CERTIFICATE=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getTrustCertificate()) : "unused"),
+                        String.format("SERVER_CERTIFICATE=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getCertificate()) : "unused"),
+                        String.format("PRIVATE_KEY=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getCertificatePrivateKey()) : "unused"),
                         String.format("SERVER_BASIC_AUTH_PASSWORD=%s", managerProperties.getServerBasicAuthPassword())))
                 .withHostConfig(
                         HostConfig.newHostConfig()
@@ -213,7 +214,7 @@ public class DockerHostingService implements HostingService {
                                                 new Ports.Binding("0.0.0.0", Integer.toString(publicWebSocketPort)),
                                                 ExposedPort.tcp(8889)))
                                 .withAutoRemove(false))
-                                //.withAutoRemove(true))
+                //.withAutoRemove(true))
                 .exec();
         log.trace("createdContainer: {}", createdContainer);
 

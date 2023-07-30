@@ -34,6 +34,15 @@ export AWS_PROFILE_FOR_ROUTE53=${AWS_PROFILE_FOR_ROUTE53:-adhoc_acme}
 
 export ADHOC_DOMAIN=${ADHOC_DOMAIN:-localhost}
 
+# root certificate
+rm -f certs/adhoc-ca.crt
+
+certutil -store "AuthRoot" "USERTrust RSA Certification Authority" certs/adhoc-ca.crt
+openssl x509 -in certs/adhoc-ca.crt -out certs/adhoc-ca.cer -inform DEM -outform PEM
+dos2unix certs/adhoc-ca.cer
+
+rm -f certs/adhoc-ca.crt
+
 set +x
 export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id --profile ${AWS_PROFILE_FOR_ROUTE53})
 export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key --profile ${AWS_PROFILE_FOR_ROUTE53})
@@ -50,7 +59,3 @@ cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.key" >> certs/adhoc.key
 
 # put the "full chain" in the public key file
 cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/fullchain.cer" > certs/adhoc.cer
-
-# root certificate
-# TODO
-#/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem

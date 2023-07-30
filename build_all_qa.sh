@@ -31,7 +31,7 @@ source ./env/common.env || true
 source ./env/qa.env || true
 set +a
 
-export SSL_ENABLED=${SSL_ENABLED:-true}
+export SSL_ENABLED=${SSL_ENABLED:-false}
 
 export ANGULAR_CONFIGURATION=${ANGULAR_CONFIGURATION:-production}
 export CLIENT_UNREAL_CONFIGURATION=${CLIENT_UNREAL_CONFIGURATION:-Shipping}

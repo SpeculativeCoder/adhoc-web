@@ -36,11 +36,12 @@ import adhoc.world.ManagerWorldService;
 import com.google.common.collect.Sets;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -54,6 +55,7 @@ import java.util.stream.Stream;
 public class ManagerServerService {
 
     private final ManagerProperties managerProperties;
+    private final ServerProperties serverProperties;
 
     private final ManagerWorldService managerWorldService;
     private final HostingService hostingService;
@@ -240,11 +242,19 @@ public class ManagerServerService {
             if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
                 if (task.getPublicIp() != null) {
                     server.setStatus(Server.Status.ACTIVE);
-                    String webSocketHost = server.getId() + "-" + managerProperties.getServerDomain();
+
+                    String serverHost = server.getId() + "-" + managerProperties.getServerDomain();
+
                     int webSocketPort = Objects.requireNonNull(task.getPublicWebSocketPort(),
                             "web socket port not available from task when constructing url");
-                    server.setWebSocketUrl("wss://" + webSocketHost + ":" + webSocketPort);
-                    dnsService.createOrUpdateDnsRecord(webSocketHost, Collections.singleton(task.getPublicIp()));
+
+                    String webSocketUrl = (serverProperties.getSsl().isEnabled() ?
+                            "wss://" + serverHost : "ws://" + task.getPublicIp()) +
+                            ":" + webSocketPort;
+
+                    server.setWebSocketUrl(webSocketUrl);
+
+                    dnsService.createOrUpdateDnsRecord(serverHost, Collections.singleton(task.getPublicIp()));
                 }
                 server.setPublicIp(task.getPublicIp());
                 sendEvent = true;

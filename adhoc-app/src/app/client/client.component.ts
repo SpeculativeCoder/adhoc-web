@@ -108,18 +108,18 @@ export class ClientComponent implements OnInit {
             window.sessionStorage.removeItem('UnrealEngine_WebSocketUrl');
           }
 
-          if (!server.mapName || !server.mapName.match("^Region[0-9]+$")) {
+          if (!server.mapName || !server.mapName.match("^[A-Za-z0-9_]{1,50}$")) {
             throw new Error(`invalid map name: ${server.mapName}`);
           }
 
-          const clientUrl = location.protocol + '//' + location.host + '/' + server.mapName + '/Client.html';
+          const clientUrl = location.protocol + '//' + location.host + '/HTML5Client/' + server.mapName + '/HTML5Client.html';
           console.log(`clientUrl: ${clientUrl}`);
 
           // uncomment this if we prefer to send to the client directly rather than iframe
           //window.location.href = clientUrl;
           //return;
 
-          // NOTE: mapName as part of clientUrl was sanitized above via regex
+          // NOTE: mapName as part of clientUrl was sanitized above via regex to be only alphanumeric/underscores
           this.clientUrl = this.sanitizer.bypassSecurityTrustResourceUrl(clientUrl);
           this.showClient = true;
         });

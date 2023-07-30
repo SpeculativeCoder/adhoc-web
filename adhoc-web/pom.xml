@@ -256,13 +256,8 @@
             </resource>
             -->
             <resource>
-                <directory>../Package/${unreal.configuration}/Region0001</directory>
-                <targetPath>Client/Region0001</targetPath>
-                <filtering>false</filtering>
-            </resource>
-            <resource>
-                <directory>../Package/${unreal.configuration}/Region0002</directory>
-                <targetPath>Client/Region0002</targetPath>
+                <directory>../Package/${unreal.configuration}/HTML5Client</directory>
+                <targetPath>HTML5Client</targetPath>
                 <filtering>false</filtering>
             </resource>
         </resources>

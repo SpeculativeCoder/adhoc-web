@@ -29,6 +29,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @Slf4j
 @Getter
@@ -76,6 +78,8 @@ public class WebProperties {
 
     @Value("${adhoc.unreal-project-name}")
     private String unrealProjectName;
+    @Value("${adhoc.unreal-project-region-maps}")
+    private List<String> unrealProjectRegionMaps;
 
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
@@ -86,6 +90,6 @@ public class WebProperties {
         log.info("kioskMessageBrokerHost={} kioskMessageBrokerCorePort={}", kioskMessageBrokerHost, kioskMessageBrokerCorePort);
         log.info("managerHost={} kioskHost={}", managerHost, kioskHost);
         log.info("adhocDomain={}", adhocDomain);
-        log.info("unrealProjectName={}", unrealProjectName);
+        log.info("unrealProjectName={} unrealProjectRegionMaps={}", unrealProjectName, unrealProjectRegionMaps);
     }
 }

@@ -26,7 +26,7 @@ set -x # show all commands being run
 set -u # error on undefined variables
 set -e # bail on ANY error
 
-export SSL_ENABLED=${SSL_ENABLED:-true}
+export SSL_ENABLED=${SSL_ENABLED:-false}
 
 export ANGULAR_CONFIGURATION=${ANGULAR_CONFIGURATION:-development}
 export CLIENT_UNREAL_CONFIGURATION=${CLIENT_UNREAL_CONFIGURATION:-Development}
@@ -48,6 +48,7 @@ export KIOSK_DOMAIN=${KIOSK_DOMAIN:-dev.${ADHOC_DOMAIN}}
 export SERVER_DOMAIN=${SERVER_DOMAIN:-server-dev.${ADHOC_DOMAIN}}
 
 export UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME:-MyProject}
+export UNREAL_PROJECT_REGION_MAPS=${UNREAL_PROJECT_REGION_MAPS:-Region0001}
 
 export MANAGER_IMAGE=${MANAGER_IMAGE:-adhoc_dev_manager}
 export KIOSK_IMAGE=${KIOSK_IMAGE:-adhoc_dev_kiosk}
@@ -71,6 +72,7 @@ docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
   --build-arg KIOSK_DOMAIN=${KIOSK_DOMAIN} \
   --build-arg SERVER_DOMAIN=${SERVER_DOMAIN} \
   --build-arg UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME} \
+  --build-arg UNREAL_PROJECT_REGION_MAPS=${UNREAL_PROJECT_REGION_MAPS} \
   --build-arg MANAGER_IMAGE=${MANAGER_IMAGE} \
   --build-arg KIOSK_IMAGE=${KIOSK_IMAGE} \
   --build-arg SERVER_IMAGE=${SERVER_IMAGE} \
@@ -92,6 +94,7 @@ docker build --tag ${KIOSK_IMAGE} -f docker/adhoc_kiosk.Dockerfile \
   --build-arg KIOSK_DOMAIN=${KIOSK_DOMAIN} \
   --build-arg SERVER_DOMAIN=${SERVER_DOMAIN} \
   --build-arg UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME} \
+  --build-arg UNREAL_PROJECT_REGION_MAPS=${UNREAL_PROJECT_REGION_MAPS} \
   --build-arg MANAGER_IMAGE=${MANAGER_IMAGE} \
   --build-arg KIOSK_IMAGE=${KIOSK_IMAGE} \
   --build-arg SERVER_IMAGE=${SERVER_IMAGE} \

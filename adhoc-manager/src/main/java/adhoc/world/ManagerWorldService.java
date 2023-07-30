@@ -128,7 +128,8 @@ public class ManagerWorldService {
         Region region1 = new Region();
         region1.setId(1L);
         region1.setName("1");
-        region1.setMapName("Region0001");
+        // TODO: handle multiple regions
+        region1.setMapName(webProperties.getUnrealProjectRegionMaps().get(0));
         region1.setX(1750F);
         region1.setY(1000F);
         region1.setZ(50F);

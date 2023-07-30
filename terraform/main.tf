@@ -24,11 +24,11 @@ terraform {
   required_providers {
     local = {
       source  = "hashicorp/local"
-      version = "2.4.0"
+      version = "~> 2.4.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.5.1"
+      version = "~> 3.5.1"
     }
     aws = {
       source  = "hashicorp/aws"
@@ -37,11 +37,38 @@ terraform {
   }
 }
 
-variable "adhoc_domain" {
+variable "adhoc_region_dev" {
   type        = string
   nullable    = false
+  description = "AWS Region in which Adhoc operates for dev workspace"
+  default     = "us-west-1"
+}
+
+variable "adhoc_region_qa" {
+  type        = string
+  nullable    = false
+  description = "AWS Region in which Adhoc operates for qa workspace"
+  default     = "us-east-1"
+}
+
+variable "adhoc_region_prod" {
+  type        = string
+  nullable    = false
+  description = "AWS Region in which Adhoc operates for qa workspace"
+  default     = "us-east-1"
+}
+
+locals {
+  adhoc_region = (terraform.workspace == "prod" ? var.adhoc_region_prod :
+  (terraform.workspace == "qa" ? var.adhoc_region_qa :
+  (terraform.workspace == "dev" ? var.adhoc_region_dev : "us-east-1")))
+}
+
+variable "adhoc_domain" {
+  type        = string
+  nullable    = true
   description = "Domain in which Adhoc operates e.g. example.com"
-  #default     = "example.com"
+  default     = null
 }
 
 provider "local" {
@@ -51,8 +78,7 @@ provider "random" {
 }
 
 provider "aws" {
-  # TODO
-  region = (terraform.workspace == "prod" || terraform.workspace == "qa") ? "us-east-1" : "eu-west-1"
+  region  = local.adhoc_region
   profile = "adhoc_admin"
 }
 
@@ -60,7 +86,8 @@ data "aws_region" "region" {
 }
 
 data "aws_route53_zone" "adhoc" {
-  name = var.adhoc_domain
+  count = var.adhoc_domain == null ? 0 : 1
+  name  = var.adhoc_domain
 }
 
 data "aws_iam_role" "ecs_task_execution_role" {
@@ -68,74 +95,79 @@ data "aws_iam_role" "ecs_task_execution_role" {
 }
 
 data "local_sensitive_file" "adhoc_ca_certificate" {
+  count    = var.adhoc_domain == null ? 0 : 1
   #filename = fileexists("${path.root}/../certs/adhoc-ca.cer") ? "${path.root}/../certs/adhoc-ca.cer" : "${path.root}/empty_file"
   filename = "${path.root}/../certs/adhoc-ca.cer"
 }
 
 data "local_sensitive_file" "adhoc_server_certificate" {
+  count    = var.adhoc_domain == null ? 0 : 1
   #filename = fileexists("${path.root}/../certs/adhoc.cer") ? "${path.root}/../certs/adhoc.cer" : "${path.root}/empty_file"
   filename = "${path.root}/../certs/adhoc.cer"
 }
 
 data "local_sensitive_file" "adhoc_private_key" {
+  count    = var.adhoc_domain == null ? 0 : 1
   #filename = fileexists("${path.root}/../certs/adhoc.key") ? "${path.root}/../certs/adhoc.key" : "${path.root}/empty_file"
   filename = "${path.root}/../certs/adhoc.key"
 }
 
 // TODO: minimal permissions
 resource "aws_iam_policy" "adhoc_manager" {
-  name   = "adhoc_${terraform.workspace}_manager"
+  name   = "adhoc_${terraform.workspace}_manager.${local.adhoc_region}"
   policy = jsonencode(
     {
       Version   = "2012-10-17",
-      Statement = [
-        {
-          Sid    = "0",
-          Effect = "Allow",
-          Action = [
-            "route53:ChangeResourceRecordSets",
-            "route53:ListResourceRecordSets"
-          ],
-          Resource = [
-            data.aws_route53_zone.adhoc.arn
-          ]
-        },
-        {
-          Sid    = "1",
-          Effect = "Allow",
-          Action = [
-            "iam:PassRole",
-          ],
-          Resource = [
-            data.aws_iam_role.ecs_task_execution_role.arn
-          ]
-        },
-        {
-          Sid    = "2",
-          Effect = "Allow",
-          Action = [
-            "ecs:Poll",
-            "ec2:DescribeNetworkInterfaces",
-            "ec2:DescribeSubnets",
-            "ec2:DescribeSecurityGroups",
-            "ecs:RunTask",
-            "ecs:ListTasks",
-            "route53:ListHostedZones",
-            "route53:ListHostedZonesByName",
-            "route53:TestDNSAnswer",
-            "ecs:StartTask",
-            "ecs:StopTask",
-            "ecs:DescribeTasks"
-          ],
-          Resource = "*"
-        }
-      ]
+      Statement = flatten([
+        var.adhoc_domain == null ? [] : [
+          {
+            Sid    = "0",
+            Effect = "Allow",
+            Action = [
+              "route53:ChangeResourceRecordSets",
+              "route53:ListResourceRecordSets"
+            ],
+            Resource = data.aws_route53_zone.adhoc[0].arn
+          },
+        ],
+        [
+          {
+            Sid    = "1",
+            Effect = "Allow",
+            Action = [
+              "iam:PassRole",
+            ],
+            Resource = [
+              data.aws_iam_role.ecs_task_execution_role.arn
+            ]
+          },
+          {
+            Sid    = "2",
+            Effect = "Allow",
+            Action = [
+              "ecs:Poll",
+              "ec2:DescribeNetworkInterfaces",
+              "ec2:DescribeSubnets",
+              "ec2:DescribeSecurityGroups",
+              "ecs:RunTask",
+              "ecs:ListTasks",
+              "route53:ListHostedZones",
+              "route53:ListHostedZonesByName",
+              "route53:TestDNSAnswer",
+              "ecs:StartTask",
+              "ecs:StopTask",
+              "ecs:DescribeTasks"
+            ],
+            Resource = "*"
+          }
+        ]
+      ])
     }
   )
 }
 
 resource "aws_iam_group" "adhoc_manager" {
-  name = "adhoc_${terraform.workspace}_manager"
+  name = "adhoc_${terraform.workspace}_manager.${local.adhoc_region}"
 }
 
 resource "aws_iam_group_policy_attachment" "adhoc_manager" {
@@ -144,12 +176,14 @@ resource "aws_iam_group_policy_attachment" "adhoc_manager" {
 }
 
 resource "aws_iam_user" "adhoc_manager" {
-  name = "adhoc_${terraform.workspace}_manager"
+  name = "adhoc_${terraform.workspace}_manager.${local.adhoc_region}"
 }
 
 resource "aws_iam_user_group_membership" "adhoc_manager" {
   user   = aws_iam_user.adhoc_manager.name
-  groups = [aws_iam_group.adhoc_manager.name]
+  groups = [
+    aws_iam_group.adhoc_manager.name
+  ]
 }
 
 resource "aws_iam_access_key" "adhoc_manager" {
@@ -213,7 +247,9 @@ resource "aws_security_group_rule" "adhoc_manager_ingress_https" {
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [
+    "0.0.0.0/0"
+  ]
 }
 
 resource "aws_security_group_rule" "adhoc_manager_ingress_http" {
@@ -222,7 +258,9 @@ resource "aws_security_group_rule" "adhoc_manager_ingress_http" {
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [
+    "0.0.0.0/0"
+  ]
 }
 
 resource "aws_security_group_rule" "adhoc_manager_ingress_from_kiosk" {
@@ -249,7 +287,9 @@ resource "aws_security_group_rule" "adhoc_manager_egress" {
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [
+    "0.0.0.0/0"
+  ]
 }
 
 resource "aws_security_group_rule" "adhoc_kiosk_ingress_https" {
@@ -258,7 +298,9 @@ resource "aws_security_group_rule" "adhoc_kiosk_ingress_https" {
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [
+    "0.0.0.0/0"
+  ]
 }
 
 resource "aws_security_group_rule" "adhoc_kiosk_ingress_http" {
@@ -267,7 +309,9 @@ resource "aws_security_group_rule" "adhoc_kiosk_ingress_http" {
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [
+    "0.0.0.0/0"
+  ]
 }
 
 resource "aws_security_group_rule" "adhoc_kiosk_ingress_from_manager" {
@@ -285,7 +329,9 @@ resource "aws_security_group_rule" "adhoc_kiosk_egress" {
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [
+    "0.0.0.0/0"
+  ]
 }
 
 resource "aws_security_group_rule" "adhoc_server_ingress_wss" {
@@ -294,7 +340,9 @@ resource "aws_security_group_rule" "adhoc_server_ingress_wss" {
   from_port         = 8889
   to_port           = 8889
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [
+    "0.0.0.0/0"
+  ]
 }
 
 resource "aws_security_group_rule" "adhoc_server_egress" {
@@ -303,7 +351,9 @@ resource "aws_security_group_rule" "adhoc_server_egress" {
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [
+    "0.0.0.0/0"
+  ]
 }
 
 // TODO
@@ -432,21 +482,21 @@ resource "aws_ssm_parameter" "adhoc_ca_certificate" {
   name  = "adhoc_${terraform.workspace}_ca_certificate"
   type  = "SecureString"
   tier  = "Standard"
-  value = data.local_sensitive_file.adhoc_ca_certificate.content
+  value = var.adhoc_domain == null ? "unused" : data.local_sensitive_file.adhoc_ca_certificate[0].content
 }
 
 resource "aws_ssm_parameter" "adhoc_server_certificate" {
   name  = "adhoc_${terraform.workspace}_server_certificate"
   type  = "SecureString"
   tier  = "Advanced"
-  value = data.local_sensitive_file.adhoc_server_certificate.content
+  value = var.adhoc_domain == null ? "unused" : data.local_sensitive_file.adhoc_server_certificate[0].content
 }
 
 resource "aws_ssm_parameter" "adhoc_private_key" {
   name  = "adhoc_${terraform.workspace}_private_key"
   type  = "SecureString"
   tier  = "Standard"
-  value = data.local_sensitive_file.adhoc_private_key.content
+  value = var.adhoc_domain == null ? "unused" : data.local_sensitive_file.adhoc_private_key[0].content
 }
 
 resource "aws_ssm_parameter" "adhoc_postgres_password" {
@@ -456,7 +506,9 @@ resource "aws_ssm_parameter" "adhoc_postgres_password" {
   value = random_password.adhoc_postgres_password.result
   // TODO
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = [
+      value
+    ]
   }
 }
 
@@ -467,7 +519,9 @@ resource "aws_ssm_parameter" "adhoc_artemis_embedded_cluster_password" {
   value = random_password.adhoc_artemis_embedded_cluster_password.result
   // TODO
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = [
+      value
+    ]
   }
 }
 
@@ -492,7 +546,9 @@ resource "aws_ssm_parameter" "adhoc_server_basic_auth_password" {
   value = random_password.adhoc_server_basic_auth_password.result
   // TODO
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = [
+      value
+    ]
   }
 }
 
@@ -503,7 +559,9 @@ resource "aws_ssm_parameter" "adhoc_default_admin_password" {
   value = random_password.adhoc_default_admin_password.result
   // TODO
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = [
+      value
+    ]
   }
 }
 
@@ -514,7 +572,9 @@ resource "aws_ssm_parameter" "adhoc_default_user_password" {
   value = random_password.adhoc_default_user_password.result
   // TODO
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = [
+      value
+    ]
   }
 }
 
@@ -525,7 +585,9 @@ resource "aws_ssm_parameter" "adhoc_hsqldb_password" {
   value = random_password.adhoc_hsqldb_password.result
   // TODO
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = [
+      value
+    ]
   }
 }
 
@@ -536,7 +598,9 @@ resource "aws_ssm_parameter" "adhoc_postgres_host" {
   // TODO
   value = "localhost"
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = [
+      value
+    ]
   }
 }
 
@@ -580,7 +644,9 @@ resource "aws_cloudwatch_log_group" "adhoc_manager" {
   // manually adjust according to needs
   retention_in_days = terraform.workspace == "prod" ? 3 : 1
   lifecycle {
-    ignore_changes = [retention_in_days]
+    ignore_changes = [
+      retention_in_days
+    ]
   }
 }
 
@@ -589,7 +655,9 @@ resource "aws_cloudwatch_log_group" "adhoc_kiosk" {
   // manually adjust according to needs
   retention_in_days = terraform.workspace == "prod" ? 3 : 1
   lifecycle {
-    ignore_changes = [retention_in_days]
+    ignore_changes = [
+      retention_in_days
+    ]
   }
 }
 
@@ -598,7 +666,9 @@ resource "aws_cloudwatch_log_group" "adhoc_server" {
   // manually adjust according to needs
   retention_in_days = terraform.workspace == "prod" ? 3 : 1
   lifecycle {
-    ignore_changes = [retention_in_days]
+    ignore_changes = [
+      retention_in_days
+    ]
   }
 }
 
@@ -709,12 +779,14 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
     }
   ])
   network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = "512"
-  memory                   = "1024"
+  requires_compatibilities = [
+    "FARGATE"
+  ]
+  cpu                = "512"
+  memory             = "1024"
   // TODO
   #task_role_arn            = data.aws_iam_role.ecs_task_execution_role.arn
-  execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   runtime_platform {
     cpu_architecture        = "X86_64"
     operating_system_family = "LINUX"
@@ -808,12 +880,14 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
     }
   ])
   network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = "512"
-  memory                   = "1024"
+  requires_compatibilities = [
+    "FARGATE"
+  ]
+  cpu                = "512"
+  memory             = "1024"
   // TODO
   #task_role_arn            = data.aws_iam_role.ecs_task_execution_role.arn
-  execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   runtime_platform {
     cpu_architecture        = "X86_64"
     operating_system_family = "LINUX"
@@ -866,12 +940,14 @@ resource "aws_ecs_task_definition" "adhoc_server" {
     }
   ])
   network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = "512"
-  memory                   = "1024"
+  requires_compatibilities = [
+    "FARGATE"
+  ]
+  cpu                = "512"
+  memory             = "1024"
   // TODO
   #task_role_arn            = data.aws_iam_role.ecs_task_execution_role.arn
-  execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   runtime_platform {
     cpu_architecture        = "X86_64"
     operating_system_family = "LINUX"
@@ -884,7 +960,9 @@ resource "aws_ecs_cluster" "adhoc" {
 
 resource "aws_ecs_cluster_capacity_providers" "adhoc" {
   cluster_name       = aws_ecs_cluster.adhoc.name
-  capacity_providers = ["FARGATE_SPOT"]
+  capacity_providers = [
+    "FARGATE_SPOT"
+  ]
 
   default_capacity_provider_strategy {
     base              = 0
@@ -907,15 +985,21 @@ resource "aws_ecs_service" "adhoc_manager" {
     capacity_provider = "FARGATE_SPOT"
   }
   network_configuration {
-    security_groups  = [aws_security_group.adhoc_manager.id]
-    subnets          = [aws_subnet.adhoc_a.id]
+    security_groups = [
+      aws_security_group.adhoc_manager.id
+    ]
+    subnets = [
+      aws_subnet.adhoc_a.id
+    ]
     assign_public_ip = true
   }
   service_registries {
     registry_arn = aws_service_discovery_service.adhoc_manager.arn
   }
   lifecycle {
-    ignore_changes = [desired_count]
+    ignore_changes = [
+      desired_count
+    ]
   }
 }
 
@@ -933,14 +1017,20 @@ resource "aws_ecs_service" "adhoc_kiosk" {
     capacity_provider = "FARGATE_SPOT"
   }
   network_configuration {
-    security_groups  = [aws_security_group.adhoc_kiosk.id]
-    subnets          = [aws_subnet.adhoc_a.id]
+    security_groups = [
+      aws_security_group.adhoc_kiosk.id
+    ]
+    subnets = [
+      aws_subnet.adhoc_a.id
+    ]
     assign_public_ip = true
   }
   service_registries {
     registry_arn = aws_service_discovery_service.adhoc_kiosk.arn
   }
   lifecycle {
-    ignore_changes = [desired_count]
+    ignore_changes = [
+      desired_count
+    ]
   }
 }

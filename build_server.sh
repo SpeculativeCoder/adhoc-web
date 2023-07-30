@@ -32,21 +32,25 @@ export FEATURE_FLAGS=${FEATURE_FLAGS:-development}
 export MANAGER_HOST=${MANAGER_HOST:-adhoc-dev-manager.adhoc-dev}
 
 export UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME:-MyProject}
+export UNREAL_PROJECT_REGION_MAPS=${UNREAL_PROJECT_REGION_MAPS:-Region0001}
+export UNREAL_PROJECT_TRANSITION_MAP=${UNREAL_PROJECT_TRANSITION_MAP:-Entry}
 # TODO: better default due to risk of long path?
 export UNREAL_PROJECT_DIR=${UNREAL_PROJECT_DIR:-${HOME}/Unreal\ Projects/${UNREAL_PROJECT_NAME}}
 export UNREAL_ENGINE_DIR=${UNREAL_ENGINE_DIR:-${HOME}/ue-4.27-html5-es3}
 
 export SERVER_IMAGE=${SERVER_IMAGE:-adhoc_dev_server}
 
-package_dir=$(realpath -e $(dirname "$0")/Package)
+web_project_dir=$(realpath -e $(dirname "$0"))
+package_dir=${web_project_dir}/Package
 
 mkdir -p ${package_dir}/${SERVER_UNREAL_CONFIGURATION}
 
+# TODO: array join on maps
 ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
  -Project=${UNREAL_PROJECT_DIR}/${UNREAL_PROJECT_NAME}.uproject \
  -Target=${UNREAL_PROJECT_NAME}Server -TargetPlatform=Linux -ServerConfig=${SERVER_UNREAL_CONFIGURATION} \
  -Build -Cook -Stage -Package -Archive \
- -MapsToCook=Transition+Region0001 -Map=Transition \
+ -MapsToCook=${UNREAL_PROJECT_REGION_MAPS}+${UNREAL_PROJECT_TRANSITION_MAP} -Map=${UNREAL_PROJECT_TRANSITION_MAP} \
  -ArchiveDirectory=${package_dir}/${SERVER_UNREAL_CONFIGURATION} \
  -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
  -NoP4 -UTF8Output -NoDebugInfo
@@ -55,4 +59,5 @@ docker build --tag ${SERVER_IMAGE} -f docker/adhoc_server.Dockerfile \
   --build-arg SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION} \
   --build-arg FEATURE_FLAGS=${FEATURE_FLAGS} \
   --build-arg MANAGER_HOST=${MANAGER_HOST} \
+  --build-arg UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME} \
   .

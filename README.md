@@ -18,19 +18,25 @@ Live Example: [**AdhocCombat** (https://adhoccombat.com)](https://adhoccombat.co
 
 Out of the box, the application in this repository will run in a development mode without the Unreal / cloud server functionality.
 
-To build the application:
+### Run in IDE
 
-`mvn clean install -DskipTests`
+To build the application (at least once to make sure the Angular app is built):
 
-To run the application you can run:
+`mvn clean package -DskipTests`
 
-`mvn spring-boot:run -f adhoc-manager`
+To run the application run the following Spring Boot application class:
 
-or alternatively you can manually run `AdhocManagerApplication` in your IDE.
+`AdhocManagerApplication`
 
 If you go to http://localhost you should see the application running in development mode.
 
 Further functionality requires setup. See: [https://github.com/SpeculativeCoder/AdhocDocumentation](https://github.com/SpeculativeCoder/AdhocDocumentation) (not yet available)
+
+### Run from command line
+
+`mvn clean install -DskipTests`
+
+`mvn spring-boot:run -f adhoc-manager`
 
 ## Copyright / License(s)
 

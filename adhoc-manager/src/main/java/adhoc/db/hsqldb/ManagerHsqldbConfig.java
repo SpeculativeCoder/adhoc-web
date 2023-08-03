@@ -25,13 +25,11 @@ package adhoc.db.hsqldb;
 import lombok.extern.slf4j.Slf4j;
 import org.hsqldb.server.Server;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -39,6 +37,9 @@ import java.nio.file.Files;
 @Profile("db-hsqldb")
 @Slf4j
 public class ManagerHsqldbConfig {
+
+    @Value("${spring.datasource.url}")
+    private String url;
 
     @Value("${spring.datasource.username}")
     private String username;
@@ -58,7 +59,7 @@ public class ManagerHsqldbConfig {
         server.setDatabaseName(0, "adhoc");
         server.setDatabasePath(0, "file:" + Files.createTempFile("adhoc_hsqldb_", ".dat").toString() +
                 ";user=" + username + ";password=" + password +
-                ";hsqldb.tx=mvlocks" + // locks/mvlocks
+                ";hsqldb.tx=locks" + // locks/mvlocks
                 ";check_props=true" +
                 ";sql.restrict_exec=true" +
                 ";sql.enforce_names=true" +
@@ -72,14 +73,24 @@ public class ManagerHsqldbConfig {
         return server;
     }
 
-    // TODO: use spring boot datasource (just need to make sure the server has started first)
     @Bean
-    @Primary
-    public DataSource dataSource(Server hsqldbServer) {
-        return DataSourceBuilder.create()
-                .url("jdbc:hsqldb:hsql://localhost:9001/adhoc")
-                .username(username)
-                .password(password)
-                .build();
+    public JdbcConnectionDetails dataSourceProperties(Server hsqldbServer) {
+        return new JdbcConnectionDetails() {
+
+            @Override
+            public String getJdbcUrl() {
+                return !url.isEmpty() ? url : "jdbc:hsqldb:hsql://localhost:9001/adhoc";
+            }
+
+            @Override
+            public String getUsername() {
+                return username;
+            }
+
+            @Override
+            public String getPassword() {
+                return password;
+            }
+        };
     }
 }

@@ -36,10 +36,10 @@ public interface FactionRepository extends JpaRepository<Faction, Long> {
     Faction getByIndex(Integer index);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Faction getFactionById(Long id);
+    Faction getForUpdateById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Faction> streamFactionsByOrderById();
+    Stream<Faction> streamForUpdateBy();
 
     @Modifying
     @Query("update Faction set version = version + 1, score = score * :multiplyScore")

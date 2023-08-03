@@ -98,7 +98,7 @@ public class ManagerServerService {
     }
 
     public void handleServerStarted(ServerStartedEvent serverStartedEvent) {
-        Server server = serverRepository.getServerById(serverStartedEvent.getServerId());
+        Server server = serverRepository.getForUpdateById(serverStartedEvent.getServerId());
 
         server.setStatus(Server.Status.ACTIVE);
         //server.setPrivateIp(serverStartedEvent.getPrivateIp());
@@ -156,7 +156,7 @@ public class ManagerServerService {
     private void manageNeededServer(Region region, List<Area> areaGroup) {
         // TODO: other servers may already be hosting some of the other areas so can't just check first area (but we do for now)
         Area firstArea = areaGroup.get(0);
-        Server server = serverRepository.findFirstServerByAreasContains(firstArea).orElseGet(Server::new);
+        Server server = serverRepository.findFirstForUpdateByAreasContains(firstArea).orElseGet(Server::new);
 
         if (server.getRegion() == null || !region.getId().equals(server.getRegion().getId())) {
             server.setRegion(region);
@@ -213,7 +213,7 @@ public class ManagerServerService {
         managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
 
         Set<HostingState.ServerTask> tasksToKeep = Sets.newLinkedHashSet();
-        try (Stream<Server> servers = serverRepository.streamAllServersByOrderById()) {
+        try (Stream<Server> servers = serverRepository.streamAllForUpdateBy()) {
             servers.forEach(server -> {
                 manageHostingTask(hostingState, tasksToKeep, server);
             });

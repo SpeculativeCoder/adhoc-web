@@ -45,13 +45,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByNameOrEmailAndPasswordIsNotNull(String name, String email);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    User getUserById(Long id);
+    User getForUpdateById(Long id);
 
     @Query("select id from AdhocUser where created < :createdBefore and seen is null and password is null and pawns is empty")
-    List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmptyOrderById(@Param("createdBefore") LocalDateTime createdBefore);
+    List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(@Param("createdBefore") LocalDateTime createdBefore);
 
     @Query("select id from AdhocUser where seen < :seenBefore and password is null and pawns is empty")
-    List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmptyOrderById(@Param("seenBefore") LocalDateTime seenBefore);
+    List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(@Param("seenBefore") LocalDateTime seenBefore);
 
     @Modifying
     @Query("update AdhocUser set version = version + 1, server = :server, seen = :seen where id in :idIn")

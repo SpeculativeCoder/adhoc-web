@@ -62,7 +62,7 @@ public class ManagerAreaService {
         List<AreaDto> result = areaDtos.stream()
                 .peek(areaDto -> Verify.verify(Objects.equals(region.getId(), areaDto.getRegionId())))
                 .map(areaDto -> toEntity(areaDto,
-                        areaRepository.findAreaByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
+                        areaRepository.findForUpdateByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
                 .map(areaRepository::save)
                 .peek(area -> areaIds.add(area.getId()))
                 .map(areaService::toDto)
@@ -70,12 +70,12 @@ public class ManagerAreaService {
 
         if (!areaIds.isEmpty()) {
 
-            try (Stream<Area> areasToDelete = areaRepository.streamAreaByRegionAndIdNotInOrderById(region, areaIds)) {
+            try (Stream<Area> areasToDelete = areaRepository.streamForUpdateByRegionAndIdNotIn(region, areaIds)) {
                 areasToDelete.forEach(areaToDelete -> {
 
                     // before deleting areas we must unlink any objectives that will become orphaned
                     for (Objective orphanedObjective : areaToDelete.getObjectives()) {
-                        orphanedObjective = objectiveRepository.getObjectiveById(orphanedObjective.getId());
+                        orphanedObjective = objectiveRepository.getForUpdateById(orphanedObjective.getId());
                         orphanedObjective.setArea(null);
                     }
 

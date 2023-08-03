@@ -29,5 +29,5 @@ import org.springframework.data.jpa.repository.Lock;
 public interface RegionRepository extends JpaRepository<Region, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Region getRegionById(Long id);
+    Region getForUpdateById(Long id);
 }

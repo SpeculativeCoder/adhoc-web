@@ -65,7 +65,7 @@ public class ManagerUserService {
     }
 
     public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
-        User user = userRepository.getUserById(userNavigateRequest.getUserId());
+        User user = userRepository.getForUpdateById(userNavigateRequest.getUserId());
         Area area = areaRepository.getReferenceById(userNavigateRequest.getAreaId());
         Server server = area.getServer();
         if (server == null) {
@@ -90,7 +90,7 @@ public class ManagerUserService {
     }
 
     public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest) {
-        User user = userRepository.getUserById(userJoinRequest.getUserId());
+        User user = userRepository.getForUpdateById(userJoinRequest.getUserId());
         Server server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
         // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
@@ -106,14 +106,14 @@ public class ManagerUserService {
     }
 
     public UserDefeatedUserEvent handleUserDefeatedUser(UserDefeatedUserEvent userDefeatedUserEvent) {
-        User user = userRepository.getUserById(userDefeatedUserEvent.getUserId());
+        User user = userRepository.getForUpdateById(userDefeatedUserEvent.getUserId());
         user.setScore(user.getScore() + 1);
 
         return userDefeatedUserEvent;
     }
 
     public UserDefeatedBotEvent handleUserDefeatedBot(UserDefeatedBotEvent userDefeatedBotEvent) {
-        User user = userRepository.getUserById(userDefeatedBotEvent.getUserId());
+        User user = userRepository.getForUpdateById(userDefeatedBotEvent.getUserId());
         user.setScore(user.getScore() + 1);
 
         return userDefeatedBotEvent;
@@ -132,10 +132,10 @@ public class ManagerUserService {
         Set<Long> oldUserIds = new TreeSet<>();
 
         // regular cleanup of anon users who had a temp account created but never were seen in a server
-        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmptyOrderById(LocalDateTime.now().minusHours(6)));
+        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
 
         // regular cleanup of anon users who were last seen in a server a long time ago
-        oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmptyOrderById(LocalDateTime.now().minusDays(7)));
+        oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
 
         userRepository.deleteAllByIdInBatch(oldUserIds);
     }

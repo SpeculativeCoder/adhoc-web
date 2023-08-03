@@ -43,10 +43,10 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
     boolean existsByRegionAndAreaIdNotIn(Region region, Collection<Long> areaIdNotIn);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Objective getObjectiveById(Long id);
+    Objective getForUpdateById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Objective> findObjectiveByRegionAndIndex(Region region, Integer index);
+    Optional<Objective> findForUpdateByRegionAndIndex(Region region, Integer index);
 
     @Modifying
     @Query("update Objective set version = version + 1, area = null where region = :region and area.id not in :areaIdNotIn")

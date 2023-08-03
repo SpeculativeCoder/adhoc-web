@@ -347,7 +347,7 @@ public class ManagerWorldService {
     }
 
     public void updateManagerAndKioskHosts(Set<String> managerHosts, Set<String> kioskHosts) {
-        World world = worldRepository.getWorldById(WorldService.WORLD_ID);
+        World world = worldRepository.getForUpdateById(WorldService.WORLD_ID);
 
         boolean emitEvent = false;
 

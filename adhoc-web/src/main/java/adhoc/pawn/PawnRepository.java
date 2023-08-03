@@ -36,11 +36,11 @@ import java.util.stream.Stream;
 public interface PawnRepository extends JpaRepository<Pawn, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Pawn> findPawnByServerAndUuid(Server server, UUID uuid);
+    Optional<Pawn> findForUpdateByServerAndUuid(Server server, UUID uuid);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Pawn> streamByServerAndIdNotInOrderById(Server server, Set<Long> idNotIn);
+    Stream<Pawn> streamForUpdateByServerAndIdNotIn(Server server, Set<Long> idNotIn);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Pawn> streamBySeenBeforeOrderById(LocalDateTime seenBefore);
+    Stream<Pawn> streamForUpdateBySeenBefore(LocalDateTime seenBefore);
 }

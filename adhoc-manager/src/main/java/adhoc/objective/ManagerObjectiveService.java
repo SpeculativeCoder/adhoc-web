@@ -62,7 +62,7 @@ public class ManagerObjectiveService {
         // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveService.toDto(
                 toEntityStage2(objectiveDto,
-                        toEntityStage1(objectiveDto, objectiveRepository.getObjectiveById(objectiveDto.getId()))));
+                        toEntityStage1(objectiveDto, objectiveRepository.getForUpdateById(objectiveDto.getId()))));
     }
 
     public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
@@ -74,7 +74,7 @@ public class ManagerObjectiveService {
                 .peek(objectiveDto -> Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId())))
                 .map(objectiveDto -> Pair.of(objectiveDto,
                         objectiveRepository.save(toEntityStage1(objectiveDto,
-                                objectiveRepository.findObjectiveByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)))))
+                                objectiveRepository.findForUpdateByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)))))
                 .toList();
 
         return dtoEntityPairs.stream()
@@ -131,8 +131,8 @@ public class ManagerObjectiveService {
 
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
 
-        Faction faction = factionRepository.getFactionById(objectiveTakenEvent.getFactionId());
-        Objective objective = objectiveRepository.getObjectiveById(objectiveTakenEvent.getObjectiveId());
+        Faction faction = factionRepository.getForUpdateById(objectiveTakenEvent.getFactionId());
+        Objective objective = objectiveRepository.getForUpdateById(objectiveTakenEvent.getObjectiveId());
 
         faction.setScore(faction.getScore() + 1);
         objective.setFaction(faction);

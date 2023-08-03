@@ -26,13 +26,10 @@ import adhoc.web.properties.WebProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-
-import javax.sql.DataSource;
 
 @Configuration
 @Profile("db-hsqldb")
@@ -42,20 +39,33 @@ public class KioskHsqldbConfig {
 
     private final WebProperties webProperties;
 
+    @Value("${spring.datasource.url}")
+    private String url;
+
     @Value("${spring.datasource.username}")
     private String username;
 
     @Value("${spring.datasource.password}")
     private String password;
 
-    // TODO: use spring boot datasource (just need to make sure the server has started first)
     @Bean
-    @Primary
-    public DataSource dataSource() {
-        return DataSourceBuilder.create()
-                .url("jdbc:hsqldb:hsql://" + webProperties.getManagerHost() + ":9001/adhoc")
-                .username(username)
-                .password(password)
-                .build();
+    public JdbcConnectionDetails dataSourceProperties() {
+        return new JdbcConnectionDetails() {
+
+            @Override
+            public String getJdbcUrl() {
+                return !url.isEmpty() ? url : "jdbc:hsqldb:hsql://" + webProperties.getManagerHost() + ":9001/adhoc";
+            }
+
+            @Override
+            public String getUsername() {
+                return username;
+            }
+
+            @Override
+            public String getPassword() {
+                return password;
+            }
+        };
     }
 }

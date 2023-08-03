@@ -36,8 +36,8 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
     Area getByRegionAndIndex(Region region, Integer index);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Area> findAreaByRegionAndIndex(Region region, Integer index);
+    Optional<Area> findForUpdateByRegionAndIndex(Region region, Integer index);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Area> streamAreaByRegionAndIdNotInOrderById(Region region, Collection<Long> idNotIn);
+    Stream<Area> streamForUpdateByRegionAndIdNotIn(Region region, Collection<Long> idNotIn);
 }

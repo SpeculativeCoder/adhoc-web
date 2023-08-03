@@ -62,7 +62,7 @@ public class ManagerPawnService {
             pawnDto.setSeen(seen);
 
             Pawn pawn = pawnRepository.save(
-                    toEntity(pawnDto, pawnRepository.findPawnByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
+                    toEntity(pawnDto, pawnRepository.findForUpdateByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
 
             seenPawnIds.add(pawn.getId());
 
@@ -73,7 +73,7 @@ public class ManagerPawnService {
 
         // clean up any pawns we didn't update for this server
         if (!seenPawnIds.isEmpty()) {
-            try (Stream<Pawn> pawnsToDelete = pawnRepository.streamByServerAndIdNotInOrderById(server, seenPawnIds)) {
+            try (Stream<Pawn> pawnsToDelete = pawnRepository.streamForUpdateByServerAndIdNotIn(server, seenPawnIds)) {
                 pawnsToDelete.forEach(pawnRepository::delete);
             }
         }
@@ -86,7 +86,7 @@ public class ManagerPawnService {
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");
 
-        try (Stream<Pawn> oldPawns = pawnRepository.streamBySeenBeforeOrderById( LocalDateTime.now().minusMinutes(5))) {
+        try (Stream<Pawn> oldPawns = pawnRepository.streamForUpdateBySeenBefore( LocalDateTime.now().minusMinutes(5))) {
             oldPawns.forEach(pawnRepository::delete);
         }
     }

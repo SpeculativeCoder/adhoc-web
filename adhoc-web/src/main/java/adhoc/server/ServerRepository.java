@@ -33,11 +33,11 @@ import java.util.stream.Stream;
 public interface ServerRepository extends JpaRepository<Server, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Server getServerById(Long id);
+    Server getForUpdateById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Server> findFirstServerByAreasContains(Area area);
+    Optional<Server> findFirstForUpdateByAreasContains(Area area);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Server> streamAllServersByOrderById();
+    Stream<Server> streamAllForUpdateBy();
 }

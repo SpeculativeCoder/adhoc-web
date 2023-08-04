@@ -24,7 +24,6 @@ package adhoc.server.event;
 
 import adhoc.pawn.PawnDto;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,6 +42,6 @@ public class ServerPawnsEvent {
     @Min(1)
     private Long serverId;
 
-    @NotEmpty
+    @NotNull
     private List<PawnDto> pawns;
 }

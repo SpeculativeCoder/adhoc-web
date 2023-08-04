@@ -24,12 +24,17 @@ package adhoc.web;
 
 import adhoc.web.properties.WebProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
+
+import java.time.Duration;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -37,6 +42,11 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final WebProperties webProperties;
+
+    @Lazy
+    @Autowired
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+    private TaskScheduler taskScheduler;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -53,8 +63,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "http://" + webProperties.getAdhocDomain(),
                         "https://*." + webProperties.getAdhocDomain(),
                         "http://*." + webProperties.getAdhocDomain())
-                .withSockJS();
-                //.setHeartbeatTime(Duration.ofSeconds(15).toMillis());
+                .withSockJS()
+                .setHeartbeatTime(Duration.ofSeconds(30).toMillis());
     }
 
     @Override
@@ -66,13 +76,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //config.enableSimpleBroker("/queue", "/topic");
         config.enableStompBrokerRelay("/queue", "/topic")
                 .setRelayHost(webProperties.getMessageBrokerHost())
-                .setRelayPort(webProperties.getMessageBrokerStompPort());
-                //.setSystemHeartbeatReceiveInterval(Duration.ofSeconds(10).toMillis())
-                //.setSystemHeartbeatSendInterval(Duration.ofSeconds(10).toMillis());
+                .setRelayPort(webProperties.getMessageBrokerStompPort())
+                .setSystemHeartbeatReceiveInterval(Duration.ofSeconds(30).toMillis())
+                .setSystemHeartbeatSendInterval(Duration.ofSeconds(30).toMillis())
+                .setTaskScheduler(taskScheduler);
     }
 }
-
-//private TaskScheduler taskScheduler;
 
 //@Autowired
 //public void setTaskScheduler(@Lazy TaskScheduler taskScheduler) {
@@ -83,7 +92,3 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //    public void configureClientInboundChannel(ChannelRegistration registration) {
 //        // TODO
 //    }
-
-//.setSystemHeartbeatReceiveInterval(10000)
-//.setSystemHeartbeatSendInterval(10000)
-//.setTaskScheduler(taskScheduler);

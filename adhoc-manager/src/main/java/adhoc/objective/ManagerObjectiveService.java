@@ -42,7 +42,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -69,6 +72,8 @@ public class ManagerObjectiveService {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
 
+        Set<Long> objectiveIds = new TreeSet<>();
+
         // NOTE: this is a two stage save to allow linked objectives to be set too (they need to be saved in the first pass to get ids)
         List<Pair<ObjectiveDto, Objective>> dtoEntityPairs = objectiveDtos.stream()
                 .peek(objectiveDto -> Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId())))
@@ -77,13 +82,25 @@ public class ManagerObjectiveService {
                                 objectiveRepository.findForUpdateByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)))))
                 .toList();
 
-        return dtoEntityPairs.stream()
+        objectiveDtos = dtoEntityPairs.stream()
                 .map(dtoEntityPair ->
                         toEntityStage2(dtoEntityPair.getLeft(), dtoEntityPair.getRight()))
+                .peek(objective -> objectiveIds.add(objective.getId()))
                 .map(objectiveService::toDto)
                 .collect(Collectors.toList());
 
-        // TODO: delete unused objectives in region
+        if (objectiveIds.isEmpty()) {
+            objectiveIds.add(-1L);
+        }
+
+        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamForUpdateByRegionAndIdNotIn(region, objectiveIds)) {
+            objectivesToDelete.forEach(objectiveToDelete -> {
+                log.info("Deleting objective: {}", objectiveToDelete);
+                objectiveRepository.delete(objectiveToDelete);
+            });
+        }
+
+        return objectiveDtos;
     }
 
     Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {

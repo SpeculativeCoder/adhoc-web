@@ -68,20 +68,22 @@ public class ManagerAreaService {
                 .map(areaService::toDto)
                 .toList();
 
-        if (!areaIds.isEmpty()) {
+        if (areaIds.isEmpty()) {
+            areaIds.add(-1L);
+        }
 
-            try (Stream<Area> areasToDelete = areaRepository.streamForUpdateByRegionAndIdNotIn(region, areaIds)) {
-                areasToDelete.forEach(areaToDelete -> {
+        try (Stream<Area> areasToDelete = areaRepository.streamForUpdateByRegionAndIdNotIn(region, areaIds)) {
+            areasToDelete.forEach(areaToDelete -> {
+                log.info("Deleting area: {}", areaToDelete);
 
-                    // before deleting areas we must unlink any objectives that will become orphaned
-                    for (Objective orphanedObjective : areaToDelete.getObjectives()) {
-                        orphanedObjective = objectiveRepository.getForUpdateById(orphanedObjective.getId());
-                        orphanedObjective.setArea(null);
-                    }
+                // before deleting areas we must unlink any objectives that will become orphaned
+                for (Objective orphanedObjective : areaToDelete.getObjectives()) {
+                    orphanedObjective = objectiveRepository.getForUpdateById(orphanedObjective.getId());
+                    orphanedObjective.setArea(null);
+                }
 
-                    areaRepository.delete(areaToDelete);
-                });
-            }
+                areaRepository.delete(areaToDelete);
+            });
         }
 
         return result;

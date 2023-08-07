@@ -25,7 +25,7 @@ package adhoc.db.hsqldb;
 import adhoc.web.properties.WebProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,14 +39,7 @@ public class KioskHsqldbConfig {
 
     private final WebProperties webProperties;
 
-    @Value("${spring.datasource.url}")
-    private String url;
-
-    @Value("${spring.datasource.username}")
-    private String username;
-
-    @Value("${spring.datasource.password}")
-    private String password;
+    private final DataSourceProperties dataSourceProperties;
 
     @Bean
     public JdbcConnectionDetails dataSourceProperties() {
@@ -54,17 +47,18 @@ public class KioskHsqldbConfig {
 
             @Override
             public String getJdbcUrl() {
-                return !url.isEmpty() ? url : "jdbc:hsqldb:hsql://" + webProperties.getManagerHost() + ":9001/adhoc";
+                return !dataSourceProperties.getUrl().isEmpty()
+                        ? dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://" + webProperties.getManagerHost() + ":9001/adhoc";
             }
 
             @Override
             public String getUsername() {
-                return username;
+                return dataSourceProperties.getUsername();
             }
 
             @Override
             public String getPassword() {
-                return password;
+                return dataSourceProperties.getPassword();
             }
         };
     }

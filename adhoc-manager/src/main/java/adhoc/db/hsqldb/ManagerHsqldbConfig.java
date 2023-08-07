@@ -22,9 +22,10 @@
 
 package adhoc.db.hsqldb;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hsqldb.server.Server;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,16 +37,10 @@ import java.nio.file.Files;
 @Configuration
 @Profile("db-hsqldb")
 @Slf4j
+@RequiredArgsConstructor
 public class ManagerHsqldbConfig {
 
-    @Value("${spring.datasource.url}")
-    private String url;
-
-    @Value("${spring.datasource.username}")
-    private String username;
-
-    @Value("${spring.datasource.password}")
-    private String password;
+    private final DataSourceProperties dataSourceProperties;
 
     static {
         System.setProperty("hsqldb.reconfig_logging", "false");
@@ -58,7 +53,7 @@ public class ManagerHsqldbConfig {
         //server.setAddress("localhost"); //"0.0.0.0");
         server.setDatabaseName(0, "adhoc");
         server.setDatabasePath(0, "file:" + Files.createTempFile("adhoc_hsqldb_", ".dat").toString() +
-                ";user=" + username + ";password=" + password +
+                ";user=" + dataSourceProperties.getUsername() + ";password=" + dataSourceProperties.getPassword() +
                 ";hsqldb.tx=locks" + // locks/mvlocks
                 ";check_props=true" +
                 ";sql.restrict_exec=true" +
@@ -79,17 +74,18 @@ public class ManagerHsqldbConfig {
 
             @Override
             public String getJdbcUrl() {
-                return !url.isEmpty() ? url : "jdbc:hsqldb:hsql://localhost:9001/adhoc";
+                return !dataSourceProperties.getUrl().isEmpty() ?
+                        dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://localhost:9001/adhoc";
             }
 
             @Override
             public String getUsername() {
-                return username;
+                return dataSourceProperties.getUsername();
             }
 
             @Override
             public String getPassword() {
-                return password;
+                return dataSourceProperties.getPassword();
             }
         };
     }

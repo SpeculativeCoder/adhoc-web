@@ -30,7 +30,7 @@ To run the application run the following Spring Boot application class:
 
 If you go to http://localhost you should see the application running in development mode.
 
-Further functionality requires setup. See: [https://github.com/SpeculativeCoder/AdhocDocumentation](https://github.com/SpeculativeCoder/AdhocDocumentation) (not yet available)
+Further functionality requires setup. See: [https://github.com/SpeculativeCoder/AdhocDocumentation](https://github.com/SpeculativeCoder/AdhocDocumentation)
 
 ### Run from command line
 

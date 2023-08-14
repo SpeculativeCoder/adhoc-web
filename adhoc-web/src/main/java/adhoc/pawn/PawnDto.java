@@ -67,7 +67,6 @@ public class PawnDto {
     @NotNull
     private Float z;
 
-    @NotNull
     @Min(1)
     private Long factionId;
 
@@ -75,7 +74,6 @@ public class PawnDto {
     @Min(0)
     private Integer factionIndex;
 
-    @NotNull
     private LocalDateTime seen;
 
     @Min(1)

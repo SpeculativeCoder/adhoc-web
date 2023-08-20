@@ -102,7 +102,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         //clusterConnection.setAllowDirectConnectionsOnly(true);
         //clusterConnection.setReconnectAttempts(1);
         //clusterConnection.setInitialConnectAttempts(1);
-        clusterConnection.setStaticConnectors(Arrays.asList("manager-core-connector", "core-connector"));
+        clusterConnection.setStaticConnectors(Arrays.asList("manager-core-connector", "kiosk-core-connector")); //, "core-connector"
         configuration.addClusterConfiguration(clusterConnection);
     }
 
@@ -122,6 +122,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerStompPort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "STOMP");
         props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
         props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "4");
         log.info("stompProps: props={}", props);
         return props;
@@ -134,6 +135,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
         log.info("coreProps: props={}", props);
         return props;
     }
@@ -145,6 +147,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getManagerMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
         log.info("managerCoreProps: props={}", props);
         return props;
     }
@@ -156,6 +159,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getKioskMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
         log.info("kioskCoreProps: props={}", props);
         return props;
     }

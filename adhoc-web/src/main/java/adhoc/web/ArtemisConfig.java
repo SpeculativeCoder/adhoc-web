@@ -102,7 +102,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         //clusterConnection.setAllowDirectConnectionsOnly(true);
         //clusterConnection.setReconnectAttempts(1);
         //clusterConnection.setInitialConnectAttempts(1);
-        clusterConnection.setStaticConnectors(Arrays.asList("manager-core-connector", "kiosk-core-connector")); //, "core-connector"
+        clusterConnection.setStaticConnectors(Arrays.asList("manager-core-connector")); //, "kiosk-core-connector")); //, "core-connector"
         configuration.addClusterConfiguration(clusterConnection);
     }
 

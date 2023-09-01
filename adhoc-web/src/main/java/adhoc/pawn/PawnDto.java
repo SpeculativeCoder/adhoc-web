@@ -23,9 +23,11 @@
 package adhoc.pawn;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -57,7 +59,7 @@ public class PawnDto {
     @Min(0)
     private Integer index;
 
-    @NotEmpty
+    @NotNull
     private String name;
 
     @NotNull
@@ -70,7 +72,6 @@ public class PawnDto {
     @Min(1)
     private Long factionId;
 
-    @NotNull
     @Min(0)
     private Integer factionIndex;
 

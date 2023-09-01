@@ -78,7 +78,7 @@ public class Pawn {
     @Basic(optional = false)
     private Float z;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Faction faction;
 
     @Basic(optional = false)

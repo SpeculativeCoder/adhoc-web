@@ -60,8 +60,8 @@ public class PawnService {
                 pawn.getIndex(),
                 pawn.getName(),
                 pawn.getX(), pawn.getY(), pawn.getZ(),
-                pawn.getFaction().getId(),
-                pawn.getFaction().getIndex(),
+                pawn.getFaction() == null ? null : pawn.getFaction().getId(),
+                pawn.getFaction() == null ? null : pawn.getFaction().getIndex(),
                 pawn.getSeen(),
                 pawn.getUser() == null ? null : pawn.getUser().getId());
     }

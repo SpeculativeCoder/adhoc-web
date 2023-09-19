@@ -30,7 +30,6 @@ import org.apache.activemq.artemis.core.config.ClusterConnectionConfiguration;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyAcceptorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
-import org.apache.activemq.artemis.core.server.cluster.impl.MessageLoadBalancingType;
 import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
 import org.apache.activemq.artemis.jms.server.config.TopicConfiguration;
 import org.apache.activemq.artemis.jms.server.config.impl.TopicConfigurationImpl;
@@ -69,41 +68,47 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         configuration.addAddressSetting("/topic/events", eventsAddressSettings());
 
         configuration.addAcceptorConfiguration(
-                new TransportConfiguration(NettyAcceptorFactory.class.getName(), stompProps(), "stomp-acceptor"));
-        configuration.addAcceptorConfiguration(
-                new TransportConfiguration(NettyAcceptorFactory.class.getName(), coreProps(), "core-acceptor"));
+                new TransportConfiguration(NettyAcceptorFactory.class.getName(), stompConnectorProps(), "stomp-acceptor"));
 
-        //configuration.addConnectorConfiguration("stomp-connector",
-        //        new TransportConfiguration(NettyConnectorFactory.class.getName(), stompProps()));
+        configuration.addAcceptorConfiguration(
+                new TransportConfiguration(NettyAcceptorFactory.class.getName(), coreConnectorProps(), "core-acceptor"));
+
         configuration.addConnectorConfiguration("core-connector",
-                new TransportConfiguration(NettyConnectorFactory.class.getName(), coreProps()));
+                new TransportConfiguration(NettyConnectorFactory.class.getName(), coreConnectorProps()));
 
         configuration.addConnectorConfiguration("kiosk-core-connector",
-                new TransportConfiguration(NettyConnectorFactory.class.getName(), kioskCoreProps()));
+                new TransportConfiguration(NettyConnectorFactory.class.getName(), kioskCoreConnectorProps()));
 
         configuration.addConnectorConfiguration("manager-core-connector",
-                new TransportConfiguration(NettyConnectorFactory.class.getName(), managerCoreProps()));
+                new TransportConfiguration(NettyConnectorFactory.class.getName(), managerCoreConnectorProps()));
 
+        //configuration.setGracefulShutdownEnabled(true);
+        //configuration.setGracefulShutdownTimeout(5000);
+
+        configuration.addClusterConfiguration(clusterConnectionConfiguration());
+    }
+
+    private static ClusterConnectionConfiguration clusterConnectionConfiguration() {
         ClusterConnectionConfiguration clusterConnection = new ClusterConnectionConfiguration();
-        clusterConnection.setName("adhoc-cluster-connection");
-        clusterConnection.setAddress("");
+        clusterConnection.setName("cluster-connection");
+        //clusterConnection.setAddress("");
         clusterConnection.setConnectorName("core-connector");
-        clusterConnection.setClientFailureCheckPeriod(Duration.ofMinutes(1).toMillis());
-        clusterConnection.setConnectionTTL(Duration.ofMinutes(2).toMillis());
-        clusterConnection.setCallTimeout(Duration.ofMinutes(1).toMillis());
-        clusterConnection.setRetryInterval(Duration.ofSeconds(1).toMillis());
+        //clusterConnection.setClientFailureCheckPeriod(Duration.ofMinutes(1).toMillis());
+        //clusterConnection.setConnectionTTL(Duration.ofMinutes(2).toMillis());
+        //clusterConnection.setCallTimeout(Duration.ofMinutes(1).toMillis());
+        //clusterConnection.setRetryInterval(Duration.ofSeconds(1).toMillis());
         clusterConnection.setRetryIntervalMultiplier(2);
         clusterConnection.setMaxRetryInterval(Duration.ofMinutes(30).toMillis());
-        clusterConnection.setDuplicateDetection(true);
-        clusterConnection.setMessageLoadBalancingType(MessageLoadBalancingType.STRICT);
-        clusterConnection.setMaxHops(1);
+        //clusterConnection.setDuplicateDetection(true);
+        //clusterConnection.setMessageLoadBalancingType(MessageLoadBalancingType.ON_DEMAND);
+        //clusterConnection.setMaxHops(1);
         //clusterConnection.setCallFailoverTimeout(Duration.ofMinutes(5).toMillis());
-        clusterConnection.setClusterNotificationInterval(Duration.ofSeconds(2).toMillis());
+        //clusterConnection.setClusterNotificationInterval(Duration.ofSeconds(2).toMillis());
         //clusterConnection.setAllowDirectConnectionsOnly(true);
-        //clusterConnection.setReconnectAttempts(1);
+        //clusterConnection.setReconnectAttempts(10);
         //clusterConnection.setInitialConnectAttempts(1);
         clusterConnection.setStaticConnectors(Arrays.asList("manager-core-connector")); //, "kiosk-core-connector")); //, "core-connector"
-        configuration.addClusterConfiguration(clusterConnection);
+        return clusterConnection;
     }
 
     private AddressSettings eventsAddressSettings() {
@@ -112,55 +117,56 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         addressSettings.setAutoCreateQueues(false);
         addressSettings.setAutoDeleteAddresses(false);
         addressSettings.setAutoDeleteQueues(false);
+        //addressSettings.setAutoDeleteAddressesDelay(5000);
         return addressSettings;
     }
 
-    private Map<String, Object> stompProps() {
+    private Map<String, Object> stompConnectorProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
         props.put(TransportConstants.HOST_PROP_NAME, webProperties.getMessageBrokerHost());
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerStompPort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "STOMP");
-        props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        //props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "4");
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
-        props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "4");
-        log.info("stompProps: props={}", props);
+        log.info("stompConnectorProps: props={}", props);
         return props;
     }
 
-    private Map<String, Object> coreProps() {
+    private Map<String, Object> coreConnectorProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
         props.put(TransportConstants.HOST_PROP_NAME, webProperties.getMessageBrokerHost());
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
-        props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
-        log.info("coreProps: props={}", props);
+        log.info("coreConnectorProps: props={}", props);
         return props;
     }
 
-    private Map<String, Object> managerCoreProps() {
+    private Map<String, Object> managerCoreConnectorProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
         props.put(TransportConstants.HOST_PROP_NAME, webProperties.getManagerMessageBrokerHost());
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getManagerMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
-        props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
-        log.info("managerCoreProps: props={}", props);
+        log.info("managerCoreConnectorProps: props={}", props);
         return props;
     }
 
-    private Map<String, Object> kioskCoreProps() {
+    private Map<String, Object> kioskCoreConnectorProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
         props.put(TransportConstants.HOST_PROP_NAME, webProperties.getKioskMessageBrokerHost());
         props.put(TransportConstants.PORT_PROP_NAME, webProperties.getKioskMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
-        props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
+        //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
-        log.info("kioskCoreProps: props={}", props);
+        log.info("kioskCoreConnectorProps: props={}", props);
         return props;
     }
 }

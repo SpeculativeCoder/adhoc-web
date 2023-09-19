@@ -61,6 +61,12 @@ export class StompService {
     this.client.connect(headers, () => this.onConnect(), () => this.onError());
   }
 
+  disconnect() {
+    if (this.client && this.client.connected) {
+      this.client.disconnect(() => this.onDisconnect());
+    }
+  }
+
   onConnect() {
     this.client.subscribe('/topic/events', message => this.onMessage(message));
   }
@@ -87,6 +93,6 @@ export class StompService {
   onError() {
   }
 
-  onClose() {
+  onDisconnect() {
   }
 }

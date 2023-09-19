@@ -34,8 +34,6 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
-import java.time.Duration;
-
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
@@ -64,7 +62,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "https://*." + webProperties.getAdhocDomain(),
                         "http://*." + webProperties.getAdhocDomain())
                 .withSockJS()
-                .setHeartbeatTime(Duration.ofSeconds(30).toMillis());
+                //.setHeartbeatTime(Duration.ofSeconds(30).toMillis())
+                .setTaskScheduler(taskScheduler);
     }
 
     @Override
@@ -77,8 +76,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.enableStompBrokerRelay("/queue", "/topic")
                 .setRelayHost(webProperties.getMessageBrokerHost())
                 .setRelayPort(webProperties.getMessageBrokerStompPort())
-                .setSystemHeartbeatReceiveInterval(Duration.ofSeconds(30).toMillis())
-                .setSystemHeartbeatSendInterval(Duration.ofSeconds(30).toMillis())
+                //.setSystemHeartbeatReceiveInterval(Duration.ofSeconds(30).toMillis())
+                //.setSystemHeartbeatSendInterval(Duration.ofSeconds(30).toMillis())
                 .setTaskScheduler(taskScheduler);
     }
 }

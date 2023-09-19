@@ -21,7 +21,7 @@
  */
 
 import {StompService} from './stomp/stomp.service';
-import {Component, ElementRef, OnInit} from '@angular/core';
+import {Component, ElementRef, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FactionService} from './faction/faction.service';
 import {UserService} from './user/user.service';
 import {User} from './user/user';
@@ -37,7 +37,7 @@ import {ActivatedRoute, Router} from "@angular/router";
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   appTitle = 'WebApp';
 
   featureFlags: string;
@@ -79,4 +79,11 @@ export class AppComponent implements OnInit {
     });
   }
 
+  @HostListener("window:beforeunload")
+  beforeUnload() {
+    this.stompService.disconnect();
+  }
+
+  ngOnDestroy() {
+  }
 }

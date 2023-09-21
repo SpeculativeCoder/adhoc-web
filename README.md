@@ -24,9 +24,7 @@ To build the application (at least once to make sure the Angular app is built):
 
 `mvn clean package -DskipTests`
 
-To run the application run the following Spring Boot application class:
-
-`AdhocManagerApplication`
+You can then run this Spring Boot application class in your IDE: `AdhocManagerApplication`
 
 If you go to http://localhost you should see the application running in development mode.
 

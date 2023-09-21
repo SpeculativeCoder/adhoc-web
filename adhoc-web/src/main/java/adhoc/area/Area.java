@@ -45,7 +45,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true, includeFieldNames = false)
+@ToString(onlyExplicitlyIncluded = true)
 public class Area {
 
     @Id

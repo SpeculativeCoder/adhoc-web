@@ -40,7 +40,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true, includeFieldNames = false)
+@ToString(onlyExplicitlyIncluded = true)
 public class World {
 
     @Id
@@ -61,7 +61,7 @@ public class World {
 //    @Embeddable
 //    @Getter
 //    @Setter
-//    @ToString(onlyExplicitlyIncluded = true, includeFieldNames = false)
+//    @ToString(onlyExplicitlyIncluded = true)
 //    private static class WebServer {
 //        @ToString.Include
 //        private String privateIp;

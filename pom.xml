@@ -70,6 +70,7 @@
                 <scope>import</scope>
             </dependency>
 
+            <!--
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
@@ -102,6 +103,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            -->
 
         </dependencies>
     </dependencyManagement>

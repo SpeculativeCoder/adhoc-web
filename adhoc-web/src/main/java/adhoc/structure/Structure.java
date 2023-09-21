@@ -43,7 +43,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true, includeFieldNames = false)
+@ToString(onlyExplicitlyIncluded = true)
 public class Structure {
 
     @Id

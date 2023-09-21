@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true, includeFieldNames = false)
+@ToString(onlyExplicitlyIncluded = true)
 public class User implements UserDetails {
 
     @Id

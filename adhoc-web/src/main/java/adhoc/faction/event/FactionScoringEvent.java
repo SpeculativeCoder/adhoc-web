@@ -38,7 +38,6 @@ import java.util.Map;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Jacksonized
-@ToString(includeFieldNames = false)
 public class FactionScoringEvent implements Event {
 
 	@NotNull

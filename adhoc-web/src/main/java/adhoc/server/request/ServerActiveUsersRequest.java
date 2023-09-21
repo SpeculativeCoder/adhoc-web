@@ -34,7 +34,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(includeFieldNames = false)
 public class ServerActiveUsersRequest {
 
 	@NotNull

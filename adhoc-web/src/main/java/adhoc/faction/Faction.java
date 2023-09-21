@@ -40,7 +40,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true, includeFieldNames = false)
+@ToString(onlyExplicitlyIncluded = true)
 public class Faction {
 
     @Id

@@ -40,7 +40,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Jacksonized
-@ToString(includeFieldNames = false)
 public class UserDto {
 
     @NotNull

@@ -39,7 +39,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Jacksonized
-@ToString(includeFieldNames = false)
 public class PawnDto {
 
     @Min(1)

@@ -32,7 +32,6 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(includeFieldNames = false)
 public class RegisterUserRequest {
 
 	// at the moment we only allow auto-generated name

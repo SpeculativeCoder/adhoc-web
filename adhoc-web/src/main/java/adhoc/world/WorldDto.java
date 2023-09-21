@@ -38,7 +38,6 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Jacksonized
-@ToString(includeFieldNames = false)
 public class WorldDto {
 
     @NotNull

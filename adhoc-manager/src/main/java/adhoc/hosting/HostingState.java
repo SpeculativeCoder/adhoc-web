@@ -36,7 +36,6 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(includeFieldNames = false)
 public class HostingState {
 
     private Set<String> managerHosts;
@@ -51,7 +50,6 @@ public class HostingState {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString(includeFieldNames = false)
     public static class ServerTask {
 
         /** Unique identifier of the task within the hosting service. */

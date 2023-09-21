@@ -36,7 +36,6 @@ import java.util.Optional;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Jacksonized
-@ToString(includeFieldNames = false)
 public class AreaDto {
 
     @Min(1)

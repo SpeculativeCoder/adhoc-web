@@ -37,7 +37,6 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Jacksonized
-@ToString(includeFieldNames = false)
 public class ObjectiveTakenEvent implements Event {
 
 	@NotNull

@@ -35,7 +35,6 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(includeFieldNames = false)
 public class UserJoinRequest {
 
 	@NotNull

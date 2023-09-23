@@ -92,7 +92,7 @@
 
     <profiles>
         <profile>
-            <id>extra</id>
+            <id>adhoc-manager-extra</id>
             <activation>
                 <file>
                     <exists>../adhoc-extra/adhoc-manager-extra</exists>

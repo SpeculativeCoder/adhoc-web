@@ -92,7 +92,7 @@
     
     <profiles>
         <profile>
-            <id>extra</id>
+            <id>adhoc-kiosk-extra</id>
             <activation>
                 <file>
                     <exists>../adhoc-extra/adhoc-kiosk-extra</exists>

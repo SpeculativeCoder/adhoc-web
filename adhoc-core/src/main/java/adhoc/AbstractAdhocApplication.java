@@ -35,5 +35,5 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableCaching
 @Slf4j
 @RequiredArgsConstructor
-public abstract class AbstractAdhocWebApplication {
+public abstract class AbstractAdhocApplication {
 }

@@ -39,7 +39,7 @@ import org.springframework.boot.SpringApplication;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class AdhocManagerApplication extends AbstractAdhocWebApplication {
+public class AdhocManagerApplication extends AbstractAdhocApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(AdhocManagerApplication.class, args); //.start();

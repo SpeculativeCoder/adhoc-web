@@ -1,6 +1,6 @@
 .idea/
 target/
-adhoc-extra/
+adhoc-web-extra/
 certs/
 customization/
 env/

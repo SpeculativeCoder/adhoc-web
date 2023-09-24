@@ -37,7 +37,7 @@ import org.springframework.boot.SpringApplication;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class AdhocKioskApplication extends AbstractAdhocWebApplication {
+public class AdhocKioskApplication extends AbstractAdhocApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(AdhocKioskApplication.class, args); //.start();

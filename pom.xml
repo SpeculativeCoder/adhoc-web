@@ -33,15 +33,15 @@
     </parent>
 
     <groupId>adhoc</groupId>
-    <artifactId>adhoc-web-parent</artifactId>
+    <artifactId>adhoc-web</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>adhoc-web-parent</name>
-    <description>adhoc-web-parent</description>
+    <name>adhoc-web</name>
+    <description>adhoc-web</description>
 
     <modules>
         <module>adhoc-app</module>
-        <module>adhoc-web</module>
+        <module>adhoc-core</module>
         <module>adhoc-kiosk</module>
         <module>adhoc-manager</module>
     </modules>
@@ -70,7 +70,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <!--
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
@@ -103,7 +102,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            -->
 
         </dependencies>
     </dependencyManagement>

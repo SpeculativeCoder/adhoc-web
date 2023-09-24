@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>adhoc</groupId>
-    <artifactId>adhoc-web-parent</artifactId>
+    <artifactId>adhoc-web</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 

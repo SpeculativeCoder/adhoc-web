@@ -27,7 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>adhoc</groupId>
-        <artifactId>adhoc-web-parent</artifactId>
+        <artifactId>adhoc-web</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>adhoc</groupId>
-            <artifactId>adhoc-web</artifactId>
+            <artifactId>adhoc-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
@@ -95,7 +95,7 @@
             <id>adhoc-manager-extra</id>
             <activation>
                 <file>
-                    <exists>../adhoc-extra/adhoc-manager-extra</exists>
+                    <exists>../adhoc-web-extra/adhoc-manager-extra</exists>
                 </file>
             </activation>
             <build>
@@ -112,7 +112,7 @@
                                 </goals>
                                 <configuration>
                                     <sources>
-                                        <source>../adhoc-extra/adhoc-manager-extra/src/main/java</source>
+                                        <source>../adhoc-web-extra/adhoc-manager-extra/src/main/java</source>
                                     </sources>
                                 </configuration>
                             </execution>
@@ -126,7 +126,7 @@
                                     <resources>
                                         <resource>
                                             <directory>
-                                                ../adhoc-extra/adhoc-manager-extra/src/main/resources
+                                                ../adhoc-web-extra/adhoc-manager-extra/src/main/resources
                                             </directory>
                                         </resource>
                                     </resources>
@@ -140,7 +140,7 @@
                                 </goals>
                                 <configuration>
                                     <sources>
-                                        <source>../adhoc-extra/adhoc-manager-extra/src/test/java</source>
+                                        <source>../adhoc-web-extra/adhoc-manager-extra/src/test/java</source>
                                     </sources>
                                 </configuration>
                             </execution>
@@ -154,7 +154,7 @@
                                     <resources>
                                         <resource>
                                             <directory>
-                                                ../adhoc-extra/adhoc-manager-extra/src/test/resources
+                                                ../adhoc-web-extra/adhoc-manager-extra/src/test/resources
                                             </directory>
                                         </resource>
                                     </resources>

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.web.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;

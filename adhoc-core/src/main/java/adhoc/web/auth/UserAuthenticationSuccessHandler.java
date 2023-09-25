@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.web.auth;
 
 import adhoc.user.User;
 import adhoc.user.UserService;

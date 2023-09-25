@@ -20,8 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.web;
 
+import adhoc.web.channel_interceptor.ServerIgnoreCsrfChannelInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.support.ChannelInterceptor;

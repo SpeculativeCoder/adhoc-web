@@ -20,37 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.web.request_matcher;
 
-import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.messaging.web.csrf.CsrfChannelInterceptor;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Component;
 
 /**
- * Web socket communication with Unreal server does not require CSRF.
+ * Communication with Unreal server does not require CSRF so this matcher provides a way to identify server requests so that we can ignore CSRF for them.
  */
 @Slf4j
-@RequiredArgsConstructor
-public class ServerIgnoreCsrfChannelInterceptor implements ChannelInterceptor {
-
-    private final CsrfChannelInterceptor delegate;
+@Component
+public class ServerRequestMatcher implements RequestMatcher {
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-
+    public boolean matches(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken &&
-                authenticationToken.getAuthorities()
-                        .stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()))) {
-            return message;
-        }
-
-        return delegate.preSend(message, channel);
+        return authentication == null // TODO
+                || (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken &&
+                authenticationToken.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority())));
     }
 }

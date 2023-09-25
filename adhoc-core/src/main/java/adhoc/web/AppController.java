@@ -22,7 +22,7 @@
 
 package adhoc.web;
 
-import adhoc.web.properties.WebProperties;
+import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,9 +38,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-public class WebController {
+public class AppController {
 
-    private final WebProperties webProperties;
+    private final CoreProperties coreProperties;
 
     // TODO: better way than this to catch browser refresh in non-root URLs
     @GetMapping(value = {
@@ -59,8 +59,8 @@ public class WebController {
             "/client/**"
     })
     public String getIndex(Model model) {
-        model.addAttribute("MODE", webProperties.getMode());
-        model.addAttribute("FEATURE_FLAGS", webProperties.getFeatureFlags());
+        model.addAttribute("MODE", coreProperties.getMode());
+        model.addAttribute("FEATURE_FLAGS", coreProperties.getFeatureFlags());
         return "index.html";
     }
 

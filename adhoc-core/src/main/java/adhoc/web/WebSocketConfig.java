@@ -22,7 +22,7 @@
 
 package adhoc.web;
 
-import adhoc.web.properties.WebProperties;
+import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +39,7 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final WebProperties webProperties;
+    private final CoreProperties coreProperties;
 
     @Lazy
     @Autowired
@@ -57,10 +57,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws/stomp/user_sockjs")
                 .addInterceptors(new HttpSessionHandshakeInterceptor())
                 .setAllowedOriginPatterns(
-                        "https://" + webProperties.getAdhocDomain(),
-                        "http://" + webProperties.getAdhocDomain(),
-                        "https://*." + webProperties.getAdhocDomain(),
-                        "http://*." + webProperties.getAdhocDomain())
+                        "https://" + coreProperties.getAdhocDomain(),
+                        "http://" + coreProperties.getAdhocDomain(),
+                        "https://*." + coreProperties.getAdhocDomain(),
+                        "http://*." + coreProperties.getAdhocDomain())
                 .withSockJS()
                 //.setHeartbeatTime(Duration.ofSeconds(30).toMillis())
                 .setTaskScheduler(taskScheduler);
@@ -74,8 +74,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         //config.enableSimpleBroker("/queue", "/topic");
         config.enableStompBrokerRelay("/queue", "/topic")
-                .setRelayHost(webProperties.getMessageBrokerHost())
-                .setRelayPort(webProperties.getMessageBrokerStompPort())
+                .setRelayHost(coreProperties.getMessageBrokerHost())
+                .setRelayPort(coreProperties.getMessageBrokerStompPort())
                 //.setSystemHeartbeatReceiveInterval(Duration.ofSeconds(30).toMillis())
                 //.setSystemHeartbeatSendInterval(Duration.ofSeconds(30).toMillis())
                 .setTaskScheduler(taskScheduler);

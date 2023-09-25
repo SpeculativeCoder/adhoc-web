@@ -20,24 +20,37 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.web.channel_interceptor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.messaging.web.csrf.CsrfChannelInterceptor;
 
-@RestController
+/**
+ * Web socket communication with Unreal server does not require CSRF.
+ */
 @Slf4j
 @RequiredArgsConstructor
-public class CsrfController {
+public class ServerIgnoreCsrfChannelInterceptor implements ChannelInterceptor {
 
-    /**
-     * Allow access to CSRF token for the Angular app.
-     */
-    @GetMapping("/csrf")
-    public CsrfToken csrf(CsrfToken token) {
-        return token;
+    private final CsrfChannelInterceptor delegate;
+
+    @Override
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken &&
+                authenticationToken.getAuthorities()
+                        .stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()))) {
+            return message;
+        }
+
+        return delegate.preSend(message, channel);
     }
 }

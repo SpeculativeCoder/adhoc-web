@@ -26,8 +26,8 @@ import adhoc.area.Area;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.hosting.ecs.properties.EcsHostingProperties;
-import adhoc.manager.properties.ManagerProperties;
-import adhoc.web.properties.WebProperties;
+import adhoc.properties.ManagerProperties;
+import adhoc.properties.CoreProperties;
 import adhoc.server.Server;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EcsHostingService implements HostingService {
 
-    private final WebProperties webProperties;
+    private final CoreProperties coreProperties;
 
     private final ManagerProperties managerProperties;
 
@@ -324,7 +324,7 @@ public class EcsHostingService implements HostingService {
                                     KeyValuePair.builder().name("MAX_PAWNS").value(managerProperties.getMaxPawns().toString()).build(),
                                     KeyValuePair.builder().name("MAX_PLAYERS").value(managerProperties.getMaxPlayers().toString()).build(),
                                     KeyValuePair.builder().name("MAX_BOTS").value(managerProperties.getMaxBots().toString()).build(),
-                                    KeyValuePair.builder().name("FEATURE_FLAGS").value(webProperties.getFeatureFlags()).build())
+                                    KeyValuePair.builder().name("FEATURE_FLAGS").value(coreProperties.getFeatureFlags()).build())
                             .build()).build())
                     .cluster(ecsHostingProperties.getEcsCluster())
                     .count(1)

@@ -29,17 +29,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.spi.LoggingEventBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * Logging component to enable logging of POSTS/PUTS etc.
@@ -49,13 +46,13 @@ import java.util.Optional;
 @Slf4j
 public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
-    @Value("${adhoc.server.basic-auth.username:#{null}}")
-    private Optional<String> serverBasicAuthUsername;
+    //@Value("${adhoc.server.basic-auth.username:#{null}}")
+    //private Optional<String> serverBasicAuthUsername;
 
-    @Value("${adhoc.server.basic-auth.password:#{null}}")
-    private Optional<String> serverBasicAuthPassword;
+    //@Value("${adhoc.server.basic-auth.password:#{null}}")
+    //private Optional<String> serverBasicAuthPassword;
 
-    private String encodedServerBasicAuth;
+    //private String encodedServerBasicAuth;
 
     public AdhocRequestLoggingFilter() {
         setIncludeQueryString(true);
@@ -68,9 +65,9 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
     @PostConstruct
     public void postConstruct() {
-        if (serverBasicAuthUsername.isPresent() && serverBasicAuthPassword.isPresent()) {
-            encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(serverBasicAuthUsername.get(), serverBasicAuthPassword.get(), null);
-        }
+        //if (serverBasicAuthUsername.isPresent() && serverBasicAuthPassword.isPresent()) {
+        //    encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(serverBasicAuthUsername.get(), serverBasicAuthPassword.get(), null);
+        //}
     }
 
     @Override
@@ -85,13 +82,13 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
         } finally {
 
-//                            response.getStatus() != HttpStatus.SWITCHING_PROTOCOLS.value() // 101 (websocket causes this)
-//                            && response.getStatus() != HttpStatus.OK.value() // 200
-//                            && response.getStatus() != HttpStatus.CREATED.value() // 201
-//                            && response.getStatus() != HttpStatus.NO_CONTENT.value() // 204
-//                            && response.getStatus() != HttpStatus.NOT_MODIFIED.value() // 304
-//                            && response.getStatus() != HttpStatus.NOT_FOUND.value() // 404
-//                            && response.getStatus() != HttpStatus.METHOD_NOT_ALLOWED.value() // 405
+            //response.getStatus() != HttpStatus.SWITCHING_PROTOCOLS.value() // 101 (websocket causes this)
+            //&& response.getStatus() != HttpStatus.OK.value() // 200
+            //&& response.getStatus() != HttpStatus.CREATED.value() // 201
+            //&& response.getStatus() != HttpStatus.NO_CONTENT.value() // 204
+            //&& response.getStatus() != HttpStatus.NOT_MODIFIED.value() // 304
+            //&& response.getStatus() != HttpStatus.NOT_FOUND.value() // 404
+            //&& response.getStatus() != HttpStatus.METHOD_NOT_ALLOWED.value() // 405
 
             boolean statusError;
             try {
@@ -105,25 +102,25 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
             boolean methodGet = "GET".equals(request.getMethod());
 
-            boolean userServer = false;
-            if (encodedServerBasicAuth != null) {
-                String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-                userServer = encodedServerBasicAuth != null
-                        && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
-            }
+            //boolean userServer = false;
+            //if (encodedServerBasicAuth != null) {
+            //    String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            //    userServer = encodedServerBasicAuth != null
+            //            && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
+            //}
 
             LoggingEventBuilder loggingEventBuilder = null;
 
             if (log.isWarnEnabled() && statusError) {
                 loggingEventBuilder = log.atWarn();
 
-            } else if (log.isInfoEnabled() && isRegisterOrLoginRequest(request)) {
-                loggingEventBuilder = log.atInfo();
+            //} else if (log.isInfoEnabled() && isRegisterOrLoginRequest(request)) {
+            //    loggingEventBuilder = log.atInfo();
 
-            } else if (log.isDebugEnabled() && !methodGet && !userServer) {
+            } else if (log.isDebugEnabled() && !methodGet) { //&& !userServer) {
                 loggingEventBuilder = log.atDebug();
 
-            } else if (log.isTraceEnabled() && !userServer) {
+            } else if (log.isTraceEnabled()) { //&& !userServer) {
                 loggingEventBuilder = log.atTrace();
             }
 

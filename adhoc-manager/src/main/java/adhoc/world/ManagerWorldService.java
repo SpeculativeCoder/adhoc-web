@@ -29,8 +29,8 @@ import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
 import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
-import adhoc.manager.properties.ManagerProperties;
-import adhoc.web.properties.WebProperties;
+import adhoc.properties.ManagerProperties;
+import adhoc.properties.CoreProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerWorldService {
 
-    private final WebProperties webProperties;
+    private final CoreProperties coreProperties;
 
     private final WorldService worldService;
 
@@ -129,7 +129,7 @@ public class ManagerWorldService {
         region1.setId(1L);
         region1.setName("1");
         // TODO: handle multiple regions
-        region1.setMapName(webProperties.getUnrealProjectRegionMaps().get(0));
+        region1.setMapName(coreProperties.getUnrealProjectRegionMaps().get(0));
         region1.setX(1750F);
         region1.setY(1000F);
         region1.setZ(50F);
@@ -272,7 +272,7 @@ public class ManagerWorldService {
 
             User u0 = new User();
             u0.setName("admin");
-            u0.setEmail("admin@" + webProperties.getAdhocDomain());
+            u0.setEmail("admin@" + coreProperties.getAdhocDomain());
             u0.setFaction(team1);
             u0.setScore(0F);
             u0.setPassword(passwordEncoder.encode(managerProperties.getDefaultAdminPassword()));
@@ -286,7 +286,7 @@ public class ManagerWorldService {
 
             User u1 = new User();
             u1.setName("AlphaTester");
-            u1.setEmail("alphatester@" + webProperties.getAdhocDomain());
+            u1.setEmail("alphatester@" + coreProperties.getAdhocDomain());
             u1.setFaction(team1);
             u1.setScore(0F);
             u1.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
@@ -298,7 +298,7 @@ public class ManagerWorldService {
 
             User u2 = new User();
             u2.setName("BetaTester");
-            u2.setEmail("betatester@" + webProperties.getAdhocDomain());
+            u2.setEmail("betatester@" + coreProperties.getAdhocDomain());
             u2.setFaction(team2);
             u2.setScore(10F);
             u2.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
@@ -310,7 +310,7 @@ public class ManagerWorldService {
 
             User u3 = new User();
             u3.setName("DeltaTester");
-            u3.setEmail("deltatester@" + webProperties.getAdhocDomain());
+            u3.setEmail("deltatester@" + coreProperties.getAdhocDomain());
             u3.setFaction(team3);
             u3.setScore(20F);
             u3.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
@@ -322,7 +322,7 @@ public class ManagerWorldService {
 
             User u4 = new User();
             u4.setName("GammaTester");
-            u4.setEmail("gammatester@" + webProperties.getAdhocDomain());
+            u4.setEmail("gammatester@" + coreProperties.getAdhocDomain());
             u4.setFaction(team4);
             u4.setScore(30F);
             u4.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));

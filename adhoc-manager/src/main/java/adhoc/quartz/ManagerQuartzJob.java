@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.manager.quartz;
+package adhoc.quartz;
 
 import adhoc.faction.ManagerFactionService;
 import adhoc.pawn.ManagerPawnService;

@@ -20,8 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.web.auth;
 
+import adhoc.user.User;
+import adhoc.user.UserService;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

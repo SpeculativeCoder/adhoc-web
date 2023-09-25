@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.web;
+package adhoc.artemis;
 
-import adhoc.web.properties.WebProperties;
+import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
@@ -53,7 +53,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ArtemisConfig implements ArtemisConfigurationCustomizer {
 
-    private final WebProperties webProperties;
+    private final CoreProperties coreProperties;
 
     @Bean
     public TopicConfiguration eventsTopic() {
@@ -124,8 +124,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
     private Map<String, Object> stompConnectorProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-        props.put(TransportConstants.HOST_PROP_NAME, webProperties.getMessageBrokerHost());
-        props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerStompPort());
+        props.put(TransportConstants.HOST_PROP_NAME, coreProperties.getMessageBrokerHost());
+        props.put(TransportConstants.PORT_PROP_NAME, coreProperties.getMessageBrokerStompPort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "STOMP");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         //props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "4");
@@ -137,8 +137,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
     private Map<String, Object> coreConnectorProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-        props.put(TransportConstants.HOST_PROP_NAME, webProperties.getMessageBrokerHost());
-        props.put(TransportConstants.PORT_PROP_NAME, webProperties.getMessageBrokerCorePort());
+        props.put(TransportConstants.HOST_PROP_NAME, coreProperties.getMessageBrokerHost());
+        props.put(TransportConstants.PORT_PROP_NAME, coreProperties.getMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
@@ -149,8 +149,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
     private Map<String, Object> managerCoreConnectorProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-        props.put(TransportConstants.HOST_PROP_NAME, webProperties.getManagerMessageBrokerHost());
-        props.put(TransportConstants.PORT_PROP_NAME, webProperties.getManagerMessageBrokerCorePort());
+        props.put(TransportConstants.HOST_PROP_NAME, coreProperties.getManagerMessageBrokerHost());
+        props.put(TransportConstants.PORT_PROP_NAME, coreProperties.getManagerMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
@@ -161,8 +161,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
     private Map<String, Object> kioskCoreConnectorProps() {
         Map<String, Object> props = new LinkedHashMap<>();
         props.put(TransportConstants.SCHEME_PROP_NAME, "tcp");
-        props.put(TransportConstants.HOST_PROP_NAME, webProperties.getKioskMessageBrokerHost());
-        props.put(TransportConstants.PORT_PROP_NAME, webProperties.getKioskMessageBrokerCorePort());
+        props.put(TransportConstants.HOST_PROP_NAME, coreProperties.getKioskMessageBrokerHost());
+        props.put(TransportConstants.PORT_PROP_NAME, coreProperties.getKioskMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));

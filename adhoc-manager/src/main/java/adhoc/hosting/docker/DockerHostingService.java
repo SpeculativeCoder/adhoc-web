@@ -26,8 +26,8 @@ import adhoc.area.Area;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.hosting.docker.properties.DockerHostingProperties;
-import adhoc.manager.properties.ManagerProperties;
-import adhoc.web.properties.WebProperties;
+import adhoc.properties.ManagerProperties;
+import adhoc.properties.CoreProperties;
 import adhoc.server.Server;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
@@ -72,7 +72,7 @@ public class DockerHostingService implements HostingService {
 
     private static final Pattern SERVER_ID_PATTERN = Pattern.compile("^SERVER_ID=([0-9]+)$");
 
-    private final WebProperties webProperties;
+    private final CoreProperties coreProperties;
     private final ManagerProperties managerProperties;
     private final DockerHostingProperties dockerHostingProperties;
 
@@ -202,7 +202,7 @@ public class DockerHostingService implements HostingService {
                         String.format("MAX_PAWNS=%d", managerProperties.getMaxPawns()),
                         String.format("MAX_PLAYERS=%d", managerProperties.getMaxPlayers()),
                         String.format("MAX_BOTS=%d", managerProperties.getMaxBots()),
-                        String.format("FEATURE_FLAGS=%s", webProperties.getFeatureFlags()),
+                        String.format("FEATURE_FLAGS=%s", coreProperties.getFeatureFlags()),
                         String.format("CA_CERTIFICATE=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getTrustCertificate()) : "unused"),
                         String.format("SERVER_CERTIFICATE=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getCertificate()) : "unused"),
                         String.format("PRIVATE_KEY=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getCertificatePrivateKey()) : "unused"),

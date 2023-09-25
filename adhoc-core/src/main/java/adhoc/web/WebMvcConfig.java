@@ -22,7 +22,7 @@
 
 package adhoc.web;
 
-import adhoc.web.properties.WebProperties;
+import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.Connector;
@@ -38,16 +38,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final WebProperties webProperties;
+    private final CoreProperties coreProperties;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOriginPatterns(
-                        "https://" + webProperties.getAdhocDomain(),
-                        "http://" + webProperties.getAdhocDomain(),
-                        "https://*." + webProperties.getAdhocDomain(),
-                        "http://*." + webProperties.getAdhocDomain())
+                        "https://" + coreProperties.getAdhocDomain(),
+                        "http://" + coreProperties.getAdhocDomain(),
+                        "https://*." + coreProperties.getAdhocDomain(),
+                        "http://*." + coreProperties.getAdhocDomain())
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .exposedHeaders("*")
@@ -59,7 +59,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer() {
         return (TomcatServletWebServerFactory factory) -> {
             final Connector connector = new Connector();
-            connector.setPort(webProperties.getServerPort2());
+            connector.setPort(coreProperties.getServerPort2());
             factory.addAdditionalTomcatConnectors(connector);
         };
     }

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.web.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;

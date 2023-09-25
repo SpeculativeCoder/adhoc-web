@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web.properties;
+package adhoc.properties;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ import java.util.List;
 @Component
 @Slf4j
 @Getter
-public class WebProperties {
+public class CoreProperties {
 
     public enum ApplicationMode {
         MANAGER,

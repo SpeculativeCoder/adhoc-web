@@ -27,7 +27,7 @@ import adhoc.area.AreaRepository;
 import adhoc.dns.DnsService;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
-import adhoc.manager.properties.ManagerProperties;
+import adhoc.properties.ManagerProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;

@@ -23,6 +23,7 @@
 package adhoc.user;
 
 import adhoc.user.request.RegisterUserRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +74,7 @@ public class UserController {
     @PostMapping("/users/register")
     public ResponseEntity<UserDetailDto> postRegisterUser(
             @Valid @RequestBody RegisterUserRequest registerUserRequest,
+            HttpServletRequest httpServletRequest,
             Authentication authentication) {
 
         if (!featureFlags.contains("development")) {
@@ -86,6 +88,8 @@ public class UserController {
                 throw new UnsupportedOperationException("register name not supported yet");
             }
         }
+
+        log.info("register: name={} factionId={} remoteAddr={} userAgent=\"{}\"", registerUserRequest.getName(), registerUserRequest.getFactionId(), httpServletRequest.getRemoteAddr(), httpServletRequest.getHeader("user-agent"));
 
         return userService.registerUser(registerUserRequest, authentication);
     }

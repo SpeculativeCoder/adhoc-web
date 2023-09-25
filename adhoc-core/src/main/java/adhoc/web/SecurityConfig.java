@@ -20,8 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.web;
 
+import adhoc.web.request_matcher.ServerRequestMatcher;
+import adhoc.web.auth.ServerAuthenticationDetailsSource;
+import adhoc.web.auth.UserAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

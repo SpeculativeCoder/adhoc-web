@@ -22,7 +22,7 @@
 
 package adhoc.db.hsqldb;
 
-import adhoc.web.properties.WebProperties;
+import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Profile;
 @RequiredArgsConstructor
 public class KioskHsqldbConfig {
 
-    private final WebProperties webProperties;
+    private final CoreProperties coreProperties;
 
     private final DataSourceProperties dataSourceProperties;
 
@@ -48,7 +48,7 @@ public class KioskHsqldbConfig {
             @Override
             public String getJdbcUrl() {
                 return !dataSourceProperties.getUrl().isEmpty()
-                        ? dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://" + webProperties.getManagerHost() + ":9001/adhoc";
+                        ? dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://" + coreProperties.getManagerHost() + ":9001/adhoc";
             }
 
             @Override

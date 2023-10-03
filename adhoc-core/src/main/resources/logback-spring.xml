@@ -27,18 +27,34 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
-        <!-- quick/handy way to only show mutating SQL if chasing something down when hibernate SQL is being logged - note: depends on janino being enabled in pom -->
+        <!-- quick/handy way to only show mutating SQL if chasing something down when org.hibernate.SQL logging set to debug -->
         <!--
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
-                <expression>!"org.hibernate.SQL".equals(logger) ||
+                <expression>
                     ("org.hibernate.SQL".equals(logger) &amp;&amp;
-                        (message.startsWith("update") || message.startsWith("insert") || message.startsWith("delete") || message.endsWith("for update")))</expression>
+                        !message.startsWith("update") &amp;&amp;
+                        !message.startsWith("insert") &amp;&amp;
+                        !message.startsWith("delete"))
+                </expression>
             </evaluator>
-            <onMismatch>DENY</onMismatch>
-            <onMatch>NEUTRAL</onMatch>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
         </filter>
         -->
+        <!-- message.endsWith("for update") -->
+
+        <!-- suppress some artemis errors - TODO: chase down why these happen -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    ("org.apache.activemq.artemis.core.server".equals(logger) &amp;&amp;
+                    message.startsWith("AMQ224037: cluster connection Failed to handle message"))
+                </expression>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
 
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->

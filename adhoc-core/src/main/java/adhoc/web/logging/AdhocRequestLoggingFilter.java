@@ -39,7 +39,7 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 import java.io.IOException;
 
 /**
- * Logging component to enable logging of POSTS/PUTS etc.
+ * Logging component to enable logging of POSTs/PUTs etc.
  */
 @Component
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
@@ -114,8 +114,8 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
             if (log.isWarnEnabled() && statusError) {
                 loggingEventBuilder = log.atWarn();
 
-            //} else if (log.isInfoEnabled() && isRegisterOrLoginRequest(request)) {
-            //    loggingEventBuilder = log.atInfo();
+                //} else if (log.isInfoEnabled() && isRegisterOrLoginRequest(request)) {
+                //    loggingEventBuilder = log.atInfo();
 
             } else if (log.isDebugEnabled() && !methodGet) { //&& !userServer) {
                 loggingEventBuilder = log.atDebug();

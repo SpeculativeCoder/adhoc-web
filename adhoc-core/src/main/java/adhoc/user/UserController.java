@@ -89,7 +89,7 @@ public class UserController {
             }
         }
 
-        log.info("register: name={} factionId={} remoteAddr={} userAgent=\"{}\"", registerUserRequest.getName(), registerUserRequest.getFactionId(), httpServletRequest.getRemoteAddr(), httpServletRequest.getHeader("user-agent"));
+        log.info("register: name={} factionId={} remoteAddr={} userAgent={}", registerUserRequest.getName(), registerUserRequest.getFactionId(), httpServletRequest.getRemoteAddr(), httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 ()/;,.]", "?"));
 
         return userService.registerUser(registerUserRequest, authentication);
     }

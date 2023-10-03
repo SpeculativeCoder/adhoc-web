@@ -52,7 +52,6 @@ export class StompService {
 
     this.client = webstomp.over(new SockJS(window.location.protocol + '//' + location.host + '/ws/stomp/user_sockjs', {}), {
       debug: false,
-      heartbeat: false,
     });
     let headers = {};
     if (this.csrf) {

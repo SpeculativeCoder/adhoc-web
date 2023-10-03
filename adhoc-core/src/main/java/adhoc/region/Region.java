@@ -60,7 +60,7 @@ public class Region {
     private String name;
 
     /**
-     * Name of map in Unreal project.
+     * Name of map/level in Unreal project.
      */
     @Basic(optional = false)
     @ToString.Include

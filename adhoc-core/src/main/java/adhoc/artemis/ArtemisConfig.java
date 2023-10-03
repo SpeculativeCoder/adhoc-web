@@ -129,7 +129,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "STOMP");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         //props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "4");
-        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
+        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(5).toMillis()));
         log.info("stompConnectorProps: props={}", props);
         return props;
     }
@@ -141,7 +141,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.PORT_PROP_NAME, coreProperties.getMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
-        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
+        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(5).toMillis()));
         log.info("coreConnectorProps: props={}", props);
         return props;
     }
@@ -153,7 +153,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.PORT_PROP_NAME, coreProperties.getManagerMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
-        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
+        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(5).toMillis()));
         log.info("managerCoreConnectorProps: props={}", props);
         return props;
     }
@@ -165,7 +165,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         props.put(TransportConstants.PORT_PROP_NAME, coreProperties.getKioskMessageBrokerCorePort());
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
-        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(1).toMillis()));
+        props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(5).toMillis()));
         log.info("kioskCoreConnectorProps: props={}", props);
         return props;
     }

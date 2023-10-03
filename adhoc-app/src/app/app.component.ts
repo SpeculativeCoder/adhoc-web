@@ -79,10 +79,10 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  @HostListener("window:beforeunload")
-  beforeUnload() {
-    this.stompService.disconnect();
-  }
+  //@HostListener("window:beforeunload")
+  //beforeUnload() {
+  //  this.stompService.disconnect();
+  //}
 
   ngOnDestroy() {
   }

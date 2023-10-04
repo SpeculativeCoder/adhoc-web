@@ -252,15 +252,15 @@ public class ManagerWorldService {
         objectiveB2 = objectiveRepository.save(objectiveB2);
 
         objectiveA1.setLinkedObjectives(Arrays.asList(objectiveB1, objectiveA2, objectiveA3, objectiveB2)
-                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toList()));
+                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
         objectiveA2.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveB1)
-                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toList()));
+                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
         objectiveA3.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveB2)
-                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toList()));
+                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
         objectiveB1.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveA2, objectiveB2)
-                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toList()));
+                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
         objectiveB2.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveA3, objectiveB1)
-                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toList()));
+                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
 
         // admin user and some faction specific users for testing
 

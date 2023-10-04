@@ -22,13 +22,15 @@
 
 package adhoc.web.request_matcher;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 /**
  * Communication with Unreal server does not require CSRF so this matcher provides a way to identify server requests so that we can ignore CSRF for them.
@@ -37,11 +39,31 @@ import org.springframework.stereotype.Component;
 @Component
 public class ServerRequestMatcher implements RequestMatcher {
 
+    @Value("${adhoc.server.basic-auth.username:#{null}}")
+    private Optional<String> serverBasicAuthUsername;
+
+    @Value("${adhoc.server.basic-auth.password:#{null}}")
+    private Optional<String> serverBasicAuthPassword;
+
+    private String encodedServerBasicAuth;
+
+    @PostConstruct
+    public void postConstruct() {
+        if (serverBasicAuthUsername.isPresent() && serverBasicAuthPassword.isPresent()) {
+            encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(serverBasicAuthUsername.get(), serverBasicAuthPassword.get(), null);
+        }
+    }
+
     @Override
     public boolean matches(HttpServletRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null // TODO
-                || (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken &&
-                authenticationToken.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority())));
+
+        boolean userServer = false;
+        if (encodedServerBasicAuth != null) {
+            String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            userServer = encodedServerBasicAuth != null
+                    && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
+        }
+
+        return userServer;
     }
 }

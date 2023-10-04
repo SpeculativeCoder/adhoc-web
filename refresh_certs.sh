@@ -34,6 +34,10 @@ export AWS_PROFILE_FOR_ROUTE53=${AWS_PROFILE_FOR_ROUTE53:-adhoc_acme}
 
 export ADHOC_DOMAIN=${ADHOC_DOMAIN:-localhost}
 
+export UNREAL_ENGINE_CERTS_DIR=${UNREAL_ENGINE_CERTS_DIR:-${UNREAL_ENGINE_DIR}/certs}
+
+mkdir -p ${UNREAL_ENGINE_CERTS_DIR}
+
 # root certificate
 rm -f certs/adhoc-ca.crt
 
@@ -59,3 +63,7 @@ cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.key" >> certs/adhoc.key
 
 # put the "full chain" in the public key file
 cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/fullchain.cer" > certs/adhoc.cer
+
+cp certs/adhoc-ca.cer ${UNREAL_ENGINE_CERTS_DIR}/adhoc-ca.cer
+cp certs/adhoc.key ${UNREAL_ENGINE_CERTS_DIR}/adhoc.key
+cp certs/adhoc.cer ${UNREAL_ENGINE_CERTS_DIR}/adhoc.cer

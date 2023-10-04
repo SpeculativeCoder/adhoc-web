@@ -30,7 +30,7 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * An objective that can be taken by a faction.
@@ -78,7 +78,7 @@ public class Objective {
     private Faction faction;
 
     @ManyToMany
-    private List<Objective> linkedObjectives;
+    private Set<Objective> linkedObjectives;
 
     @ManyToOne
     private Area area;

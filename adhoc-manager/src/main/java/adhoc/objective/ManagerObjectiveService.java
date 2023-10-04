@@ -65,7 +65,7 @@ public class ManagerObjectiveService {
         // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveService.toDto(
                 toEntityStage2(objectiveDto,
-                        toEntityStage1(objectiveDto, objectiveRepository.getForUpdateById(objectiveDto.getId()))));
+                        toEntityStage1(objectiveDto, objectiveRepository.getReferenceById(objectiveDto.getId()))));
     }
 
     public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
@@ -140,7 +140,8 @@ public class ManagerObjectiveService {
             objective.setLinkedObjectives(
                     objectiveDto.getLinkedObjectiveIndexes().stream()
                             .map(linkedObjectiveIndex ->
-                                    objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex)).toList());
+                                    objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
+                            .collect(Collectors.toSet()));
         }
 
         return objective;

@@ -71,11 +71,13 @@ public class ManagerPawnService {
             }
         }
 
+        if (seenPawnIds.isEmpty()) {
+            seenPawnIds.add(-1L);
+        }
+
         // clean up any pawns we didn't update for this server
-        if (!seenPawnIds.isEmpty()) {
-            try (Stream<Pawn> pawnsToDelete = pawnRepository.streamForUpdateByServerAndIdNotIn(server, seenPawnIds)) {
-                pawnsToDelete.forEach(pawnRepository::delete);
-            }
+        try (Stream<Pawn> pawnsToDelete = pawnRepository.streamForUpdateByServerAndIdNotIn(server, seenPawnIds)) {
+            pawnsToDelete.forEach(pawnRepository::delete);
         }
 
         if (!seenUserIds.isEmpty()) {

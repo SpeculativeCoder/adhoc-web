@@ -54,14 +54,8 @@ variable "adhoc_region_qa" {
 variable "adhoc_region_prod" {
   type        = string
   nullable    = false
-  description = "AWS Region in which Adhoc operates for qa workspace"
+  description = "AWS Region in which Adhoc operates for prod workspace"
   default     = "us-east-1"
-}
-
-locals {
-  adhoc_region = (terraform.workspace == "prod" ? var.adhoc_region_prod :
-  (terraform.workspace == "qa" ? var.adhoc_region_qa :
-  (terraform.workspace == "dev" ? var.adhoc_region_dev : "us-east-1")))
 }
 
 variable "adhoc_domain" {
@@ -71,6 +65,48 @@ variable "adhoc_domain" {
   default     = null
 }
 
+variable "adhoc_name_dev" {
+  type        = string
+  nullable    = false
+  description = "Name of the Adhoc project in dev workspace (will be used as a name or a prefix to the name of most resources)"
+  default     = "adhoc"
+  validation {
+    condition = can(regex("^[a-z0-9_]+$", var.adhoc_name_dev))
+    error_message = "adhoc_name_dev must match regex [a-z0-9_]+"
+  }
+}
+
+variable "adhoc_name_qa" {
+  type        = string
+  nullable    = false
+  description = "Name of the Adhoc project in qa workspace (will be used as a name or a prefix to the name of most resources)"
+  default     = "adhoc"
+  validation {
+    condition = can(regex("^[a-z0-9_]+$", var.adhoc_name_qa))
+    error_message = "adhoc_name_qa must match regex [a-z0-9_]+"
+  }
+}
+
+variable "adhoc_name_prod" {
+  type        = string
+  nullable    = false
+  description = "Name of the Adhoc project in prod workspace (will be used as a name or a prefix to the name of most resources)"
+  default     = "adhoc"
+  validation {
+    condition = can(regex("^[a-z0-9_]+$", var.adhoc_name_prod))
+    error_message = "adhoc_name_prod must match regex [a-z0-9_]+"
+  }
+}
+
+locals {
+  aws_region = (terraform.workspace == "prod" ? var.adhoc_region_prod :
+  (terraform.workspace == "qa" ? var.adhoc_region_qa :
+  (terraform.workspace == "dev" ? var.adhoc_region_dev : "us-east-1")))
+  adhoc_name = (terraform.workspace == "prod" ? var.adhoc_name_prod :
+  (terraform.workspace == "qa" ? var.adhoc_name_qa :
+  (terraform.workspace == "dev" ? var.adhoc_name_dev : "adhoc")))
+}
+
 provider "local" {
 }
 
@@ -78,7 +114,7 @@ provider "random" {
 }
 
 provider "aws" {
-  region  = local.adhoc_region
+  region  = local.aws_region
   profile = "adhoc_admin"
 }
 
@@ -97,24 +133,24 @@ data "aws_iam_role" "ecs_task_execution_role" {
 data "local_sensitive_file" "adhoc_ca_certificate" {
   count    = var.adhoc_domain == null ? 0 : 1
   #filename = fileexists("${path.root}/../certs/adhoc-ca.cer") ? "${path.root}/../certs/adhoc-ca.cer" : "${path.root}/empty_file"
-  filename = "${path.root}/../certs/adhoc-ca.cer"
+  filename = "${path.root}/../certs/${local.adhoc_name}-ca.cer"
 }
 
 data "local_sensitive_file" "adhoc_server_certificate" {
   count    = var.adhoc_domain == null ? 0 : 1
   #filename = fileexists("${path.root}/../certs/adhoc.cer") ? "${path.root}/../certs/adhoc.cer" : "${path.root}/empty_file"
-  filename = "${path.root}/../certs/adhoc.cer"
+  filename = "${path.root}/../certs/${local.adhoc_name}.cer"
 }
 
 data "local_sensitive_file" "adhoc_private_key" {
   count    = var.adhoc_domain == null ? 0 : 1
   #filename = fileexists("${path.root}/../certs/adhoc.key") ? "${path.root}/../certs/adhoc.key" : "${path.root}/empty_file"
-  filename = "${path.root}/../certs/adhoc.key"
+  filename = "${path.root}/../certs/${local.adhoc_name}.key"
 }
 
 // TODO: minimal permissions
 resource "aws_iam_policy" "adhoc_manager" {
-  name   = "adhoc_${terraform.workspace}_manager.${local.adhoc_region}"
+  name   = "${local.adhoc_name}_${terraform.workspace}_manager.${local.aws_region}"
   policy = jsonencode(
     {
       Version   = "2012-10-17",
@@ -167,7 +203,7 @@ resource "aws_iam_policy" "adhoc_manager" {
 }
 
 resource "aws_iam_group" "adhoc_manager" {
-  name = "adhoc_${terraform.workspace}_manager.${local.adhoc_region}"
+  name = "${local.adhoc_name}_${terraform.workspace}_manager.${local.aws_region}"
 }
 
 resource "aws_iam_group_policy_attachment" "adhoc_manager" {
@@ -176,7 +212,7 @@ resource "aws_iam_group_policy_attachment" "adhoc_manager" {
 }
 
 resource "aws_iam_user" "adhoc_manager" {
-  name = "adhoc_${terraform.workspace}_manager.${local.adhoc_region}"
+  name = "${local.adhoc_name}_${terraform.workspace}_manager.${local.aws_region}"
 }
 
 resource "aws_iam_user_group_membership" "adhoc_manager" {
@@ -195,7 +231,7 @@ resource "aws_vpc" "adhoc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags                 = {
-    Name = "adhoc_${terraform.workspace}"
+    Name = "${local.adhoc_name}_${terraform.workspace}"
   }
 }
 
@@ -206,7 +242,7 @@ resource "aws_subnet" "adhoc_a" {
   availability_zone       = "${data.aws_region.region.name}a"
   map_public_ip_on_launch = true
   tags                    = {
-    Name = "adhoc_${terraform.workspace}_a"
+    Name = "${local.adhoc_name}_${terraform.workspace}_a"
   }
 }
 
@@ -226,17 +262,17 @@ resource "aws_route" "adhoc" {
 #}
 
 resource "aws_security_group" "adhoc_manager" {
-  name   = "adhoc_${terraform.workspace}_manager"
+  name   = "${local.adhoc_name}_${terraform.workspace}_manager"
   vpc_id = aws_vpc.adhoc.id
 }
 
 resource "aws_security_group" "adhoc_kiosk" {
-  name   = "adhoc_${terraform.workspace}_kiosk"
+  name   = "${local.adhoc_name}_${terraform.workspace}_kiosk"
   vpc_id = aws_vpc.adhoc.id
 }
 
 resource "aws_security_group" "adhoc_server" {
-  name   = "adhoc_${terraform.workspace}_server"
+  name   = "${local.adhoc_name}_${terraform.workspace}_server"
   vpc_id = aws_vpc.adhoc.id
 }
 
@@ -367,17 +403,17 @@ resource "aws_security_group_rule" "adhoc_server_egress" {
 #}
 
 resource "aws_ecr_repository" "adhoc_manager" {
-  name         = "adhoc_${terraform.workspace}_manager"
+  name         = "${local.adhoc_name}_${terraform.workspace}_manager"
   force_delete = true
 }
 
 resource "aws_ecr_repository" "adhoc_kiosk" {
-  name         = "adhoc_${terraform.workspace}_kiosk"
+  name         = "${local.adhoc_name}_${terraform.workspace}_kiosk"
   force_delete = true
 }
 
 resource "aws_ecr_repository" "adhoc_server" {
-  name         = "adhoc_${terraform.workspace}_server"
+  name         = "${local.adhoc_name}_${terraform.workspace}_server"
   force_delete = true
 }
 
@@ -479,28 +515,28 @@ resource "random_password" "adhoc_hsqldb_password" {
 }
 
 resource "aws_ssm_parameter" "adhoc_ca_certificate" {
-  name  = "adhoc_${terraform.workspace}_ca_certificate"
+  name  = "${local.adhoc_name}_${terraform.workspace}_ca_certificate"
   type  = "SecureString"
   tier  = "Standard"
   value = var.adhoc_domain == null ? "unused" : data.local_sensitive_file.adhoc_ca_certificate[0].content
 }
 
 resource "aws_ssm_parameter" "adhoc_server_certificate" {
-  name  = "adhoc_${terraform.workspace}_server_certificate"
+  name  = "${local.adhoc_name}_${terraform.workspace}_server_certificate"
   type  = "SecureString"
   tier  = "Advanced"
   value = var.adhoc_domain == null ? "unused" : data.local_sensitive_file.adhoc_server_certificate[0].content
 }
 
 resource "aws_ssm_parameter" "adhoc_private_key" {
-  name  = "adhoc_${terraform.workspace}_private_key"
+  name  = "${local.adhoc_name}_${terraform.workspace}_private_key"
   type  = "SecureString"
   tier  = "Standard"
   value = var.adhoc_domain == null ? "unused" : data.local_sensitive_file.adhoc_private_key[0].content
 }
 
 resource "aws_ssm_parameter" "adhoc_postgres_password" {
-  name  = "adhoc_${terraform.workspace}_postgres_password"
+  name  = "${local.adhoc_name}_${terraform.workspace}_postgres_password"
   type  = "SecureString"
   tier  = "Standard"
   value = random_password.adhoc_postgres_password.result
@@ -513,7 +549,7 @@ resource "aws_ssm_parameter" "adhoc_postgres_password" {
 }
 
 resource "aws_ssm_parameter" "adhoc_artemis_embedded_cluster_password" {
-  name  = "adhoc_${terraform.workspace}_artemis_embedded_cluster_password"
+  name  = "${local.adhoc_name}_${terraform.workspace}_artemis_embedded_cluster_password"
   type  = "SecureString"
   tier  = "Standard"
   value = random_password.adhoc_artemis_embedded_cluster_password.result
@@ -526,21 +562,21 @@ resource "aws_ssm_parameter" "adhoc_artemis_embedded_cluster_password" {
 }
 
 resource "aws_ssm_parameter" "adhoc_aws_access_key_id" {
-  name  = "adhoc_${terraform.workspace}_aws_access_key_id"
+  name  = "${local.adhoc_name}_${terraform.workspace}_aws_access_key_id"
   type  = "SecureString"
   tier  = "Standard"
   value = aws_iam_access_key.adhoc_manager.id
 }
 
 resource "aws_ssm_parameter" "adhoc_aws_secret_access_key" {
-  name  = "adhoc_${terraform.workspace}_aws_secret_access_key"
+  name  = "${local.adhoc_name}_${terraform.workspace}_aws_secret_access_key"
   type  = "SecureString"
   tier  = "Standard"
   value = aws_iam_access_key.adhoc_manager.secret
 }
 
 resource "aws_ssm_parameter" "adhoc_server_basic_auth_password" {
-  name  = "adhoc_${terraform.workspace}_server_basic_auth_password"
+  name  = "${local.adhoc_name}_${terraform.workspace}_server_basic_auth_password"
   type  = "SecureString"
   tier  = "Standard"
   value = random_password.adhoc_server_basic_auth_password.result
@@ -553,7 +589,7 @@ resource "aws_ssm_parameter" "adhoc_server_basic_auth_password" {
 }
 
 resource "aws_ssm_parameter" "adhoc_default_admin_password" {
-  name  = "adhoc_${terraform.workspace}_default_admin_password"
+  name  = "${local.adhoc_name}_${terraform.workspace}_default_admin_password"
   type  = "SecureString"
   tier  = "Standard"
   value = random_password.adhoc_default_admin_password.result
@@ -566,7 +602,7 @@ resource "aws_ssm_parameter" "adhoc_default_admin_password" {
 }
 
 resource "aws_ssm_parameter" "adhoc_default_user_password" {
-  name  = "adhoc_${terraform.workspace}_default_user_password"
+  name  = "${local.adhoc_name}_${terraform.workspace}_default_user_password"
   type  = "SecureString"
   tier  = "Standard"
   value = random_password.adhoc_default_user_password.result
@@ -579,7 +615,7 @@ resource "aws_ssm_parameter" "adhoc_default_user_password" {
 }
 
 resource "aws_ssm_parameter" "adhoc_hsqldb_password" {
-  name  = "adhoc_${terraform.workspace}_hsqldb_password"
+  name  = "${local.adhoc_name}_${terraform.workspace}_hsqldb_password"
   type  = "SecureString"
   tier  = "Standard"
   value = random_password.adhoc_hsqldb_password.result
@@ -592,7 +628,7 @@ resource "aws_ssm_parameter" "adhoc_hsqldb_password" {
 }
 
 resource "aws_ssm_parameter" "adhoc_postgres_host" {
-  name  = "adhoc_${terraform.workspace}_postgres_host"
+  name  = "${local.adhoc_name}_${terraform.workspace}_postgres_host"
   type  = "String"
   tier  = "Standard"
   // TODO
@@ -605,12 +641,12 @@ resource "aws_ssm_parameter" "adhoc_postgres_host" {
 }
 
 resource "aws_service_discovery_private_dns_namespace" "adhoc" {
-  name = "adhoc-${terraform.workspace}"
+  name = "${local.adhoc_name}-${terraform.workspace}"
   vpc  = aws_vpc.adhoc.id
 }
 
 resource "aws_service_discovery_service" "adhoc_manager" {
-  name = "adhoc-${terraform.workspace}-manager"
+  name = "${local.adhoc_name}-${terraform.workspace}-manager"
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.adhoc.id
     dns_records {
@@ -625,7 +661,7 @@ resource "aws_service_discovery_service" "adhoc_manager" {
 }
 
 resource "aws_service_discovery_service" "adhoc_kiosk" {
-  name = "adhoc-${terraform.workspace}-kiosk"
+  name = "${local.adhoc_name}-${terraform.workspace}-kiosk"
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.adhoc.id
     dns_records {
@@ -640,7 +676,7 @@ resource "aws_service_discovery_service" "adhoc_kiosk" {
 }
 
 resource "aws_cloudwatch_log_group" "adhoc_manager" {
-  name              = "/ecs/adhoc_${terraform.workspace}_manager"
+  name              = "/ecs/${local.adhoc_name}_${terraform.workspace}_manager"
   // manually adjust according to needs
   retention_in_days = terraform.workspace == "prod" ? 3 : 1
   lifecycle {
@@ -651,7 +687,7 @@ resource "aws_cloudwatch_log_group" "adhoc_manager" {
 }
 
 resource "aws_cloudwatch_log_group" "adhoc_kiosk" {
-  name              = "/ecs/adhoc_${terraform.workspace}_kiosk"
+  name              = "/ecs/${local.adhoc_name}_${terraform.workspace}_kiosk"
   // manually adjust according to needs
   retention_in_days = terraform.workspace == "prod" ? 3 : 1
   lifecycle {
@@ -662,7 +698,7 @@ resource "aws_cloudwatch_log_group" "adhoc_kiosk" {
 }
 
 resource "aws_cloudwatch_log_group" "adhoc_server" {
-  name              = "/ecs/adhoc_${terraform.workspace}_server"
+  name              = "/ecs/${local.adhoc_name}_${terraform.workspace}_server"
   // manually adjust according to needs
   retention_in_days = terraform.workspace == "prod" ? 3 : 1
   lifecycle {
@@ -673,22 +709,22 @@ resource "aws_cloudwatch_log_group" "adhoc_server" {
 }
 
 resource "aws_ecs_task_definition" "adhoc_manager" {
-  family                = "adhoc_${terraform.workspace}_manager"
+  family                = "${local.adhoc_name}_${terraform.workspace}_manager"
   container_definitions = jsonencode([
     {
-      name         = "adhoc_${terraform.workspace}_manager"
+      name         = "${local.adhoc_name}_${terraform.workspace}_manager"
       image        = aws_ecr_repository.adhoc_manager.repository_url
       cpu          = 0
       links        = []
       portMappings = [
         {
-          name          = "adhoc_${terraform.workspace}_manager-443-tcp"
+          name          = "${local.adhoc_name}_${terraform.workspace}_manager-443-tcp"
           containerPort = 443
           hostPort      = 443
           protocol      = "tcp"
         },
         {
-          name          = "adhoc_${terraform.workspace}_manager-80-tcp"
+          name          = "${local.adhoc_name}_${terraform.workspace}_manager-80-tcp"
           containerPort = 80
           hostPort      = 80
           protocol      = "tcp"
@@ -709,51 +745,51 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
       secrets = [
         {
           name      = "CA_CERTIFICATE"
-          valueFrom = "adhoc_${terraform.workspace}_ca_certificate"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_ca_certificate"
         },
         {
           name      = "SERVER_CERTIFICATE"
-          valueFrom = "adhoc_${terraform.workspace}_server_certificate"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_server_certificate"
         },
         {
           name      = "PRIVATE_KEY"
-          valueFrom = "adhoc_${terraform.workspace}_private_key"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_private_key"
         },
         {
           name      = "POSTGRES_PASSWORD"
-          valueFrom = "adhoc_${terraform.workspace}_postgres_password"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_postgres_password"
         },
         {
           name      = "ARTEMIS_EMBEDDED_CLUSTER_PASSWORD"
-          valueFrom = "adhoc_${terraform.workspace}_artemis_embedded_cluster_password"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_artemis_embedded_cluster_password"
         },
         {
           name      = "AWS_ACCESS_KEY_ID"
-          valueFrom = "adhoc_${terraform.workspace}_aws_access_key_id"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_aws_access_key_id"
         },
         {
           name      = "AWS_SECRET_ACCESS_KEY"
-          valueFrom = "adhoc_${terraform.workspace}_aws_secret_access_key"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_aws_secret_access_key"
         },
         {
           name      = "SERVER_BASIC_AUTH_PASSWORD"
-          valueFrom = "adhoc_${terraform.workspace}_server_basic_auth_password"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_server_basic_auth_password"
         },
         {
           name      = "DEFAULT_ADMIN_PASSWORD"
-          valueFrom = "adhoc_${terraform.workspace}_default_admin_password"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_default_admin_password"
         },
         {
           name      = "DEFAULT_USER_PASSWORD"
-          valueFrom = "adhoc_${terraform.workspace}_default_user_password"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_default_user_password"
         },
         {
           name      = "HSQLDB_PASSWORD"
-          valueFrom = "adhoc_${terraform.workspace}_hsqldb_password"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_hsqldb_password"
         },
         {
           name      = "POSTGRES_HOST"
-          valueFrom = "adhoc_${terraform.workspace}_postgres_host"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_postgres_host"
         }
       ],
       dnsServers       = []
@@ -767,7 +803,7 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
         logDriver = "awslogs",
         options   = {
           awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/adhoc_${terraform.workspace}_manager"
+          awslogs-group         = "/ecs/${local.adhoc_name}_${terraform.workspace}_manager"
           awslogs-region        = data.aws_region.region.name
           awslogs-stream-prefix = "ecs"
         },
@@ -794,22 +830,22 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
 }
 
 resource "aws_ecs_task_definition" "adhoc_kiosk" {
-  family                = "adhoc_${terraform.workspace}_kiosk"
+  family                = "${local.adhoc_name}_${terraform.workspace}_kiosk"
   container_definitions = jsonencode([
     {
-      name         = "adhoc_${terraform.workspace}_kiosk"
+      name         = "${local.adhoc_name}_${terraform.workspace}_kiosk"
       image        = aws_ecr_repository.adhoc_kiosk.repository_url
       cpu          = 0
       links        = []
       portMappings = [
         {
-          name          = "adhoc_${terraform.workspace}_kiosk-443-tcp"
+          name          = "${local.adhoc_name}_${terraform.workspace}_kiosk-443-tcp"
           containerPort = 443
           hostPort      = 443
           protocol      = "tcp"
         },
         {
-          name          = "adhoc_${terraform.workspace}_kiosk-80-tcp"
+          name          = "${local.adhoc_name}_${terraform.workspace}_kiosk-80-tcp"
           containerPort = 80
           hostPort      = 80
           protocol      = "tcp"
@@ -830,31 +866,31 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
       secrets = [
         {
           name      = "CA_CERTIFICATE"
-          valueFrom = "adhoc_${terraform.workspace}_ca_certificate"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_ca_certificate"
         },
         {
           name      = "SERVER_CERTIFICATE"
-          valueFrom = "adhoc_${terraform.workspace}_server_certificate"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_server_certificate"
         },
         {
           name      = "PRIVATE_KEY"
-          valueFrom = "adhoc_${terraform.workspace}_private_key"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_private_key"
         },
         {
           name      = "POSTGRES_PASSWORD"
-          valueFrom = "adhoc_${terraform.workspace}_postgres_password"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_postgres_password"
         },
         {
           name      = "ARTEMIS_EMBEDDED_CLUSTER_PASSWORD"
-          valueFrom = "adhoc_${terraform.workspace}_artemis_embedded_cluster_password"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_artemis_embedded_cluster_password"
         },
         {
           name      = "HSQLDB_PASSWORD"
-          valueFrom = "adhoc_${terraform.workspace}_hsqldb_password"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_hsqldb_password"
         },
         {
           name      = "POSTGRES_HOST"
-          valueFrom = "adhoc_${terraform.workspace}_postgres_host"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_postgres_host"
         }
       ],
       dnsServers       = []
@@ -868,7 +904,7 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
         logDriver = "awslogs",
         options   = {
           awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/adhoc_${terraform.workspace}_kiosk"
+          awslogs-group         = "/ecs/${local.adhoc_name}_${terraform.workspace}_kiosk"
           awslogs-region        = data.aws_region.region.name
           awslogs-stream-prefix = "ecs"
         },
@@ -895,15 +931,15 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
 }
 
 resource "aws_ecs_task_definition" "adhoc_server" {
-  family                = "adhoc_${terraform.workspace}_server"
+  family                = "${local.adhoc_name}_${terraform.workspace}_server"
   container_definitions = jsonencode([
     {
-      name         = "adhoc_${terraform.workspace}_server"
+      name         = "${local.adhoc_name}_${terraform.workspace}_server"
       image        = aws_ecr_repository.adhoc_server.repository_url
       cpu          = 0
       portMappings = [
         {
-          name          = "adhoc_${terraform.workspace}_server-8889-tcp"
+          name          = "${local.adhoc_name}_${terraform.workspace}_server-8889-tcp"
           containerPort = 8889
           hostPort      = 8889
           protocol      = "tcp"
@@ -913,26 +949,26 @@ resource "aws_ecs_task_definition" "adhoc_server" {
       secrets   = [
         {
           name      = "CA_CERTIFICATE"
-          valueFrom = "adhoc_${terraform.workspace}_ca_certificate"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_ca_certificate"
         },
         {
           name      = "SERVER_CERTIFICATE"
-          valueFrom = "adhoc_${terraform.workspace}_server_certificate"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_server_certificate"
         },
         {
           name      = "PRIVATE_KEY"
-          valueFrom = "adhoc_${terraform.workspace}_private_key"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_private_key"
         },
         {
           name      = "SERVER_BASIC_AUTH_PASSWORD"
-          valueFrom = "adhoc_${terraform.workspace}_server_basic_auth_password"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_server_basic_auth_password"
         }
       ],
       logConfiguration = {
         logDriver = "awslogs",
         options   = {
           awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/adhoc_${terraform.workspace}_server"
+          awslogs-group         = "/ecs/${local.adhoc_name}_${terraform.workspace}_server"
           awslogs-region        = data.aws_region.region.name
           awslogs-stream-prefix = "ecs"
         }
@@ -955,7 +991,7 @@ resource "aws_ecs_task_definition" "adhoc_server" {
 }
 
 resource "aws_ecs_cluster" "adhoc" {
-  name = "adhoc_${terraform.workspace}"
+  name = "${local.adhoc_name}_${terraform.workspace}"
 }
 
 resource "aws_ecs_cluster_capacity_providers" "adhoc" {
@@ -972,7 +1008,7 @@ resource "aws_ecs_cluster_capacity_providers" "adhoc" {
 }
 
 resource "aws_ecs_service" "adhoc_manager" {
-  name                               = "adhoc_${terraform.workspace}_manager"
+  name                               = "${local.adhoc_name}_${terraform.workspace}_manager"
   cluster                            = aws_ecs_cluster.adhoc.id
   #launch_type     = "FARGATE"
   task_definition                    = "${aws_ecs_task_definition.adhoc_manager.family}:${aws_ecs_task_definition.adhoc_manager.revision}"
@@ -1004,7 +1040,7 @@ resource "aws_ecs_service" "adhoc_manager" {
 }
 
 resource "aws_ecs_service" "adhoc_kiosk" {
-  name                               = "adhoc_${terraform.workspace}_kiosk"
+  name                               = "${local.adhoc_name}_${terraform.workspace}_kiosk"
   cluster                            = aws_ecs_cluster.adhoc.id
   #launch_type = "FARGATE"
   task_definition                    = "${aws_ecs_task_definition.adhoc_kiosk.family}:${aws_ecs_task_definition.adhoc_kiosk.revision}"

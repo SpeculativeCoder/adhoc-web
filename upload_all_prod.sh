@@ -31,10 +31,12 @@ source ./env/common.env || true
 source ./env/prod.env || true
 set +a
 
+export ADHOC_NAME=${ADHOC_NAME:-adhoc}
+
 export AWS_PROFILE_FOR_ECR=${AWS_PROFILE_FOR_ECR:-adhoc_admin}
 
-export MANAGER_IMAGE=${MANAGER_IMAGE:-adhoc_prod_manager}
-export KIOSK_IMAGE=${KIOSK_IMAGE:-adhoc_prod_kiosk}
-export SERVER_IMAGE=${SERVER_IMAGE:-adhoc_prod_server}
+export MANAGER_IMAGE=${MANAGER_IMAGE:-${ADHOC_NAME}_prod_manager}
+export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_prod_kiosk}
+export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_prod_server}
 
 ./upload_all.sh

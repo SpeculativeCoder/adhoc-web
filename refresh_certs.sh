@@ -30,6 +30,8 @@ set -a
 source ./env/common.env || true
 set +a
 
+export ADHOC_NAME=${ADHOC_NAME:-adhoc}
+
 export AWS_PROFILE_FOR_ROUTE53=${AWS_PROFILE_FOR_ROUTE53:-adhoc_acme}
 
 export ADHOC_DOMAIN=${ADHOC_DOMAIN:-localhost}
@@ -39,13 +41,13 @@ export UNREAL_ENGINE_CERTS_DIR=${UNREAL_ENGINE_CERTS_DIR:-${UNREAL_ENGINE_DIR}/c
 mkdir -p ${UNREAL_ENGINE_CERTS_DIR}
 
 # root certificate
-rm -f certs/adhoc-ca.crt
+rm -f certs/${ADHOC_NAME}-ca.crt
 
-certutil -store "AuthRoot" "USERTrust RSA Certification Authority" certs/adhoc-ca.crt
-openssl x509 -in certs/adhoc-ca.crt -out certs/adhoc-ca.cer -inform DEM -outform PEM
-dos2unix certs/adhoc-ca.cer
+certutil -store "AuthRoot" "USERTrust RSA Certification Authority" certs/${ADHOC_NAME}-ca.crt
+openssl x509 -in certs/${ADHOC_NAME}-ca.crt -out certs/${ADHOC_NAME}-ca.cer -inform DEM -outform PEM
+dos2unix certs/${ADHOC_NAME}-ca.cer
 
-rm -f certs/adhoc-ca.crt
+rm -f certs/${ADHOC_NAME}-ca.crt
 
 set +x
 export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id --profile ${AWS_PROFILE_FOR_ROUTE53})
@@ -57,13 +59,13 @@ mkdir -p certs
 ~/.acme.sh/acme.sh --issue --force --dns dns_aws -d ${ADHOC_DOMAIN} -d *.${ADHOC_DOMAIN}
 
 # put the public key first in the private key file (not sure why this is needed)
-cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.cer" > certs/adhoc.key
+cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.cer" > certs/${ADHOC_NAME}.key
 # follow this with the actual private key
-cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.key" >> certs/adhoc.key
+cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.key" >> certs/${ADHOC_NAME}.key
 
 # put the "full chain" in the public key file
-cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/fullchain.cer" > certs/adhoc.cer
+cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/fullchain.cer" > certs/${ADHOC_NAME}.cer
 
-cp certs/adhoc-ca.cer ${UNREAL_ENGINE_CERTS_DIR}/adhoc-ca.cer
-cp certs/adhoc.key ${UNREAL_ENGINE_CERTS_DIR}/adhoc.key
-cp certs/adhoc.cer ${UNREAL_ENGINE_CERTS_DIR}/adhoc.cer
+cp certs/${ADHOC_NAME}-ca.cer ${UNREAL_ENGINE_CERTS_DIR}/${ADHOC_NAME}-ca.cer
+cp certs/${ADHOC_NAME}.key ${UNREAL_ENGINE_CERTS_DIR}/${ADHOC_NAME}.key
+cp certs/${ADHOC_NAME}.cer ${UNREAL_ENGINE_CERTS_DIR}/${ADHOC_NAME}.cer

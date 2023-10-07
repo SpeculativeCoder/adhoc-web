@@ -25,6 +25,8 @@ FROM ubuntu:rolling
 RUN apt-get update -y && apt-get dist-upgrade -y
 # RUN apt-get install -y openssl ca-certificates
 
+ARG ADHOC_NAME=adhoc
+
 ARG SERVER_UNREAL_CONFIGURATION=Development
 ARG FEATURE_FLAGS=development
 
@@ -34,6 +36,7 @@ ARG UNREAL_PROJECT_NAME=MyProject
 
 ARG SERVER_AUTH_BASIC_PASSWORD
 
+ENV ADHOC_NAME=${ADHOC_NAME}
 ENV FEATURE_FLAGS=${FEATURE_FLAGS}
 ENV MANAGER_HOST=${MANAGER_HOST}
 ENV UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME}

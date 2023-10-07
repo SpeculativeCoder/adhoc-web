@@ -27,14 +27,16 @@ set -e # bail on ANY error
 
 # NOTE: this script is intended to be ran within a docker container and will copy certs from environment variables into files
 
+[[ -v ADHOC_NAME ]] || echo "missing ADHOC_NAME"
+
 [[ -v CA_CERTIFICATE ]] || echo "missing CA_CERTIFICATE"
 [[ -v SERVER_CERTIFICATE ]] || echo "missing SERVER_CERTIFICATE"
 [[ -v PRIVATE_KEY ]] || echo "missing PRIVATE_KEY"
 
 # TODO
-echo -e "${CA_CERTIFICATE}" > certs/adhoc-ca.cer
-echo -e "${SERVER_CERTIFICATE}" > certs/adhoc.cer
-echo -e "${PRIVATE_KEY}" > certs/adhoc.key
+echo -e "${CA_CERTIFICATE}" > certs/${ADHOC_NAME}-ca.cer
+echo -e "${SERVER_CERTIFICATE}" > certs/${ADHOC_NAME}.cer
+echo -e "${PRIVATE_KEY}" > certs/${ADHOC_NAME}.key
 
 ls -al certs
 

@@ -29,7 +29,7 @@ set -e # bail on ANY error
 export SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION:-Development}
 export FEATURE_FLAGS=${FEATURE_FLAGS:-development}
 
-export MANAGER_HOST=${MANAGER_HOST:-adhoc-dev-manager.adhoc-dev}
+export MANAGER_HOST=${MANAGER_HOST:-${ADHOC_NAME}-dev-manager.${ADHOC_NAME}-dev}
 
 export UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME:-MyProject}
 export UNREAL_PROJECT_REGION_MAPS=${UNREAL_PROJECT_REGION_MAPS:-Region0001}
@@ -38,7 +38,7 @@ export UNREAL_PROJECT_TRANSITION_MAP=${UNREAL_PROJECT_TRANSITION_MAP:-Entry}
 export UNREAL_PROJECT_DIR=${UNREAL_PROJECT_DIR:-${HOME}/Unreal\ Projects/${UNREAL_PROJECT_NAME}}
 export UNREAL_ENGINE_DIR=${UNREAL_ENGINE_DIR:-${HOME}/ue-4.27-html5-es3}
 
-export SERVER_IMAGE=${SERVER_IMAGE:-adhoc_dev_server}
+export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_dev_server}
 
 web_project_dir=$(realpath -e $(dirname "$0"))
 package_dir=${web_project_dir}/Package
@@ -56,6 +56,7 @@ ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
  -NoP4 -UTF8Output -NoDebugInfo
 
 docker build --tag ${SERVER_IMAGE} -f docker/adhoc_server.Dockerfile \
+  --build-arg ADHOC_NAME=${ADHOC_NAME} \
   --build-arg SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION} \
   --build-arg FEATURE_FLAGS=${FEATURE_FLAGS} \
   --build-arg MANAGER_HOST=${MANAGER_HOST} \

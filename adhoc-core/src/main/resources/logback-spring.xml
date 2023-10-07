@@ -59,7 +59,7 @@
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->
             <!--<pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%-5p){bright_black} %acc([%15.15t]){bright_black} %acc(%40.40logger{39}){cyan}: %acc(%m%n%ewtpc)</pattern>-->
-            <pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%-5p){bright_black} %acc([%15.15t]){bright_black} %acc(%40.40logger){cyan}: %acc(%m%n%ewtpc)</pattern>
+            <pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%-5p){bright_black} %acc([%15.15t]){bright_black} %acc(%40.40logger){cyan}: %acc(%m%n%ex)</pattern>
             <charset>UTF-8</charset>
         </encoder>
 

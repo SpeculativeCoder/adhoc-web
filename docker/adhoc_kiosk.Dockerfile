@@ -26,6 +26,8 @@ RUN apt-get update -y && apt-get dist-upgrade -y
 RUN apt-get install -y openjdk-21-jre-headless
 #ca-certificates
 
+ARG ADHOC_NAME=adhoc
+
 ARG SSL_ENABLED=false
 
 ARG FEATURE_FLAGS=development
@@ -51,6 +53,8 @@ ARG UNREAL_PROJECT_REGION_MAPS=Region0001
 ARG MANAGER_IMAGE=adhoc_dev_manager
 ARG KIOSK_IMAGE=adhoc_dev_kiosk
 ARG SERVER_IMAGE=adhoc_dev_server
+
+ENV ADHOC_NAME=${ADHOC_NAME}
 
 ENV SSL_ENABLED=${SSL_ENABLED}
 

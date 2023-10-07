@@ -31,6 +31,8 @@ source ./env/common.env || true
 source ./env/qa.env || true
 set +a
 
+export ADHOC_NAME=${ADHOC_NAME:-adhoc}
+
 export SSL_ENABLED=${SSL_ENABLED:-false}
 
 export ANGULAR_CONFIGURATION=${ANGULAR_CONFIGURATION:-production}
@@ -38,16 +40,16 @@ export CLIENT_UNREAL_CONFIGURATION=${CLIENT_UNREAL_CONFIGURATION:-Shipping}
 export SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION:-Shipping}
 export FEATURE_FLAGS=${FEATURE_FLAGS:-production}
 
-export POSTGRES_HOST=${POSTGRES_HOST:-adhoc-qa-manager.adhoc-qa}
-export HSQLDB_HOST=${HSQLDB_HOST:-adhoc-qa-manager.adhoc-qa}
-export MANAGER_HOST=${MANAGER_HOST:-adhoc-qa-manager.adhoc-qa}
-export KIOSK_HOST=${KIOSK_HOST:-adhoc-qa-kiosk.adhoc-qa}
+export POSTGRES_HOST=${POSTGRES_HOST:-${ADHOC_NAME}-qa-manager.${ADHOC_NAME}-qa}
+export HSQLDB_HOST=${HSQLDB_HOST:-${ADHOC_NAME}-qa-manager.${ADHOC_NAME}-qa}
+export MANAGER_HOST=${MANAGER_HOST:-${ADHOC_NAME}-qa-manager.${ADHOC_NAME}-qa}
+export KIOSK_HOST=${KIOSK_HOST:-${ADHOC_NAME}-qa-kiosk.${ADHOC_NAME}-qa}
 
 export AWS_REGION=${AWS_REGION:-us-east-1}
 export SERVER_AVAILABILITY_ZONE=${SERVER_AVAILABILITY_ZONE:-us-east-1a}
-export SERVER_SECURITY_GROUP_NAME=${SERVER_SECURITY_GROUP_NAME:-adhoc_qa_server}
+export SERVER_SECURITY_GROUP_NAME=${SERVER_SECURITY_GROUP_NAME:-${ADHOC_NAME}_qa_server}
 
-export ECS_CLUSTER=${ECS_CLUSTER:-adhoc_qa}
+export ECS_CLUSTER=${ECS_CLUSTER:-${ADHOC_NAME}_qa}
 export ADHOC_DOMAIN=${ADHOC_DOMAIN:-localhost}
 export MANAGER_DOMAIN=${MANAGER_DOMAIN:-manager-qa.${ADHOC_DOMAIN}}
 export KIOSK_DOMAIN=${KIOSK_DOMAIN:-qa.${ADHOC_DOMAIN}}
@@ -55,8 +57,8 @@ export SERVER_DOMAIN=${SERVER_DOMAIN:-server-qa.${ADHOC_DOMAIN}}
 
 export UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME:-MyProject}
 
-export MANAGER_IMAGE=${MANAGER_IMAGE:-adhoc_qa_manager}
-export KIOSK_IMAGE=${KIOSK_IMAGE:-adhoc_qa_kiosk}
-export SERVER_IMAGE=${SERVER_IMAGE:-adhoc_qa_server}
+export MANAGER_IMAGE=${MANAGER_IMAGE:-${ADHOC_NAME}_qa_manager}
+export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_qa_kiosk}
+export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_qa_server}
 
 ./build_all.sh

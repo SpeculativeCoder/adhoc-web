@@ -38,12 +38,11 @@ public class WorldService {
     public static final long WORLD_ID = 1L;
 
     public WorldDto toDto(World world) {
-        return WorldDto.builder()
-                .id(WorldService.WORLD_ID)
-                .version(world.getVersion())
-                .managerHosts(new ArrayList<>(world.getManagerHosts()))
-                .kioskHosts(new ArrayList<>(world.getKioskHosts()))
-                .build();
+        return new WorldDto(
+                world.getId(),
+                world.getVersion(),
+                new ArrayList<>(world.getManagerHosts()),
+                new ArrayList<>(world.getKioskHosts()));
     }
 }
 

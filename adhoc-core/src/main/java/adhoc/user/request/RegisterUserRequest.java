@@ -23,15 +23,14 @@
 package adhoc.user.request;
 
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
 public class RegisterUserRequest {
 
 	// at the moment we only allow auto-generated name

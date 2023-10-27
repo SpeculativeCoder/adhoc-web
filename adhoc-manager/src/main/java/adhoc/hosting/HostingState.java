@@ -23,9 +23,10 @@
 package adhoc.hosting;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +37,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class HostingState {
 
     private Set<String> managerHosts;
@@ -50,6 +52,7 @@ public class HostingState {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder(toBuilder = true)
     public static class ServerTask {
 
         /** Unique identifier of the task within the hosting service. */

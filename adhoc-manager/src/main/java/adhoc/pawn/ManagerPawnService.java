@@ -25,7 +25,7 @@ package adhoc.pawn;
 import adhoc.faction.FactionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import adhoc.server.event.ServerPawnsEvent;
+import adhoc.pawn.event.ServerPawnsEvent;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

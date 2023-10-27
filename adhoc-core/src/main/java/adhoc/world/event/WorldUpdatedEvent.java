@@ -25,16 +25,15 @@ package adhoc.world.event;
 import adhoc.Event;
 import adhoc.world.WorldDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder(toBuilder = true)
+@Builder(toBuilder = true)
 @Jacksonized
 public class WorldUpdatedEvent implements Event {
 

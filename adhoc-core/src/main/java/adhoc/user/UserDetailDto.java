@@ -26,17 +26,42 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@SuperBuilder(toBuilder = true)
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true, includeFieldNames = false)
-public class UserDetailDto extends UserDto {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class UserDetailDto {
+
+    @NotNull
+    @Min(1)
+    private Long id;
+
+    @Min(0)
+    private Long version;
+
+    @NotEmpty
+    private String name;
+
+    @NotNull
+    @Min(1)
+    private Long factionId;
+
+    @NotNull
+    @Min(0)
+    private Integer factionIndex;
+
+    @NotNull
+    private Float score;
 
     @NotNull
     private Float x;
@@ -56,6 +81,7 @@ public class UserDetailDto extends UserDto {
     private LocalDateTime updated;
     private LocalDateTime lastLogin;
     private LocalDateTime lastJoin;
+    private LocalDateTime seen;
 
     @NotNull
     @Size(min = 1)

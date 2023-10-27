@@ -370,9 +370,7 @@ public class ManagerWorldService {
     }
 
     private void sendWorldUpdatedEvent(World world) {
-        WorldUpdatedEvent event = WorldUpdatedEvent.builder()
-                .world(worldService.toDto(world))
-                .build();
+        WorldUpdatedEvent event = new WorldUpdatedEvent(worldService.toDto(world));
 
         log.info("Sending: {}", event);
         stomp.convertAndSend("/topic/events", event);

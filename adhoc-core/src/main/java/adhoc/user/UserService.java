@@ -108,8 +108,8 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        User user = userRepository.save(toEntity(registerUserRequest));
-        log.info("register: user={} password={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
+        User user = userRepository.saveAndFlush(toEntity(registerUserRequest));
+        log.debug("register: user={} password***={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
 
         // if not an auto-register from server - log them in too
         if (authentication == null
@@ -122,6 +122,9 @@ public class UserService {
             SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(authenticationToken);
             httpServletRequest.getSession(true).setAttribute(SPRING_SECURITY_CONTEXT_KEY, securityContext);
+
+            // TODO: put in a login listener
+            user.setLastLogin(LocalDateTime.now());
         }
 
         return ResponseEntity.ok(toDetailDto(user));
@@ -148,27 +151,26 @@ public class UserService {
     }
 
     UserDetailDto toDetailDto(User user) {
-        return UserDetailDto.builder()
-                .id(user.getId())
-                .version(user.getVersion())
-                .name(user.getName())
-                .factionId(user.getFaction().getId())
-                .factionIndex(user.getFaction().getIndex())
-                .score(user.getScore())
-                .x(user.getX())
-                .y(user.getY())
-                .z(user.getZ())
-                .pitch(user.getPitch())
-                .yaw(user.getYaw())
-                .created(user.getCreated())
-                .updated(user.getUpdated())
-                .lastLogin(user.getLastLogin())
-                .lastJoin(user.getLastJoin())
-                .seen(user.getSeen())
-                .roles(user.getRoles().stream().map(User.Role::name).collect(Collectors.toList()))
-                .token(user.getToken().toString())
-                .serverId(user.getServer() == null ? null : user.getServer().getId())
-                .build();
+        return new UserDetailDto(
+                user.getId(),
+                user.getVersion(),
+                user.getName(),
+                user.getFaction().getId(),
+                user.getFaction().getIndex(),
+                user.getScore(),
+                user.getX(),
+                user.getY(),
+                user.getZ(),
+                user.getPitch(),
+                user.getYaw(),
+                user.getCreated(),
+                user.getUpdated(),
+                user.getLastLogin(),
+                user.getLastJoin(),
+                user.getSeen(),
+                user.getRoles().stream().map(User.Role::name).collect(Collectors.toList()),
+                user.getToken().toString(),
+                user.getServer() == null ? null : user.getServer().getId());
     }
 
     User toEntity(RegisterUserRequest registerUserRequest) {
@@ -179,10 +181,6 @@ public class UserService {
         user.setPassword(registerUserRequest.getPassword() == null ? null : passwordEncoder.encode(registerUserRequest.getPassword()));
         user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
         user.setScore(0F);
-        user.setCreated(LocalDateTime.now());
-        user.setUpdated(user.getCreated());
-        user.setLastLogin(user.getCreated());
-        user.setLastJoin(null);
         user.setRoles(Sets.newHashSet(User.Role.USER));
         user.setToken(UUID.randomUUID());
         user.setServer(registerUserRequest.getServerId() == null ? null : serverRepository.getReferenceById(registerUserRequest.getServerId()));

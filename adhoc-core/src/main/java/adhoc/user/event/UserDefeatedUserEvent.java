@@ -23,25 +23,34 @@
 package adhoc.user.event;
 
 import adhoc.Event;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder(toBuilder = true)
+@Builder(toBuilder = true)
 @Jacksonized
 public class UserDefeatedUserEvent implements Event {
 
 	@NotNull
+	@Min(1)
 	private Long userId;
 
+	//@NotNull
+	@Min(0)
+	private Long userVersion;
+
 	@NotNull
+	@Min(1)
 	private Long defeatedUserId;
+
+	//@NotNull
+	@Min(0)
+	private Long defeatedUserVersion;
 }

@@ -27,8 +27,10 @@ import adhoc.pawn.Pawn;
 import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -86,12 +88,18 @@ public class User implements UserDetails {
     private Float pitch;
     private Float yaw;
 
+    @CreationTimestamp
     @Basic(optional = false)
     private LocalDateTime created;
+
+    @UpdateTimestamp
     @Basic(optional = false)
     private LocalDateTime updated;
+
     private LocalDateTime lastLogin;
+
     private LocalDateTime lastJoin;
+
     private LocalDateTime seen;
 
     @ElementCollection(fetch = FetchType.EAGER) // TODO: can we make the login success handler transactional?

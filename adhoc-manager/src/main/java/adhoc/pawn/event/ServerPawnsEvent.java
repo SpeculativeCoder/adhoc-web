@@ -20,22 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.server.event;
+package adhoc.pawn.event;
 
 import adhoc.pawn.PawnDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
 public class ServerPawnsEvent {
 
     @NotNull

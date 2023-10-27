@@ -85,7 +85,7 @@ export class StompService {
     if (eventListener) {
       eventListener.next(body);
     } else {
-      console.log("no event listener for " + body.eventType);
+      //console.log("no event listener for " + body.eventType);
     }
   }
 

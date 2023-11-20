@@ -22,9 +22,9 @@
 
 package adhoc.dns.route53;
 
-import adhoc.dns.route53.properties.Route53DnsProperties;
-import adhoc.properties.CoreProperties;
+import adhoc.core.properties.CoreProperties;
 import adhoc.dns.DnsService;
+import adhoc.dns.route53.properties.Route53DnsProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;

@@ -23,13 +23,18 @@
 package adhoc.user.request;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
+import org.hibernate.validator.constraints.Length;
 
 
-/** User connects to server and server must confirm they are user with matching token. */
+/**
+ * User joins server. This will either verify an existing user (if {@link #userId} is not null) or register a new user (if {@link #userId} is null).
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,14 +42,14 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class UserJoinRequest {
 
-	@NotNull
-	@Min(1)
-	private Long userId;
+    //@NotNull
+    @Min(1)
+    private Long userId;
 
-	@NotNull
-	@Min(1)
-	private Long serverId;
+    @NotNull
+    @Min(1)
+    private Long serverId;
 
-	@NotEmpty
-	private String token;
+    @Length(min = 1)
+    private String token;
 }

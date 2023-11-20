@@ -89,7 +89,7 @@ public class UserController {
             }
         }
 
-        log.info("register: name={} password***={} factionId={} remoteAddr={} userAgent={}",
+        log.info("register: name={} password*={} factionId={} remoteAddr={} userAgent={}",
                 registerUserRequest.getName(),
                 registerUserRequest.getPassword() == null ? null : "***",
                 registerUserRequest.getFactionId(),

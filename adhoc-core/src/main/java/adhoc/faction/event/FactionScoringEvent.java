@@ -22,7 +22,7 @@
 
 package adhoc.faction.event;
 
-import adhoc.Event;
+import adhoc.core.event.Event;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +39,6 @@ import java.util.Map;
 @Jacksonized
 public class FactionScoringEvent implements Event {
 
-	@NotNull
-	private Map<Long, Integer> factionAwardedScores;
+    @NotNull
+    private Map<Long, Integer> factionAwardedScores;
 }

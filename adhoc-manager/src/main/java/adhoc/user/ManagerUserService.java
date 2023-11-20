@@ -32,6 +32,7 @@ import adhoc.user.request.RegisterUserRequest;
 import adhoc.user.request.UserJoinRequest;
 import adhoc.user.request.UserNavigateRequest;
 import adhoc.user.response.UserNavigateResponse;
+import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -60,10 +61,6 @@ public class ManagerUserService {
                 toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }
 
-    public ResponseEntity<UserDetailDto> serverUserRegister(RegisterUserRequest registerUserRequest, Authentication authentication) {
-        return userService.registerUser(registerUserRequest, authentication);
-    }
-
     public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
         User user = userRepository.getForUpdateById(userNavigateRequest.getUserId());
         Area area = areaRepository.getReferenceById(userNavigateRequest.getAreaId());
@@ -89,13 +86,29 @@ public class ManagerUserService {
                 server.getWebSocketUrl()));
     }
 
-    public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest) {
-        User user = userRepository.getForUpdateById(userJoinRequest.getUserId());
+    public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest, Authentication authentication) {
         Server server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
+        Long userId = userJoinRequest.getUserId();
+        String token = userJoinRequest.getToken();
+
+        Verify.verify(userId == null || token != null);
+
+        // if no user id provided, register them
+        if (userId == null) {
+            RegisterUserRequest registerUserRequest = RegisterUserRequest.builder()
+                    .serverId(userJoinRequest.getServerId())
+                    .build();
+            ResponseEntity<UserDetailDto> registeredUserDetail = userService.registerUser(registerUserRequest, authentication);
+            userId = registeredUserDetail.getBody().getId();
+            token = registeredUserDetail.getBody().getToken();
+        }
+
+        User user = userRepository.getForUpdateById(userId);
+
         // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
-        if (user.getToken() == null || !user.getToken().toString().contentEquals(userJoinRequest.getToken())) {
-            log.warn("Token {} mismatch {} for user {}", userJoinRequest.getToken(), user.getToken(), user);
+        if (user.getToken() == null || !user.getToken().toString().contentEquals(token)) {
+            log.warn("Token {} mismatch {} for user {}", token, user.getToken(), user);
             return ResponseEntity.unprocessableEntity().build();
         }
 

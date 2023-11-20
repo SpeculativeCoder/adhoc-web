@@ -103,7 +103,7 @@ public class User implements UserDetails {
     private LocalDateTime seen;
 
     @ElementCollection(fetch = FetchType.EAGER) // TODO: can we make the login success handler transactional?
-    private Set<Role> roles;
+    private Set<UserRole> roles;
 
     private UUID token;
 
@@ -143,9 +143,4 @@ public class User implements UserDetails {
         return password != null;
     }
 
-    public enum Role {
-        ADMIN,
-        USER,
-        SERVER
-    }
 }

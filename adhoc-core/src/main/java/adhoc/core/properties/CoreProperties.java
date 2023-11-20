@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.properties;
+package adhoc.core.properties;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

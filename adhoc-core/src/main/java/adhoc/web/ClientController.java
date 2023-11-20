@@ -22,7 +22,7 @@
 
 package adhoc.web;
 
-import adhoc.properties.CoreProperties;
+import adhoc.core.properties.CoreProperties;
 import com.google.common.base.Verify;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;

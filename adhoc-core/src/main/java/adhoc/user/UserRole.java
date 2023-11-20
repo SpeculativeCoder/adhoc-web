@@ -20,15 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc;
+package adhoc.user;
 
-/**
- * All our Stomp events will implement this interface to provide an easy mapping to an event type based on class name of the event.
- */
-public interface Event {
-
-    // for output in JSON
-    default String getEventType() {
-        return getClass().getSimpleName().replaceFirst("Event$", "");
-    }
+public enum UserRole {
+    ADMIN,
+    USER,
+    SERVER,
+    BOT
 }

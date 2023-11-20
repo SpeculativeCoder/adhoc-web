@@ -24,7 +24,6 @@ package adhoc.user;
 
 import adhoc.user.event.UserDefeatedBotEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
-import adhoc.user.request.RegisterUserRequest;
 import adhoc.user.request.UserJoinRequest;
 import adhoc.user.request.UserNavigateRequest;
 import adhoc.user.response.UserNavigateResponse;
@@ -60,21 +59,6 @@ public class ManagerUserController {
         return managerUserService.updateUser(userDto);
     }
 
-    /**
-     * When a user connects to a server but has not yet registered, the server will auto register them.
-     */
-    @PostMapping("/servers/{serverId}/users/register")
-    @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserDetailDto> postServerUserRegister(
-            @PathVariable("serverId") Long serverId,
-            @Valid @RequestBody RegisterUserRequest registerUserRequest,
-            Authentication authentication) {
-
-        Verify.verify(Objects.equals(serverId, registerUserRequest.getServerId()));
-
-        return managerUserService.serverUserRegister(registerUserRequest, authentication);
-    }
-
     @PostMapping("/servers/{serverId}/users/{userId}/navigate")
     @PreAuthorize("hasRole('SERVER')")
     public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
@@ -87,17 +71,18 @@ public class ManagerUserController {
         return managerUserService.serverUserNavigate(userNavigateRequest);
     }
 
-    @PostMapping("/servers/{serverId}/users/{userId}/join")
+    @PostMapping("/servers/{serverId}/userJoin")
     @PreAuthorize("hasRole('SERVER')")
     public ResponseEntity<UserDetailDto> postServerUserJoin(
             @PathVariable("serverId") Long serverId,
-            @PathVariable("userId") Long userId,
-            @Valid @RequestBody UserJoinRequest userJoinRequest) {
+            @Valid @RequestBody UserJoinRequest userJoinRequest,
+            Authentication authentication) {
 
         Verify.verify(Objects.equals(serverId, userJoinRequest.getServerId()));
-        Verify.verify(Objects.equals(userId, userJoinRequest.getUserId()));
 
-        return managerUserService.serverUserJoin(userJoinRequest);
+        log.info("userJoin: userId={} serverId={}", userJoinRequest.getUserId(), userJoinRequest.getServerId());
+
+        return managerUserService.serverUserJoin(userJoinRequest, authentication);
     }
 
     @MessageMapping("UserDefeatedUser")

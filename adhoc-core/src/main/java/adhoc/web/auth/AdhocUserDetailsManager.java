@@ -23,6 +23,7 @@
 package adhoc.web.auth;
 
 import adhoc.user.User;
+import adhoc.user.UserRole;
 import adhoc.user.UserService;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +63,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
             User user = new User();
             user.setName(serverBasicAuthUsername.get());
             user.setPassword(passwordEncoder.encode(serverBasicAuthPassword.get()));
-            user.setRoles(Sets.newHashSet(User.Role.SERVER));
+            user.setRoles(Sets.newHashSet(UserRole.SERVER));
             return user;
         }
 

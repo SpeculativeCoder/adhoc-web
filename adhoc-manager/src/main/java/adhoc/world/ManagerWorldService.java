@@ -24,19 +24,20 @@ package adhoc.world;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
+import adhoc.core.properties.CoreProperties;
 import adhoc.dns.DnsService;
 import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
 import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
 import adhoc.properties.ManagerProperties;
-import adhoc.properties.CoreProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
+import adhoc.user.UserRole;
 import adhoc.world.event.WorldUpdatedEvent;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -280,7 +281,7 @@ public class ManagerWorldService {
             u0.setUpdated(created);
             u0.setSeen(seen);
             //if (webProperties.getFeatureFlags().contains("development")) {
-            u0.setRoles(Sets.newHashSet(User.Role.USER)); // TODO: restore User.Role.ADMIN,
+            u0.setRoles(Sets.newHashSet(UserRole.USER)); // TODO: restore User.Role.ADMIN,
             //}
             u0 = userRepository.save(u0);
 
@@ -293,7 +294,7 @@ public class ManagerWorldService {
             u1.setCreated(created);
             u1.setUpdated(created);
             u1.setSeen(seen);
-            u1.setRoles(Sets.newHashSet(User.Role.USER));
+            u1.setRoles(Sets.newHashSet(UserRole.USER));
             u1 = userRepository.save(u1);
 
             User u2 = new User();
@@ -305,7 +306,7 @@ public class ManagerWorldService {
             u2.setCreated(created);
             u2.setUpdated(created);
             u2.setSeen(seen);
-            u2.setRoles(Sets.newHashSet(User.Role.USER));
+            u2.setRoles(Sets.newHashSet(UserRole.USER));
             u2 = userRepository.save(u2);
 
             User u3 = new User();
@@ -317,7 +318,7 @@ public class ManagerWorldService {
             u3.setCreated(created);
             u3.setUpdated(created);
             //u3.setSeen(seen);
-            u3.setRoles(Sets.newHashSet(User.Role.USER));
+            u3.setRoles(Sets.newHashSet(UserRole.USER));
             u3 = userRepository.save(u3);
 
             User u4 = new User();
@@ -329,7 +330,7 @@ public class ManagerWorldService {
             u4.setCreated(created);
             u4.setUpdated(created);
             //u4.setSeen(seen);
-            u4.setRoles(Sets.newHashSet(User.Role.USER));
+            u4.setRoles(Sets.newHashSet(UserRole.USER));
             u4 = userRepository.save(u4);
 
             //Pawn pawn1 = new Pawn();

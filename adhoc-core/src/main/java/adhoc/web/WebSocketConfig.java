@@ -22,7 +22,7 @@
 
 package adhoc.web;
 
-import adhoc.properties.CoreProperties;
+import adhoc.core.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

@@ -109,7 +109,7 @@ public class UserService {
         }
 
         User user = userRepository.saveAndFlush(toEntity(registerUserRequest));
-        log.debug("register: user={} password***={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
+        log.debug("register: user={} password*={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
 
         // if not an auto-register from server - log them in too
         if (authentication == null
@@ -168,7 +168,7 @@ public class UserService {
                 user.getLastLogin(),
                 user.getLastJoin(),
                 user.getSeen(),
-                user.getRoles().stream().map(User.Role::name).collect(Collectors.toList()),
+                user.getRoles().stream().map(UserRole::name).collect(Collectors.toList()),
                 user.getToken().toString(),
                 user.getServer() == null ? null : user.getServer().getId());
     }
@@ -181,7 +181,7 @@ public class UserService {
         user.setPassword(registerUserRequest.getPassword() == null ? null : passwordEncoder.encode(registerUserRequest.getPassword()));
         user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
         user.setScore(0F);
-        user.setRoles(Sets.newHashSet(User.Role.USER));
+        user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());
         user.setServer(registerUserRequest.getServerId() == null ? null : serverRepository.getReferenceById(registerUserRequest.getServerId()));
 

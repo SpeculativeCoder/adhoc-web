@@ -22,7 +22,7 @@
 
 package adhoc.user.event;
 
-import adhoc.Event;
+import adhoc.core.event.Event;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -38,11 +38,11 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class UserDefeatedBotEvent implements Event {
 
-	@NotNull
-	@Min(1)
-	private Long userId;
+    @NotNull
+    @Min(1)
+    private Long userId;
 
-	//@NotNull
-	@Min(0)
-	private Long userVersion;
+    //@NotNull
+    @Min(0)
+    private Long userVersion;
 }

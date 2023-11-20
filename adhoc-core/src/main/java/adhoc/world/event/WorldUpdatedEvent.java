@@ -22,7 +22,7 @@
 
 package adhoc.world.event;
 
-import adhoc.Event;
+import adhoc.core.event.Event;
 import adhoc.world.WorldDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

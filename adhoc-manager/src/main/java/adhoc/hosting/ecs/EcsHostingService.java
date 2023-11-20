@@ -23,11 +23,11 @@
 package adhoc.hosting.ecs;
 
 import adhoc.area.Area;
+import adhoc.core.properties.CoreProperties;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.hosting.ecs.properties.EcsHostingProperties;
 import adhoc.properties.ManagerProperties;
-import adhoc.properties.CoreProperties;
 import adhoc.server.Server;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;

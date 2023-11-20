@@ -22,7 +22,7 @@
 
 package adhoc.server.event;
 
-import adhoc.Event;
+import adhoc.core.event.Event;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -39,17 +39,17 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class ServerStartedEvent implements Event {
 
-	@NotNull
-	@Min(1)
-	private Long serverId;
+    @NotNull
+    @Min(1)
+    private Long serverId;
 
-	//@NotNull
-	@Min(0)
-	private Long serverVersion;
+    //@NotNull
+    @Min(0)
+    private Long serverVersion;
 
-	@NotEmpty
-	private String privateIp;
+    @NotEmpty
+    private String privateIp;
 
-	@NotEmpty
-	private String managerHost;
+    @NotEmpty
+    private String managerHost;
 }

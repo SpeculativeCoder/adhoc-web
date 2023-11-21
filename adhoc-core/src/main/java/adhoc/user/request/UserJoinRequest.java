@@ -46,6 +46,12 @@ public class UserJoinRequest {
     @Min(1)
     private Long userId;
 
+    @Min(1)
+    private Long factionId;
+
+    @NotNull
+    private Boolean bot;
+
     @NotNull
     @Min(1)
     private Long serverId;

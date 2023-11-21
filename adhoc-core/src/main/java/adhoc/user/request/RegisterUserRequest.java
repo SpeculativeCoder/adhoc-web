@@ -22,7 +22,10 @@
 
 package adhoc.user.request;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
@@ -33,22 +36,24 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class RegisterUserRequest {
 
-	// at the moment we only allow auto-generated name
-	//@NotEmpty
-	//@Pattern(regexp = "Anon[0-9]{1,10}")
-	@Null
-	private String name;
+    // at the moment we only allow auto-generated name
+    //@NotEmpty
+    //@Pattern(regexp = "Anon[0-9]{1,10}")
+    @Null
+    private String name;
 
-	@Email
-	private String email;
+    @Email
+    private String email;
 
-	@Size(min = 1)
-	@ToString.Exclude
-	private String password;
+    @Size(min = 1)
+    @ToString.Exclude
+    private String password;
 
-	@Min(1)
-	private Long factionId;
+    @Min(1)
+    private Long factionId;
 
-	@Min(1)
-	private Long serverId;
+    private Boolean bot;
+
+    @Min(1)
+    private Long serverId;
 }

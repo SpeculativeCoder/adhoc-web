@@ -275,6 +275,7 @@ public class ManagerWorldService {
             u0.setName("admin");
             u0.setEmail("admin@" + coreProperties.getAdhocDomain());
             u0.setFaction(team1);
+            u0.setBot(false);
             u0.setScore(0F);
             u0.setPassword(passwordEncoder.encode(managerProperties.getDefaultAdminPassword()));
             u0.setCreated(created);
@@ -289,6 +290,7 @@ public class ManagerWorldService {
             u1.setName("AlphaTester");
             u1.setEmail("alphatester@" + coreProperties.getAdhocDomain());
             u1.setFaction(team1);
+            u1.setBot(false);
             u1.setScore(0F);
             u1.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
             u1.setCreated(created);
@@ -301,6 +303,7 @@ public class ManagerWorldService {
             u2.setName("BetaTester");
             u2.setEmail("betatester@" + coreProperties.getAdhocDomain());
             u2.setFaction(team2);
+            u2.setBot(false);
             u2.setScore(10F);
             u2.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
             u2.setCreated(created);
@@ -313,6 +316,7 @@ public class ManagerWorldService {
             u3.setName("DeltaTester");
             u3.setEmail("deltatester@" + coreProperties.getAdhocDomain());
             u3.setFaction(team3);
+            u3.setBot(false);
             u3.setScore(20F);
             u3.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
             u3.setCreated(created);
@@ -325,6 +329,7 @@ public class ManagerWorldService {
             u4.setName("GammaTester");
             u4.setEmail("gammatester@" + coreProperties.getAdhocDomain());
             u4.setFaction(team4);
+            u4.setBot(false);
             u4.setScore(30F);
             u4.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
             u4.setCreated(created);

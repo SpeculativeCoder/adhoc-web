@@ -80,7 +80,8 @@ public class ManagerUserController {
 
         Verify.verify(Objects.equals(serverId, userJoinRequest.getServerId()));
 
-        log.info("userJoin: userId={} serverId={}", userJoinRequest.getUserId(), userJoinRequest.getServerId());
+        log.info("userJoin: userId={} factionId={} bot={} serverId={}",
+                userJoinRequest.getUserId(), userJoinRequest.getFactionId(), userJoinRequest.getBot(), userJoinRequest.getServerId());
 
         return managerUserService.serverUserJoin(userJoinRequest, authentication);
     }

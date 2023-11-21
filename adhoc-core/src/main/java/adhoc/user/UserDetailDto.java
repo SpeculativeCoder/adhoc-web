@@ -61,6 +61,9 @@ public class UserDetailDto {
     private Integer factionIndex;
 
     @NotNull
+    private Boolean bot;
+
+    @NotNull
     private Float score;
 
     @NotNull

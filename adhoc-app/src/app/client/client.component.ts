@@ -90,8 +90,8 @@ export class ClientComponent implements OnInit {
 
         this.userService.getCurrentUserOrRegister(server.id).subscribe(user => {
           let unrealEngineCommandLine = server.publicIp + ":" + server.publicWebSocketPort;
-          if (user && user.id && user.token) {
-            unrealEngineCommandLine += '?UserID=' + user.id + '?Token=' + user.token;
+          if (user && (typeof user.id) === 'number' && (typeof user.factionId) === 'number' && user.token) {
+            unrealEngineCommandLine += '?UserID=' + user.id + '?FactionID=' + user.factionId + '?Token=' + user.token;
           }
           if (this.configService.featureFlags) {
             unrealEngineCommandLine += ' FeatureFlags=' + this.configService.featureFlags;

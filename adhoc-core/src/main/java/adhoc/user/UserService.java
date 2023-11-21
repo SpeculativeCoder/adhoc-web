@@ -146,6 +146,7 @@ public class UserService {
                 user.getName(),
                 user.getFaction().getId(),
                 user.getFaction().getIndex(),
+                user.getBot(),
                 user.getScore(),
                 user.getSeen());
     }
@@ -157,6 +158,7 @@ public class UserService {
                 user.getName(),
                 user.getFaction().getId(),
                 user.getFaction().getIndex(),
+                user.getBot(),
                 user.getScore(),
                 user.getX(),
                 user.getY(),
@@ -180,6 +182,7 @@ public class UserService {
         user.setEmail(registerUserRequest.getEmail());
         user.setPassword(registerUserRequest.getPassword() == null ? null : passwordEncoder.encode(registerUserRequest.getPassword()));
         user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
+        user.setBot(registerUserRequest.getBot() == null ? false : registerUserRequest.getBot());
         user.setScore(0F);
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());

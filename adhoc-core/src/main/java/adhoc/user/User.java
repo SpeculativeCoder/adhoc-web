@@ -79,6 +79,9 @@ public class User implements UserDetails {
     private Faction faction;
 
     @Basic(optional = false)
+    private Boolean bot;
+
+    @Basic(optional = false)
     private Float score;
 
     private Float x;

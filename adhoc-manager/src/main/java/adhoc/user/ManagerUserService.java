@@ -24,6 +24,7 @@ package adhoc.user;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
+import adhoc.faction.FactionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.event.UserDefeatedBotEvent;
@@ -55,6 +56,7 @@ public class ManagerUserService {
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
     private final AreaRepository areaRepository;
+    private final FactionRepository factionRepository;
 
     public UserDto updateUser(UserDto userDto) {
         return userService.toDto(
@@ -97,11 +99,17 @@ public class ManagerUserService {
         // if no user id provided, register them
         if (userId == null) {
             RegisterUserRequest registerUserRequest = RegisterUserRequest.builder()
+                    .factionId(userJoinRequest.getFactionId())
+                    .bot(userJoinRequest.getBot())
                     .serverId(userJoinRequest.getServerId())
                     .build();
             ResponseEntity<UserDetailDto> registeredUserDetail = userService.registerUser(registerUserRequest, authentication);
-            userId = registeredUserDetail.getBody().getId();
-            token = registeredUserDetail.getBody().getToken();
+
+            Verify.verify(registeredUserDetail.getStatusCode().is2xxSuccessful());
+            UserDetailDto userDetailDto = Verify.verifyNotNull(registeredUserDetail.getBody());
+
+            userId = userDetailDto.getId();
+            token = userDetailDto.getToken();
         }
 
         User user = userRepository.getForUpdateById(userId);

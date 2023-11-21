@@ -60,6 +60,9 @@ public class UserDto {
     private Integer factionIndex;
 
     @NotNull
+    private Boolean bot;
+
+    @NotNull
     private Float score;
 
     private LocalDateTime seen;

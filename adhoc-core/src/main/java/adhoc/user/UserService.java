@@ -60,6 +60,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
+
     private final HttpServletRequest httpServletRequest;
 
     // lazy for now due to cycle on authentication success handler
@@ -98,7 +99,7 @@ public class UserService {
             registerUserRequest.setFactionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
         }
 
-        // TODO: think about email check before allowing email input (currently guarded at controller)
+        // TODO: think about email check before allowing email input
         Optional<User> optionalUser =
                 registerUserRequest.getEmail() == null
                         ? userRepository.findByName(registerUserRequest.getName())
@@ -145,7 +146,6 @@ public class UserService {
                 user.getVersion(),
                 user.getName(),
                 user.getFaction().getId(),
-                user.getFaction().getIndex(),
                 user.getBot(),
                 user.getScore(),
                 user.getSeen());
@@ -157,7 +157,6 @@ public class UserService {
                 user.getVersion(),
                 user.getName(),
                 user.getFaction().getId(),
-                user.getFaction().getIndex(),
                 user.getBot(),
                 user.getScore(),
                 user.getX(),

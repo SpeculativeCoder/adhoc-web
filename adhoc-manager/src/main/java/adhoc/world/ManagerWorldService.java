@@ -62,10 +62,10 @@ import java.util.stream.Collectors;
 public class ManagerWorldService {
 
     private final CoreProperties coreProperties;
+    private final ManagerProperties managerProperties;
 
     private final WorldService worldService;
 
-    private final ManagerProperties managerProperties;
     private final WorldRepository worldRepository;
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;

@@ -29,8 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 
 /**
- * When running as a manager, this application talks to a {@link adhoc.hosting.HostingService} to ensure servers are representing each area in each region (and will start / stop servers accordingly).
- * There will likely only be a few (and typically just 1) manager applications running.
+ * When running as a manager, this application talks to a {@link adhoc.hosting.HostingService}
+ * to ensure servers are representing each area in each region (and will start / stop servers accordingly).
+ * There will likely only be a few (and typically just 1) manager application(s) running.
  * <p>
  * Servers communicate with the manager to let it know about events occurring in the world.
  * Events are handled by the manager and then emitted in the {@link ArtemisConfig} cluster for kiosks to observe.

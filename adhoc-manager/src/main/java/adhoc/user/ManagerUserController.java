@@ -59,14 +59,13 @@ public class ManagerUserController {
         return managerUserService.updateUser(userDto);
     }
 
-    @PostMapping("/servers/{serverId}/users/{userId}/navigate")
+    @PostMapping("/servers/{serverId}/userNavigate")
     @PreAuthorize("hasRole('SERVER')")
     public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
             @PathVariable("serverId") Long serverId,
-            @PathVariable("userId") Long userId,
             @Valid @RequestBody UserNavigateRequest userNavigateRequest) {
 
-        Verify.verify(Objects.equals(userId, userNavigateRequest.getUserId()));
+        Verify.verify(Objects.equals(serverId, userNavigateRequest.getSourceServerId()));
 
         return managerUserService.serverUserNavigate(userNavigateRequest);
     }

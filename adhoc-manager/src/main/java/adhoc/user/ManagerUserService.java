@@ -24,7 +24,6 @@ package adhoc.user;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
-import adhoc.faction.FactionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.event.UserDefeatedBotEvent;
@@ -42,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -56,7 +56,6 @@ public class ManagerUserService {
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
     private final AreaRepository areaRepository;
-    private final FactionRepository factionRepository;
 
     public UserDto updateUser(UserDto userDto) {
         return userService.toDto(
@@ -65,10 +64,14 @@ public class ManagerUserService {
 
     public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
         User user = userRepository.getForUpdateById(userNavigateRequest.getUserId());
-        Area area = areaRepository.getReferenceById(userNavigateRequest.getAreaId());
-        Server server = area.getServer();
-        if (server == null) {
-            log.warn("User {} tried to navigate to area {} which does not have a server!", user.getId(), area.getId());
+        Server sourceServer = serverRepository.getReferenceById(userNavigateRequest.getSourceServerId());
+        Area destinationArea = areaRepository.getReferenceById(userNavigateRequest.getDestinationAreaId());
+
+        Verify.verify(Objects.equals(user.getServer(), sourceServer));
+
+        Server destinationServer = destinationArea.getServer();
+        if (destinationServer == null) {
+            log.warn("User {} tried to navigate to area {} which does not have a server!", user.getId(), destinationArea.getId());
             return ResponseEntity.unprocessableEntity().build();
         }
 
@@ -79,13 +82,14 @@ public class ManagerUserService {
         user.setYaw(userNavigateRequest.getYaw());
         user.setPitch(userNavigateRequest.getPitch());
 
-        user.setServer(server);
+        // NOTE: when user joins new server this will be updated
+        //user.setServer(destinationServer);
 
-        return ResponseEntity.ok(new UserNavigateResponse(server.getId(),
+        return ResponseEntity.ok(new UserNavigateResponse(destinationServer.getId(),
                 //adhocProperties.getServerDomain(),
-                server.getPublicIp(),
-                server.getPublicWebSocketPort(),
-                server.getWebSocketUrl()));
+                destinationServer.getPublicIp(),
+                destinationServer.getPublicWebSocketPort(),
+                destinationServer.getWebSocketUrl()));
     }
 
     public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest, Authentication authentication) {
@@ -103,7 +107,9 @@ public class ManagerUserService {
                     .bot(userJoinRequest.getBot())
                     .serverId(userJoinRequest.getServerId())
                     .build();
-            ResponseEntity<UserDetailDto> registeredUserDetail = userService.registerUser(registerUserRequest, authentication);
+
+            ResponseEntity<UserDetailDto> registeredUserDetail =
+                    userService.registerUser(registerUserRequest, authentication);
 
             Verify.verify(registeredUserDetail.getStatusCode().is2xxSuccessful());
             UserDetailDto userDetailDto = Verify.verifyNotNull(registeredUserDetail.getBody());

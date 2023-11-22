@@ -22,12 +22,12 @@
 
 package adhoc.user;
 
+import adhoc.core.properties.CoreProperties;
 import adhoc.user.request.RegisterUserRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,10 +41,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final CoreProperties coreProperties;
 
-    @Value("${adhoc.feature-flags}")
-    private String featureFlags;
+    private final UserService userService;
 
     @GetMapping("/users")
     public List<UserDto> getUsers() {
@@ -77,7 +76,7 @@ public class UserController {
             HttpServletRequest httpServletRequest,
             Authentication authentication) {
 
-        if (!featureFlags.contains("development")) {
+        if (!coreProperties.getFeatureFlags().contains("development")) {
             if (registerUserRequest.getEmail() != null) {
                 throw new UnsupportedOperationException("register email not supported yet");
             }

@@ -56,10 +56,6 @@ public class UserDto {
     private Long factionId;
 
     @NotNull
-    @Min(0)
-    private Integer factionIndex;
-
-    @NotNull
     private Boolean bot;
 
     @NotNull

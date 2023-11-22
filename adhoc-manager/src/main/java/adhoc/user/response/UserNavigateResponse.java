@@ -25,7 +25,10 @@ package adhoc.user.response;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
 
@@ -39,10 +42,7 @@ public class UserNavigateResponse {
 
     @NotNull
     @Min(1)
-    private Long serverId;
-
-    //@NotEmpty
-    //private String serverDomain;
+    private Long destinationServerId;
 
     @NotEmpty
     private String ip;

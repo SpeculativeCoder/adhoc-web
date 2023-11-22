@@ -6,11 +6,12 @@ indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
 insert_final_newline = true
-max_line_length = off
+max_line_length = 120
 
 [*.java]
 ij_java_continuation_indent_size = 8
 ij_java_doc_do_not_wrap_if_one_line = true
+ij_java_line_comment_at_first_column = false
 
 [*.properties]
 ij_properties_keep_blank_lines = true

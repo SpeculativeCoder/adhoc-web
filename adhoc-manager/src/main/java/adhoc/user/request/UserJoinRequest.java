@@ -33,7 +33,8 @@ import org.hibernate.validator.constraints.Length;
 
 
 /**
- * User joins server. This will either verify an existing user (if {@link #userId} is not null) or register a new user (if {@link #userId} is null).
+ * User joins server. This will either verify an existing user (if {@link #userId} is not null)
+ * or register a new user (if {@link #userId} is null).
  */
 @Data
 @NoArgsConstructor

@@ -23,7 +23,6 @@
 export class Faction {
   id?: number;
   version?: number;
-  index?: number;
   name?: string;
   color?: string;
   score?: number;

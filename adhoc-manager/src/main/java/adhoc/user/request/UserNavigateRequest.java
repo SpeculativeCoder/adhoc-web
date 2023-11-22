@@ -24,7 +24,10 @@ package adhoc.user.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
 /**
@@ -44,7 +47,11 @@ public class UserNavigateRequest {
 
     @NotNull
     @Min(1)
-    private Long areaId;
+    private Long sourceServerId;
+
+    @NotNull
+    @Min(1)
+    private Long destinationAreaId;
 
     @NotNull
     private Float x;

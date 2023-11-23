@@ -27,7 +27,7 @@ import adhoc.core.properties.CoreProperties;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.hosting.docker.properties.DockerHostingProperties;
-import adhoc.properties.ManagerProperties;
+import adhoc.manager.properties.ManagerProperties;
 import adhoc.server.Server;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;

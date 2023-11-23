@@ -71,6 +71,7 @@ public class AreaDto {
     @NotNull
     private Float sizeZ;
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @Min(1)
     private Optional<Long> serverId;
 }

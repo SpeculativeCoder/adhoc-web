@@ -28,13 +28,14 @@ import adhoc.core.properties.CoreProperties;
 import adhoc.dns.DnsService;
 import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
+import adhoc.manager.properties.ManagerProperties;
 import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
-import adhoc.properties.ManagerProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
+import adhoc.server.ServerStatus;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
@@ -64,8 +65,6 @@ public class ManagerWorldService {
     private final CoreProperties coreProperties;
     private final ManagerProperties managerProperties;
 
-    private final WorldService worldService;
-
     private final WorldRepository worldRepository;
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
@@ -74,9 +73,11 @@ public class ManagerWorldService {
     private final ObjectiveRepository objectiveRepository;
     private final ServerRepository serverRepository;
 
+    private final WorldService worldService;
+    private final DnsService dnsService;
+
     private final PasswordEncoder passwordEncoder;
     private final SimpMessageSendingOperations stomp;
-    private final DnsService dnsService;
 
     /**
      * Inserts some initial data to set up the world e.g. factions.
@@ -171,7 +172,7 @@ public class ManagerWorldService {
         server1.setZ(region1.getZ());
         server1.setRegion(region1);
         server1.setAreas(Arrays.asList(area1));
-        server1.setStatus(Server.Status.INACTIVE);
+        server1.setStatus(ServerStatus.INACTIVE);
         server1 = serverRepository.save(server1);
 
         area1.setServer(server1);

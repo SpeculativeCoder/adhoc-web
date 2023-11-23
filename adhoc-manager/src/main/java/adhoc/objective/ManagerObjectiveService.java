@@ -52,13 +52,14 @@ import java.util.stream.Stream;
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerObjectiveService {
-    private final ServerRepository serverRepository;
 
+    private final ServerRepository serverRepository;
     private final ObjectiveRepository objectiveRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
     private final FactionRepository factionRepository;
     private final UserRepository userRepository;
+
     private final ObjectiveService objectiveService;
 
     public ObjectiveDto updateObjective(ObjectiveDto objectiveDto) {

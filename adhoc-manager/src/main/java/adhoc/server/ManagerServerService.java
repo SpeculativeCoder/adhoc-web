@@ -27,7 +27,7 @@ import adhoc.area.AreaRepository;
 import adhoc.dns.DnsService;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
-import adhoc.properties.ManagerProperties;
+import adhoc.manager.properties.ManagerProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
@@ -86,7 +86,7 @@ public class ManagerServerService {
         server.setY(server.getY());
         server.setZ(server.getZ());
 
-        server.setStatus(Server.Status.INACTIVE);
+        server.setStatus(ServerStatus.INACTIVE);
 
         server.setManagerHost(server.getManagerHost());
         server.setPrivateIp(server.getPrivateIp());
@@ -100,7 +100,7 @@ public class ManagerServerService {
     public void handleServerStarted(ServerStartedEvent serverStartedEvent) {
         Server server = serverRepository.getForUpdateById(serverStartedEvent.getServerId());
 
-        server.setStatus(Server.Status.ACTIVE);
+        server.setStatus(ServerStatus.ACTIVE);
         //server.setPrivateIp(serverStartedEvent.getPrivateIp());
         //server.setManagerHost(server.getManagerHost());
 
@@ -185,7 +185,7 @@ public class ManagerServerService {
 
         if (server.getId() == null) {
             server.setName(""); // the id will be added after insert (see below)
-            server.setStatus(Server.Status.INACTIVE);
+            server.setStatus(ServerStatus.INACTIVE);
 
             server = serverRepository.save(server);
 
@@ -241,7 +241,7 @@ public class ManagerServerService {
             }
             if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
                 if (task.getPublicIp() != null) {
-                    server.setStatus(Server.Status.ACTIVE);
+                    server.setStatus(ServerStatus.ACTIVE);
 
                     String serverHost = server.getId() + "-" + managerProperties.getServerDomain();
 
@@ -265,9 +265,9 @@ public class ManagerServerService {
             }
 
         } else if (task == null) {
-            if (server.getStatus() == Server.Status.ACTIVE) {
+            if (server.getStatus() == ServerStatus.ACTIVE) {
                 log.warn("Server {} seems to have stopped running!", server.getId());
-                server.setStatus(Server.Status.INACTIVE);
+                server.setStatus(ServerStatus.INACTIVE);
 
                 server.setPrivateIp(null);
                 server.setPublicIp(null);
@@ -277,7 +277,7 @@ public class ManagerServerService {
                 server.setSeen(null);
                 sendEvent = true;
 
-            } else if (server.getStatus() == Server.Status.INACTIVE) {
+            } else if (server.getStatus() == ServerStatus.INACTIVE) {
                 // don't start a server unless it will be able to connect to a manager
                 //if (hostingState.getManagerHosts().isEmpty()) {
                 //    log.warn("Need to start server {} but no manager(s) available!", server.getId());
@@ -285,13 +285,13 @@ public class ManagerServerService {
                 log.info("Need to start server {}", server.getId());
                 try {
                     hostingService.startServerTask(server); //, hostingState.getManagerHosts());
-                    server.setStatus(Server.Status.STARTING);
+                    server.setStatus(ServerStatus.STARTING);
                     server.setInitiated(LocalDateTime.now());
                     //server.setManagerHost(hostingState.getManagerHosts().iterator().next());
                     sendEvent = true;
                 } catch (Exception e) {
                     log.warn("Failed to start server {}!", server.getId(), e);
-                    server.setStatus(Server.Status.ERROR);
+                    server.setStatus(ServerStatus.ERROR);
                     //throw new RuntimeException("Failed to start server "+server.getId(), e);
                 }
                 //}

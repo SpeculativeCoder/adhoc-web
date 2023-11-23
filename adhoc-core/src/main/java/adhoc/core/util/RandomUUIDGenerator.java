@@ -20,16 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.core.event;
+package adhoc.core.util;
 
-/**
- * All our Stomp events will implement this interface to provide an easy mapping to an event type based on class name of
- * the event.
- */
-public interface Event {
+import java.util.UUID;
 
-    // for output in JSON
-    default String getEventType() {
-        return getClass().getSimpleName().replaceFirst("Event$", "");
+public class RandomUUIDGenerator {
+
+    public static void main(String[] args) {
+        System.err.println(UUID.randomUUID());
     }
 }

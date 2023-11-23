@@ -20,13 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.util;
+package adhoc.server;
 
-import java.util.UUID;
-
-public class RandomUUIDGenerator {
-
-    public static void main(String[] args) {
-        System.err.println(UUID.randomUUID());
-    }
+public enum ServerStatus {
+    INACTIVE,
+    STARTING,
+    ACTIVE,
+    ERROR
 }

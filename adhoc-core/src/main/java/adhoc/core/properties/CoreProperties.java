@@ -22,6 +22,7 @@
 
 package adhoc.core.properties;
 
+import adhoc.core.ApplicationMode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,11 +36,6 @@ import java.util.List;
 @Slf4j
 @Getter
 public class CoreProperties {
-
-    public enum ApplicationMode {
-        MANAGER,
-        KIOSK
-    }
 
     @Value("${server.port}")
     private Integer serverPort;

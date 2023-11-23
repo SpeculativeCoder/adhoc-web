@@ -43,8 +43,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * A user account can be created by registering via the web application. This allows the user to login again later to the same account.
- * A user is also automatically created on joining an Unreal server if there was no logged-in user.
+ * A user account can be created by registering via the web application. This allows the user to login again later to
+ * the same account. A user is also automatically created on joining an Unreal server if there was no logged-in user.
  */
 @Entity(name = "AdhocUser")
 @SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 1)

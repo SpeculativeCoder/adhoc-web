@@ -85,9 +85,7 @@ public class Area {
     @OneToMany(mappedBy = "area")
     private List<Objective> objectives;
 
-    /**
-     * Server currently representing this area.
-     */
+    /** Server currently representing this area. */
     @ManyToOne
     private Server server;
 }

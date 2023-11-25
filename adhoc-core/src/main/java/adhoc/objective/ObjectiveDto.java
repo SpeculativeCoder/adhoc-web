@@ -74,10 +74,9 @@ public class ObjectiveDto {
     @Min(0)
     private Integer factionIndex;
 
+    private List<@NotNull Long> linkedObjectiveIds;
     @NotNull
-    private List<Long> linkedObjectiveIds;
-    @NotNull
-    private List<Integer> linkedObjectiveIndexes;
+    private List<@NotNull Integer> linkedObjectiveIndexes;
 
     @Min(1)
     private Long areaId;

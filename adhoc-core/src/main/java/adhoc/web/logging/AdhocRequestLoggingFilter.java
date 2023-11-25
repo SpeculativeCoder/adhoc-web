@@ -93,7 +93,7 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
             boolean statusError;
             try {
                 HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
-                statusError = httpStatus.is5xxServerError();
+                statusError = httpStatus.is5xxServerError(); // || httpStatus.value() == 400;
 
             } catch (
                     IllegalArgumentException e) {

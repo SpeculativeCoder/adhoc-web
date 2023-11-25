@@ -88,7 +88,8 @@ public class SecurityConfig {
                 // allow form login - used by users
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .failureHandler((request, response, exception) -> response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
+                        .failureHandler((request, response, exception) ->
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
                         .successHandler(userAuthenticationSuccessHandler))
                 // allow basic auth (Authorization header) - used by the server
                 .httpBasic(basic -> basic

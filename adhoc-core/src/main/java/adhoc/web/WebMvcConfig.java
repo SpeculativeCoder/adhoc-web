@@ -54,13 +54,18 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 
+    @Bean
+    public Connector httpConnector() {
+        final Connector connector = new Connector();
+        connector.setPort(coreProperties.getServerPort2());
+        return connector;
+    }
+
     /** Also allow HTTP access on a secondary port for now. */
     @Bean
-    WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer() {
+    WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer(Connector httpConnector) {
         return (TomcatServletWebServerFactory factory) -> {
-            final Connector connector = new Connector();
-            connector.setPort(coreProperties.getServerPort2());
-            factory.addAdditionalTomcatConnectors(connector);
+            factory.addAdditionalTomcatConnectors(httpConnector);
         };
     }
 }

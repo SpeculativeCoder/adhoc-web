@@ -22,20 +22,23 @@
 
 package adhoc.web.auth;
 
+import adhoc.user.AdhocUserDetails;
 import adhoc.user.User;
 import adhoc.user.UserRole;
 import adhoc.user.UserService;
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Consults the ADHOC_USER table for user info.
@@ -57,24 +60,35 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         if (serverBasicAuthUsername.isPresent()
                 && serverBasicAuthPassword.isPresent()
                 && serverBasicAuthUsername.get().equals(username)) {
-            User user = new User();
-            user.setName(serverBasicAuthUsername.get());
-            user.setPassword(passwordEncoder.encode(serverBasicAuthPassword.get()));
-            user.setRoles(Sets.newHashSet(UserRole.SERVER));
-            return user;
+
+            return new AdhocUserDetails(
+                    serverBasicAuthUsername.get(),
+                    passwordEncoder.encode(serverBasicAuthPassword.get()),
+                    true, true, true, true,
+                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserRole.SERVER.name())),
+                    null);
         }
 
         log.debug("loadUserByUsername: username={}", username);
 
-        User user = userService.findUser(username).orElseThrow(() ->
+        User user = userService.findUserByNameOrEmail(username).orElseThrow(() ->
                 new UsernameNotFoundException("Failed to find enabled user with name or email: " + username));
 
         log.debug("loadUserByUsername: user={} token={}", user, user.getToken());
 
-        return user;
+        AdhocUserDetails userDetails = new AdhocUserDetails(
+                user.getName(),
+                // TODO
+                user.getPassword() == null ? UUID.randomUUID().toString() : user.getPassword(),
+                user.getPassword() != null, true, true, true,
+                user.getAuthorities(),
+                user.getId());
+
+        return userDetails;
     }
 
     @Override

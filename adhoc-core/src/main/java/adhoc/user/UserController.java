@@ -25,12 +25,12 @@ package adhoc.user;
 import adhoc.core.properties.CoreProperties;
 import adhoc.user.request.RegisterUserRequest;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,21 +60,21 @@ public class UserController {
     }
 
     @GetMapping("/users/current")
-    public ResponseEntity<UserDetailDto> getCurrentUser() {
+    public ResponseEntity<UserDetailDto> getCurrentUser(Authentication authentication) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication.getPrincipal() instanceof User user)) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails userDetails)) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(userService.getUserDetail(user.getId()));
+        return ResponseEntity.ok(userService.getUserDetail(userDetails.getUserId()));
     }
 
     @PostMapping("/users/register")
     public ResponseEntity<UserDetailDto> postRegisterUser(
             @Valid @RequestBody RegisterUserRequest registerUserRequest,
+            Authentication authentication,
             HttpServletRequest httpServletRequest,
-            Authentication authentication) {
+            HttpServletResponse httpServletResponse) {
 
         if (!coreProperties.getFeatureFlags().contains("development")) {
             if (registerUserRequest.getEmail() != null) {
@@ -95,6 +95,6 @@ public class UserController {
                 httpServletRequest.getRemoteAddr(),
                 httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.]", "?"));
 
-        return userService.registerUser(registerUserRequest, authentication);
+        return userService.registerUser(registerUserRequest, authentication, httpServletRequest, httpServletResponse);
     }
 }

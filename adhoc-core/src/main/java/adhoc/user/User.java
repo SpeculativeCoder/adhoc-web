@@ -33,7 +33,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -47,6 +46,7 @@ import java.util.stream.Collectors;
  * the same account. A user is also automatically created on joining an Unreal server if there was no logged-in user.
  */
 @Entity(name = "AdhocUser")
+// TODO: unique constraint(s)
 @SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 1)
 @DynamicInsert
 @DynamicUpdate
@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @ToString(onlyExplicitlyIncluded = true)
-public class User implements UserDetails {
+public class User {
 
     @Id
     @GeneratedValue(generator = "UserIdSequence")
@@ -116,33 +116,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Pawn> pawns;
 
-    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(role -> "ROLE_" + role.name()).map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
-    }
-
-    @Override
-    public String getUsername() {
-        return name;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return password != null;
     }
 }

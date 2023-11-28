@@ -28,6 +28,8 @@ import adhoc.user.request.UserJoinRequest;
 import adhoc.user.request.UserNavigateRequest;
 import adhoc.user.response.UserNavigateResponse;
 import com.google.common.base.Verify;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,14 +77,16 @@ public class ManagerUserController {
     public ResponseEntity<UserDetailDto> postServerUserJoin(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody UserJoinRequest userJoinRequest,
-            Authentication authentication) {
+            Authentication authentication,
+            HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) {
 
         Verify.verify(Objects.equals(serverId, userJoinRequest.getServerId()));
 
         log.info("userJoin: userId={} factionId={} bot={} serverId={}",
                 userJoinRequest.getUserId(), userJoinRequest.getFactionId(), userJoinRequest.getBot(), userJoinRequest.getServerId());
 
-        return managerUserService.serverUserJoin(userJoinRequest, authentication);
+        return managerUserService.serverUserJoin(userJoinRequest, authentication, httpServletRequest, httpServletResponse);
     }
 
     @MessageMapping("UserDefeatedUser")

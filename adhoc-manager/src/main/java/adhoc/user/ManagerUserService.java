@@ -33,6 +33,8 @@ import adhoc.user.request.UserJoinRequest;
 import adhoc.user.request.UserNavigateRequest;
 import adhoc.user.response.UserNavigateResponse;
 import com.google.common.base.Verify;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -92,7 +94,8 @@ public class ManagerUserService {
                 destinationServer.getWebSocketUrl()));
     }
 
-    public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest, Authentication authentication) {
+    public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest, Authentication authentication,
+                                                        HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Server server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
         Long userId = userJoinRequest.getUserId();
@@ -109,7 +112,7 @@ public class ManagerUserService {
                     .build();
 
             ResponseEntity<UserDetailDto> registeredUserDetail =
-                    userService.registerUser(registerUserRequest, authentication);
+                    userService.registerUser(registerUserRequest, authentication, httpServletRequest, httpServletResponse);
 
             Verify.verify(registeredUserDetail.getStatusCode().is2xxSuccessful());
             UserDetailDto userDetailDto = Verify.verifyNotNull(registeredUserDetail.getBody());

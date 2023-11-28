@@ -80,6 +80,21 @@
         <addForeignKeyConstraint baseTableName="adhoc_user_roles" baseColumnNames="adhoc_user_id" constraintName="fkbpj40nowvqa5m1p39ceopxbcp"
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
                                  referencedTableName="adhoc_user" validate="true"/>
+
+        <createTable tableName="persistent_logins">
+            <column name="username" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="series" type="VARCHAR(64)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="persistent_logins_pkey"/>
+            </column>
+            <column name="token" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_used" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
 </databaseChangeLog>

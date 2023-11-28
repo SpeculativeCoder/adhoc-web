@@ -36,7 +36,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @Slf4j
 @RequiredArgsConstructor
-public class WebMvcConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer {
 
     private final CoreProperties coreProperties;
 
@@ -54,7 +54,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 
-    @Bean
+    @Bean(destroyMethod = "destroy")
     public Connector httpConnector() {
         final Connector connector = new Connector();
         connector.setPort(coreProperties.getServerPort2());

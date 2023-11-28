@@ -30,7 +30,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.messaging.web.csrf.CsrfChannelInterceptor;
 
 /**
  * Web socket communication with Unreal server does not require CSRF.
@@ -39,7 +38,7 @@ import org.springframework.security.messaging.web.csrf.CsrfChannelInterceptor;
 @RequiredArgsConstructor
 public class ServerIgnoreCsrfChannelInterceptor implements ChannelInterceptor {
 
-    private final CsrfChannelInterceptor delegate;
+    private final ChannelInterceptor delegate;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {

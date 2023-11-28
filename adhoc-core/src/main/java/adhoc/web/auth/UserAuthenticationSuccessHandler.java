@@ -22,6 +22,7 @@
 
 package adhoc.web.auth;
 
+import adhoc.user.AdhocUserDetails;
 import adhoc.user.User;
 import adhoc.user.UserService;
 import jakarta.servlet.ServletException;
@@ -49,14 +50,12 @@ public class UserAuthenticationSuccessHandler implements AuthenticationSuccessHa
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
-        User user = (User) authentication.getPrincipal();
+        AdhocUserDetails userDetails = (AdhocUserDetails) authentication.getPrincipal();
 
-        log.info("onAuthenticationSuccess: before: user={} token={}", user, user.getToken());
+        log.info("onAuthenticationSuccess: userDetails={}", userDetails);
 
-        user = userService.regenerateUserToken(user);
+        User user = userService.regenerateUserToken(userDetails.getUserId());
 
-        // TODO: set auth principal?
-
-        log.info("onAuthenticationSuccess: after: user={} token={}", user, user.getToken());
+        log.info("onAuthenticationSuccess: token={}", user.getToken());
     }
 }

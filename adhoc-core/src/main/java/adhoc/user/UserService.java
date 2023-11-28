@@ -27,6 +27,7 @@ import adhoc.server.ServerRepository;
 import adhoc.user.request.RegisterUserRequest;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +55,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
 @Transactional
 @Service
@@ -61,13 +66,22 @@ public class UserService {
     private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
 
-    private final HttpServletRequest httpServletRequest;
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final WebAuthenticationDetailsSource authenticationDetailsSource;
 
-    // lazy for now due to cycle on authentication success handler
+    private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
+
+    // lazy for now due to bean cycle
     @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
     @Lazy
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    // lazy for now due to bean cycle
+    //@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+    //@Lazy
+    //@Autowired
+    //private RememberMeServices rememberMeServices;
 
     @Transactional(readOnly = true)
     public List<UserDto> getUsers() {
@@ -81,7 +95,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> findUser(String username) {
+    public Optional<User> findUserByNameOrEmail(String username) {
         return userRepository.findByNameOrEmailAndPasswordIsNotNull(username, username);
     }
 
@@ -90,7 +104,8 @@ public class UserService {
         return toDetailDto(userRepository.getReferenceById(userId));
     }
 
-    public ResponseEntity<UserDetailDto> registerUser(RegisterUserRequest registerUserRequest, Authentication authentication) {
+    public ResponseEntity<UserDetailDto> registerUser(RegisterUserRequest registerUserRequest, Authentication authentication,
+                                                      HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         if (registerUserRequest.getName() == null) {
             registerUserRequest.setName("Anon" + (int) Math.floor(Math.random() * 1000000000)); // TODO
         }
@@ -109,20 +124,42 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        User user = userRepository.saveAndFlush(toEntity(registerUserRequest));
+        User user = userRepository.save(toEntity(registerUserRequest));
         log.debug("register: user={} password*={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
 
         // if not an auto-register from server - log them in too
         if (authentication == null
                 || authentication.getAuthorities().stream().noneMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()))) {
-            //UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            PreAuthenticatedAuthenticationToken authenticationToken = new PreAuthenticatedAuthenticationToken(user, null, user.getAuthorities());
-            //SecurityContextHolder.clearContext();
-            //SecurityContextHolder.createEmptyContext();
+
             // TODO
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            securityContext.setAuthentication(authenticationToken);
-            httpServletRequest.getSession(true).setAttribute(SPRING_SECURITY_CONTEXT_KEY, securityContext);
+            String tempPassword = null;
+            if (user.getPassword() == null) {
+                tempPassword = UUID.randomUUID().toString();
+            }
+
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    UsernamePasswordAuthenticationToken.unauthenticated(
+                            registerUserRequest.getName(),
+                            tempPassword != null ? tempPassword : registerUserRequest.getPassword());
+            authenticationToken.setDetails(authenticationDetailsSource.buildDetails(httpServletRequest));
+
+            if (tempPassword != null) {
+                user.setPassword(passwordEncoder.encode(tempPassword));
+            }
+
+            authentication = getAuthenticationManager().authenticate(authenticationToken);
+
+            if (tempPassword != null) {
+                user.setPassword(null);
+            }
+
+            SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
+            SecurityContext securityContext = securityContextHolderStrategy.createEmptyContext();
+            securityContext.setAuthentication(authentication);
+            securityContextHolderStrategy.setContext(securityContext);
+            // TODO
+            //rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
+            securityContextRepository.saveContext(securityContext, httpServletRequest, httpServletResponse);
 
             // TODO: put in a login listener
             user.setLastLogin(LocalDateTime.now());
@@ -131,8 +168,8 @@ public class UserService {
         return ResponseEntity.ok(toDetailDto(user));
     }
 
-    public User regenerateUserToken(User user) {
-        user = userRepository.getReferenceById(user.getId());
+    public User regenerateUserToken(Long userId) {
+        User user = userRepository.getReferenceById(userId);
 
         UUID newToken = UUID.randomUUID();
         user.setToken(newToken);
@@ -188,5 +225,13 @@ public class UserService {
         user.setServer(registerUserRequest.getServerId() == null ? null : serverRepository.getReferenceById(registerUserRequest.getServerId()));
 
         return user;
+    }
+
+    private AuthenticationManager getAuthenticationManager() {
+        try {
+            return authenticationConfiguration.getAuthenticationManager();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

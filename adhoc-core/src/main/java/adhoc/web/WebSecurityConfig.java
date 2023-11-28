@@ -29,19 +29,25 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.event.LoggerListener;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+import javax.sql.DataSource;
 
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class WebSecurityConfig {
 
     private final UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
 
@@ -50,10 +56,12 @@ public class SecurityConfig {
     private final ServerRequestMatcher serverRequestMatcher;
 
     @Bean
+    // TODO
+    //public SecurityFilterChain securityFilterChain(HttpSecurity http, RememberMeServices rememberMeServices) throws Exception {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // TODO: remove when Spring bug fixed: https://github.com/spring-projects/spring-security/issues/12378
-        CsrfTokenRequestAttributeHandler handler = new CsrfTokenRequestAttributeHandler();
-        handler.setCsrfRequestAttributeName(null);
+        //CsrfTokenRequestAttributeHandler handler = new CsrfTokenRequestAttributeHandler();
+        //handler.setCsrfRequestAttributeName(null);
 
         return http
                 //.securityContext(securityContext ->
@@ -79,10 +87,10 @@ public class SecurityConfig {
                         // ignore CSRF for sockjs as protected by Stomp headers
                         .ignoringRequestMatchers("/ws/stomp/user_sockjs/**")
                         // we don't want CSRF on requests from Unreal server
-                        .ignoringRequestMatchers(serverRequestMatcher)
-                        .csrfTokenRequestHandler(handler))
+                        .ignoringRequestMatchers(serverRequestMatcher))
+                //.csrfTokenRequestHandler(handler))
                 //.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
-                .cors(cors -> withDefaults())
+                .cors(cors -> Customizer.withDefaults())
                 //.sessionManagement(session ->
                 //        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 // allow form login - used by users
@@ -94,12 +102,41 @@ public class SecurityConfig {
                 // allow basic auth (Authorization header) - used by the server
                 .httpBasic(basic -> basic
                         .authenticationDetailsSource(serverAuthenticationDetailsSource))
+                // TODO
+                //.rememberMe(remember -> remember
+                //        .rememberMeServices(rememberMeServices))
                 .build();
+    }
+
+    // TODO
+    //@Bean
+    public RememberMeServices rememberMeServices(UserDetailsService userDetailsService,
+                                                 PersistentTokenRepository persistentTokenRepository) {
+        PersistentTokenBasedRememberMeServices rememberMeServices =
+                new PersistentTokenBasedRememberMeServices(
+                        PersistentTokenBasedRememberMeServices.DEFAULT_PARAMETER, userDetailsService, persistentTokenRepository);
+        //rememberMeServices.setAlwaysRemember(true);
+        return rememberMeServices;
+    }
+
+    // TODO
+    //@Bean
+    public PersistentTokenRepository persistentTokenRepository(DataSource dataSource) {
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
+        return jdbcTokenRepository;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public LoggerListener loggerListener() {
+        LoggerListener loggerListener = new LoggerListener();
+        loggerListener.setLogInteractiveAuthenticationSuccessEvents(false);
+        return loggerListener;
     }
 }
 

@@ -20,31 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.web.auth;
-
-import adhoc.user.AdhocUserDetails;
-import adhoc.user.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
-
-@Component
-@Slf4j
-@RequiredArgsConstructor
-public class UserAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-
-    private final UserService userService;
-
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        AdhocUserDetails userDetails = (AdhocUserDetails) authentication.getPrincipal();
-
-        log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
-
-        userService.authenticationSuccess(userDetails.getUserId());
-    }
+export class UserRegisterRequest {
+  name?: string;
+  email?: string;
+  password?: string;
+  factionId?: number;
+  rememberMe?: boolean;
+  serverId?: number;
 }

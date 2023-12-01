@@ -26,6 +26,7 @@ import {Router} from '@angular/router';
 import {Faction} from '../faction/faction';
 import {User} from '../user/user';
 import {FactionService} from '../faction/faction.service';
+import {UserRegisterRequest} from "../user/user-register-request";
 
 @Component({
   selector: 'app-login',
@@ -33,34 +34,37 @@ import {FactionService} from '../faction/faction.service';
 })
 export class LoginOrRegisterComponent implements OnInit, AfterViewInit {
 
-  loginUsernameOrEmail: string = '';
+  loginNameOrEmail: string = '';
   loginPassword: string = '';
+  loginRememberMe: boolean = false;
 
   loginErrorMessage: string;
   registerErrorMessage: string;
 
-  user: User = {};
+  userRegisterRequest: UserRegisterRequest = {};
+
   factions: Faction[] = [];
 
-  @ViewChild('usernameOrEmail')
-  usernameOrEmailInput: ElementRef;
+  @ViewChild('loginNameOrEmailInput')
+  loginNameOrEmailInput: ElementRef;
 
   constructor(private userService: UserService, private factionService: FactionService, private router: Router) {
-    this.user.name = null; // 'Anon' + Math.floor(Math.random() * 1000000000);
-    this.user.email = null; // this.users.email = `${this.users.name}@localhost`;
-    this.user.password = null;
-    this.user.factionId = null;
+    this.userRegisterRequest.name = null; // 'Anon' + Math.floor(Math.random() * 1000000000);
+    this.userRegisterRequest.email = null; // this.users.email = `${this.users.name}@localhost`;
+    this.userRegisterRequest.password = null;
+    this.userRegisterRequest.factionId = null;
+    this.userRegisterRequest.rememberMe = false;
   }
 
   ngOnInit(): void {
     this.factionService.getFactions().subscribe(factions => {
       this.factions = factions;
-      this.user.factionId = 1 + Math.floor(Math.random() * this.factions.length);
+      this.userRegisterRequest.factionId = 1 + Math.floor(Math.random() * this.factions.length);
     });
   }
 
   ngAfterViewInit(): void {
-    this.usernameOrEmailInput.nativeElement.focus();
+    this.loginNameOrEmailInput.nativeElement.focus();
   }
 
   getFaction(factionId: number): Faction {
@@ -68,7 +72,7 @@ export class LoginOrRegisterComponent implements OnInit, AfterViewInit {
   }
 
   login(): void {
-    this.userService.login(this.loginUsernameOrEmail, this.loginPassword).subscribe(
+    this.userService.login(this.loginNameOrEmail, this.loginPassword, this.loginRememberMe).subscribe(
       output => {
         this.router.navigate(['']);
         // window.location.href = '/';
@@ -79,16 +83,16 @@ export class LoginOrRegisterComponent implements OnInit, AfterViewInit {
   }
 
   register(): void {
-    if (this.user.name === '') {
-      this.user.name = null;
+    if (this.userRegisterRequest.name === '') {
+      this.userRegisterRequest.name = null;
     }
-    if (this.user.email === '') {
-      this.user.email = null;
+    if (this.userRegisterRequest.email === '') {
+      this.userRegisterRequest.email = null;
     }
-    if (this.user.password === '') {
-      this.user.password = null;
+    if (this.userRegisterRequest.password === '') {
+      this.userRegisterRequest.password = null;
     }
-    this.userService.register(this.user).subscribe((user: User) => {
+    this.userService.register(this.userRegisterRequest).subscribe((user: User) => {
       this.router.navigate(['']);
       //window.location.href = '/';
       //this.router.navigateByUrl(`/users/${users.userId}`)
@@ -96,6 +100,4 @@ export class LoginOrRegisterComponent implements OnInit, AfterViewInit {
       this.registerErrorMessage = 'Failed to register';
     });
   }
-
-
 }

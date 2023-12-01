@@ -29,6 +29,7 @@ import {StompService} from '../stomp/stomp.service';
 import {map} from 'rxjs/operators';
 import {ConfigService} from "../config/config.service";
 import {Router} from "@angular/router";
+import {UserRegisterRequest} from "./user-register-request";
 
 @Injectable({
   providedIn: 'root'
@@ -104,8 +105,12 @@ export class UserService {
     return this.refreshCurrentUser$().pipe(take(1));
   }
 
-  register(user: User): Observable<User> {
-    return this.http.post(`${this.usersUrl}/register`, {...user}, {withCredentials: true}).pipe(
+  register(userRegisterRequest: UserRegisterRequest): Observable<User> {
+    return this.http.post(`${this.usersUrl}/register`, {...userRegisterRequest}, {
+      withCredentials: true,
+      params: {
+        'remember-me': userRegisterRequest.rememberMe
+      }}).pipe(
       mergeMap(user => {
         this.currentUser$.next(user);
         return of(this.currentUser$.value);
@@ -117,12 +122,19 @@ export class UserService {
       : this.register({serverId: serverId});
   }
 
-  login(usernameOrEmail: string, password: string) {
+  login(usernameOrEmail: string, password: string, rememberMe: boolean) {
     const formData: FormData = new FormData();
-    formData.set('username', usernameOrEmail ?? '');
-    formData.set('password', password ?? '');
+    formData.set('username', usernameOrEmail);
+    formData.set('password', password);
+    formData.set('remember-me', rememberMe.toString());
 
-    return this.http.post(`${this.loginUrl}`, formData, {responseType: 'text', withCredentials: true}).pipe(
+    return this.http.post(`${this.loginUrl}`, formData, {
+      responseType: 'text',
+      withCredentials: true,
+      params: {
+        'remember-me': rememberMe
+      }
+    }).pipe(
       mergeMap(_ => this.refreshCurrentUser()));
   }
 

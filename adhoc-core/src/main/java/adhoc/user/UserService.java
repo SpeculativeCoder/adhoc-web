@@ -25,6 +25,7 @@ package adhoc.user;
 import adhoc.faction.FactionRepository;
 import adhoc.server.ServerRepository;
 import adhoc.user.request.RegisterUserRequest;
+import adhoc.web.auth.UserAuthenticationSuccessHandler;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,7 +45,9 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
@@ -70,18 +73,27 @@ public class UserService {
     private final WebAuthenticationDetailsSource authenticationDetailsSource;
 
     private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
+    private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
-    // lazy for now due to bean cycle
     @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
     @Lazy
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // lazy for now due to bean cycle
-    //@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
-    //@Lazy
-    //@Autowired
-    //private RememberMeServices rememberMeServices;
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+    @Lazy
+    @Autowired
+    private SessionAuthenticationStrategy sessionAuthenticationStrategy;
+
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+    @Lazy
+    @Autowired
+    private RememberMeServices rememberMeServices;
+
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+    @Lazy
+    @Autowired
+    private UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
 
     @Transactional(readOnly = true)
     public List<UserDto> getUsers() {
@@ -153,28 +165,34 @@ public class UserService {
                 user.setPassword(null);
             }
 
-            SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
+            sessionAuthenticationStrategy.onAuthentication(authentication, httpServletRequest, httpServletResponse);
+
             SecurityContext securityContext = securityContextHolderStrategy.createEmptyContext();
             securityContext.setAuthentication(authentication);
             securityContextHolderStrategy.setContext(securityContext);
-            // TODO
-            //rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
             securityContextRepository.saveContext(securityContext, httpServletRequest, httpServletResponse);
 
-            // TODO: put in a login listener
-            user.setLastLogin(LocalDateTime.now());
+            rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
+
+            userAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
         }
 
         return ResponseEntity.ok(toDetailDto(user));
     }
 
-    public User regenerateUserToken(Long userId) {
+    /**
+     * Sets a new "token" every time a user logs in.
+     * The "token" is used when logging into an Unreal server to make sure the user is who they say they are.
+     */
+    public void authenticationSuccess(Long userId) {
         User user = userRepository.getReferenceById(userId);
 
         UUID newToken = UUID.randomUUID();
         user.setToken(newToken);
 
-        return user;
+        user.setLastLogin(LocalDateTime.now());
+
+        log.debug("authenticationSuccess: id={} name={} token={}", user.getId(), user.getName(), user.getToken());
     }
 
     UserDto toDto(User user) {

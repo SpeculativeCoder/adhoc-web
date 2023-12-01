@@ -33,21 +33,21 @@ import org.springframework.security.authentication.event.LoggerListener;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-
-import javax.sql.DataSource;
+import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.Session;
+import org.springframework.session.security.SpringSessionBackedSessionRegistry;
+import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig<S extends Session> {
 
     private final UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
 
@@ -55,14 +55,11 @@ public class WebSecurityConfig {
 
     private final ServerRequestMatcher serverRequestMatcher;
 
-    @Bean
-    // TODO
-    //public SecurityFilterChain securityFilterChain(HttpSecurity http, RememberMeServices rememberMeServices) throws Exception {
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // TODO: remove when Spring bug fixed: https://github.com/spring-projects/spring-security/issues/12378
-        //CsrfTokenRequestAttributeHandler handler = new CsrfTokenRequestAttributeHandler();
-        //handler.setCsrfRequestAttributeName(null);
+    private final FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository;
 
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, RememberMeServices rememberMeServices,
+                                                   SpringSessionBackedSessionRegistry<S> sessionRegistry) throws Exception {
         return http
                 //.securityContext(securityContext ->
                 //        securityContext.requireExplicitSave(true))
@@ -88,11 +85,14 @@ public class WebSecurityConfig {
                         .ignoringRequestMatchers("/ws/stomp/user_sockjs/**")
                         // we don't want CSRF on requests from Unreal server
                         .ignoringRequestMatchers(serverRequestMatcher))
-                //.csrfTokenRequestHandler(handler))
                 //.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
                 .cors(cors -> Customizer.withDefaults())
-                //.sessionManagement(session ->
-                //        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .sessionManagement(session -> session
+                        .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
+                        .sessionConcurrency(concurrency -> concurrency
+                                //.maximumSessions(1)
+                                .sessionRegistry(sessionRegistry)))
+                //session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 // allow form login - used by users
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -102,29 +102,26 @@ public class WebSecurityConfig {
                 // allow basic auth (Authorization header) - used by the server
                 .httpBasic(basic -> basic
                         .authenticationDetailsSource(serverAuthenticationDetailsSource))
-                // TODO
-                //.rememberMe(remember -> remember
-                //        .rememberMeServices(rememberMeServices))
+                .rememberMe(remember -> remember
+                        .rememberMeServices(rememberMeServices))
                 .build();
     }
 
-    // TODO
-    //@Bean
-    public RememberMeServices rememberMeServices(UserDetailsService userDetailsService,
-                                                 PersistentTokenRepository persistentTokenRepository) {
-        PersistentTokenBasedRememberMeServices rememberMeServices =
-                new PersistentTokenBasedRememberMeServices(
-                        PersistentTokenBasedRememberMeServices.DEFAULT_PARAMETER, userDetailsService, persistentTokenRepository);
-        //rememberMeServices.setAlwaysRemember(true);
-        return rememberMeServices;
+    @Bean
+    public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+        return new ChangeSessionIdAuthenticationStrategy();
     }
 
-    // TODO
-    //@Bean
-    public PersistentTokenRepository persistentTokenRepository(DataSource dataSource) {
-        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
-        jdbcTokenRepository.setDataSource(dataSource);
-        return jdbcTokenRepository;
+    @Bean
+    public SpringSessionBackedSessionRegistry<S> sessionRegistry() {
+        return new SpringSessionBackedSessionRegistry<>(jdbcIndexedSessionRepository);
+    }
+
+    @Bean
+    public RememberMeServices rememberMeServices() {
+        SpringSessionRememberMeServices rememberMeServices = new SpringSessionRememberMeServices();
+        //rememberMeServices.setAlwaysRemember(true);
+        return rememberMeServices;
     }
 
     @Bean

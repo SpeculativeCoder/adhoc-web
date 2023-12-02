@@ -22,14 +22,13 @@
 
 package adhoc.web;
 
-import adhoc.web.auth.ServerAuthenticationDetailsSource;
 import adhoc.web.auth.UserAuthenticationSuccessHandler;
 import adhoc.web.request_matcher.ServerRequestMatcher;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.event.LoggerListener;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -47,11 +46,10 @@ import org.springframework.session.security.web.authentication.SpringSessionReme
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig<S extends Session> {
 
     private final UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
-
-    private final ServerAuthenticationDetailsSource serverAuthenticationDetailsSource;
 
     private final ServerRequestMatcher serverRequestMatcher;
 
@@ -65,10 +63,10 @@ public class WebSecurityConfig<S extends Session> {
                 //        securityContext.requireExplicitSave(true))
                 .authorizeHttpRequests(auth -> auth
                         // TODO: ideally have a separate one for anonymous?
-                        //.requestMatchers("/ws/stomp/user/**").permitAll()
                         .requestMatchers("/ws/stomp/user_sockjs/**").permitAll()
+                        //.requestMatchers("/ws/stomp/user/**").permitAll()
                         .requestMatchers("/ws/stomp/server/**").hasAnyRole("SERVER")
-                        //.requestMatchers("/ws/stomp/**").permitAll()
+                        .requestMatchers("/ws/stomp/**").denyAll()
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers("/api/**").permitAll() // TODO: some should be for logged in only
@@ -83,6 +81,8 @@ public class WebSecurityConfig<S extends Session> {
                 .csrf(csrf -> csrf
                         // ignore CSRF for sockjs as protected by Stomp headers
                         .ignoringRequestMatchers("/ws/stomp/user_sockjs/**")
+                        //.ignoringRequestMatchers("/ws/stomp/user/**")
+                        //.ignoringRequestMatchers("/ws/stomp/server/**")
                         // we don't want CSRF on requests from Unreal server
                         .ignoringRequestMatchers(serverRequestMatcher))
                 //.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
@@ -100,8 +100,7 @@ public class WebSecurityConfig<S extends Session> {
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
                         .successHandler(userAuthenticationSuccessHandler))
                 // allow basic auth (Authorization header) - used by the server
-                .httpBasic(basic -> basic
-                        .authenticationDetailsSource(serverAuthenticationDetailsSource))
+                .httpBasic(Customizer.withDefaults())
                 .rememberMe(remember -> remember
                         .rememberMeServices(rememberMeServices))
                 .build();
@@ -129,12 +128,12 @@ public class WebSecurityConfig<S extends Session> {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Bean
-    public LoggerListener loggerListener() {
-        LoggerListener loggerListener = new LoggerListener();
-        loggerListener.setLogInteractiveAuthenticationSuccessEvents(false);
-        return loggerListener;
-    }
+    //@Bean
+    //public LoggerListener loggerListener() {
+    //    LoggerListener loggerListener = new LoggerListener();
+    //    //loggerListener.setLogInteractiveAuthenticationSuccessEvents(false);
+    //    return loggerListener;
+    //}
 }
 
 //	@Bean

@@ -70,8 +70,8 @@ public class UserService {
     private final ServerRepository serverRepository;
 
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final WebAuthenticationDetailsSource authenticationDetailsSource;
 
+    private final WebAuthenticationDetailsSource authenticationDetailsSource = new WebAuthenticationDetailsSource();
     private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 

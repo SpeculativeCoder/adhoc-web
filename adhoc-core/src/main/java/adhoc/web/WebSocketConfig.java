@@ -88,8 +88,3 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
 //public void setTaskScheduler(@Lazy TaskScheduler taskScheduler) {
 //    this.taskScheduler = taskScheduler;
 //}
-
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        // TODO
-//    }

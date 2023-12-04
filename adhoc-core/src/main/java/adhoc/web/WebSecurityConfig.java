@@ -59,8 +59,6 @@ public class WebSecurityConfig<S extends Session> {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, RememberMeServices rememberMeServices,
                                                    SpringSessionBackedSessionRegistry<S> sessionRegistry) throws Exception {
         return http
-                //.securityContext(securityContext ->
-                //        securityContext.requireExplicitSave(true))
                 .authorizeHttpRequests(auth -> auth
                         // TODO: ideally have a separate one for anonymous?
                         .requestMatchers("/ws/stomp/user_sockjs/**").permitAll()
@@ -85,14 +83,12 @@ public class WebSecurityConfig<S extends Session> {
                         //.ignoringRequestMatchers("/ws/stomp/server/**")
                         // we don't want CSRF on requests from Unreal server
                         .ignoringRequestMatchers(serverRequestMatcher))
-                //.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
                 .cors(cors -> Customizer.withDefaults())
                 .sessionManagement(session -> session
                         .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
                         .sessionConcurrency(concurrency -> concurrency
                                 //.maximumSessions(1)
                                 .sessionRegistry(sessionRegistry)))
-                //session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 // allow form login - used by users
                 .formLogin(form -> form
                         .loginPage("/login")

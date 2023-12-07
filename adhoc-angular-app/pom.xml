@@ -32,10 +32,10 @@
   </parent>
 
   <groupId>adhoc</groupId>
-  <artifactId>adhoc-app</artifactId>
+  <artifactId>adhoc-angular-app</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>adhoc-app</name>
-  <description>adhoc-app</description>
+  <name>adhoc-angular-app</name>
+  <description>adhoc-angular-app</description>
 
   <build>
     <resources>

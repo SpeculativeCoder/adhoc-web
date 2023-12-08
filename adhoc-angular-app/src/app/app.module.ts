@@ -37,7 +37,7 @@ import {HttpClientInMemoryWebApiModule} from 'angular-in-memory-web-api';
 import {InMemoryDataService} from './in-memory-data/in-memory-data.service';
 import {HttpClientModule} from '@angular/common/http';
 import {httpInterceptorProviders} from './http-interceptor';
-import {environment} from 'src/environments/environment';
+import {environment} from '../environments/environment';
 import {HeaderSortComponent} from './table-sort/header-sort.component';
 import {TableSortDirective} from './table-sort/table-sort.directive';
 import {MapComponent} from './map/map.component';

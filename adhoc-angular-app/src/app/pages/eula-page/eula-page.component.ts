@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-import { Component } from '@angular/core';
-import { appEnvironment } from 'src/environments/app-environment';
+import {Component} from '@angular/core';
+import {appEnvironment} from '../../../environments/app-environment';
 
 @Component({
   selector: 'app-eula',

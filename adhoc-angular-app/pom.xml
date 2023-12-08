@@ -40,7 +40,7 @@
   <build>
     <resources>
       <resource>
-        <directory>dist/adhoc-app</directory>
+        <directory>dist/adhoc-angular-app/browser</directory>
         <includes>
           <include>index.html</include>
         </includes>
@@ -48,7 +48,7 @@
         <filtering>false</filtering>
       </resource>
       <resource>
-        <directory>dist/adhoc-app</directory>
+        <directory>dist/adhoc-angular-app/browser</directory>
         <excludes>
           <exclude>index.html</exclude>
         </excludes>

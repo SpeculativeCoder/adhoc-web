@@ -22,8 +22,7 @@
 
 import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import { appEnvironment } from 'src/environments/app-environment';
-import {ConfigService} from "../config/config.service";
+import {appEnvironment} from '../../environments/app-environment';
 
 @Component({
   selector: 'app-page',

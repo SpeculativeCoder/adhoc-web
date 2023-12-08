@@ -21,7 +21,8 @@
  */
 
 import {StompService} from './stomp/stomp.service';
-import {Component, ElementRef, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {UserService} from './user/user.service';
 import {User} from './user/user';
@@ -31,10 +32,13 @@ import {HeaderInterceptor} from "./http-interceptor/header-interceptor";
 import {ConfigService} from "./config/config.service";
 import {Faction} from "./faction/faction";
 import {appEnvironment} from "../environments/app-environment";
-import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
+  // TODO
+  //standalone: true,
+  // TODO
+  //imports: [CommonModule, RouterOutlet],
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, OnDestroy {

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "adhoc-app": {
+    "adhoc-angular-app": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -15,11 +15,11 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/adhoc-app",
+            "outputPath": "dist/adhoc-angular-app",
             "index": "src/index.html",
-            "main": "src/main.ts",
+            "browser": "src/main.ts",
             "polyfills": [
               "zone.js",
               "src/polyfills.ts"
@@ -36,6 +36,9 @@
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
               "node_modules/fabric/dist/fabric.js"
+            ],
+            "externalDependencies": [
+              "jsdom"
             ]
           },
           "configurations": {
@@ -61,12 +64,9 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "sourceMap": true
             },
             "customization": {
               "fileReplacements": [
@@ -90,13 +90,13 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "adhoc-app:build:production"
+              "buildTarget": "adhoc-angular-app:build:production"
             },
             "development": {
-              "browserTarget": "adhoc-app:build:development"
+              "buildTarget": "adhoc-angular-app:build:development"
             },
             "customization": {
-              "browserTarget": "adhoc-app:build:customization"
+              "buildTarget": "adhoc-angular-app:build:customization"
             }
           },
           "defaultConfiguration": "development"
@@ -104,7 +104,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "adhoc-app:build"
+            "buildTarget": "adhoc-angular-app:build"
           }
         },
         "test": {

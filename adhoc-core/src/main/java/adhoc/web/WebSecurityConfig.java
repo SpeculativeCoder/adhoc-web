@@ -53,6 +53,7 @@ public class WebSecurityConfig<S extends Session> {
 
     private final ServerRequestMatcher serverRequestMatcher;
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     private final FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository;
 
     @Bean

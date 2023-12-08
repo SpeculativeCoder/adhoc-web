@@ -288,8 +288,8 @@ public class ManagerWorldService {
             u0 = userRepository.save(u0);
 
             User u1 = new User();
-            u1.setName("TesterAlpha");
-            u1.setEmail("testeralpha@" + coreProperties.getAdhocDomain());
+            u1.setName("TestAlpha");
+            u1.setEmail("testalpha@" + coreProperties.getAdhocDomain());
             u1.setFaction(team1);
             u1.setBot(false);
             u1.setScore(0F);
@@ -301,8 +301,8 @@ public class ManagerWorldService {
             u1 = userRepository.save(u1);
 
             User u2 = new User();
-            u2.setName("TesterBeta");
-            u2.setEmail("testerbeta@" + coreProperties.getAdhocDomain());
+            u2.setName("TestBeta");
+            u2.setEmail("testbeta@" + coreProperties.getAdhocDomain());
             u2.setFaction(team2);
             u2.setBot(false);
             u2.setScore(10F);
@@ -314,8 +314,8 @@ public class ManagerWorldService {
             u2 = userRepository.save(u2);
 
             User u3 = new User();
-            u3.setName("TesterDelta");
-            u3.setEmail("testerdelta@" + coreProperties.getAdhocDomain());
+            u3.setName("TestDelta");
+            u3.setEmail("testdelta@" + coreProperties.getAdhocDomain());
             u3.setFaction(team3);
             u3.setBot(false);
             u3.setScore(20F);
@@ -327,8 +327,8 @@ public class ManagerWorldService {
             u3 = userRepository.save(u3);
 
             User u4 = new User();
-            u4.setName("TesterGamma");
-            u4.setEmail("testergamma@" + coreProperties.getAdhocDomain());
+            u4.setName("TestGamma");
+            u4.setEmail("testgamma@" + coreProperties.getAdhocDomain());
             u4.setFaction(team4);
             u4.setBot(false);
             u4.setScore(30F);

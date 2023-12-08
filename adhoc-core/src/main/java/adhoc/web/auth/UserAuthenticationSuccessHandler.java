@@ -24,6 +24,7 @@ package adhoc.web.auth;
 
 import adhoc.user.AdhocUserDetails;
 import adhoc.user.UserService;
+import com.google.common.base.Verify;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,9 @@ public class UserAuthenticationSuccessHandler extends SavedRequestAwareAuthentic
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        AdhocUserDetails userDetails = (AdhocUserDetails) authentication.getPrincipal();
+        Object principal = authentication.getPrincipal();
+        Verify.verify(principal instanceof AdhocUserDetails);
+        AdhocUserDetails userDetails = (AdhocUserDetails) principal;
 
         log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
 

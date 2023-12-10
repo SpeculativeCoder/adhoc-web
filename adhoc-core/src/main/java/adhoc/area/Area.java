@@ -34,8 +34,7 @@ import java.util.List;
 
 /**
  * An area within a region (a region is map/level in the Unreal project).
- * There may be more than one area per region.
- * When users navigate from one area to another area,
+ * There may be more than one area per region. When users navigate from one area to another area,
  * they may have to connect to a new server unless the same server manages both the areas.
  */
 @Entity

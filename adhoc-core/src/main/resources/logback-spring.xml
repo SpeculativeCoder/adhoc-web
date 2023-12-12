@@ -48,8 +48,20 @@
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
-                    ("org.apache.activemq.artemis.core.server".equals(logger) &amp;&amp;
-                    message.startsWith("AMQ224037: cluster connection Failed to handle message"))
+                    ("org.apache.activemq.artemis.core.server".equals(logger)
+                    &amp;&amp; message.startsWith("AMQ224037: cluster connection Failed to handle message"))
+                </expression>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+
+        <!-- suppress no data warnings from hsqldb UPDATEs etc. which don't update any columns -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
+                    &amp;&amp; (message.equals("SQL Warning Code: -1100, SQLState: 02000") || message.equals("no data")))
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
@@ -59,7 +71,7 @@
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->
             <!--<pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%-5p){bright_black} %acc([%15.15t]){bright_black} %acc(%40.40logger{39}){cyan}: %acc(%m%n%ewtpc)</pattern>-->
-            <pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%-5p){bright_black} %acc([%15.15t]){bright_black} %acc(%40.40logger){cyan}: %acc(%m%n%ex)</pattern>
+            <pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%p){bright_black} %acc([%t]){bright_black} %acc(%logger){cyan}: %acc(%m%n%ewtpc)</pattern>
             <charset>UTF-8</charset>
         </encoder>
 

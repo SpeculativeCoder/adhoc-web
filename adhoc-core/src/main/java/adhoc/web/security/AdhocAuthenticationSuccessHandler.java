@@ -20,13 +20,33 @@
  * SOFTWARE.
  */
 
-package adhoc.core.util;
+package adhoc.web.security;
 
-import java.util.UUID;
+import adhoc.user.UserService;
+import com.google.common.base.Verify;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
-public class RandomUUIDGenerator {
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class AdhocAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-    public static void main(String[] args) {
-        System.err.println(UUID.randomUUID());
+    private final UserService userService;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        Verify.verify(principal instanceof AdhocUserDetails);
+        AdhocUserDetails userDetails = (AdhocUserDetails) principal;
+
+        log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
+
+        userService.authenticationSuccess(userDetails.getUserId());
     }
 }

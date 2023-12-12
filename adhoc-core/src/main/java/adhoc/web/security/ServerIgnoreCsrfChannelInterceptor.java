@@ -20,34 +20,36 @@
  * SOFTWARE.
  */
 
-package adhoc.web.auth;
+package adhoc.web.security;
 
-import adhoc.user.AdhocUserDetails;
-import adhoc.user.UserService;
-import com.google.common.base.Verify;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-@Component
+/**
+ * Web socket communication with Unreal server does not require CSRF.
+ */
 @Slf4j
 @RequiredArgsConstructor
-public class UserAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class ServerIgnoreCsrfChannelInterceptor implements ChannelInterceptor {
 
-    private final UserService userService;
+    private final ChannelInterceptor delegate;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        Verify.verify(principal instanceof AdhocUserDetails);
-        AdhocUserDetails userDetails = (AdhocUserDetails) principal;
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
-        log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken &&
+                authenticationToken.getAuthorities()
+                        .stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()))) {
+            return message;
+        }
 
-        userService.authenticationSuccess(userDetails.getUserId());
+        return delegate.preSend(message, channel);
     }
 }

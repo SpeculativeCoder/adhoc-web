@@ -20,24 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.web;
+package adhoc.web.security;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
 
-@RestController
-@Slf4j
-@RequiredArgsConstructor
-public class CsrfController {
+import java.util.Collection;
 
-    /**
-     * Allow access to CSRF token for the Angular app.
-     */
-    @GetMapping("/csrf")
-    public CsrfToken csrf(CsrfToken token) {
-        return token;
+public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {
+
+    @Getter
+    private final Long userId;
+
+    public AdhocUserDetails(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long userId) {
+        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+        this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " userId=" + userId;
     }
 }

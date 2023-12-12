@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web.request_matcher;
+package adhoc.web.security;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,8 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 /**
- * Communication with Unreal server does not require CSRF so this matcher provides a way to identify server requests so that we can ignore CSRF for them.
+ * Communication with Unreal server does not require CSRF.
+ * This matcher provides a way to identify server requests so that we can ignore CSRF for them.
  */
 @Slf4j
 @Component

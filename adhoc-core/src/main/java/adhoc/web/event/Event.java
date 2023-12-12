@@ -20,25 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.web.event;
 
-import lombok.Getter;
-import org.springframework.security.core.GrantedAuthority;
+/**
+ * All our Stomp events will implement this interface to provide an easy mapping to an event type based on class name of
+ * the event.
+ */
+public interface Event {
 
-import java.util.Collection;
-
-public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {
-
-    @Getter
-    private final Long userId;
-
-    public AdhocUserDetails(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long userId) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.userId = userId;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " userId=" + userId;
+    // for output in JSON
+    default String getEventType() {
+        return getClass().getSimpleName().replaceFirst("Event$", "");
     }
 }

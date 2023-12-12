@@ -22,7 +22,7 @@
 
 package adhoc.db.hsqldb;
 
-import adhoc.core.properties.CoreProperties;
+import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;

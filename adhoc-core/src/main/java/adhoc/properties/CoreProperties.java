@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.core.properties;
+package adhoc.properties;
 
-import adhoc.core.ApplicationMode;
+import adhoc.ApplicationMode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -25,7 +25,7 @@ package adhoc.user;
 import adhoc.faction.FactionRepository;
 import adhoc.server.ServerRepository;
 import adhoc.user.request.RegisterUserRequest;
-import adhoc.web.auth.UserAuthenticationSuccessHandler;
+import adhoc.web.security.AdhocAuthenticationSuccessHandler;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -93,7 +93,7 @@ public class UserService {
     @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
     @Lazy
     @Autowired
-    private UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
+    private AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
 
     @Transactional(readOnly = true)
     public List<UserDto> getUsers() {
@@ -174,7 +174,7 @@ public class UserService {
 
             rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
 
-            userAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
+            adhocAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
         }
 
         return ResponseEntity.ok(toDetailDto(user));

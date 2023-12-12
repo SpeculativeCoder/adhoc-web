@@ -24,13 +24,13 @@ package adhoc.world;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
-import adhoc.core.properties.CoreProperties;
 import adhoc.dns.DnsService;
 import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
 import adhoc.manager.properties.ManagerProperties;
 import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
+import adhoc.properties.CoreProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;

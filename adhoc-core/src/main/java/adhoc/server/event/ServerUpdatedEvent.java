@@ -22,7 +22,7 @@
 
 package adhoc.server.event;
 
-import adhoc.core.event.Event;
+import adhoc.web.event.Event;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

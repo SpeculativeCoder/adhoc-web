@@ -22,7 +22,7 @@
 
 package adhoc.web;
 
-import adhoc.core.properties.CoreProperties;
+import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-public class AppController {
+public class WebController {
 
     private final CoreProperties coreProperties;
 

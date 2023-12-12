@@ -20,10 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.web;
+package adhoc.web.security;
 
-import adhoc.web.auth.UserAuthenticationSuccessHandler;
-import adhoc.web.request_matcher.ServerRequestMatcher;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -44,12 +43,13 @@ import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 
 @Configuration
+@EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 @Slf4j
 public class WebSecurityConfig<S extends Session> {
 
-    private final UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
+    private final AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
 
     private final ServerRequestMatcher serverRequestMatcher;
 
@@ -95,7 +95,7 @@ public class WebSecurityConfig<S extends Session> {
                         .loginPage("/login")
                         .failureHandler((request, response, exception) ->
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
-                        .successHandler(userAuthenticationSuccessHandler))
+                        .successHandler(adhocAuthenticationSuccessHandler))
                 // allow basic auth (Authorization header) - used by the server
                 .httpBasic(Customizer.withDefaults())
                 .rememberMe(remember -> remember

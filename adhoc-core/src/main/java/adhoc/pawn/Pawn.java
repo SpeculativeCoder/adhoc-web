@@ -61,7 +61,7 @@ public class Pawn {
     @Basic(optional = false)
     private UUID uuid;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Server server;
 
     @Basic(optional = false)
@@ -78,12 +78,12 @@ public class Pawn {
     @Basic(optional = false)
     private Float z;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Faction faction;
 
     @Basic(optional = false)
     private LocalDateTime seen;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 }

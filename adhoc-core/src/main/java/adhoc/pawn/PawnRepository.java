@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public interface PawnRepository extends JpaRepository<Pawn, Long> {
 
@@ -39,8 +38,8 @@ public interface PawnRepository extends JpaRepository<Pawn, Long> {
     Optional<Pawn> findForUpdateByServerAndUuid(Server server, UUID uuid);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Pawn> streamForUpdateByServerAndIdNotIn(Server server, Set<Long> idNotIn);
+    void deleteByServerAndIdNotIn(Server server, Set<Long> idNotIn);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Pawn> streamForUpdateBySeenBefore(LocalDateTime seenBefore);
+    void deleteBySeenBefore(LocalDateTime seenBefore);
 }

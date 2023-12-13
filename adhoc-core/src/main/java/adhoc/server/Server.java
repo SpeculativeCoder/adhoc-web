@@ -59,7 +59,7 @@ public class Server {
     @ToString.Include
     private String name;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Region region;
 
     @OneToMany(mappedBy = "server")

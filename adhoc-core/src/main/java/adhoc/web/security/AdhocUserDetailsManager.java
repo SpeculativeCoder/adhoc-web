@@ -75,7 +75,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         log.debug("loadUserByUsername: username={}", username);
 
         User user = userService.findUserByNameOrEmail(username).orElseThrow(() ->
-                new UsernameNotFoundException("Failed to find enabled user with name or email: " + username));
+                new UsernameNotFoundException("Failed to find user with name or email: " + username));
 
         log.debug("loadUserByUsername: user={} token={}", user, user.getToken());
 

@@ -108,7 +108,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Optional<User> findUserByNameOrEmail(String username) {
-        return userRepository.findByNameOrEmailAndPasswordIsNotNull(username, username);
+        return userRepository.findByNameOrEmail(username, username);
     }
 
     @Transactional(readOnly = true)
@@ -236,6 +236,7 @@ public class UserService {
         user.setEmail(registerUserRequest.getEmail());
         user.setPassword(registerUserRequest.getPassword() == null ? null : passwordEncoder.encode(registerUserRequest.getPassword()));
         user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
+        //noinspection SimplifiableConditionalExpression
         user.setBot(registerUserRequest.getBot() == null ? false : registerUserRequest.getBot());
         user.setScore(0F);
         user.setRoles(Sets.newHashSet(UserRole.USER));

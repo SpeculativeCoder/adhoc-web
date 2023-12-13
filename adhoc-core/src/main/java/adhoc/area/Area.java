@@ -57,7 +57,7 @@ public class Area {
     @Basic(optional = false)
     private Long version;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Region region;
 
     @Basic(optional = false)
@@ -85,6 +85,6 @@ public class Area {
     private List<Objective> objectives;
 
     /** Server currently representing this area. */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Server server;
 }

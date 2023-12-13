@@ -22,7 +22,6 @@
 
 package adhoc.properties;
 
-import adhoc.ApplicationMode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,8 +41,8 @@ public class CoreProperties {
     @Value("${server.port-2}")
     private Integer serverPort2;
 
-    @Value("${adhoc.application.mode}")
-    private ApplicationMode mode;
+    //@Value("${adhoc.application.mode}")
+    //private ApplicationMode mode;
     @Value("${adhoc.feature-flags}")
     private String featureFlags;
 
@@ -80,7 +79,7 @@ public class CoreProperties {
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
         log.info("serverPort={} serverPort2={}", serverPort, serverPort2);
-        log.info("mode={} featureFlags={}", mode, featureFlags);
+        log.info("featureFlags={}", featureFlags);
         log.info("messageBrokerHost={} messageBrokerStompPort={} messageBrokerCorePort={}", messageBrokerHost, messageBrokerStompPort, messageBrokerCorePort);
         log.info("managerMessageBrokerHost={} managerMessageBrokerCorePort={}", managerMessageBrokerHost, managerMessageBrokerCorePort);
         log.info("kioskMessageBrokerHost={} kioskMessageBrokerCorePort={}", kioskMessageBrokerHost, kioskMessageBrokerCorePort);

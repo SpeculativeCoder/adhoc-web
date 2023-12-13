@@ -66,7 +66,7 @@ public class Structure {
     @ToString.Include
     private String type;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Region region;
 
     @Basic(optional = false)
@@ -97,9 +97,9 @@ public class Structure {
     @Basic(optional = false)
     private Float sizeZ;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Faction faction;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 }

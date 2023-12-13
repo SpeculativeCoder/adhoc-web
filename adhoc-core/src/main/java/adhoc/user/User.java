@@ -75,7 +75,7 @@ public class User {
     @ToString.Exclude
     private String password;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Faction faction;
 
     @Basic(optional = false)
@@ -110,7 +110,7 @@ public class User {
 
     private UUID token;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Server server;
 
     @OneToMany(mappedBy = "user")

@@ -90,9 +90,9 @@ public class ManagerObjectiveService {
                 .map(objectiveService::toDto)
                 .collect(Collectors.toList());
 
-        if (objectiveIds.isEmpty()) {
-            objectiveIds.add(-1L);
-        }
+        //if (objectiveIds.isEmpty()) {
+        //    objectiveIds.add(-1L);
+        //}
 
         try (Stream<Objective> objectivesToDelete = objectiveRepository.streamForUpdateByRegionAndIdNotIn(region, objectiveIds)) {
             objectivesToDelete.forEach(objectiveToDelete -> {

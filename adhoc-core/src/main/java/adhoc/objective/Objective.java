@@ -55,7 +55,7 @@ public class Objective {
     @Basic(optional = false)
     private Long version;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Region region;
 
     @Basic(optional = false)
@@ -72,14 +72,14 @@ public class Objective {
     @Basic(optional = false)
     private Float z;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Faction initialFaction;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Faction faction;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<Objective> linkedObjectives;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Area area;
 }

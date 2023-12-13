@@ -59,7 +59,7 @@ public class WebController {
             "/client/**"
     })
     public String getIndex(Model model) {
-        model.addAttribute("MODE", coreProperties.getMode());
+        //model.addAttribute("MODE", applicationMode);
         model.addAttribute("FEATURE_FLAGS", coreProperties.getFeatureFlags());
         return "index.html";
     }

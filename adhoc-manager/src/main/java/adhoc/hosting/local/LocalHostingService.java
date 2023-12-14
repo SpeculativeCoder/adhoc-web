@@ -24,6 +24,7 @@ package adhoc.hosting.local;
 
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
+import adhoc.hosting.ServerTask;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,32 +51,30 @@ public class LocalHostingService implements HostingService {
 
     @Override
     public HostingState poll() {
-        HostingState state = new HostingState();
-        state.setManagerHosts(Collections.singleton("localhost"));
-        state.setKioskHosts(Collections.singleton("localhost"));
 
-        Map<Long, HostingState.ServerTask> tasks = new LinkedHashMap<>();
-        state.setServerTasks(tasks);
+        Set<String> managerHosts = Collections.singleton("localhost");
+        Set<String> kioskHosts = Collections.singleton("localhost");
+        Map<Long, ServerTask> serverTasks = new LinkedHashMap<>();
 
         List<Server> servers = serverRepository.findAll();
 
         for (Server server : servers) {
             if (serverIds.contains(server.getId())) {
 
-                HostingState.ServerTask task = new HostingState.ServerTask();
+                ServerTask serverTask = new ServerTask();
 
-                task.setTaskId("local-task-" + server.getId());
+                serverTask.setTaskId("local-task-" + server.getId());
                 //task.setServerId(server.getId());
                 //task.setManagerHost("127.0.0.1");
-                task.setPrivateIp("127.0.0.1");
-                task.setPublicIp("127.0.0.1");
-                task.setPublicWebSocketPort(8889);
+                serverTask.setPrivateIp("127.0.0.1");
+                serverTask.setPublicIp("127.0.0.1");
+                serverTask.setPublicWebSocketPort(8889);
 
-                tasks.put(server.getId(), task);
+                serverTasks.put(server.getId(), serverTask);
             }
         }
 
-        return state;
+        return new HostingState(managerHosts, kioskHosts, serverTasks);
     }
 
     @Override
@@ -85,7 +84,7 @@ public class LocalHostingService implements HostingService {
     }
 
     @Override
-    public void stopServerTask(HostingState.ServerTask task) {
+    public void stopServerTask(ServerTask task) {
         log.warn("Ignoring request to stop task {}", task);
     }
 

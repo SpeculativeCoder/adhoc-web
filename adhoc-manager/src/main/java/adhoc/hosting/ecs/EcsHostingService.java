@@ -25,6 +25,7 @@ package adhoc.hosting.ecs;
 import adhoc.area.Area;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
+import adhoc.hosting.ServerTask;
 import adhoc.hosting.ecs.properties.EcsHostingProperties;
 import adhoc.manager.properties.ManagerProperties;
 import adhoc.properties.CoreProperties;
@@ -87,15 +88,14 @@ public class EcsHostingService implements HostingService {
     public HostingState poll() {
         log.trace("Polling ECS container service tasks...");
 
-        HostingState hostingState = new HostingState();
-        hostingState.setManagerHosts(new LinkedHashSet<>());
-        hostingState.setKioskHosts(new LinkedHashSet<>());
-        hostingState.setServerTasks(new LinkedHashMap<>());
+        Set<String> managerHosts = new LinkedHashSet<>();
+        Set<String> kioskHosts = new LinkedHashSet<>();
+        Map<Long, ServerTask> serverTasks = new LinkedHashMap<>();
 
         LinkedHashSet<String> managerNetworkInterfaceIds = new LinkedHashSet<>();
         LinkedHashSet<String> kioskNetworkInterfaceIds = new LinkedHashSet<>();
         // we will do a lookup of public IPs using the network interface IDs after we have looked through all the tasks
-        Map<String, HostingState.ServerTask> serverNetworkInterfaceIds = new LinkedHashMap<>();
+        Map<String, ServerTask> serverNetworkInterfaceIds = new LinkedHashMap<>();
 
         try (EcsClient ecsClient = ecsClient();
              Ec2Client ec2Client = ec2Client()) {
@@ -107,7 +107,7 @@ public class EcsHostingService implements HostingService {
 
             if (!listTasksResponse.hasTaskArns() || listTasksResponse.taskArns().isEmpty()) {
                 log.debug("No tasks to examine");
-                return hostingState;
+                return new HostingState(); // TODO
             }
 
             DescribeTasksResponse describeTasksResponse =
@@ -179,11 +179,11 @@ public class EcsHostingService implements HostingService {
                                         throw new RuntimeException("Failed to parse server ID", e);
                                     }
 
-                                    HostingState.ServerTask serverTask = new HostingState.ServerTask();
+                                    ServerTask serverTask = new ServerTask();
                                     //hostingTask.setServerId(serverId);
                                     serverTask.setTaskId(task.taskArn());
                                     serverTask.setPrivateIp(privateIp);
-                                    hostingState.getServerTasks().put(serverId, serverTask);
+                                    serverTasks.put(serverId, serverTask);
 
                                     // we do another bulk call to the container service to actually get the public IPs
                                     // so keep a mapping of network interface ID to the task
@@ -219,15 +219,15 @@ public class EcsHostingService implements HostingService {
 
                     if (managerNetworkInterfaceIds.contains(networkInterfaceId)) {
                         log.trace("Found manager. publicIp={}", publicIp);
-                        hostingState.getManagerHosts().add(publicIp);
+                        managerHosts.add(publicIp);
                     }
 
                     if (kioskNetworkInterfaceIds.contains(networkInterfaceId)) {
                         log.trace("Found kiosk. publicIp={}", publicIp);
-                        hostingState.getKioskHosts().add(publicIp);
+                        kioskHosts.add(publicIp);
                     }
 
-                    HostingState.ServerTask serverTask = serverNetworkInterfaceIds.get(networkInterfaceId);
+                    ServerTask serverTask = serverNetworkInterfaceIds.get(networkInterfaceId);
                     if (serverTask != null) {
                         log.trace("Found server. publicIp={}", publicIp);
                         serverTask.setPublicIp(publicIp);
@@ -237,7 +237,7 @@ public class EcsHostingService implements HostingService {
             }
         }
 
-        return hostingState;
+        return new HostingState(managerHosts, kioskHosts, serverTasks);
     }
 
     public void startServerTask(Server server) { //, Set<String> managerHosts) {
@@ -351,7 +351,7 @@ public class EcsHostingService implements HostingService {
     }
 
     @Override
-    public void stopServerTask(HostingState.ServerTask task) {
+    public void stopServerTask(ServerTask task) {
         log.info("Stopping task {}", task.getTaskId());
 
         try (EcsClient ecsClient = ecsClient()) {

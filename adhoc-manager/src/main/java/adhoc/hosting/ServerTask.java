@@ -20,30 +20,31 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.hosting;
 
-import adhoc.server.Server;
-import jakarta.persistence.LockModeType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+/**
+ * Information about a container running an Unreal server in the hosting service e.g. a task in an AWS ECS cluster.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+public class ServerTask {
 
-public interface PawnRepository extends JpaRepository<Pawn, Long> {
+    /** Unique identifier of the task within the hosting service. */
+    private String taskId;
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Pawn> findForUpdateByServerAndUuid(Server server, UUID uuid);
+    /** IP that is reachable within the hosting service but not externally. */
+    private String privateIp;
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    void deleteByServerAndIdNotIn(Server server, Set<Long> idNotIn);
+    /** Public IP visible to users. */
+    private String publicIp;
 
-    @Modifying
-    @Query("delete from Pawn where seen < :seenBefore")
-    void deleteBySeenBefore(@Param("seenBefore") LocalDateTime seenBefore);
+    /** Web socket port visible to users (typically 8898) */
+    private Integer publicWebSocketPort;
 }

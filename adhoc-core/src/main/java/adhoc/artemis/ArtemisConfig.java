@@ -31,7 +31,9 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.NettyAcceptorFactory
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
+import org.apache.activemq.artemis.jms.server.config.JMSQueueConfiguration;
 import org.apache.activemq.artemis.jms.server.config.TopicConfiguration;
+import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.TopicConfigurationImpl;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -63,9 +65,18 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         return topicConfiguration;
     }
 
+    @Bean
+    public JMSQueueConfiguration emissionsQueue() {
+        JMSQueueConfigurationImpl queueConfiguration = new JMSQueueConfigurationImpl();
+        queueConfiguration.setName("emissions");
+        queueConfiguration.setBindings("/queue/emissions");
+        return queueConfiguration;
+    }
+
     @Override
     public void customize(org.apache.activemq.artemis.core.config.Configuration configuration) {
         configuration.addAddressSetting("/topic/events", eventsAddressSettings());
+        configuration.addAddressSetting("/queue/emissions", emissionsAddressSettings());
 
         configuration.addAcceptorConfiguration(
                 new TransportConfiguration(NettyAcceptorFactory.class.getName(), stompConnectorProps(), "stomp-acceptor"));
@@ -115,6 +126,16 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         AddressSettings addressSettings = new AddressSettings();
         addressSettings.setAutoCreateAddresses(true);
         addressSettings.setAutoCreateQueues(false);
+        addressSettings.setAutoDeleteAddresses(false);
+        addressSettings.setAutoDeleteQueues(false);
+        //addressSettings.setAutoDeleteAddressesDelay(5000);
+        return addressSettings;
+    }
+
+    private AddressSettings emissionsAddressSettings() {
+        AddressSettings addressSettings = new AddressSettings();
+        addressSettings.setAutoCreateAddresses(true);
+        addressSettings.setAutoCreateQueues(true);
         addressSettings.setAutoDeleteAddresses(false);
         addressSettings.setAutoDeleteQueues(false);
         //addressSettings.setAutoDeleteAddressesDelay(5000);

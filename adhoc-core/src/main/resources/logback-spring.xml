@@ -23,7 +23,7 @@
 <configuration>
 
     <conversionRule conversionWord="acc" converterClass="adhoc.web.logging.AdhocColorConverter" />
-    <conversionRule conversionWord="ewtpc" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+    <!--<conversionRule conversionWord="ewtpc" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />-->
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
@@ -71,7 +71,7 @@
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->
             <!--<pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%-5p){bright_black} %acc([%15.15t]){bright_black} %acc(%40.40logger{39}){cyan}: %acc(%m%n%ewtpc)</pattern>-->
-            <pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%p){bright_black} %acc([%t]){bright_black} %acc(%logger){cyan}: %acc(%m%n%ewtpc)</pattern>
+            <pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%p){bright_black} %acc([%t]){bright_black} %acc(%logger){cyan}: %acc(%m%n%ex)</pattern>
             <charset>UTF-8</charset>
         </encoder>
 

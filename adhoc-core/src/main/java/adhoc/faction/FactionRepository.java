@@ -42,6 +42,6 @@ public interface FactionRepository extends JpaRepository<Faction, Long> {
     Stream<Faction> streamForUpdateBy();
 
     @Modifying
-    @Query("update Faction set version = version + 1, score = score * :multiplyScore")
-    void updateFactionsMultiplyScore(@Param("multiplyScore") float multiplyScore);
+    @Query("update Faction set version = version + 1, score = score * :scoreMultiply")
+    void updateScoreMultiply(@Param("scoreMultiply") float scoreMultiply);
 }

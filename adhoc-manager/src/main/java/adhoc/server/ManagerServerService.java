@@ -27,6 +27,7 @@ import adhoc.area.AreaRepository;
 import adhoc.dns.DnsService;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
+import adhoc.hosting.ServerTask;
 import adhoc.manager.properties.ManagerProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
@@ -129,16 +130,16 @@ public class ManagerServerService {
     }
 
     /**
-     * Manage the needed servers to represent areas within each region.
+     * Manage the required servers to represent the areas within each region.
      * This will typically be based on number of players in each area.
      */
-    public void manageNeededServers() {
-        log.trace("Managing needed servers...");
+    public void manageServers() {
+        log.trace("Managing servers...");
 
         List<Region> regions = regionRepository.findAll();
 
         for (Region region : regions) {
-            log.trace("Managing needed servers for region {}", region.getId());
+            log.trace("Managing servers for region {}", region.getId());
 
             // TODO: assign areas to servers based on player count etc. - for now we just do one server per area
             List<List<Area>> areaGroups = new ArrayList<>();
@@ -148,12 +149,14 @@ public class ManagerServerService {
             }
 
             for (List<Area> areaGroup : areaGroups) {
-                manageNeededServer(region, areaGroup);
+                manageServer(region, areaGroup);
             }
         }
     }
 
-    private void manageNeededServer(Region region, List<Area> areaGroup) {
+    private void manageServer(Region region, List<Area> areaGroup) {
+        log.trace("Managing server for region {} and area group {}", region.getId(), areaGroup);
+
         // TODO: other servers may already be hosting some of the other areas so can't just check first area (but we do for now)
         Area firstArea = areaGroup.get(0);
         Server server = serverRepository.findFirstForUpdateByAreasContains(firstArea).orElseGet(Server::new);
@@ -175,8 +178,8 @@ public class ManagerServerService {
         }
 
         if (server.getAreas() == null ||
-                !server.getAreas().stream().map(Area::getId).collect(Collectors.toSet()).equals(
-                        areaGroup.stream().map(Area::getId).collect(Collectors.toSet()))) {
+                !server.getAreas().stream().map(Area::getId).collect(Collectors.toSet())
+                        .equals(areaGroup.stream().map(Area::getId).collect(Collectors.toSet()))) {
             server.setAreas(new ArrayList<>(areaGroup));
             for (Area area : server.getAreas()) {
                 area.setServer(server);
@@ -197,11 +200,11 @@ public class ManagerServerService {
     }
 
     /**
-     * Manage the tasks in the hosting service, creating new ones and/or tearing down old ones as required
-     * by the current needed servers.
+     * Manage the server tasks in the hosting service, creating new ones and/or tearing down old ones as required
+     * by the current servers.
      */
-    public void manageHostingTasks() {
-        log.trace("Managing hosting tasks...");
+    public void manageServerTasks() {
+        log.trace("Managing server tasks...");
 
         // get state of running containers
         HostingState hostingState = hostingService.poll();
@@ -212,14 +215,14 @@ public class ManagerServerService {
 
         managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
 
-        Set<HostingState.ServerTask> tasksToKeep = Sets.newLinkedHashSet();
+        Set<ServerTask> tasksToKeep = Sets.newLinkedHashSet();
         try (Stream<Server> servers = serverRepository.streamAllForUpdateByAreasNotEmpty()) {
             servers.forEach(server -> {
-                manageHostingTask(hostingState, tasksToKeep, server);
+                manageServerTask(hostingState, tasksToKeep, server);
             });
         }
 
-        for (HostingState.ServerTask task : hostingState.getServerTasks().values()) {
+        for (ServerTask task : hostingState.getServerTasks().values()) {
             if (!tasksToKeep.contains(task)) {
                 log.debug("Need to stop task {}", task);
                 hostingService.stopServerTask(task);
@@ -227,8 +230,8 @@ public class ManagerServerService {
         }
     }
 
-    private void manageHostingTask(HostingState hostingState, Set<HostingState.ServerTask> tasksToKeep, Server server) {
-        HostingState.ServerTask task = hostingState.getServerTasks().get(server.getId());
+    private void manageServerTask(HostingState hostingState, Set<ServerTask> tasksToKeep, Server server) {
+        ServerTask task = hostingState.getServerTasks().get(server.getId());
 
         boolean sendEvent = false;
         if (task != null) {
@@ -303,14 +306,14 @@ public class ManagerServerService {
         }
     }
 
-    private void stopAllTasks() {
+    private void stopAllServerTasks() {
         // get state of running containers
         HostingState hostingState = hostingService.poll();
         log.debug("stopAllTasks: hostingState={}", hostingState);
         if (hostingState == null) {
             return;
         }
-        for (HostingState.ServerTask task : hostingState.getServerTasks().values()) {
+        for (ServerTask task : hostingState.getServerTasks().values()) {
             log.debug("Stopping task {}", task);
             hostingService.stopServerTask(task);
         }

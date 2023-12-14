@@ -22,12 +22,10 @@
 
 package adhoc.hosting;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,36 +33,25 @@ import java.util.Set;
  * State of a hosting service e.g. details about all the tasks running in our AWS ECS cluster.
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder(toBuilder = true)
 public class HostingState {
 
-    private Set<String> managerHosts;
+    private final Set<String> managerHosts;
 
-    private Set<String> kioskHosts;
+    private final Set<String> kioskHosts;
 
-    private Map<Long, ServerTask> serverTasks;
+    private final Map<Long, ServerTask> serverTasks;
 
-    /**
-     * Information about a container running an Unreal server in the hosting service e.g. a task in an AWS ECS cluster.
-     */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder(toBuilder = true)
-    public static class ServerTask {
-
-        /** Unique identifier of the task within the hosting service. */
-        private String taskId;
-
-        /** IP that is reachable within the hosting service but not externally. */
-        private String privateIp;
-
-        /** Public IP visible to users. */
-        private String publicIp;
-
-        /** Web socket port visible to users (typically 8898) */
-        private Integer publicWebSocketPort;
+    public HostingState() {
+        this.managerHosts = Collections.emptySet();
+        this.kioskHosts = Collections.emptySet();
+        this.serverTasks = Collections.emptyMap();
     }
+
+    public HostingState(Set<String> managerHosts, Set<String> kioskHosts, Map<Long, ServerTask> serverTasks) {
+        this.managerHosts = Collections.unmodifiableSet(managerHosts);
+        this.kioskHosts = Collections.unmodifiableSet(kioskHosts);
+        this.serverTasks = Collections.unmodifiableMap(serverTasks);
+    }
+
 }

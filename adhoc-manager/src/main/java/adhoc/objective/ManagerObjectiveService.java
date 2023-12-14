@@ -77,9 +77,10 @@ public class ManagerObjectiveService {
 
         // NOTE: this is a two stage save to allow linked objectives to be set too (they need to be saved in the first pass to get ids)
         List<Pair<ObjectiveDto, Objective>> dtoEntityPairs = objectiveDtos.stream()
-                .peek(objectiveDto -> Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId())))
-                .map(objectiveDto -> Pair.of(objectiveDto,
-                        objectiveRepository.save(toEntityStage1(objectiveDto,
+                .peek(objectiveDto ->
+                        Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId())))
+                .map(objectiveDto ->
+                        Pair.of(objectiveDto, objectiveRepository.save(toEntityStage1(objectiveDto,
                                 objectiveRepository.findForUpdateByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)))))
                 .toList();
 
@@ -89,10 +90,6 @@ public class ManagerObjectiveService {
                 .peek(objective -> objectiveIds.add(objective.getId()))
                 .map(objectiveService::toDto)
                 .collect(Collectors.toList());
-
-        //if (objectiveIds.isEmpty()) {
-        //    objectiveIds.add(-1L);
-        //}
 
         try (Stream<Objective> objectivesToDelete = objectiveRepository.streamForUpdateByRegionAndIdNotIn(region, objectiveIds)) {
             objectivesToDelete.forEach(objectiveToDelete -> {
@@ -149,14 +146,13 @@ public class ManagerObjectiveService {
     }
 
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
+        userRepository.updateScoreAddByFactionIdAndSeenAfter(1, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
 
         Faction faction = factionRepository.getForUpdateById(objectiveTakenEvent.getFactionId());
         Objective objective = objectiveRepository.getForUpdateById(objectiveTakenEvent.getObjectiveId());
 
         faction.setScore(faction.getScore() + 1);
         objective.setFaction(faction);
-
-        userRepository.updateUsersAddScoreByFactionAndSeenAfter(1, faction, LocalDateTime.now().minusMinutes(15));
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
     }

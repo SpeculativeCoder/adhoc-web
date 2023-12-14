@@ -22,7 +22,6 @@
 
 package adhoc.user;
 
-import adhoc.faction.Faction;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -31,6 +30,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,10 +50,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(@Param("seenBefore") LocalDateTime seenBefore);
 
     @Modifying
-    @Query("update AdhocUser set version = version + 1, score = score + :addScore where faction = :faction and seen > :seenAfter")
-    void updateUsersAddScoreByFactionAndSeenAfter(@Param("addScore") float addScore, @Param("faction") Faction faction, @Param("seenAfter") LocalDateTime seenAfter);
+    @Query("update AdhocUser set version = version + 1, server.id = :serverId, seen = :seen where id in :idIn")
+    void updateServerIdAndSeenByIdIn(@Param("serverId") Long serverId, @Param("seen") LocalDateTime seen, @Param("idIn") Collection<Long> idIn);
 
     @Modifying
-    @Query("update AdhocUser set version = version + 1, score = score * :multiplyScore")
-    void updateUsersMultiplyScore(@Param("multiplyScore") float multiplyScore);
+    @Query("update AdhocUser set version = version + 1, score = score + :scoreAdd where faction.id = :factionId and seen > :seenAfter")
+    void updateScoreAddByFactionIdAndSeenAfter(@Param("scoreAdd") float scoreAdd, @Param("factionId") Long factionId, @Param("seenAfter") LocalDateTime seenAfter);
+
+    @Modifying
+    @Query("update AdhocUser set version = version + 1, score = score * :scoreMultiply")
+    void updateScoreMultiply(@Param("scoreMultiply") float scoreMultiply);
 }

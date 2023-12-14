@@ -38,8 +38,6 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
 
     Objective getByRegionAndIndex(Region region, Integer index);
 
-    boolean existsByRegionAndAreaIdNotIn(Region region, Collection<Long> areaIdNotIn);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Objective getForUpdateById(Long id);
 

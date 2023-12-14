@@ -53,8 +53,8 @@ public class ManagerQuartzJob implements Job {
             switch (jobName) {
                 case ManagerQuartzConfig.MANAGE_SERVERS:
                     // TODO: have these on separate schedules?
-                    managerServerService.manageNeededServers();
-                    managerServerService.manageHostingTasks();
+                    managerServerService.manageServers();
+                    managerServerService.manageServerTasks();
                     break;
                 case ManagerQuartzConfig.AWARD_FACTION_SCORES:
                     managerFactionService.awardFactionScores();

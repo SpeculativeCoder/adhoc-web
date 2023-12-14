@@ -25,6 +25,7 @@ package adhoc.hosting.docker;
 import adhoc.area.Area;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
+import adhoc.hosting.ServerTask;
 import adhoc.hosting.docker.properties.DockerHostingProperties;
 import adhoc.manager.properties.ManagerProperties;
 import adhoc.properties.CoreProperties;
@@ -114,15 +115,14 @@ public class DockerHostingService implements HostingService {
         List<Container> containers = dockerClient.listContainersCmd().exec();
         log.trace("containers: {}", containers);
 
-        HostingState hostingState = new HostingState();
-        hostingState.setManagerHosts(new LinkedHashSet<>());
-        hostingState.setKioskHosts(new LinkedHashSet<>());
-        hostingState.setServerTasks(new LinkedHashMap<>());
+        Set<String> managerHosts = new LinkedHashSet<>();
+        Set<String> kioskHosts = new LinkedHashSet<>();
+        Map<Long, ServerTask> serverTasks = new LinkedHashMap<>();
 
         // assume manager running on Docker host (unless we find a adhoc_manager container in Docker)
-        hostingState.getManagerHosts().add(DEFAULT_MANAGER_HOST);
+        managerHosts.add(DEFAULT_MANAGER_HOST);
         // assume kiosk running on Docker host (unless we find a adhoc_kiosk container in Docker)
-        hostingState.getManagerHosts().add(DEFAULT_KIOSK_HOST);
+        kioskHosts.add(DEFAULT_KIOSK_HOST);
 
         for (Container container : containers) {
             //log.info("state: {}", container.getState());
@@ -144,13 +144,13 @@ public class DockerHostingService implements HostingService {
 
             if (containerImage.contains(managerProperties.getManagerImage())) {
                 // as we have found a manager - remove the default assumption that the manager is the docker host
-                hostingState.getManagerHosts().remove(DEFAULT_MANAGER_HOST);
-                hostingState.getManagerHosts().add(privateIp);
+                managerHosts.remove(DEFAULT_MANAGER_HOST);
+                managerHosts.add(privateIp);
 
             } else if (containerImage.contains(managerProperties.getKioskImage())) {
                 // as we have found a kiosk - remove the default assumption that the kiosk is the docker host
-                hostingState.getKioskHosts().remove(DEFAULT_KIOSK_HOST);
-                hostingState.getKioskHosts().add(privateIp);
+                kioskHosts.remove(DEFAULT_KIOSK_HOST);
+                kioskHosts.add(privateIp);
 
             } else if (containerImage.contains(managerProperties.getServerImage())) {
                 for (String env : Objects.requireNonNull(inspectedContainer.getConfig().getEnv())) {
@@ -158,21 +158,21 @@ public class DockerHostingService implements HostingService {
                     if (serverIdMatcher.matches()) {
                         Long serverId = parseServerId(serverIdMatcher.group(1));
 
-                        HostingState.ServerTask task = new HostingState.ServerTask();
+                        ServerTask task = new ServerTask();
                         task.setTaskId(inspectedContainer.getId());
                         //task.setServerId(serverId);
                         task.setPrivateIp(privateIp);
                         task.setPublicIp("127.0.0.1");
                         task.setPublicWebSocketPort(calculatePublicWebSocketPort(serverId));
 
-                        hostingState.getServerTasks().put(serverId, task);
+                        serverTasks.put(serverId, task);
                         break;
                     }
                 }
             }
         }
 
-        return hostingState;
+        return new HostingState(managerHosts, kioskHosts, serverTasks);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class DockerHostingService implements HostingService {
     }
 
     @Override
-    public void stopServerTask(HostingState.ServerTask task) {
+    public void stopServerTask(ServerTask task) {
         dockerClient()
                 .removeContainerCmd(task.getTaskId())
                 .withForce(true)

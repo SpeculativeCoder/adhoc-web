@@ -68,10 +68,6 @@ public class ManagerAreaService {
                 .map(areaService::toDto)
                 .toList();
 
-        //if (areaIds.isEmpty()) {
-        //    areaIds.add(-1L);
-        //}
-
         try (Stream<Area> areasToDelete = areaRepository.streamForUpdateByRegionAndIdNotIn(region, areaIds)) {
             areasToDelete.forEach(areaToDelete -> {
                 log.info("Deleting area: {}", areaToDelete);

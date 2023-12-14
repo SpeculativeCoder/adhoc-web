@@ -43,7 +43,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -69,7 +68,7 @@ public class ManagerUserService {
         Server sourceServer = serverRepository.getReferenceById(userNavigateRequest.getSourceServerId());
         Area destinationArea = areaRepository.getReferenceById(userNavigateRequest.getDestinationAreaId());
 
-        Verify.verify(Objects.equals(user.getServer(), sourceServer));
+        Verify.verify(user.getServer() == sourceServer);
 
         Server destinationServer = destinationArea.getServer();
         if (destinationServer == null) {
@@ -103,7 +102,7 @@ public class ManagerUserService {
 
         Verify.verify(userId == null || token != null);
 
-        // if no user id provided, register them
+        // if no user id provided, auto register them
         if (userId == null) {
             RegisterUserRequest registerUserRequest = RegisterUserRequest.builder()
                     .factionId(userJoinRequest.getFactionId())
@@ -114,6 +113,7 @@ public class ManagerUserService {
             ResponseEntity<UserDetailDto> registeredUserDetail =
                     userService.registerUser(registerUserRequest, authentication, httpServletRequest, httpServletResponse);
 
+            // TODO
             Verify.verify(registeredUserDetail.getStatusCode().is2xxSuccessful());
             UserDetailDto userDetailDto = Verify.verifyNotNull(registeredUserDetail.getBody());
 
@@ -153,7 +153,7 @@ public class ManagerUserService {
         log.trace("Decaying user scores...");
 
         // TODO: multiplier property
-        userRepository.updateUsersMultiplyScore(0.999F);
+        userRepository.updateScoreMultiply(0.999F);
     }
 
     public void purgeOldUsers() {
@@ -166,6 +166,10 @@ public class ManagerUserService {
 
         // regular cleanup of anon users who were last seen in a server a long time ago
         oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
+
+        if (!oldUserIds.isEmpty()) {
+            log.info("Purging old users: {}", oldUserIds);
+        }
 
         userRepository.deleteAllByIdInBatch(oldUserIds);
     }

@@ -77,9 +77,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.csrfService.getCsrf().subscribe(csrf => {
       this.headerInterceptor.setCsrf(csrf);
-      this.stompService.setCsrf(csrf);
 
-      this.stompService.connect();
+      //   this.stompService.setCsrf(csrf);
+      //   this.stompService.connect();
     });
   }
 

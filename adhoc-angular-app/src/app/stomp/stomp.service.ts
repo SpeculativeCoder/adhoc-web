@@ -66,7 +66,7 @@ export class StompService {
     }
   }
 
-  onConnect() {
+  private onConnect() {
     this.client.subscribe('/topic/events', message => this.onMessage(message));
   }
 
@@ -78,20 +78,20 @@ export class StompService {
     return this.eventListeners[eventType] || (this.eventListeners[eventType] = new Subject());
   }
 
-  onMessage(message: Message) {
-    const body = JSON.parse(message.body);
+  private onMessage(message: Message) {
+    const event = JSON.parse(message.body);
     // let services know the event happened so they can update cached data etc.
-    const eventListener = this.eventListeners[body.eventType];
+    const eventListener = this.eventListeners[event['eventType']];
     if (eventListener) {
-      eventListener.next(body);
+      eventListener.next(event);
     } else {
       //console.log("no event listener for " + body.eventType);
     }
   }
 
-  onError() {
+  private onError() {
   }
 
-  onDisconnect() {
+  private onDisconnect() {
   }
 }

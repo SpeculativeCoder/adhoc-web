@@ -26,7 +26,7 @@ const PROXY_CONFIG = [
       "/csrf",
       "/api",
       "/login",
-      "/Region",
+      "/HTML5Client",
       "/fonts",
     ],
     target: "http://localhost:80",

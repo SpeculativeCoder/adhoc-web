@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @Slf4j
@@ -41,12 +43,16 @@ public class ManagerPawnController {
     private final ManagerPawnService managerPawnService;
 
     @MessageMapping("ServerPawns")
+    //@SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER')")
+    //public ServerPawnsEvent handleServerPawns(
     public void handleServerPawns(
             @Valid @RequestBody ServerPawnsEvent serverPawnsEvent) {
 
         log.debug("Handling: {}", serverPawnsEvent);
 
-        managerPawnService.handleServerPawns(serverPawnsEvent);
+        List<PawnDto> pawnDtos = managerPawnService.handleServerPawns(serverPawnsEvent);
+
+        //return new ServerPawnsEvent(serverPawnsEvent.getServerId(), pawnDtos);
     }
 }

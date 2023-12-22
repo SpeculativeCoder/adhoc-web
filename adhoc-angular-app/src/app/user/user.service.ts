@@ -109,7 +109,7 @@ export class UserService {
     return this.http.post(`${this.usersUrl}/register`, {...userRegisterRequest}, {
       withCredentials: true,
       params: {
-        'remember-me': userRegisterRequest.rememberMe
+        'remember-me': userRegisterRequest.rememberMe || false
       }}).pipe(
       mergeMap(user => {
         this.currentUser$.next(user);

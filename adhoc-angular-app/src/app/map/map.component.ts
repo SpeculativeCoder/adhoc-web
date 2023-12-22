@@ -21,14 +21,13 @@
  */
 
 import {ServerService} from '../server/server.service';
-import {Component, DoCheck, IterableDiffers, KeyValueDiffers, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, DoCheck, Inject, IterableDiffers, KeyValueDiffers, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {Objective} from '../objective/objective';
 import {Faction} from '../faction/faction';
 import {ObjectiveService} from '../objective/objective.service';
 import {FactionService} from '../faction/faction.service';
-import {forkJoin, Observable, Subscription, timer} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {Server} from '../server/server';
-import {User} from "../user/user";
 import {UserService} from "../user/user.service";
 import {Region} from "../region/region";
 import {Area} from "../area/area";
@@ -38,41 +37,48 @@ import {fabric} from 'fabric';
 import {Pawn} from "../pawn/pawn";
 import {PawnService} from "../pawn/pawn.service";
 import {ConfigService} from "../config/config.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
+import {StompService} from "../stomp/stomp.service";
+import {Emission} from "../emission/emission";
+import {DOCUMENT} from "@angular/common";
+import {CsrfService} from "../csrf/csrf.service";
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html'
 })
-export class MapComponent implements OnInit, DoCheck, OnChanges {
+export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
   regions: Region[] = [];
   areas: Area[] = [];
   objectives: Objective[] = [];
+  objectiveGroups: { [key: number]: fabric.Group } = {};
   factions: Faction[] = [];
   servers: Server[] = [];
   pawns: Pawn[] = [];
+  pawnGroups: { [key: number]: fabric.Group } = {};
 
-  differ: any;
-  regionsDiffer: any;
-  regionDiffers: any[] = [];
-  areasDiffer: any;
-  areaDiffers: any[] = [];
-  objectivesDiffer: any;
-  objectiveDiffers: any[] = [];
-  serversDiffer: any;
-  serverDiffers: any[] = [];
-  pawnsDiffer: any;
-  pawnDiffers: any[] = [];
+  mapScaleDiffer: any;
+  // regionsDiffer: any;
+  // regionDiffers: any[] = [];
+  // areasDiffer: any;
+  // areaDiffers: any[] = [];
+  // objectivesDiffer: any;
+  // objectiveDiffers: any[] = [];
+  // serversDiffer: any;
+  // serverDiffers: any[] = [];
+  // pawnsDiffer: any;
+  // pawnDiffers: any[] = [];
 
   canvasWidth = 1000;
   canvasHeight = 1000;
 
-  canvas: fabric.Canvas;
+  canvas: fabric.Canvas = null;
 
   mapWidth: number = 0;
   mapHeight: number = 0;
   mapLeft: number = 0;
   mapTop: number = 0;
+
   initialMapScale: number = null;
   mapScale: number = null;
 
@@ -80,23 +86,30 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
   lastPosX?: number;
   lastPosY?: number;
 
-  timerSubscription: Subscription;
-  timer: Observable<number> = timer(0, 10000);
+  // timerSubscription: Subscription;
+  // timer: Observable<number> = timer(0, 10000);
 
-  constructor(private regionService: RegionService,
+  constructor(private csrfService: CsrfService,
+              private stompService: StompService,
+              private regionService: RegionService,
               private areaService: AreaService,
               private objectiveService: ObjectiveService,
               private factionService: FactionService,
               private serverService: ServerService,
               private pawnService: PawnService,
               private userService: UserService,
-              private featureFlagsService: ConfigService,
+              private stomp: StompService,
+              private configService: ConfigService,
               private iterableDiffers: IterableDiffers,
               private keyValueDiffers: KeyValueDiffers,
-              private router: Router) {
+              private router: Router,
+              private activatedRoute: ActivatedRoute,
+              @Inject(DOCUMENT) private document: Document) {
   }
 
   ngOnInit(): void {
+    //console.log("MapComponent::ngOnInit");
+
     this.createDiffers();
 
     this.canvas = new fabric.Canvas('map-canvas', {
@@ -108,22 +121,46 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
       enableRetinaScaling: true
     });
 
-    this.refreshData();
-    this.timerSubscription = this.timer.subscribe(() => {
-      this.refreshData();
+    this.loadData();
+    // this.timerSubscription = this.timer.subscribe(() => {
+    //   this.refreshData();
+    // });
+
+    this.csrfService.getCsrf().subscribe(csrf => {
+      this.stompService.setCsrf(csrf);
+      this.stompService.connect();
     });
+
+    this.stomp
+      .observeEvent('ObjectiveTaken')
+      .subscribe((event: any) => this.handleObjectiveTaken(event));
+
+    this.stomp
+      .observeEvent('ServerPawns')
+      .subscribe((event: any) => this.handleServerPawns(event));
+
+    this.stomp
+      .observeEvent('Emissions')
+      .subscribe((event: any) => this.handleEmissions(event));
   }
 
   ngOnDestroy(): void {
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-    }
+    //console.log("MapComponent::ngOnDestroy");
+
+    // if (this.timerSubscription) {
+    //   this.timerSubscription.unsubscribe();
+    // }
+
+    this.stompService.disconnect();
+
+    this.canvas.dispose();
+    this.canvas = null;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
   }
 
-  private refreshData() {
+  private loadData() {
     forkJoin([
       this.regionService.getRegions(),
       this.areaService.getAreas(),
@@ -133,89 +170,89 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
       this.pawnService.getPawns(),
     ]).subscribe(data => {
       [this.regions, this.areas, this.objectives, this.servers, this.factions, this.pawns] = data;
+      this.refreshMap();
     });
   }
 
   private createDiffers() {
-    this.differ = this.keyValueDiffers.find({scale: this.mapScale}).create();
+    this.mapScaleDiffer = this.keyValueDiffers.find({scale: this.mapScale}).create();
 
-    this.regionsDiffer = this.iterableDiffers.find(this.regions).create();
-    this.regionDiffers.length = 0;
-    this.regions.forEach((region) => {
-      this.regionDiffers.push(this.keyValueDiffers.find(region).create());
-    });
-    this.areasDiffer = this.iterableDiffers.find(this.areas).create();
-    this.areaDiffers.length = 0;
-    this.areas.forEach((area) => {
-      this.areaDiffers.push(this.keyValueDiffers.find(area).create());
-    });
-    this.objectivesDiffer = this.iterableDiffers.find(this.objectives).create();
-    this.objectiveDiffers.length = 0;
-    this.objectives.forEach((objective) => {
-      this.objectiveDiffers.push(this.keyValueDiffers.find(objective).create());
-    });
-    this.serversDiffer = this.iterableDiffers.find(this.servers).create();
-    this.serverDiffers.length = 0;
-    this.servers.forEach((server) => {
-      this.serverDiffers.push(this.keyValueDiffers.find(server).create());
-    });
-    this.pawnsDiffer = this.iterableDiffers.find(this.pawns).create();
-    this.pawnDiffers.length = 0;
-    this.pawns.forEach((pawn) => {
-      this.pawnDiffers.push(this.keyValueDiffers.find(pawn).create());
-    });
+    //   this.regionsDiffer = this.iterableDiffers.find(this.regions).create();
+    //   this.regionDiffers.length = 0;
+    //   this.regions.forEach((region) => {
+    //     this.regionDiffers.push(this.keyValueDiffers.find(region).create());
+    //   });
+    //   this.areasDiffer = this.iterableDiffers.find(this.areas).create();
+    //   this.areaDiffers.length = 0;
+    //   this.areas.forEach((area) => {
+    //     this.areaDiffers.push(this.keyValueDiffers.find(area).create());
+    //   });
+    //   this.objectivesDiffer = this.iterableDiffers.find(this.objectives).create();
+    //   this.objectiveDiffers.length = 0;
+    //   this.objectives.forEach((objective) => {
+    //     this.objectiveDiffers.push(this.keyValueDiffers.find(objective).create());
+    //   });
+    //   this.serversDiffer = this.iterableDiffers.find(this.servers).create();
+    //   this.serverDiffers.length = 0;
+    //   this.servers.forEach((server) => {
+    //     this.serverDiffers.push(this.keyValueDiffers.find(server).create());
+    //   });
+    //   this.pawnsDiffer = this.iterableDiffers.find(this.pawns).create();
+    //   this.pawnDiffers.length = 0;
+    //   this.pawns.forEach((pawn) => {
+    //     this.pawnDiffers.push(this.keyValueDiffers.find(pawn).create());
+    //   });
   }
 
   ngDoCheck() {
     let refresh: boolean = false;
 
-    if (this.differ.diff({scale: this.mapScale})) {
+    if (this.mapScaleDiffer.diff({scale: this.mapScale})) {
       refresh = true;
     }
 
-    if (this.regionsDiffer && this.regionsDiffer.diff(this.regions)) {
-      refresh = true;
-    }
-    for (let i = 0; i < this.regionDiffers.length; i++) {
-      if (this.regionDiffers[i].diff(this.regions[i])) {
-        refresh = true;
-      }
-    }
-    if (this.areasDiffer && this.areasDiffer.diff(this.areas)) {
-      refresh = true;
-    }
-    for (let i = 0; i < this.areaDiffers.length; i++) {
-      if (this.areaDiffers[i].diff(this.areas[i])) {
-        refresh = true;
-      }
-    }
-    if (this.objectivesDiffer && this.objectivesDiffer.diff(this.objectives)) {
-      refresh = true;
-    }
-    for (let i = 0; i < this.objectiveDiffers.length; i++) {
-      if (this.objectiveDiffers[i].diff(this.objectives[i])) {
-        refresh = true;
-      }
-    }
-    if (this.serversDiffer && this.serversDiffer.diff(this.servers)) {
-      refresh = true;
-    }
-    for (let i = 0; i < this.serverDiffers.length; i++) {
-      if (this.serverDiffers[i].diff(this.servers[i])) {
-        refresh = true;
-      }
-    }
-    if (this.pawnsDiffer && this.pawnsDiffer.diff(this.pawns)) {
-      refresh = true;
-    }
-    for (let i = 0; i < this.pawnDiffers.length; i++) {
-      if (this.pawnDiffers[i].diff(this.pawns[i])) {
-        refresh = true;
-      }
-    }
+    // if (this.regionsDiffer && this.regionsDiffer.diff(this.regions)) {
+    //   refresh = true;
+    // }
+    // for (let i = 0; i < this.regionDiffers.length; i++) {
+    //   if (this.regionDiffers[i].diff(this.regions[i])) {
+    //     refresh = true;
+    //   }
+    // }
+    // if (this.areasDiffer && this.areasDiffer.diff(this.areas)) {
+    //   refresh = true;
+    // }
+    // for (let i = 0; i < this.areaDiffers.length; i++) {
+    //   if (this.areaDiffers[i].diff(this.areas[i])) {
+    //     refresh = true;
+    //   }
+    // }
+    // if (this.objectivesDiffer && this.objectivesDiffer.diff(this.objectives)) {
+    //   refresh = true;
+    // }
+    // for (let i = 0; i < this.objectiveDiffers.length; i++) {
+    //   if (this.objectiveDiffers[i].diff(this.objectives[i])) {
+    //     refresh = true;
+    //   }
+    // }
+    // if (this.serversDiffer && this.serversDiffer.diff(this.servers)) {
+    //   refresh = true;
+    // }
+    // for (let i = 0; i < this.serverDiffers.length; i++) {
+    //   if (this.serverDiffers[i].diff(this.servers[i])) {
+    //     refresh = true;
+    //   }
+    // }
+    // if (this.pawnsDiffer && this.pawnsDiffer.diff(this.pawns)) {
+    //   refresh = true;
+    // }
+    // for (let i = 0; i < this.pawnDiffers.length; i++) {
+    //   if (this.pawnDiffers[i].diff(this.pawns[i])) {
+    //     refresh = true;
+    //   }
+    // }
 
     if (refresh) {
-      //console.log("refreshing");
       this.refreshMap();
     }
   }
@@ -280,7 +317,7 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
       left: minLeft - (this.mapWidth * 0.04),
       top: minTop - (this.mapHeight * 0.04),
       width: this.mapWidth + (this.mapWidth * 0.08),
-      height: this.mapHeight+ (this.mapHeight * 0.08),
+      height: this.mapHeight + (this.mapHeight * 0.08),
       fill: '#EEEEEE',
       rx: 5 * (1 / this.mapScale),
       ry: 5 * (1 / this.mapScale),
@@ -354,75 +391,13 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
     }
 
     for (const objective of this.objectives) {
-      let objectiveRect = new fabric.Rect({
-        originX: 'center',
-        originY: 'center',
-        left: objective.x,
-        top: -objective.y,
-        width: 20 * (1 / this.mapScale),
-        height: 20 * (1 / this.mapScale),
-        stroke: '#888888',
-        strokeWidth: 1 * (1 / this.mapScale),
-        fill: this.getFaction(objective.factionId)?.color || 'lightgray',
-        hoverCursor: 'default',
-        selectable: false,
-      });
-      let objectiveText = new fabric.IText(objective.name, {
-        fontFamily: 'sans-serif',
-        fontSize: 16 * (1 / this.mapScale),
-        fill: '#222222',
-        textBackgroundColor: '#EEEEEEAA',
-        hoverCursor: 'default',
-        editable: false,
-        selectable: false,
-      });
-      objectiveText.set({
-        left: objective.x - 0.5 * objectiveText.get('width'),
-        top: -objective.y - 30 * (1 / this.mapScale),
-      });
-      this.canvas.add(objectiveRect);
-      this.canvas.add(objectiveText);
+      this.createObjectiveGroup(objective);
     }
 
-    for (const pawn of this.pawns) {
-      let pawnCircle = new fabric.Circle({
-        originX: 'center',
-        originY: 'center',
-        left: pawn.x,
-        top: -pawn.y,
-        radius: 5 * (1 / this.mapScale),
-        stroke: 'black',
-        strokeWidth: 0.1 * (1 / this.mapScale),
-        fill: this.getFaction(pawn.factionId)?.color || 'lightgray',
-        hoverCursor: 'default',
-        selectable: false,
-      });
-      let label = pawn.name;
-      let pawnText = new fabric.IText(label, {
-        originX: 'left',
-        originY: 'center',
-        left: pawn.x + 10 * (1 / this.mapScale),
-        top: -pawn.y, // + 10 * (1 / this.scale),
-        fontFamily: 'sans-serif',
-        fontSize: 10 * (1 / this.mapScale),
-        fill: '#000000',
-        textBackgroundColor: '#EEEEEEAA',
-        hoverCursor: 'default',
-        editable: false,
-        selectable: false,
-        visible: !!pawn.userId, // bot name only visible on mouseover
-      });
-      pawnCircle.on('mouseover', () => {
-        pawnText.set('visible', true);
-        this.canvas.requestRenderAll();
-      });
-      pawnCircle.on('mouseout', () => {
-        pawnText.set('visible', !!pawn.userId);
-        this.canvas.requestRenderAll();
-      });
-      this.canvas.add(pawnCircle);
-      this.canvas.add(pawnText);
-    }
+    // TODO: enable
+    // for (const pawn of this.pawns) {
+    //   this.createPawnGroup(pawn);
+    // }
 
     for (const area of this.areas) {
       for (const server of this.servers) {
@@ -523,7 +498,192 @@ export class MapComponent implements OnInit, DoCheck, OnChanges {
     this.canvas.requestRenderAll();
   }
 
+  private createObjectiveGroup(objective: Objective) {
+    let objectiveRect = new fabric.Rect({
+      originX: 'center',
+      originY: 'center',
+      width: 20 * (1 / this.mapScale),
+      height: 20 * (1 / this.mapScale),
+      stroke: '#888888',
+      strokeWidth: 1 * (1 / this.mapScale),
+      fill: this.getFaction(objective.factionId)?.color || 'lightgray',
+      hoverCursor: 'default',
+      selectable: false,
+    });
+    let objectiveText = new fabric.IText(objective.name, {
+      originX: 'center',
+      originY: 'center',
+      top: - 20 * (1 / this.mapScale),
+      fontFamily: 'sans-serif',
+      fontSize: 16 * (1 / this.mapScale),
+      fill: '#222222',
+      textAlign: 'center',
+      textBackgroundColor: '#EEEEEEAA',
+      hoverCursor: 'default',
+      editable: false,
+      selectable: false,
+    });
+    //[objectiveRect, objectiveText]
+    let objectiveGroup = new fabric.Group([objectiveRect], {
+      originX: 'center',
+      originY: 'center',
+      left: objective.x,
+      top: -objective.y,
+      hoverCursor: 'default',
+      selectable: false,
+      subTargetCheck: true
+    });
+    objectiveGroup.add(objectiveText);
+    this.canvas.add(objectiveGroup);
+    this.objectiveGroups[objective.id] = objectiveGroup;
+  }
+
+  private createPawnGroup(pawn: Pawn) {
+    let pawnCircle = new fabric.Circle({
+      originX: 'center',
+      originY: 'center',
+      left: 0,
+      top: 0,
+      radius: 5 * (1 / this.mapScale),
+      stroke: 'black',
+      strokeWidth: 0.1 * (1 / this.mapScale),
+      fill: this.getFaction(pawn.factionId)?.color || 'lightgray',
+      hoverCursor: 'default',
+      selectable: false,
+    });
+    let pawnText = new fabric.IText(pawn.name, {
+      originX: 'left',
+      originY: 'center',
+      left: 10 * (1 / this.mapScale),
+      top: 0,
+      fontFamily: 'sans-serif',
+      fontSize: 10 * (1 / this.mapScale),
+      fill: '#000000',
+      textBackgroundColor: '#EEEEEEAA',
+      hoverCursor: 'default',
+      editable: false,
+      selectable: false,
+      visible: !!pawn.userId, // bot name only visible on mouseover
+    });
+    //[pawnCircle, pawnText]
+    let pawnGroup = new fabric.Group([pawnCircle], {
+      originX: 'center',
+      originY: 'center',
+      left: pawn.x,
+      top: -pawn.y,
+      hoverCursor: 'default',
+      selectable: false,
+      subTargetCheck: true
+    });
+    pawnCircle.on('mouseover', () => {
+      pawnText.set('visible', true);
+      this.canvas.requestRenderAll();
+    });
+    pawnCircle.on('mouseout', () => {
+      pawnText.set('visible', !!pawn.userId);
+      this.canvas.requestRenderAll();
+    });
+    pawnGroup.add(pawnText);
+    this.canvas.add(pawnGroup);
+    this.pawnGroups[pawn.id] = pawnGroup;
+  }
+
   getFaction(factionId: number): Faction {
     return this.factions.find(faction => faction.id === factionId);
+  }
+
+  handleObjectiveTaken(event: any) {
+    //console.log(`MapComponent::handleObjectiveTaken: event=${JSON.stringify(event)}`);
+
+    let objectiveId: number = event['objectiveId'];
+    let factionId: number = event['factionId'];
+
+    if (!this.canvas) {
+      return;
+    }
+
+    let objectiveGroup = this.objectiveGroups[objectiveId];
+    if (!objectiveGroup) {
+      return;
+    }
+
+    objectiveGroup.item(0).set({
+      fill: this.getFaction(factionId)?.color || 'lightgray',
+    });
+    this.canvas.requestRenderAll();
+  }
+
+  handleServerPawns(event: any) {
+    let pawns: Pawn[] = event['pawns'];
+
+    if (!this.canvas || !this.document.hasFocus()) {
+      return;
+    }
+
+    // TODO: enable
+    return;
+
+    for (let pawn of pawns) {
+      let pawnGroup = this.pawnGroups[pawn.id];
+      if (pawnGroup) {
+        pawnGroup.animate({'left': pawn.x, 'top': -pawn.y}, {
+          duration: 1000,
+          easing: fabric.util.ease.easeOutExpo,
+          onChange: this.canvas.requestRenderAll.bind(this.canvas),
+        });
+      } else {
+        this.createPawnGroup(pawn);
+      }
+    }
+  }
+
+  handleEmissions(event: any) {
+    if (!this.canvas || !this.document.hasFocus()) {
+      return;
+    }
+
+    let emissions: Emission[] = event['emissions'];
+
+    for (const emission of emissions) {
+      // TODO: staggering and emission type
+      let circle = new fabric.Circle({
+        originX: 'center',
+        originY: 'center',
+        left: emission.x,
+        top: -emission.y,
+        radius: 0 * (1 / this.mapScale),
+        //stroke: 'black',
+        //strokeWidth: 0.1 * (1 / this.mapScale),
+        fill: '#FFAA0088',
+        opacity: 0,
+        hoverCursor: 'default',
+        selectable: false,
+        evented: false
+      });
+      this.canvas.add(circle);
+      this.canvas.requestRenderAll();
+
+      circle.animate({
+        opacity: 100,
+        radius: 15 * (1 / this.mapScale)
+      }, {
+        duration: 1000,
+        easing: fabric.util.ease.easeInExpo,
+        onChange: this.canvas.requestRenderAll.bind(this.canvas),
+        onComplete: () => {
+          circle.animate({
+            opacity: 0,
+            //radius: 10 * (1 / this.mapScale)
+          }, {
+            duration: 1000,
+            easing: fabric.util.ease.easeOutExpo,
+            onChange: this.canvas.requestRenderAll.bind(this.canvas),
+            onComplete: () => {
+              this.canvas.remove(circle);
+            }
+          });
+        }
+      });
+    }
   }
 }

@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -49,7 +50,9 @@ public class ManagerPawnService {
     private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
 
-    public void handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
+    private final PawnService pawnService;
+
+    public List<PawnDto> handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
 
         LocalDateTime seen = LocalDateTime.now();
 
@@ -62,19 +65,22 @@ public class ManagerPawnService {
         Server server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
 
         Set<Long> seenPawnIds = new TreeSet<>();
-        for (PawnDto pawnDto : serverPawnsEvent.getPawns()) {
+        List<PawnDto> pawnDtos = serverPawnsEvent.getPawns().stream()
+                .map(pawnDto -> {
+                    pawnDto.setServerId(server.getId());
+                    pawnDto.setSeen(seen);
 
-            pawnDto.setServerId(server.getId());
-            pawnDto.setSeen(seen);
+                    Pawn pawn = pawnRepository.save(
+                            toEntity(pawnDto, pawnRepository.findForUpdateByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
 
-            Pawn pawn = pawnRepository.save(
-                    toEntity(pawnDto, pawnRepository.findForUpdateByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
+                    seenPawnIds.add(pawn.getId());
 
-            seenPawnIds.add(pawn.getId());
-        }
-
+                    return pawnService.toDto(pawn);
+                }).toList();
         // clean up any pawns we didn't update for this server
         pawnRepository.deleteByServerAndIdNotIn(server, seenPawnIds);
+
+        return pawnDtos;
     }
 
     public void purgeOldPawns() {

@@ -20,33 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn.event;
-
-import adhoc.pawn.PawnDto;
-import adhoc.web.event.Event;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
-
-import java.util.List;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class ServerPawnsEvent implements Event {
-
-    @NotNull
-    @Min(1)
-    private Long serverId;
-
-    @NotNull
-    @Valid
-    private List<PawnDto> pawns;
+export class Emission {
+  serverId?: number;
+  category?: string;
+  type?: string;
+  mapName?: string;
+  x?: number;
+  y?: number;
+  z?: number;
+  pitch?: number;
+  yaw?: number;
+  roll?: number;
+  timestamp?: Date;
 }

@@ -23,7 +23,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {MessageService} from '../messages/message.service';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {Objective} from './objective';
 import {Faction} from '../faction/faction';
 import {StompService} from '../stomp/stomp.service';
@@ -55,6 +55,13 @@ export class ObjectiveService {
   }
 
   getObjectives(): Observable<Objective[]> {
+    if (this.objectives) {
+      return of(this.objectives);
+    }
+    return this.refreshObjectives();
+  }
+
+  refreshObjectives(): Observable<Objective[]> {
     return this.http.get<Objective[]>(this.objectivesUrl).pipe(
       map(objectives => {
         this.objectives ? this.objectives.length = 0 : this.objectives = [];

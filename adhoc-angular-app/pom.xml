@@ -90,7 +90,8 @@
                 <argument>run</argument>
                 <argument>build</argument>
                 <argument>--</argument>
-                <argument>--configuration=${angular.configuration}</argument>
+                <!-- TODO: remove jsdom_fix when no longer needed -->
+                <argument>--configuration=${angular.configuration},jsdom_fix</argument>
               </arguments>
               <environmentVariables>
                 <!-- TODO: figure out a way to have analytics on -->

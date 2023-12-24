@@ -51,23 +51,14 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
   regions: Region[] = [];
   areas: Area[] = [];
   objectives: Objective[] = [];
-  objectiveGroups: { [key: number]: fabric.Group } = {};
   factions: Faction[] = [];
   servers: Server[] = [];
-  pawns: Pawn[] = [];
+  serversPawns: { [key: number]: Pawn[] } = {};
+
+  objectiveGroups: { [key: number]: fabric.Group } = {};
   pawnGroups: { [key: number]: fabric.Group } = {};
 
   mapScaleDiffer: any;
-  // regionsDiffer: any;
-  // regionDiffers: any[] = [];
-  // areasDiffer: any;
-  // areaDiffers: any[] = [];
-  // objectivesDiffer: any;
-  // objectiveDiffers: any[] = [];
-  // serversDiffer: any;
-  // serverDiffers: any[] = [];
-  // pawnsDiffer: any;
-  // pawnDiffers: any[] = [];
 
   canvasWidth = 1000;
   canvasHeight = 1000;
@@ -108,8 +99,6 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
   }
 
   ngOnInit(): void {
-    //console.log("MapComponent::ngOnInit");
-
     this.createDiffers();
 
     this.canvas = new fabric.Canvas('map-canvas', {
@@ -118,7 +107,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       // width: this.canvasWidth,
       // height: this.canvasHeight,
       imageSmoothingEnabled: false,
-      enableRetinaScaling: true
+      enableRetinaScaling: true,
+      renderOnAddRemove: false
     });
 
     this.loadData();
@@ -145,8 +135,6 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
   }
 
   ngOnDestroy(): void {
-    //console.log("MapComponent::ngOnDestroy");
-
     // if (this.timerSubscription) {
     //   this.timerSubscription.unsubscribe();
     // }
@@ -169,39 +157,17 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       this.factionService.getFactions(),
       this.pawnService.getPawns(),
     ]).subscribe(data => {
-      [this.regions, this.areas, this.objectives, this.servers, this.factions, this.pawns] = data;
+      let pawns: Pawn[];
+      [this.regions, this.areas, this.objectives, this.servers, this.factions, pawns] = data;
+      for (let pawn of pawns) {
+        (this.serversPawns[pawn.serverId] ||= []).push(pawn);
+      }
       this.refreshMap();
     });
   }
 
   private createDiffers() {
     this.mapScaleDiffer = this.keyValueDiffers.find({scale: this.mapScale}).create();
-
-    //   this.regionsDiffer = this.iterableDiffers.find(this.regions).create();
-    //   this.regionDiffers.length = 0;
-    //   this.regions.forEach((region) => {
-    //     this.regionDiffers.push(this.keyValueDiffers.find(region).create());
-    //   });
-    //   this.areasDiffer = this.iterableDiffers.find(this.areas).create();
-    //   this.areaDiffers.length = 0;
-    //   this.areas.forEach((area) => {
-    //     this.areaDiffers.push(this.keyValueDiffers.find(area).create());
-    //   });
-    //   this.objectivesDiffer = this.iterableDiffers.find(this.objectives).create();
-    //   this.objectiveDiffers.length = 0;
-    //   this.objectives.forEach((objective) => {
-    //     this.objectiveDiffers.push(this.keyValueDiffers.find(objective).create());
-    //   });
-    //   this.serversDiffer = this.iterableDiffers.find(this.servers).create();
-    //   this.serverDiffers.length = 0;
-    //   this.servers.forEach((server) => {
-    //     this.serverDiffers.push(this.keyValueDiffers.find(server).create());
-    //   });
-    //   this.pawnsDiffer = this.iterableDiffers.find(this.pawns).create();
-    //   this.pawnDiffers.length = 0;
-    //   this.pawns.forEach((pawn) => {
-    //     this.pawnDiffers.push(this.keyValueDiffers.find(pawn).create());
-    //   });
   }
 
   ngDoCheck() {
@@ -211,47 +177,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       refresh = true;
     }
 
-    // if (this.regionsDiffer && this.regionsDiffer.diff(this.regions)) {
-    //   refresh = true;
-    // }
-    // for (let i = 0; i < this.regionDiffers.length; i++) {
-    //   if (this.regionDiffers[i].diff(this.regions[i])) {
-    //     refresh = true;
-    //   }
-    // }
-    // if (this.areasDiffer && this.areasDiffer.diff(this.areas)) {
-    //   refresh = true;
-    // }
-    // for (let i = 0; i < this.areaDiffers.length; i++) {
-    //   if (this.areaDiffers[i].diff(this.areas[i])) {
-    //     refresh = true;
-    //   }
-    // }
-    // if (this.objectivesDiffer && this.objectivesDiffer.diff(this.objectives)) {
-    //   refresh = true;
-    // }
-    // for (let i = 0; i < this.objectiveDiffers.length; i++) {
-    //   if (this.objectiveDiffers[i].diff(this.objectives[i])) {
-    //     refresh = true;
-    //   }
-    // }
-    // if (this.serversDiffer && this.serversDiffer.diff(this.servers)) {
-    //   refresh = true;
-    // }
-    // for (let i = 0; i < this.serverDiffers.length; i++) {
-    //   if (this.serverDiffers[i].diff(this.servers[i])) {
-    //     refresh = true;
-    //   }
-    // }
-    // if (this.pawnsDiffer && this.pawnsDiffer.diff(this.pawns)) {
-    //   refresh = true;
-    // }
-    // for (let i = 0; i < this.pawnDiffers.length; i++) {
-    //   if (this.pawnDiffers[i].diff(this.pawns[i])) {
-    //     refresh = true;
-    //   }
-    // }
-
+    // TODO
     if (refresh) {
       this.refreshMap();
     }
@@ -353,6 +279,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         width: area.sizeX,
         height: area.sizeY,
         stroke: '#888888',
+        strokeDashArray: [2 * (1 / this.mapScale), 2 * (1 / this.mapScale)],
         strokeWidth: 1 * (1 / this.mapScale),
         fill: 'transparent',
         hoverCursor: 'default',
@@ -379,7 +306,12 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       for (const linkedObjectiveId of objective.linkedObjectiveIds) {
         const linkedObjective = this.objectives.find(o => o.id == linkedObjectiveId);
         if (visitedObjectives.indexOf(linkedObjective) === -1) {
-          let linkLine = new fabric.Line([objective.x, -objective.y, linkedObjective.x, -linkedObjective.y], {
+          let linkLine = new fabric.Line([
+            objective.x,
+            -objective.y,
+            linkedObjective.x, // + 15 * (1 / this.mapScale),
+            -linkedObjective.y, // + 15 * (1 / this.mapScale),
+          ], {
             stroke: '#888888',
             strokeWidth: 1 * (1 / this.mapScale),
             hoverCursor: 'default',
@@ -388,16 +320,19 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
           this.canvas.add(linkLine);
         }
       }
+      // TODO
+      visitedObjectives.push(objective);
     }
 
     for (const objective of this.objectives) {
       this.createObjectiveGroup(objective);
     }
 
-    // TODO: enable
-    // for (const pawn of this.pawns) {
-    //   this.createPawnGroup(pawn);
-    // }
+    for (const pawns of Object.values(this.serversPawns)) {
+      for (const pawn of pawns) {
+        this.createPawnGroup(pawn);
+      }
+    }
 
     for (const area of this.areas) {
       for (const server of this.servers) {
@@ -513,7 +448,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     let objectiveText = new fabric.IText(objective.name, {
       originX: 'center',
       originY: 'center',
-      top: - 20 * (1 / this.mapScale),
+      top: -20 * (1 / this.mapScale),
       fontFamily: 'sans-serif',
       fontSize: 16 * (1 / this.mapScale),
       fill: '#222222',
@@ -548,6 +483,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       stroke: 'black',
       strokeWidth: 0.1 * (1 / this.mapScale),
       fill: this.getFaction(pawn.factionId)?.color || 'lightgray',
+      opacity: 0,
       hoverCursor: 'default',
       selectable: false,
     });
@@ -586,6 +522,11 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     pawnGroup.add(pawnText);
     this.canvas.add(pawnGroup);
     this.pawnGroups[pawn.id] = pawnGroup;
+    pawnCircle.animate({'opacity': 100}, {
+      duration: 500,
+      easing: fabric.util.ease.easeInExpo,
+      onChange: this.canvas.requestRenderAll.bind(this.canvas)
+    });
   }
 
   getFaction(factionId: number): Faction {
@@ -598,9 +539,15 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     let objectiveId: number = event['objectiveId'];
     let factionId: number = event['factionId'];
 
-    if (!this.canvas) {
-      return;
+    for (const objective of this.objectives) {
+      if (objective.id == objectiveId) {
+        objective.factionId = factionId;
+      }
     }
+
+    //if (!this.canvas) {
+    //  return;
+    //}
 
     let objectiveGroup = this.objectiveGroups[objectiveId];
     if (!objectiveGroup) {
@@ -614,14 +561,15 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
   }
 
   handleServerPawns(event: any) {
+    let serverId: number = event['serverId'];
     let pawns: Pawn[] = event['pawns'];
 
-    if (!this.canvas || !this.document.hasFocus()) {
-      return;
-    }
+    let oldPawnIds = new Set(this.serversPawns[serverId].map(pawn => pawn.id));
+    this.serversPawns[serverId] = pawns;
 
-    // TODO: enable
-    return;
+    //if (!this.canvas || !this.document.hasFocus()) {
+    //  return;
+    //}
 
     for (let pawn of pawns) {
       let pawnGroup = this.pawnGroups[pawn.id];
@@ -634,13 +582,29 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       } else {
         this.createPawnGroup(pawn);
       }
+      oldPawnIds.delete(pawn.id);
+    }
+
+    for (const oldPawnId of oldPawnIds) {
+      let pawnGroup = this.pawnGroups[oldPawnId];
+      if (pawnGroup) {
+        pawnGroup.item(0).animate({'opacity': 0}, {
+          duration: 500,
+          easing: fabric.util.ease.easeOutExpo,
+          onChange: this.canvas.requestRenderAll.bind(this.canvas),
+          onComplete: () => {
+            this.canvas.remove(pawnGroup);
+            this.canvas.requestRenderAll();
+          }
+        });
+      }
     }
   }
 
   handleEmissions(event: any) {
-    if (!this.canvas || !this.document.hasFocus()) {
-      return;
-    }
+    //if (!this.canvas || !this.document.hasFocus()) {
+    //  return;
+    //}
 
     let emissions: Emission[] = event['emissions'];
 

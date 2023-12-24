@@ -36,8 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Stream;
 
 @Transactional
@@ -57,22 +55,13 @@ public class ManagerAreaService {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
 
-        Set<Long> areaIds = new TreeSet<>();
+        List<Integer> indexes = areaDtos.stream().map(AreaDto::getIndex).toList();
 
-        List<AreaDto> result = areaDtos.stream()
-                .peek(areaDto -> Verify.verify(Objects.equals(region.getId(), areaDto.getRegionId())))
-                .map(areaDto -> toEntity(areaDto,
-                        areaRepository.findForUpdateByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
-                .map(areaRepository::save)
-                .peek(area -> areaIds.add(area.getId()))
-                .map(areaService::toDto)
-                .toList();
-
-        try (Stream<Area> areasToDelete = areaRepository.streamForUpdateByRegionAndIdNotIn(region, areaIds)) {
+        try (Stream<Area> areasToDelete = areaRepository.streamForUpdateByRegionAndIndexNotIn(region, indexes)) {
             areasToDelete.forEach(areaToDelete -> {
-                log.info("Deleting area: {}", areaToDelete);
+                log.info("Deleting unused area: {}", areaToDelete);
 
-                // before deleting areas we must unlink any objectives that will become orphaned
+                // before deleting unused areas we must unlink any objectives that will become orphaned
                 for (Objective orphanedObjective : areaToDelete.getObjectives()) {
                     orphanedObjective = objectiveRepository.getForUpdateById(orphanedObjective.getId());
                     orphanedObjective.setArea(null);
@@ -82,10 +71,18 @@ public class ManagerAreaService {
             });
         }
 
-        return result;
+        return areaDtos.stream().map(areaDto -> {
+            Verify.verify(Objects.equals(region.getId(), areaDto.getRegionId()));
+
+            Area area = areaRepository.save(toEntity(areaDto,
+                    areaRepository.findForUpdateByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)));
+
+            return areaService.toDto(area);
+        }).toList();
     }
 
     Area toEntity(AreaDto areaDto, Area area) {
+
         area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
         area.setIndex(areaDto.getIndex());
         area.setName(areaDto.getName());

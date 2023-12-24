@@ -66,17 +66,17 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
     }
 
     @Bean
-    public JMSQueueConfiguration emissionsQueue() {
+    public JMSQueueConfiguration serverEmissionsQueue() {
         JMSQueueConfigurationImpl queueConfiguration = new JMSQueueConfigurationImpl();
-        queueConfiguration.setName("emissions");
-        queueConfiguration.setBindings("/queue/emissions");
+        queueConfiguration.setName("server_emissions");
+        queueConfiguration.setBindings("/queue/server_emissions");
         return queueConfiguration;
     }
 
     @Override
     public void customize(org.apache.activemq.artemis.core.config.Configuration configuration) {
         configuration.addAddressSetting("/topic/events", eventsAddressSettings());
-        configuration.addAddressSetting("/queue/emissions", emissionsAddressSettings());
+        configuration.addAddressSetting("/queue/server_emissions", emissionsAddressSettings());
 
         configuration.addAcceptorConfiguration(
                 new TransportConfiguration(NettyAcceptorFactory.class.getName(), stompConnectorProps(), "stomp-acceptor"));

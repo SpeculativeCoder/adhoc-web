@@ -31,8 +31,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 public interface PawnRepository extends JpaRepository<Pawn, Long> {
@@ -40,8 +40,9 @@ public interface PawnRepository extends JpaRepository<Pawn, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Pawn> findForUpdateByServerAndUuid(Server server, UUID uuid);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    void deleteByServerAndIdNotIn(Server server, Set<Long> idNotIn);
+    @Modifying
+    @Query("delete from Pawn where server = :server and uuid not in :uuidNotIn")
+    void deleteByServerAndUuidNotIn(@Param("server") Server server, @Param("uuidNotIn") Collection<UUID> uuidNotIn);
 
     @Modifying
     @Query("delete from Pawn where seen < :seenBefore")

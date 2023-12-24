@@ -45,5 +45,5 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
     Optional<Objective> findForUpdateByRegionAndIndex(Region region, Integer index);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Objective> streamForUpdateByRegionAndIdNotIn(Region region, Collection<Long> idNotIn);
+    Stream<Objective> streamForUpdateByRegionAndIndexNotIn(Region region, Collection<Integer> indexNotIn);
 }

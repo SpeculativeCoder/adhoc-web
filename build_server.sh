@@ -26,6 +26,8 @@ set -x # show all commands being run
 set -u # error on undefined variables
 set -e # bail on ANY error
 
+export ADHOC_NAME=${ADHOC_NAME:-adhoc}
+
 export SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION:-Development}
 export FEATURE_FLAGS=${FEATURE_FLAGS:-development}
 

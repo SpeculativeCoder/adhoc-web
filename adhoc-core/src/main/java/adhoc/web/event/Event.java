@@ -22,10 +22,13 @@
 
 package adhoc.web.event;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * All our Stomp events will implement this interface to provide an easy mapping to an event type based on class name of
  * the event.
  */
+@JsonPropertyOrder("eventType")
 public interface Event {
 
     // for output in JSON

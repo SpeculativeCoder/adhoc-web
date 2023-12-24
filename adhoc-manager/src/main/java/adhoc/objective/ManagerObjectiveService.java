@@ -35,15 +35,13 @@ import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,32 +71,30 @@ public class ManagerObjectiveService {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
 
-        Set<Long> objectiveIds = new TreeSet<>();
+        List<Integer> indexes = objectiveDtos.stream().map(ObjectiveDto::getIndex).toList();
 
-        // NOTE: this is a two stage save to allow linked objectives to be set too (they need to be saved in the first pass to get ids)
-        List<Pair<ObjectiveDto, Objective>> dtoEntityPairs = objectiveDtos.stream()
-                .peek(objectiveDto ->
-                        Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId())))
-                .map(objectiveDto ->
-                        Pair.of(objectiveDto, objectiveRepository.save(toEntityStage1(objectiveDto,
-                                objectiveRepository.findForUpdateByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)))))
-                .toList();
-
-        objectiveDtos = dtoEntityPairs.stream()
-                .map(dtoEntityPair ->
-                        toEntityStage2(dtoEntityPair.getLeft(), dtoEntityPair.getRight()))
-                .peek(objective -> objectiveIds.add(objective.getId()))
-                .map(objectiveService::toDto)
-                .collect(Collectors.toList());
-
-        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamForUpdateByRegionAndIdNotIn(region, objectiveIds)) {
+        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamForUpdateByRegionAndIndexNotIn(region, indexes)) {
             objectivesToDelete.forEach(objectiveToDelete -> {
-                log.info("Deleting objective: {}", objectiveToDelete);
+                log.info("Deleting unused objective: {}", objectiveToDelete);
+
                 objectiveRepository.delete(objectiveToDelete);
             });
         }
 
-        return objectiveDtos;
+        // NOTE: this is a two stage save to allow linked objectives to be set too
+        return objectiveDtos.stream().map(objectiveDto -> {
+            Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId()));
+
+            Objective objective = objectiveRepository.save(toEntityStage1(objectiveDto,
+                    objectiveRepository.findForUpdateByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)));
+
+            return new AbstractMap.SimpleEntry<>(objectiveDto, objective);
+        }).toList().stream().map(entry -> {
+
+            Objective objective = toEntityStage2(entry.getKey(), entry.getValue());
+
+            return objectiveService.toDto(objective);
+        }).toList();
     }
 
     Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
@@ -135,11 +131,10 @@ public class ManagerObjectiveService {
                 !objective.getLinkedObjectives().stream().map(Objective::getIndex).collect(Collectors.toSet())
                         .equals(Sets.newHashSet(objectiveDto.getLinkedObjectiveIndexes()))) {
 
-            objective.setLinkedObjectives(
-                    objectiveDto.getLinkedObjectiveIndexes().stream()
-                            .map(linkedObjectiveIndex ->
-                                    objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
-                            .collect(Collectors.toSet()));
+            objective.setLinkedObjectives(objectiveDto.getLinkedObjectiveIndexes().stream()
+                    .map(linkedObjectiveIndex ->
+                            objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
+                    .collect(Collectors.toSet()));
         }
 
         return objective;

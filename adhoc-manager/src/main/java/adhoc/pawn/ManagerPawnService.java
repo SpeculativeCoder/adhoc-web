@@ -27,16 +27,14 @@ import adhoc.pawn.event.ServerPawnsEvent;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.UserRepository;
+import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -53,34 +51,29 @@ public class ManagerPawnService {
     private final PawnService pawnService;
 
     public List<PawnDto> handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
-
-        LocalDateTime seen = LocalDateTime.now();
-
-        Set<Long> seenUserIds = serverPawnsEvent.getPawns().stream()
-                .map(PawnDto::getUserId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toCollection(TreeSet::new));
-        userRepository.updateServerIdAndSeenByIdIn(serverPawnsEvent.getServerId(), seen, seenUserIds);
+        LocalDateTime now = LocalDateTime.now();
 
         Server server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
 
-        Set<Long> seenPawnIds = new TreeSet<>();
-        List<PawnDto> pawnDtos = serverPawnsEvent.getPawns().stream()
-                .map(pawnDto -> {
-                    pawnDto.setServerId(server.getId());
-                    pawnDto.setSeen(seen);
+        // clean up any pawns that are no longer on this server
+        List<UUID> uuids = serverPawnsEvent.getPawns().stream().map(PawnDto::getUuid).toList();
+        pawnRepository.deleteByServerAndUuidNotIn(server, uuids);
 
-                    Pawn pawn = pawnRepository.save(
-                            toEntity(pawnDto, pawnRepository.findForUpdateByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
+        // update users seen
+        Set<Long> userIds = serverPawnsEvent.getPawns().stream()
+                .map(PawnDto::getUserId).filter(Objects::nonNull).collect(Collectors.toCollection(TreeSet::new));
+        userRepository.updateServerIdAndSeenByIdIn(serverPawnsEvent.getServerId(), now, userIds);
 
-                    seenPawnIds.add(pawn.getId());
+        return serverPawnsEvent.getPawns().stream().map(pawnDto -> {
+            Verify.verify(Objects.equals(server.getId(), pawnDto.getServerId()));
 
-                    return pawnService.toDto(pawn);
-                }).toList();
-        // clean up any pawns we didn't update for this server
-        pawnRepository.deleteByServerAndIdNotIn(server, seenPawnIds);
+            pawnDto.setSeen(now); // TODO
 
-        return pawnDtos;
+            Pawn pawn = pawnRepository.save(toEntity(pawnDto,
+                    pawnRepository.findForUpdateByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
+
+            return pawnService.toDto(pawn);
+        }).toList();
     }
 
     public void purgeOldPawns() {

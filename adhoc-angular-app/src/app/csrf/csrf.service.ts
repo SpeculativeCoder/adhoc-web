@@ -22,7 +22,7 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {BehaviorSubject, mergeMap, Observable, of} from "rxjs";
+import {Observable, shareReplay} from "rxjs";
 import {Csrf} from "./csrf";
 
 @Injectable({
@@ -32,18 +32,18 @@ export class CsrfService {
 
   private readonly csrfUrl: string;
 
-  private csrf$: BehaviorSubject<Csrf> = new BehaviorSubject(null);
+  private csrf$: Observable<Csrf>;
 
   constructor(@Inject('BASE_URL') baseUrl: string, private http: HttpClient) {
     this.csrfUrl = `${baseUrl}/csrf`;
   }
 
-  getCsrf(): Observable<Csrf> {
-    return this.csrf$.value ? of(this.csrf$.value)
-      : this.http.get<Csrf>(`${this.csrfUrl}`, {withCredentials: true}).pipe(
-        mergeMap(user => {
-          this.csrf$.next(user);
-          return of(this.csrf$.value);
-        }));
+  getCsrf() {
+    return this.csrf$ || this.refreshCsrf();
+  }
+
+  refreshCsrf() {
+    return this.csrf$ = this.http.get<Csrf>(`${this.csrfUrl}`, {withCredentials: true})
+      .pipe(shareReplay(1));
   }
 }

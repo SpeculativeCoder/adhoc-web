@@ -56,6 +56,9 @@ export MANAGER_IMAGE=${MANAGER_IMAGE:-${ADHOC_NAME}_dev_manager}
 export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_dev_kiosk}
 export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_dev_server}
 
+export MANAGER_SPRING_PROFILES_ACTIVE=${MANAGER_SPRING_PROFILES_ACTIVE:-db-hsqldb,hosting-ecs,dns-route53}
+export KIOSK_SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE:-db-hsqldb}
+
 mvn clean package -DskipTests -Dangular.configuration=${ANGULAR_CONFIGURATION},customization -Dunreal.configuration=${CLIENT_UNREAL_CONFIGURATION}
 
 docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
@@ -79,6 +82,7 @@ docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
   --build-arg MANAGER_IMAGE=${MANAGER_IMAGE} \
   --build-arg KIOSK_IMAGE=${KIOSK_IMAGE} \
   --build-arg SERVER_IMAGE=${SERVER_IMAGE} \
+  --build-arg SPRING_PROFILES_ACTIVE=${MANAGER_SPRING_PROFILES_ACTIVE} \
   .
 
 docker build --tag ${KIOSK_IMAGE} -f docker/adhoc_kiosk.Dockerfile \
@@ -102,4 +106,5 @@ docker build --tag ${KIOSK_IMAGE} -f docker/adhoc_kiosk.Dockerfile \
   --build-arg MANAGER_IMAGE=${MANAGER_IMAGE} \
   --build-arg KIOSK_IMAGE=${KIOSK_IMAGE} \
   --build-arg SERVER_IMAGE=${SERVER_IMAGE} \
+  --build-arg SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE} \
   .

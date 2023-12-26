@@ -61,4 +61,7 @@ export MANAGER_IMAGE=${MANAGER_IMAGE:-${ADHOC_NAME}_prod_manager}
 export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_prod_kiosk}
 export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_prod_server}
 
+export MANAGER_SPRING_PROFILES_ACTIVE=${MANAGER_SPRING_PROFILES_ACTIVE:-db-hsqldb,hosting-ecs,dns-route53}
+export KIOSK_SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE:-db-hsqldb}
+
 ./build_all.sh

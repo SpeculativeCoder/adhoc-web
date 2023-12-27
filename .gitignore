@@ -1,9 +1,10 @@
-.idea/
 target/
-adhoc-web-extra/
 certs/
-/customization/
 env/
-Package
 
+/Package/
+/adhoc-web-extra/
+/customization/
+
+.idea/
 *.iml

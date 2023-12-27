@@ -20,7 +20,13 @@
  * SOFTWARE.
  */
 
+// you can create a copy of this in src/customization and tailor it to your needs
+export const appCustomization = {
+  appTitle: 'WebApp',
+  appDeveloper: 'the developer(s) of this web page / application',
 
-// any additional about information (e.g. assets used etc.) can go here
-export const aboutPageMoreHtml = `
-`;
+  // any additional about information (e.g. assets used etc.) can go in here
+  aboutPageMoreHtml: `
+<br/>
+  `,
+};

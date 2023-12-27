@@ -22,7 +22,7 @@
 
 import {RouterStateSnapshot, TitleStrategy} from "@angular/router";
 import {Title} from "@angular/platform-browser";
-import {appCustomization} from "../customization/app-customization";
+import {appCustomization} from "./app-customization";
 import {Injectable} from "@angular/core";
 
 @Injectable({providedIn: 'root'})

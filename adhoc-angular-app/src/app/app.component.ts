@@ -31,7 +31,7 @@ import {CsrfService} from "./csrf/csrf.service";
 import {HeaderInterceptor} from "./http-interceptor/header-interceptor";
 import {ConfigService} from "./config/config.service";
 import {Faction} from "./faction/faction";
-import {appCustomization} from "../customization/app-customization";
+import {appCustomization} from "./app-customization";
 
 @Component({
   selector: 'app-root',

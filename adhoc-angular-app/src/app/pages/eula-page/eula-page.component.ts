@@ -21,7 +21,7 @@
  */
 
 import {Component} from '@angular/core';
-import {appCustomization} from '../../../customization/app-customization';
+import {appCustomization} from '../../app-customization';
 
 @Component({
   selector: 'app-eula',

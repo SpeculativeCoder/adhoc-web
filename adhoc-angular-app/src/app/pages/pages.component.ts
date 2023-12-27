@@ -22,7 +22,7 @@
 
 import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {appCustomization} from '../../customization/app-customization';
+import {appCustomization} from '../app-customization';
 
 @Component({
   selector: 'app-page',

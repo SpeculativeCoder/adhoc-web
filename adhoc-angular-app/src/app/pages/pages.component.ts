@@ -22,7 +22,7 @@
 
 import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {appEnvironment} from '../../environments/app-environment';
+import {appCustomization} from '../../customization/app-customization';
 
 @Component({
   selector: 'app-page',
@@ -30,7 +30,7 @@ import {appEnvironment} from '../../environments/app-environment';
 })
 export class PagesComponent {
 
-  adhocEnvironment = appEnvironment;
+  adhocEnvironment = appCustomization;
 
   page: string;
 

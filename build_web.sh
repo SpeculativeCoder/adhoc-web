@@ -59,7 +59,7 @@ export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_dev_server}
 export MANAGER_SPRING_PROFILES_ACTIVE=${MANAGER_SPRING_PROFILES_ACTIVE:-db-hsqldb,hosting-ecs,dns-route53}
 export KIOSK_SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE:-db-hsqldb}
 
-mvn clean package -DskipTests -Dangular.configuration=${ANGULAR_CONFIGURATION},customization -Dunreal.configuration=${CLIENT_UNREAL_CONFIGURATION}
+mvn clean package -DskipTests -Dangular.configuration=${ANGULAR_CONFIGURATION} -Dunreal.configuration=${CLIENT_UNREAL_CONFIGURATION}
 
 docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
   --build-arg ADHOC_NAME=${ADHOC_NAME} \

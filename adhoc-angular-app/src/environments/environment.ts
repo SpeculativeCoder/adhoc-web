@@ -21,7 +21,7 @@
  */
 
 export const environment = {
-  production: false,
   inMemoryDb: false,
-  baseUrl: location.protocol + '//' + location.host
+  baseUrl: location.protocol + '//' + location.host,
+  extra: null
 };

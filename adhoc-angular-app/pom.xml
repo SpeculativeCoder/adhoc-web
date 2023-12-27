@@ -37,6 +37,10 @@
   <name>adhoc-angular-app</name>
   <description>adhoc-angular-app</description>
 
+  <properties>
+    <angular-app-customization></angular-app-customization>
+  </properties>
+
   <build>
     <resources>
       <resource>
@@ -91,7 +95,7 @@
                 <argument>build</argument>
                 <argument>--</argument>
                 <!-- TODO: remove jsdom_fix when no longer needed -->
-                <argument>--configuration=${angular.configuration},jsdom_fix</argument>
+                <argument>--configuration=jsdom_fix,${angular.configuration}${angular-app-customization}</argument>
               </arguments>
               <environmentVariables>
                 <!-- TODO: figure out a way to have analytics on -->
@@ -102,7 +106,20 @@
         </executions>
       </plugin>
     </plugins>
-
   </build>
+
+  <profiles>
+    <profile>
+      <id>angular-app-customization</id>
+      <activation>
+        <file>
+          <exists>../customization</exists>
+        </file>
+      </activation>
+      <properties>
+        <angular-app-customization>,customization</angular-app-customization>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>

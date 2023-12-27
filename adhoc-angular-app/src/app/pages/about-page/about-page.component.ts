@@ -21,8 +21,8 @@
  */
 
 import {Component, SecurityContext} from '@angular/core';
-import {appEnvironment} from "../../../environments/app-environment";
-import {aboutPageExtra} from "./about-page-extra";
+import {appCustomization} from "../../../customization/app-customization";
+import {aboutPageMoreHtml} from "../../../customization/about-page-more-html";
 import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 
 @Component({
@@ -31,12 +31,12 @@ import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 })
 export class AboutPageComponent {
 
-  appEnvironment = appEnvironment;
+  appEnvironment = appCustomization;
 
-  aboutPageExtra: SafeHtml;
+  aboutPageMoreHtml: SafeHtml;
 
   constructor(private sanitizer: DomSanitizer) {
-    this.aboutPageExtra = sanitizer.sanitize(SecurityContext.HTML, aboutPageExtra);
+    this.aboutPageMoreHtml = sanitizer.sanitize(SecurityContext.HTML, aboutPageMoreHtml);
   }
 
 }

@@ -24,7 +24,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {ConfigService} from "../config/config.service";
-import {appEnvironment} from "../../environments/app-environment";
+import {appCustomization} from "../../customization/app-customization";
 import {AreaService} from "../area/area.service";
 import {UserService} from "../user/user.service";
 import {ServerService} from "../server/server.service";
@@ -38,7 +38,7 @@ export class ClientComponent implements OnInit {
   showClient: boolean;
   showCompatibilityWarning: boolean;
 
-  appEnvironment = appEnvironment;
+  appEnvironment = appCustomization;
 
   clientUrl: SafeResourceUrl;
 

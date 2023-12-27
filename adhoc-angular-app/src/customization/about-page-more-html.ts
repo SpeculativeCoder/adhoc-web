@@ -20,8 +20,7 @@
  * SOFTWARE.
  */
 
-export const environment = {
-  production: true,
-  inMemoryDb: false,
-  baseUrl: location.protocol + '//' + location.host
-};
+
+// any additional about information (e.g. assets used etc.) can go here
+export const aboutPageMoreHtml = `
+`;

@@ -21,7 +21,7 @@
  */
 
 import {ServerService} from '../server/server.service';
-import {Component, DoCheck, Inject, IterableDiffers, KeyValueDiffers, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {Component, DoCheck, Inject, Injector, IterableDiffers, KeyValueDiffers, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {Objective} from '../objective/objective';
 import {Faction} from '../faction/faction';
 import {ObjectiveService} from '../objective/objective.service';
@@ -39,9 +39,10 @@ import {PawnService} from "../pawn/pawn.service";
 import {ConfigService} from "../config/config.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StompService} from "../stomp/stomp.service";
-import {Emission} from "../emission/emission";
 import {DOCUMENT} from "@angular/common";
 import {CsrfService} from "../csrf/csrf.service";
+import {MapComponentExtraInterface} from "./map-component-extra-interface";
+import {environment} from "../../environments/environment";
 
 @Component({
   selector: 'app-map',
@@ -80,6 +81,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
   // timerSubscription: Subscription;
   // timer: Observable<number> = timer(0, 10000);
 
+  private mapComponentExtra: MapComponentExtraInterface;
+
   constructor(private csrfService: CsrfService,
               private stompService: StompService,
               private regionService: RegionService,
@@ -95,7 +98,12 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               private keyValueDiffers: KeyValueDiffers,
               private router: Router,
               private activatedRoute: ActivatedRoute,
+              private injector: Injector,
               @Inject(DOCUMENT) private document: Document) {
+
+    if (environment['extra']) {
+      this.mapComponentExtra = new environment['extra']['MapComponentExtra'](this, injector);
+    }
   }
 
   ngOnInit(): void {
@@ -129,9 +137,9 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       .observeEvent('ServerPawns')
       .subscribe((event: any) => this.handleServerPawns(event));
 
-    this.stomp
-      .observeEvent('Emissions')
-      .subscribe((event: any) => this.handleEmissions(event));
+    if (this.mapComponentExtra) {
+      this.mapComponentExtra.ngOnInit();
+    }
   }
 
   ngOnDestroy(): void {
@@ -598,56 +606,6 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
           }
         });
       }
-    }
-  }
-
-  handleEmissions(event: any) {
-    //if (!this.canvas || !this.document.hasFocus()) {
-    //  return;
-    //}
-
-    let emissions: Emission[] = event['emissions'];
-
-    for (const emission of emissions) {
-      // TODO: staggering and emission type
-      let circle = new fabric.Circle({
-        originX: 'center',
-        originY: 'center',
-        left: emission.x,
-        top: -emission.y,
-        radius: 0 * (1 / this.mapScale),
-        //stroke: 'black',
-        //strokeWidth: 0.1 * (1 / this.mapScale),
-        fill: '#FFAA0088',
-        opacity: 0,
-        hoverCursor: 'default',
-        selectable: false,
-        evented: false
-      });
-      this.canvas.add(circle);
-      this.canvas.requestRenderAll();
-
-      circle.animate({
-        opacity: 100,
-        radius: 15 * (1 / this.mapScale)
-      }, {
-        duration: 1000,
-        easing: fabric.util.ease.easeInExpo,
-        onChange: this.canvas.requestRenderAll.bind(this.canvas),
-        onComplete: () => {
-          circle.animate({
-            opacity: 0,
-            //radius: 10 * (1 / this.mapScale)
-          }, {
-            duration: 1000,
-            easing: fabric.util.ease.easeOutExpo,
-            onChange: this.canvas.requestRenderAll.bind(this.canvas),
-            onComplete: () => {
-              this.canvas.remove(circle);
-            }
-          });
-        }
-      });
     }
   }
 }

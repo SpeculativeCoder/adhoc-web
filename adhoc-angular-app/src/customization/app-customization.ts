@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
-export const aboutPageExtra = `
-<!-- any extra about information (e.g. assets used etc.) can go here -->
-`;
+export const appCustomization = {
+  appTitle: 'WebApp',
+  appDeveloper: 'the developer(s) of this web page / application'
+};

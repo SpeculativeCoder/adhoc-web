@@ -2,7 +2,7 @@
 target/
 adhoc-web-extra/
 certs/
-customization/
+/customization/
 env/
 Package
 

@@ -20,7 +20,6 @@
  * SOFTWARE.
  */
 
-export const appEnvironment = {
-  appTitle: 'WebApp',
-  appDeveloper: 'the developer(s) of this web page / application'
-};
+export interface MapComponentExtraInterface {
+  ngOnInit(): void;
+}

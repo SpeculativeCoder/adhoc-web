@@ -42,7 +42,6 @@ import {PawnsComponent} from "./pawn/pawns.component";
 import {PawnComponent} from "./pawn/pawn.component";
 import {PagesComponent} from "./pages/pages.component";
 import {ClientComponent} from "./client/client.component";
-import {appEnvironment} from "../environments/app-environment";
 
 const routes: Routes = [
   {path: '', component: MapComponent},

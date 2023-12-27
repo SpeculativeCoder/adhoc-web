@@ -57,12 +57,6 @@
                   "maximumError": "4kb"
                 }
               ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
               "outputHashing": "all"
             },
             "development": {
@@ -73,12 +67,12 @@
             "customization": {
               "fileReplacements": [
                 {
-                  "replace": "src/environments/app-environment.ts",
-                  "with": "../customization/app-environment.ts"
+                  "replace": "src/customization/app-customization.ts",
+                  "with": "../customization/app-customization.ts"
                 },
                 {
-                  "replace": "src/app/pages/about-page/about-page-extra.ts",
-                  "with": "../customization/about-page-extra.ts"
+                  "replace": "src/customization/about-page-more-html.ts",
+                  "with": "../customization/about-page-more-html.ts"
                 }
               ]
             }

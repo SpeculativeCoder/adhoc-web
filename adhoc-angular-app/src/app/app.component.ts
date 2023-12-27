@@ -31,7 +31,7 @@ import {CsrfService} from "./csrf/csrf.service";
 import {HeaderInterceptor} from "./http-interceptor/header-interceptor";
 import {ConfigService} from "./config/config.service";
 import {Faction} from "./faction/faction";
-import {appEnvironment} from "../environments/app-environment";
+import {appCustomization} from "../customization/app-customization";
 
 @Component({
   selector: 'app-root',
@@ -63,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.featureFlags = this.configService.featureFlags;
-    this.appTitle = appEnvironment.appTitle;
+    this.appTitle = appCustomization.appTitle;
 
     this.userService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser = currentUser;

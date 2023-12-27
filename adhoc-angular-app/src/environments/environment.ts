@@ -23,5 +23,4 @@
 export const environment = {
   inMemoryDb: false,
   baseUrl: location.protocol + '//' + location.host,
-  extra: null
 };

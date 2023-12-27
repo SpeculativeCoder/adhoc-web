@@ -68,7 +68,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/app/app-customization.ts",
-                  "with": "../customization/app-customization.ts"
+                  "with": "src/customization/app-customization.ts"
                 }
               ]
             }

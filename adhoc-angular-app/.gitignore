@@ -41,5 +41,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# Adhoc Extra
+# Adhoc extra functionality
 /src/app/adhoc-angular-app-extra/
+
+# Adhoc app customization
+/src/customization/

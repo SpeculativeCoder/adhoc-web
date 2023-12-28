@@ -24,6 +24,7 @@ package adhoc.world.event;
 
 import adhoc.web.event.Event;
 import adhoc.world.WorldDto;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,5 +38,6 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class WorldUpdatedEvent implements Event {
 
+    @NotNull
     private WorldDto world;
 }

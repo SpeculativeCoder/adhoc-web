@@ -39,9 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -71,7 +69,24 @@ public class ManagerObjectiveService {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
 
-        List<Integer> indexes = objectiveDtos.stream().map(ObjectiveDto::getIndex).toList();
+        Set<Integer> indexes = new TreeSet<>();
+        objectiveDtos.forEach(objectiveDto -> {
+            Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId()));
+
+            objectiveDto.getLinkedObjectiveIndexes().forEach(linkedObjectiveIndex -> {
+                // self loop not allowed
+                Verify.verify(!Objects.equals(objectiveDto.getIndex(), linkedObjectiveIndex));
+
+                // linked objectives must have matching link back to this objective
+                objectiveDtos.stream()
+                        .filter(otherObjectiveDto -> Objects.equals(otherObjectiveDto.getIndex(), linkedObjectiveIndex))
+                        .forEach(linkedObjectiveDto ->
+                                Verify.verify(linkedObjectiveDto.getLinkedObjectiveIndexes().contains(objectiveDto.getIndex())));
+            });
+
+            boolean indexUnique = indexes.add(objectiveDto.getIndex());
+            Verify.verify(indexUnique);
+        });
 
         try (Stream<Objective> objectivesToDelete = objectiveRepository.streamForUpdateByRegionAndIndexNotIn(region, indexes)) {
             objectivesToDelete.forEach(objectiveToDelete -> {
@@ -83,7 +98,6 @@ public class ManagerObjectiveService {
 
         // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveDtos.stream().map(objectiveDto -> {
-            Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId()));
 
             Objective objective = objectiveRepository.save(toEntityStage1(objectiveDto,
                     objectiveRepository.findForUpdateByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)));
@@ -109,11 +123,18 @@ public class ManagerObjectiveService {
         objective.setY(objectiveDto.getY());
         objective.setZ(objectiveDto.getZ());
 
-        objective.setInitialFaction(objectiveDto.getInitialFactionIndex() == null ? null :
-                factionRepository.getByIndex(objectiveDto.getInitialFactionIndex()));
+        objective.setInitialFaction(objectiveDto.getInitialFactionIndex() == null ? null
+                : factionRepository.getByIndex(objectiveDto.getInitialFactionIndex()));
 
-        // NOTE: we never change existing non-null faction (if admin wishes to do this - they can send an objective taken event)
-        objective.setFaction(objective.getFaction() == null ? objective.getInitialFaction() : objective.getFaction());
+        //noinspection OptionalAssignedToNull
+        if (objectiveDto.getFactionIndex() != null) {
+            objective.setFaction(objectiveDto.getFactionIndex().map(factionRepository::getByIndex).orElse(null));
+        }
+
+        // set faction to be initial faction if this is a new entity
+        if (objective.getId() == null) {
+            objective.setFaction(objective.getInitialFaction());
+        }
 
         // NOTE: linked objectives will be set in stage 2
         //objective.setLinkedObjectives(new ArrayList<>());

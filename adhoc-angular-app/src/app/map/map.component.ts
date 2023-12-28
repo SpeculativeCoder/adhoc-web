@@ -572,7 +572,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     let serverId: number = event['serverId'];
     let pawns: Pawn[] = event['pawns'];
 
-    let oldPawnIds = new Set(this.serversPawns[serverId].map(pawn => pawn.id));
+    let oldPawns = this.serversPawns[serverId] || [];
+    let oldPawnIds = new Set(oldPawns.map(pawn => pawn.id));
     this.serversPawns[serverId] = pawns;
 
     //if (!this.canvas || !this.document.hasFocus()) {

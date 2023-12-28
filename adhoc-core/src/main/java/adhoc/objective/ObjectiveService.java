@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -62,7 +63,7 @@ public class ObjectiveService {
                 objective.getInitialFaction() == null ? null : objective.getInitialFaction().getId(),
                 objective.getInitialFaction() == null ? null : objective.getInitialFaction().getIndex(),
                 objective.getFaction() == null ? null : objective.getFaction().getId(),
-                objective.getFaction() == null ? null : objective.getFaction().getIndex(),
+                objective.getFaction() == null ? Optional.empty() : Optional.of(objective.getFaction().getIndex()),
                 objective.getLinkedObjectives().stream().map(Objective::getId).collect(Collectors.toList()),
                 objective.getLinkedObjectives().stream().map(Objective::getIndex).collect(Collectors.toList()),
                 objective.getArea() == null ? null : objective.getArea().getId(),

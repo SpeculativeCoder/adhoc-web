@@ -61,11 +61,10 @@ export class StompService {
   }
 
   disconnect() {
+    this.eventListeners = {}; // TODO
     if (this.client && this.client.connected) {
       this.client.disconnect(() => this.onDisconnect());
     }
-    // TODO
-    this.eventListeners = {};
   }
 
   private onConnect() {

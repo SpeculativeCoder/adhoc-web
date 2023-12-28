@@ -36,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
 @Transactional
@@ -55,7 +57,13 @@ public class ManagerAreaService {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
 
-        List<Integer> indexes = areaDtos.stream().map(AreaDto::getIndex).toList();
+        Set<Integer> indexes = new TreeSet<>();
+        areaDtos.forEach(areaDto -> {
+            Verify.verify(Objects.equals(region.getId(), areaDto.getRegionId()));
+
+            boolean indexUnique = indexes.add(areaDto.getIndex());
+            Verify.verify(indexUnique);
+        });
 
         try (Stream<Area> areasToDelete = areaRepository.streamForUpdateByRegionAndIndexNotIn(region, indexes)) {
             areasToDelete.forEach(areaToDelete -> {
@@ -72,7 +80,6 @@ public class ManagerAreaService {
         }
 
         return areaDtos.stream().map(areaDto -> {
-            Verify.verify(Objects.equals(region.getId(), areaDto.getRegionId()));
 
             Area area = areaRepository.save(toEntity(areaDto,
                     areaRepository.findForUpdateByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)));
@@ -94,7 +101,7 @@ public class ManagerAreaService {
         area.setSizeZ(areaDto.getSizeZ());
         //noinspection OptionalAssignedToNull
         if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().isEmpty() ? null : serverRepository.getReferenceById(areaDto.getServerId().get()));
+            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
         }
 
         return area;

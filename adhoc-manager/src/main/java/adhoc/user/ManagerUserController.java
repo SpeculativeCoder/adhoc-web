@@ -22,6 +22,7 @@
 
 package adhoc.user;
 
+import adhoc.user.event.ServerUserDefeatedUserEvent;
 import adhoc.user.event.UserDefeatedBotEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
 import adhoc.user.request.UserJoinRequest;
@@ -83,31 +84,29 @@ public class ManagerUserController {
 
         Verify.verify(Objects.equals(serverId, userJoinRequest.getServerId()));
 
-        log.info("userJoin: userId={} factionId={} bot={} serverId={}",
-                userJoinRequest.getUserId(), userJoinRequest.getFactionId(), userJoinRequest.getBot(), userJoinRequest.getServerId());
-
         return managerUserService.serverUserJoin(userJoinRequest, authentication, httpServletRequest, httpServletResponse);
     }
 
     @MessageMapping("UserDefeatedUser")
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public UserDefeatedUserEvent handleDefeatedUser(
-            @Valid @RequestBody UserDefeatedUserEvent userDefeatedUserEvent) {
+    public UserDefeatedUserEvent handleServerUserDefeatedUser(
+            @Valid @RequestBody ServerUserDefeatedUserEvent event) {
+        log.debug("Handling: {}", event);
 
-        log.debug("Handling: {}", userDefeatedUserEvent);
+        UserDefeatedUserEvent userDefeatedUserEvent = managerUserService.handleUserDefeatedUser(event);
+        log.debug("userDefeatedUserEvent: {}", userDefeatedUserEvent);
 
-        return managerUserService.handleUserDefeatedUser(userDefeatedUserEvent);
+        return userDefeatedUserEvent;
     }
 
+    // TODO
     @MessageMapping("UserDefeatedBot")
-    @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public UserDefeatedBotEvent handleDefeatedBot(
-            @Valid @RequestBody UserDefeatedBotEvent userDefeatedBotEvent) {
+    public void handleUserDefeatedBot(
+            @Valid @RequestBody UserDefeatedBotEvent event) {
+        log.debug("Handling: {}", event);
 
-        log.debug("Handling: {}", userDefeatedBotEvent);
-
-        return managerUserService.handleUserDefeatedBot(userDefeatedBotEvent);
+        managerUserService.handleUserDefeatedBot(event);
     }
 }

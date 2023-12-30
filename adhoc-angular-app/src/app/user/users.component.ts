@@ -47,7 +47,6 @@ export class UsersComponent implements OnInit {
   ngOnInit() {
     forkJoin([this.factionService.getFactions(), this.userService.getUsers()]).subscribe(data => {
       [this.factions, this.users] = data;
-      this.sortBy({column: 'score', direction: 'desc'});
     });
   }
 

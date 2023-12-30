@@ -51,7 +51,7 @@ public class UserJoinRequest {
     private Long factionId;
 
     @NotNull
-    private Boolean bot;
+    private Boolean human;
 
     @NotNull
     @Min(1)

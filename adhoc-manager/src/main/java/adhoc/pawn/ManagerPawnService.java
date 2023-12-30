@@ -93,6 +93,7 @@ public class ManagerPawnService {
         pawn.setZ(pawnDto.getZ());
         pawn.setSeen(pawnDto.getSeen());
         pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
+        pawn.setHuman(pawnDto.getHuman());
 
         return pawn;
     }

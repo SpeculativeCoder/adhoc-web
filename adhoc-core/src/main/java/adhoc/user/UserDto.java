@@ -56,7 +56,7 @@ public class UserDto {
     private Long factionId;
 
     @NotNull
-    private Boolean bot;
+    private Boolean human;
 
     @NotNull
     private Float score;

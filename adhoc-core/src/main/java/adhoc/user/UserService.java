@@ -26,6 +26,7 @@ import adhoc.faction.FactionRepository;
 import adhoc.server.ServerRepository;
 import adhoc.user.request.RegisterUserRequest;
 import adhoc.web.security.AdhocAuthenticationSuccessHandler;
+import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -97,7 +98,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<UserDto> getUsers() {
-        return userRepository.findAll(PageRequest.of(0, 100, Sort.Direction.DESC, "score", "id"))
+        // TODO: sorting
+        return userRepository.findAll(PageRequest.of(0, 100, Sort.Direction.DESC, "id"))
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
@@ -118,8 +120,17 @@ public class UserService {
 
     public ResponseEntity<UserDetailDto> registerUser(RegisterUserRequest registerUserRequest, Authentication authentication,
                                                       HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        boolean authIsServer = authentication != null
+                && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
+
+        Verify.verifyNotNull(registerUserRequest.getHuman());
+        // human can only register user as human, but server may register users as human or bot
+        Verify.verify(registerUserRequest.getHuman() || authIsServer);
+
+        String prefix = registerUserRequest.getHuman() ? "Anon" : "Bot";
+
         if (registerUserRequest.getName() == null) {
-            registerUserRequest.setName("Anon" + (int) Math.floor(Math.random() * 1000000000)); // TODO
+            registerUserRequest.setName(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
         }
 
         if (registerUserRequest.getFactionId() == null) {
@@ -140,8 +151,7 @@ public class UserService {
         log.debug("register: user={} password*={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
 
         // if not an auto-register from server - log them in too
-        if (authentication == null
-                || authentication.getAuthorities().stream().noneMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()))) {
+        if (!authIsServer) {
 
             // TODO
             String tempPassword = null;
@@ -201,7 +211,7 @@ public class UserService {
                 user.getVersion(),
                 user.getName(),
                 user.getFaction().getId(),
-                user.getBot(),
+                user.getHuman(),
                 user.getScore(),
                 user.getSeen());
     }
@@ -212,7 +222,7 @@ public class UserService {
                 user.getVersion(),
                 user.getName(),
                 user.getFaction().getId(),
-                user.getBot(),
+                user.getHuman(),
                 user.getScore(),
                 user.getX(),
                 user.getY(),
@@ -236,8 +246,7 @@ public class UserService {
         user.setEmail(registerUserRequest.getEmail());
         user.setPassword(registerUserRequest.getPassword() == null ? null : passwordEncoder.encode(registerUserRequest.getPassword()));
         user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
-        //noinspection SimplifiableConditionalExpression
-        user.setBot(registerUserRequest.getBot() == null ? false : registerUserRequest.getBot());
+        user.setHuman(registerUserRequest.getHuman());
         user.setScore(0F);
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());

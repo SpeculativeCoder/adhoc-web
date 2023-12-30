@@ -507,7 +507,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       hoverCursor: 'default',
       editable: false,
       selectable: false,
-      visible: !!pawn.userId, // bot name only visible on mouseover
+      visible: !!pawn.human, // bot name only visible on mouseover
     });
     //[pawnCircle, pawnText]
     let pawnGroup = new fabric.Group([pawnCircle], {
@@ -524,7 +524,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       this.canvas.requestRenderAll();
     });
     pawnCircle.on('mouseout', () => {
-      pawnText.set('visible', !!pawn.userId);
+      pawnText.set('visible', !!pawn.human);
       this.canvas.requestRenderAll();
     });
     pawnGroup.add(pawnText);

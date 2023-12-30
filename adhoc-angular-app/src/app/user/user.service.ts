@@ -119,7 +119,10 @@ export class UserService {
 
   getCurrentUserOrRegister(serverId: number): Observable<User> {
     return this.currentUser$.value ? of(this.currentUser$.value)
-      : this.register({serverId: serverId});
+      : this.register({
+        serverId: serverId,
+        human: true
+      });
   }
 
   login(usernameOrEmail: string, password: string, rememberMe: boolean) {

@@ -24,15 +24,14 @@ package adhoc.user.event;
 
 import adhoc.web.event.Event;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-@Data
-@NoArgsConstructor
+@Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
@@ -42,15 +41,27 @@ public class UserDefeatedUserEvent implements Event {
     @Min(1)
     private Long userId;
 
-    //@NotNull
+    @NotNull
     @Min(0)
     private Long userVersion;
+
+    @NotEmpty
+    private String userName;
+
+    @NotNull
+    private Boolean userHuman;
 
     @NotNull
     @Min(1)
     private Long defeatedUserId;
 
-    //@NotNull
+    @NotNull
     @Min(0)
     private Long defeatedUserVersion;
+
+    @NotEmpty
+    private String defeatedUserName;
+
+    @NotNull
+    private Boolean defeatedUserHuman;
 }

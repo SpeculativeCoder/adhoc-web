@@ -46,7 +46,6 @@ export class PawnsComponent implements OnInit {
   ngOnInit() {
     forkJoin([this.factionService.getFactions(), this.pawnService.getPawns()]).subscribe(data => {
       [this.factions, this.pawns] = data;
-      this.sortBy({column: 'score', direction: 'desc'});
     });
   }
 

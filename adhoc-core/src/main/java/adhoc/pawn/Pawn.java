@@ -86,4 +86,7 @@ public class Pawn {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    @Basic(optional = false)
+    private Boolean human;
 }

@@ -22,6 +22,7 @@
 
 package adhoc.user;
 
+import adhoc.faction.Faction;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -40,8 +41,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByNameOrEmail(String name, String email);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     User getForUpdateById(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<User> findForUpdateByHumanFalseAndFactionAndSeenBefore(Faction faction, LocalDateTime seenBefore);
 
     @Query("select id from AdhocUser where created < :createdBefore and seen is null and password is null and pawns is empty")
     List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(@Param("createdBefore") LocalDateTime createdBefore);

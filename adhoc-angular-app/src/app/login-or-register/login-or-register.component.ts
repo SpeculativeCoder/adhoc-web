@@ -54,6 +54,7 @@ export class LoginOrRegisterComponent implements OnInit, AfterViewInit {
     this.userRegisterRequest.password = null;
     this.userRegisterRequest.factionId = null;
     this.userRegisterRequest.rememberMe = false;
+    this.userRegisterRequest.human = true;
   }
 
   ngOnInit(): void {

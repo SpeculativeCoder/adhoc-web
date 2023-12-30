@@ -27,6 +27,7 @@ export class User {
   email?: string;
   password?: string;
   factionId?: number;
+  human?: boolean;
   score?: number;
   //created?: Date;
   //updated?: Date;

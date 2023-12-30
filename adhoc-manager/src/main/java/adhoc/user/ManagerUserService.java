@@ -24,8 +24,11 @@ package adhoc.user;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
+import adhoc.faction.Faction;
+import adhoc.faction.FactionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
+import adhoc.user.event.ServerUserDefeatedUserEvent;
 import adhoc.user.event.UserDefeatedBotEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
 import adhoc.user.request.RegisterUserRequest;
@@ -43,6 +46,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -51,6 +55,7 @@ import java.util.TreeSet;
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerUserService {
+    private final FactionRepository factionRepository;
 
     private final UserService userService;
 
@@ -95,58 +100,86 @@ public class ManagerUserService {
 
     public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest, Authentication authentication,
                                                         HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        log.info("userJoin: userId={} factionId={} human={} serverId={}",
+                userJoinRequest.getUserId(), userJoinRequest.getFactionId(), userJoinRequest.getHuman(), userJoinRequest.getServerId());
+
         Server server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
-        Long userId = userJoinRequest.getUserId();
-        String token = userJoinRequest.getToken();
+        User user;
 
-        Verify.verify(userId == null || token != null);
+        // existing user? verify token
+        if (userJoinRequest.getUserId() != null) {
+            user = userRepository.getForUpdateById(userJoinRequest.getUserId());
+            Verify.verify(Objects.equals(user.getFaction().getId(), userJoinRequest.getFactionId()));
 
-        // if no user id provided, auto register them
-        if (userId == null) {
-            RegisterUserRequest registerUserRequest = RegisterUserRequest.builder()
-                    .factionId(userJoinRequest.getFactionId())
-                    .bot(userJoinRequest.getBot())
-                    .serverId(userJoinRequest.getServerId())
-                    .build();
+            Verify.verifyNotNull(userJoinRequest.getToken());
+            Verify.verifyNotNull(user.getToken());
 
-            ResponseEntity<UserDetailDto> registeredUserDetail =
-                    userService.registerUser(registerUserRequest, authentication, httpServletRequest, httpServletResponse);
+            // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
+            if (!Objects.equals(user.getToken().toString(), userJoinRequest.getToken())) {
+                log.warn("Token {} mismatch {} for user {}", userJoinRequest.getToken(), user.getToken(), user);
+                return ResponseEntity.unprocessableEntity().build();
+            }
 
-            // TODO
-            Verify.verify(registeredUserDetail.getStatusCode().is2xxSuccessful());
-            UserDetailDto userDetailDto = Verify.verifyNotNull(registeredUserDetail.getBody());
-
-            userId = userDetailDto.getId();
-            token = userDetailDto.getToken();
-        }
-
-        User user = userRepository.getForUpdateById(userId);
-
-        // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
-        if (user.getToken() == null || !user.getToken().toString().contentEquals(token)) {
-            log.warn("Token {} mismatch {} for user {}", token, user.getToken(), user);
-            return ResponseEntity.unprocessableEntity().build();
+        } else {
+            user = autoRegister(userJoinRequest, authentication, httpServletRequest, httpServletResponse);
         }
 
         user.setServer(server);
         user.setLastJoin(LocalDateTime.now());
+        user.setSeen(user.getLastJoin());
+
+        log.info("userJoin: Success. user={} faction={} human={} server={}", user, user.getFaction(), user.getHuman(), server);
 
         return ResponseEntity.ok(userService.toDetailDto(user));
     }
 
-    public UserDefeatedUserEvent handleUserDefeatedUser(UserDefeatedUserEvent userDefeatedUserEvent) {
-        User user = userRepository.getForUpdateById(userDefeatedUserEvent.getUserId());
-        user.setScore(user.getScore() + 1);
+    private User autoRegister(UserJoinRequest userJoinRequest, Authentication authentication, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        User user = null;
 
-        return userDefeatedUserEvent;
+        Verify.verifyNotNull(userJoinRequest.getHuman());
+        if (!userJoinRequest.getHuman()) {
+            Faction faction = factionRepository.getReferenceById(userJoinRequest.getFactionId());
+            // bots should try to use existing bot account
+            // TODO: avoid using seen (should use serverId)
+            user = userRepository.findForUpdateByHumanFalseAndFactionAndSeenBefore(
+                    faction, LocalDateTime.now().minusMinutes(1)).orElse(null);
+        }
+
+        if (user == null) {
+            RegisterUserRequest registerUserRequest = RegisterUserRequest.builder()
+                    .factionId(userJoinRequest.getFactionId())
+                    .human(userJoinRequest.getHuman())
+                    .serverId(userJoinRequest.getServerId())
+                    .build();
+
+            // TODO: avoid web stuff
+            ResponseEntity<UserDetailDto> registeredUserDetail =
+                    userService.registerUser(registerUserRequest, authentication, httpServletRequest, httpServletResponse);
+
+            Verify.verify(registeredUserDetail.getStatusCode().is2xxSuccessful());
+            UserDetailDto userDetailDto = Verify.verifyNotNull(registeredUserDetail.getBody());
+
+            user = userRepository.getForUpdateById(userDetailDto.getId());
+        }
+
+        return user;
     }
 
-    public UserDefeatedBotEvent handleUserDefeatedBot(UserDefeatedBotEvent userDefeatedBotEvent) {
-        User user = userRepository.getForUpdateById(userDefeatedBotEvent.getUserId());
+    public UserDefeatedUserEvent handleUserDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
+        User user = userRepository.getForUpdateById(serverUserDefeatedUserEvent.getUserId());
         user.setScore(user.getScore() + 1);
 
-        return userDefeatedBotEvent;
+        User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
+        return new UserDefeatedUserEvent(
+                user.getId(), user.getVersion(), user.getName(), user.getHuman(),
+                defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.getHuman());
+    }
+
+    // TODO
+    public void handleUserDefeatedBot(UserDefeatedBotEvent userDefeatedBotEvent) {
+        User user = userRepository.getForUpdateById(userDefeatedBotEvent.getUserId());
+        user.setScore(user.getScore() + 1);
     }
 
     public void decayUserScores() {

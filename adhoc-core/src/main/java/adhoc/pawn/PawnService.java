@@ -22,12 +22,12 @@
 
 package adhoc.pawn;
 
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,6 +63,7 @@ public class PawnService {
                 pawn.getFaction() == null ? null : pawn.getFaction().getId(),
                 pawn.getFaction() == null ? null : pawn.getFaction().getIndex(),
                 pawn.getSeen(),
-                pawn.getUser() == null ? null : pawn.getUser().getId());
+                pawn.getUser() == null ? null : pawn.getUser().getId(),
+                pawn.getHuman());
     }
 }

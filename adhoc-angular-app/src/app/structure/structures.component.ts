@@ -46,7 +46,6 @@ export class StructuresComponent implements OnInit {
   ngOnInit() {
     forkJoin([this.factionService.getFactions(), this.structureService.getStructures()]).subscribe(data => {
       [this.factions, this.structures] = data;
-      this.sortBy({column: 'score', direction: 'desc'});
     });
   }
 

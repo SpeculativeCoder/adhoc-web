@@ -293,6 +293,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="user_id" type="BIGINT"/>
+            <column name="human" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="pawn" baseColumnNames="server_id" constraintName="fk8ratt6yxhkx0u5epmclxpt219" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="server"

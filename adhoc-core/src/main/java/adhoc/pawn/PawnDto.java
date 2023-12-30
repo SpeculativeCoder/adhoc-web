@@ -77,4 +77,7 @@ public class PawnDto {
 
     @Min(1)
     private Long userId;
+
+    @NotNull
+    private Boolean human;
 }

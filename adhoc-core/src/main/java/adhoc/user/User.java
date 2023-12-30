@@ -79,7 +79,7 @@ public class User {
     private Faction faction;
 
     @Basic(optional = false)
-    private Boolean bot;
+    private Boolean human;
 
     @Basic(optional = false)
     private Float score;

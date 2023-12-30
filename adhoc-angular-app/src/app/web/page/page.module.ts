@@ -20,25 +20,21 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {PageComponent} from "./page.component";
+import {AboutPageComponent} from "./about-page/about-page.component";
+import {EulaPageComponent} from "./eula-page/eula-page.component";
 
-import lombok.Getter;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
-
-public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {
-
-    @Getter
-    private final Long userId;
-
-    public AdhocUserDetails(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long userId) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.userId = userId;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " userId=" + userId;
-    }
+@NgModule({
+  declarations: [
+    PageComponent,
+    AboutPageComponent,
+    EulaPageComponent
+  ],
+  imports: [
+    CommonModule
+  ]
+})
+export class PageModule {
 }

@@ -23,11 +23,11 @@
 import {Inject, Injectable} from '@angular/core';
 import {User} from './user';
 import {HttpClient} from '@angular/common/http';
-import {MessageService} from '../messages/message.service';
+import {MessageService} from '../web/message/message.service';
 import {BehaviorSubject, mergeMap, Observable, of, take} from 'rxjs';
-import {StompService} from '../stomp/stomp.service';
+import {StompService} from '../web/stomp.service';
 import {map} from 'rxjs/operators';
-import {ConfigService} from "../config/config.service";
+import {PropertiesService} from "../properties/properties.service";
 import {Router} from "@angular/router";
 import {UserRegisterRequest} from "./user-register-request";
 
@@ -44,7 +44,7 @@ export class UserService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient,
-              private configService: ConfigService,
+              private configService: PropertiesService,
               private stomp: StompService,
               private messages: MessageService,
               private router: Router) {

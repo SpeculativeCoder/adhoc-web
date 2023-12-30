@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.web.server_ignore_csrf;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

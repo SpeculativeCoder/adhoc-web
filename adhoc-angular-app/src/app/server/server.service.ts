@@ -22,11 +22,11 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {MessageService} from '../messages/message.service';
+import {MessageService} from '../web/message/message.service';
 import {Observable} from 'rxjs';
 import {Server} from './server';
-import {StompService} from '../stomp/stomp.service';
-import {map, tap} from 'rxjs/operators';
+import {StompService} from '../web/stomp.service';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'

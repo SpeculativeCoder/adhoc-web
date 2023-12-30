@@ -21,13 +21,25 @@
  */
 
 import {Component} from '@angular/core';
+import {ActivatedRoute, Router} from "@angular/router";
 import {appCustomization} from '../../app-customization';
 
 @Component({
-  selector: 'app-eula',
-  templateUrl: './eula-page.component.html'
+  selector: 'app-page',
+  templateUrl: './page.component.html'
 })
-export class EulaPageComponent {
+export class PageComponent {
 
   adhocEnvironment = appCustomization;
+
+  page: string;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
+    this.route.paramMap.subscribe(params => {
+      this.page = params.get('page');
+    });
+  }
 }

@@ -20,22 +20,31 @@
  * SOFTWARE.
  */
 
-import {Component, SecurityContext} from '@angular/core';
-import {appCustomization} from "../../app-customization";
-import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
+import {Injectable} from '@angular/core';
+import {InMemoryDbService} from 'angular-in-memory-web-api';
+import {Faction} from '../../faction/faction';
+import {Objective} from '../../objective/objective';
+import {User} from '../../user/user';
 
-@Component({
-  selector: 'app-about',
-  templateUrl: './about-page.component.html'
+@Injectable({
+  providedIn: 'root'
 })
-export class AboutPageComponent {
-
-  appEnvironment = appCustomization;
-
-  aboutPageMoreHtml: SafeHtml;
-
-  constructor(private sanitizer: DomSanitizer) {
-    this.aboutPageMoreHtml = sanitizer.sanitize(SecurityContext.HTML, appCustomization.aboutPageMoreHtml);
+export class InMemoryDataService implements InMemoryDbService {
+  constructor() {
   }
 
+  createDb() {
+    const factions: Faction[] = [{id: 1, name: 'Blue', color: 'blue'}, {id: 2, name: 'Red', color: 'red'}];
+
+    const objectives: Objective[] = [
+      {id: 1, name: 'Generator'},
+      {id: 2, name: 'Bunker'},
+      {id: 3, name: 'Barracks'},
+      {id: 4, name: 'Mess Hall'}
+    ];
+
+    const users: User[] = [{id: 1, name: 'Blue Tester'}, {id: 2, name: 'Red Tester'}];
+
+    return {factions, objectives: objectives, users};
+  }
 }

@@ -24,7 +24,7 @@ import {Component, OnInit} from '@angular/core';
 import {forkJoin} from "rxjs";
 import {Area} from "./area";
 import {AreaService} from "./area.service";
-import {SortEvent} from "../table-sort/header-sort.component";
+import {SortEvent} from "../web/table-sort/header-sort.component";
 import {User} from "../user/user";
 
 @Component({

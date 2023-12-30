@@ -26,7 +26,7 @@ import {Structure} from './structure';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
-import {SortEvent} from '../table-sort/header-sort.component';
+import {SortEvent} from '../web/table-sort/header-sort.component';
 
 @Component({
   selector: 'app-structures',

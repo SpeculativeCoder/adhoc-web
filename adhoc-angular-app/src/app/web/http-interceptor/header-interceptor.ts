@@ -20,24 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+import {Injectable} from '@angular/core';
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Csrf} from "../csrf";
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+@Injectable({providedIn: 'root'})
+export class HeaderInterceptor implements HttpInterceptor {
+  private csrf: Csrf;
 
-@RestController
-@Slf4j
-@RequiredArgsConstructor
-public class CsrfController {
+  setCsrf(csrf: Csrf) {
+    this.csrf = csrf;
+  }
 
-    /**
-     * Allow access to CSRF token for the Angular app.
-     */
-    @GetMapping("/csrf")
-    public CsrfToken csrf(CsrfToken token) {
-        return token;
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (this.csrf && req.method !== 'GET') {
+      req = req.clone({
+        headers: req.headers
+          .set(this.csrf.headerName, this.csrf.token)
+        //.set('Content-Type', 'application/json')
+        //.set('Authorization', 'Basic ' + window.btoa('user:password'))
+      })
     }
+    return next.handle(req);
+  }
 }

@@ -23,7 +23,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {ConfigService} from "../config/config.service";
+import {PropertiesService} from "../properties/properties.service";
 import {appCustomization} from "../app-customization";
 import {AreaService} from "../area/area.service";
 import {UserService} from "../user/user.service";
@@ -47,7 +47,7 @@ export class ClientComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private router: Router,
               private sanitizer: DomSanitizer,
-              private configService: ConfigService,
+              private configService: PropertiesService,
               private areaService: AreaService,
               private serverService: ServerService,
               private userService: UserService) {

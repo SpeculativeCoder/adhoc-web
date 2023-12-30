@@ -26,7 +26,7 @@ import {Objective} from './objective';
 import {FactionService} from '../faction/faction.service';
 import {Faction} from '../faction/faction';
 import {forkJoin} from 'rxjs';
-import {SortEvent} from "../table-sort/header-sort.component";
+import {SortEvent} from "../web/table-sort/header-sort.component";
 import {User} from "../user/user";
 
 @Component({

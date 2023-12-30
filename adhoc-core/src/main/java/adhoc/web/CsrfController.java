@@ -20,33 +20,24 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.web;
 
-import adhoc.user.UserService;
-import com.google.common.base.Verify;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Component
+@RestController
 @Slf4j
 @RequiredArgsConstructor
-public class AdhocAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class CsrfController {
 
-    private final UserService userService;
-
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        Verify.verify(principal instanceof AdhocUserDetails);
-        AdhocUserDetails userDetails = (AdhocUserDetails) principal;
-
-        log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
-
-        userService.authenticationSuccess(userDetails.getUserId());
+    /**
+     * Allow access to CSRF token for the Angular app.
+     */
+    @GetMapping("/csrf")
+    public CsrfToken csrf(CsrfToken token) {
+        return token;
     }
 }

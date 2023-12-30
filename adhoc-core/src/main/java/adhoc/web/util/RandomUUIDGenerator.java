@@ -20,21 +20,13 @@
  * SOFTWARE.
  */
 
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {PagesComponent} from "./pages.component";
-import {AboutPageComponent} from "./about-page/about-page.component";
-import {EulaPageComponent} from "./eula-page/eula-page.component";
+package adhoc.web.util;
 
-@NgModule({
-  declarations: [
-    PagesComponent,
-    AboutPageComponent,
-    EulaPageComponent
-  ],
-  imports: [
-    CommonModule
-  ]
-})
-export class PagesModule {
+import java.util.UUID;
+
+public class RandomUUIDGenerator {
+
+    public static void main(String[] args) {
+        System.err.println(UUID.randomUUID());
+    }
 }

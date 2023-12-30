@@ -21,12 +21,12 @@
  */
 
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {UserService} from '../user/user.service';
+import {UserService} from './user.service';
 import {Router} from '@angular/router';
 import {Faction} from '../faction/faction';
-import {User} from '../user/user';
+import {User} from './user';
 import {FactionService} from '../faction/faction.service';
-import {UserRegisterRequest} from "../user/user-register-request";
+import {UserRegisterRequest} from "./user-register-request";
 
 @Component({
   selector: 'app-login',

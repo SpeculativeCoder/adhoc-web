@@ -36,11 +36,11 @@ import {AreaService} from "../area/area.service";
 import {fabric} from 'fabric';
 import {Pawn} from "../pawn/pawn";
 import {PawnService} from "../pawn/pawn.service";
-import {ConfigService} from "../config/config.service";
+import {PropertiesService} from "../properties/properties.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {StompService} from "../stomp/stomp.service";
+import {StompService} from "../web/stomp.service";
 import {DOCUMENT} from "@angular/common";
-import {CsrfService} from "../csrf/csrf.service";
+import {CsrfService} from "../web/csrf.service";
 import {MapComponentExtraInterface} from "./map-component-extra-interface";
 import {appExtra} from "../app-extra";
 
@@ -93,7 +93,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               private pawnService: PawnService,
               private userService: UserService,
               private stomp: StompService,
-              private configService: ConfigService,
+              private configService: PropertiesService,
               private iterableDiffers: IterableDiffers,
               private keyValueDiffers: KeyValueDiffers,
               private router: Router,

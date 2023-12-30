@@ -20,26 +20,22 @@
  * SOFTWARE.
  */
 
-import {Component} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {appCustomization} from '../app-customization';
+import {Injectable} from '@angular/core';
 
-@Component({
-  selector: 'app-page',
-  templateUrl: './pages.component.html'
+@Injectable({
+  providedIn: 'root'
 })
-export class PagesComponent {
+export class PropertiesService {
 
-  adhocEnvironment = appCustomization;
+  featureFlags: string = '';
 
-  page: string;
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router
-  ) {
-    this.route.paramMap.subscribe(params => {
-      this.page = params.get('page');
-    });
+  constructor() {
+    let featureFlagsMetaElement = document.head.querySelector('meta[name=FEATURE_FLAGS]');
+    this.featureFlags = featureFlagsMetaElement['content'] || 'development';
+    console.log("featureFlags=" + this.featureFlags);
   }
+
+  // getFeatureFlags() {
+  //   return this.featureFlags;
+  // }
 }

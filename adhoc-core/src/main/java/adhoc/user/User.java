@@ -79,6 +79,7 @@ public class User {
     private Faction faction;
 
     @Basic(optional = false)
+    @ToString.Include
     private Boolean human;
 
     @Basic(optional = false)

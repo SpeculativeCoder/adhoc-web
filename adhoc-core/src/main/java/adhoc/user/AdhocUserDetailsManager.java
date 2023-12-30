@@ -20,11 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.user;
 
-import adhoc.user.User;
-import adhoc.user.UserRole;
-import adhoc.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -23,7 +23,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {Faction} from './faction';
 import {Observable, of} from 'rxjs';
-import {MessageService} from '../messages/message.service';
+import {MessageService} from '../web/message/message.service';
 import {HttpClient} from '@angular/common/http';
 import {map} from "rxjs/operators";
 

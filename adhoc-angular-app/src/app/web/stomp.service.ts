@@ -23,7 +23,7 @@
 import {Injectable} from '@angular/core';
 import webstomp, {Client, Message} from 'webstomp-client';
 import {Observable, Subject} from 'rxjs';
-import {Csrf} from "../csrf/csrf";
+import {Csrf} from "./csrf";
 import SockJS from "sockjs-client";
 
 @Injectable({

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web;
+package adhoc.client;
 
 import adhoc.properties.CoreProperties;
 import com.google.common.base.Verify;

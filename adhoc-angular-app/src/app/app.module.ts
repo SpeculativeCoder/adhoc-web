@@ -31,20 +31,20 @@ import {FactionsComponent} from './faction/factions.component';
 import {ObjectiveComponent} from './objective/objective.component';
 import {UserComponent} from './user/user.component';
 import {FactionComponent} from './faction/faction.component';
-import {MessagesComponent} from './messages/messages.component';
+import {MessagesComponent} from './web/message/messages.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {HttpClientInMemoryWebApiModule} from 'angular-in-memory-web-api';
-import {InMemoryDataService} from './in-memory-data/in-memory-data.service';
+import {InMemoryDataService} from './web/in-memory-data/in-memory-data.service';
 import {HttpClientModule} from '@angular/common/http';
-import {httpInterceptorProviders} from './http-interceptor';
+import {httpInterceptorProviders} from './web/http-interceptor';
 import {environment} from '../environments/environment';
-import {HeaderSortComponent} from './table-sort/header-sort.component';
-import {TableSortDirective} from './table-sort/table-sort.directive';
+import {HeaderSortComponent} from './web/table-sort/header-sort.component';
+import {TableSortDirective} from './web/table-sort/table-sort.directive';
 import {MapComponent} from './map/map.component';
 import {ServersComponent} from './server/servers.component';
 import {ServerComponent} from './server/server.component';
-import {SimpleDatePipe} from './pipe/simple-date.pipe';
-import {LoginOrRegisterComponent} from './login-or-register/login-or-register.component';
+import {SimpleDatePipe} from './web/simple-date/simple-date.pipe';
+import {LoginOrRegisterComponent} from './user/login-or-register.component';
 import {RegionsComponent} from './region/regions.component';
 import {RegionComponent} from './region/region.component';
 import {AreasComponent} from './area/areas.component';
@@ -54,7 +54,7 @@ import {StructureComponent} from './structure/structure.component';
 import {PawnsComponent} from "./pawn/pawns.component";
 import {PawnComponent} from "./pawn/pawn.component";
 import {ClientComponent} from './client/client.component';
-import {PagesModule} from "./pages/pages.module";
+import {PageModule} from "./web/page/page.module";
 import {AppTitleStrategy} from "./app-title-strategy";
 import {TitleStrategy} from "@angular/router";
 
@@ -92,7 +92,7 @@ import {TitleStrategy} from "@angular/router";
     HttpClientModule,
     environment.inMemoryDb ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, {dataEncapsulation: false}) : [],
     NgbModule,
-    PagesModule
+    PageModule
   ],
   providers: [
     httpInterceptorProviders,

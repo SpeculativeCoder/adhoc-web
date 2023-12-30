@@ -24,7 +24,6 @@ package adhoc.user;
 
 import adhoc.properties.CoreProperties;
 import adhoc.user.request.RegisterUserRequest;
-import adhoc.web.security.AdhocUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

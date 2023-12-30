@@ -23,10 +23,10 @@
 import {Inject, Injectable} from '@angular/core';
 import {Pawn} from "./pawn";
 import {HttpClient} from "@angular/common/http";
-import {StompService} from "../stomp/stomp.service";
-import {MessageService} from "../messages/message.service";
-import {BehaviorSubject, mergeMap, Observable, of} from "rxjs";
-import {map, tap} from "rxjs/operators";
+import {StompService} from "../web/stomp.service";
+import {MessageService} from "../web/message/message.service";
+import {Observable} from "rxjs";
+import {map} from "rxjs/operators";
 import {User} from "../user/user";
 
 @Injectable({

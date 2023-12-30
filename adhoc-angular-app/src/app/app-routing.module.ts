@@ -31,7 +31,7 @@ import {UsersComponent} from './user/users.component';
 import {UserComponent} from './user/user.component';
 import {MapComponent} from './map/map.component';
 import {ServerComponent} from './server/server.component';
-import {LoginOrRegisterComponent} from './login-or-register/login-or-register.component';
+import {LoginOrRegisterComponent} from './user/login-or-register.component';
 import {RegionsComponent} from "./region/regions.component";
 import {RegionComponent} from "./region/region.component";
 import {AreasComponent} from "./area/areas.component";
@@ -40,7 +40,7 @@ import {StructuresComponent} from "./structure/structures.component";
 import {StructureComponent} from "./structure/structure.component";
 import {PawnsComponent} from "./pawn/pawns.component";
 import {PawnComponent} from "./pawn/pawn.component";
-import {PagesComponent} from "./pages/pages.component";
+import {PageComponent} from "./web/page/page.component";
 import {ClientComponent} from "./client/client.component";
 
 const routes: Routes = [
@@ -63,7 +63,7 @@ const routes: Routes = [
   {path: 'users', component: UsersComponent},
   {path: 'users/:id', component: UserComponent},
   {path: 'login-or-register', component: LoginOrRegisterComponent},
-  {path: 'pages/:page', component: PagesComponent},
+  {path: 'pages/:page', component: PageComponent},
   {path: 'client/area/:areaId', component: ClientComponent},
 ];
 

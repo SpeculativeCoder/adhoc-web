@@ -25,7 +25,6 @@ package adhoc.user;
 import adhoc.faction.FactionRepository;
 import adhoc.server.ServerRepository;
 import adhoc.user.request.RegisterUserRequest;
-import adhoc.web.security.AdhocAuthenticationSuccessHandler;
 import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
@@ -127,10 +126,12 @@ public class UserService {
         // human can only register user as human, but server may register users as human or bot
         Verify.verify(registerUserRequest.getHuman() || authIsServer);
 
-        String prefix = registerUserRequest.getHuman() ? "Anon" : "Bot";
-
         if (registerUserRequest.getName() == null) {
-            registerUserRequest.setName(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
+            if (registerUserRequest.getHuman()) {
+                registerUserRequest.setName("Anon" + (int) Math.floor(Math.random() * 1000000000)); // TODO
+            } else {
+                registerUserRequest.setName("Bot"); // NOTE: name will be updated below once database id is assigned
+            }
         }
 
         if (registerUserRequest.getFactionId() == null) {
@@ -148,6 +149,11 @@ public class UserService {
         }
 
         User user = userRepository.save(toEntity(registerUserRequest));
+
+        if (!user.getHuman() && "Bot".equals(user.getName())) {
+            user.setName("Bot" + user.getId());
+        }
+
         log.debug("register: user={} password*={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
 
         // if not an auto-register from server - log them in too

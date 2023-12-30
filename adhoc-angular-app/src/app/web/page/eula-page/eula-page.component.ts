@@ -20,13 +20,14 @@
  * SOFTWARE.
  */
 
-package adhoc.util;
+import {Component} from '@angular/core';
+import {appCustomization} from '../../../app-customization';
 
-import java.util.UUID;
+@Component({
+  selector: 'app-eula',
+  templateUrl: './eula-page.component.html'
+})
+export class EulaPageComponent {
 
-public class RandomUUIDGenerator {
-
-    public static void main(String[] args) {
-        System.err.println(UUID.randomUUID());
-    }
+  adhocEnvironment = appCustomization;
 }

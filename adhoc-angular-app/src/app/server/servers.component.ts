@@ -26,8 +26,8 @@ import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
 import {User} from '../user/user';
-import {ConfigService} from "../config/config.service";
-import {SortEvent} from "../table-sort/header-sort.component";
+import {PropertiesService} from "../properties/properties.service";
+import {SortEvent} from "../web/table-sort/header-sort.component";
 import {Router} from "@angular/router";
 
 @Component({
@@ -39,7 +39,7 @@ export class ServersComponent implements OnInit {
 
   constructor(private serverService: ServerService,
               private userService: UserService,
-              private configService: ConfigService,
+              private configService: PropertiesService,
               private router: Router) {
   }
 

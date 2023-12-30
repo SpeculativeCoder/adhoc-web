@@ -100,8 +100,8 @@ public class ManagerUserService {
 
     public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest, Authentication authentication,
                                                         HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        log.info("userJoin: userId={} factionId={} human={} serverId={}",
-                userJoinRequest.getUserId(), userJoinRequest.getFactionId(), userJoinRequest.getHuman(), userJoinRequest.getServerId());
+        log.info("userJoin: human={} userId={} serverId={} factionId={}",
+                userJoinRequest.getHuman(), userJoinRequest.getUserId(), userJoinRequest.getServerId(), userJoinRequest.getFactionId());
 
         Server server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
@@ -129,7 +129,7 @@ public class ManagerUserService {
         user.setLastJoin(LocalDateTime.now());
         user.setSeen(user.getLastJoin());
 
-        log.info("userJoin: Success. user={} faction={} human={} server={}", user, user.getFaction(), user.getHuman(), server);
+        log.debug("userJoin: user={} faction={} server={}", user, user.getFaction(), server);
 
         return ResponseEntity.ok(userService.toDetailDto(user));
     }

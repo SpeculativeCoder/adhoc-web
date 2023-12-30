@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web.security;
+package adhoc.web.server_ignore_csrf;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;

@@ -20,28 +20,32 @@
  * SOFTWARE.
  */
 
-import {Injectable} from '@angular/core';
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {Csrf} from "../csrf/csrf";
+package adhoc.user;
 
-@Injectable({providedIn: 'root'})
-export class HeaderInterceptor implements HttpInterceptor {
-  private csrf: Csrf;
+import com.google.common.base.Verify;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
-  setCsrf(csrf: Csrf) {
-    this.csrf = csrf;
-  }
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class AdhocAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (this.csrf && req.method !== 'GET') {
-      req = req.clone({
-        headers: req.headers
-          .set(this.csrf.headerName, this.csrf.token)
-        //.set('Content-Type', 'application/json')
-        //.set('Authorization', 'Basic ' + window.btoa('user:password'))
-      })
+    private final UserService userService;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        Verify.verify(principal instanceof AdhocUserDetails);
+        AdhocUserDetails userDetails = (AdhocUserDetails) principal;
+
+        log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
+
+        userService.authenticationSuccess(userDetails.getUserId());
     }
-    return next.handle(req);
-  }
 }

@@ -20,16 +20,16 @@
  * SOFTWARE.
  */
 
-import {StompService} from './stomp/stomp.service';
+import {StompService} from './web/stomp.service';
 import {Component, ElementRef, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {UserService} from './user/user.service';
 import {User} from './user/user';
 import {ObjectiveService} from "./objective/objective.service";
-import {CsrfService} from "./csrf/csrf.service";
-import {HeaderInterceptor} from "./http-interceptor/header-interceptor";
-import {ConfigService} from "./config/config.service";
+import {CsrfService} from "./web/csrf.service";
+import {HeaderInterceptor} from "./web/http-interceptor/header-interceptor";
+import {PropertiesService} from "./properties/properties.service";
 import {Faction} from "./faction/faction";
 import {appCustomization} from "./app-customization";
 
@@ -56,7 +56,7 @@ export class AppComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private headerInterceptor: HeaderInterceptor,
               private elementRef: ElementRef,
-              private configService: ConfigService,
+              private configService: PropertiesService,
               private route: ActivatedRoute,
               private router: Router) {
   }

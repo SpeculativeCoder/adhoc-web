@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.artemis;
+package adhoc.web.artemis;
 
 import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;

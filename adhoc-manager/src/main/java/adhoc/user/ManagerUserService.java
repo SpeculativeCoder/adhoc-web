@@ -55,47 +55,17 @@ import java.util.TreeSet;
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerUserService {
-    private final FactionRepository factionRepository;
-
-    private final UserService userService;
 
     private final UserRepository userRepository;
+    private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
     private final AreaRepository areaRepository;
+
+    private final UserService userService;
 
     public UserDto updateUser(UserDto userDto) {
         return userService.toDto(
                 toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
-    }
-
-    public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
-        User user = userRepository.getForUpdateById(userNavigateRequest.getUserId());
-        Server sourceServer = serverRepository.getReferenceById(userNavigateRequest.getSourceServerId());
-        Area destinationArea = areaRepository.getReferenceById(userNavigateRequest.getDestinationAreaId());
-
-        Verify.verify(user.getServer() == sourceServer);
-
-        Server destinationServer = destinationArea.getServer();
-        if (destinationServer == null) {
-            log.warn("User {} tried to navigate to area {} which does not have a server!", user.getId(), destinationArea.getId());
-            return ResponseEntity.unprocessableEntity().build();
-        }
-
-        user.setX(userNavigateRequest.getX());
-        user.setY(userNavigateRequest.getY());
-        user.setZ(userNavigateRequest.getZ());
-
-        user.setYaw(userNavigateRequest.getYaw());
-        user.setPitch(userNavigateRequest.getPitch());
-
-        // NOTE: when user joins new server this will be updated
-        //user.setServer(destinationServer);
-
-        return ResponseEntity.ok(new UserNavigateResponse(destinationServer.getId(),
-                //adhocProperties.getServerDomain(),
-                destinationServer.getPublicIp(),
-                destinationServer.getPublicWebSocketPort(),
-                destinationServer.getWebSocketUrl()));
     }
 
     public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest, Authentication authentication,
@@ -164,6 +134,36 @@ public class ManagerUserService {
         }
 
         return user;
+    }
+
+    public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
+        User user = userRepository.getForUpdateById(userNavigateRequest.getUserId());
+        Server sourceServer = serverRepository.getReferenceById(userNavigateRequest.getSourceServerId());
+        Area destinationArea = areaRepository.getReferenceById(userNavigateRequest.getDestinationAreaId());
+
+        Verify.verify(user.getServer() == sourceServer);
+
+        Server destinationServer = destinationArea.getServer();
+        if (destinationServer == null) {
+            log.warn("User {} tried to navigate to area {} which does not have a server!", user.getId(), destinationArea.getId());
+            return ResponseEntity.unprocessableEntity().build();
+        }
+
+        user.setX(userNavigateRequest.getX());
+        user.setY(userNavigateRequest.getY());
+        user.setZ(userNavigateRequest.getZ());
+
+        user.setYaw(userNavigateRequest.getYaw());
+        user.setPitch(userNavigateRequest.getPitch());
+
+        // NOTE: when user joins new server this will be updated
+        //user.setServer(destinationServer);
+
+        return ResponseEntity.ok(new UserNavigateResponse(destinationServer.getId(),
+                //adhocProperties.getServerDomain(),
+                destinationServer.getPublicIp(),
+                destinationServer.getPublicWebSocketPort(),
+                destinationServer.getWebSocketUrl()));
     }
 
     public UserDefeatedUserEvent handleUserDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {

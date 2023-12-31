@@ -47,6 +47,10 @@
     </div> -->
     </div>
     <div class="mb-3">
+      <label class="form-label" for="humanInput">Human</label>
+      <input class="form-control" id="humanInput" name="human" type="checkbox" readonly [(ngModel)]="user.human"/>
+    </div>
+    <div class="mb-3">
       <label class="form-label" for="scoreInput">Score</label>
       <input class="form-control" id="scoreInput" name="score" type="number" readonly [(ngModel)]="user.score"/>
     </div>

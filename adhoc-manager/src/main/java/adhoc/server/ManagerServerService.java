@@ -58,16 +58,16 @@ public class ManagerServerService {
     private final ManagerProperties managerProperties;
     private final ServerProperties serverProperties;
 
-    private final ManagerWorldService managerWorldService;
-    private final HostingService hostingService;
-    private final DnsService dnsService;
-
     private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
-    private final ServerService serverService;
-    private final SimpMessageSendingOperations stomp;
 
+    private final ManagerWorldService managerWorldService;
+    private final HostingService hostingService;
+    private final DnsService dnsService;
+    private final ServerService serverService;
+
+    private final SimpMessageSendingOperations stomp;
     private final EntityManager entityManager;
 
     public ServerDto updateServer(ServerDto serverDto) {
@@ -109,8 +109,6 @@ public class ManagerServerService {
     }
 
     private void sendServerUpdatedEvent(Server server) {
-        log.trace("Sending server info event for server {}", server.getId());
-
         ServerUpdatedEvent event = new ServerUpdatedEvent(
                 server.getId(),
                 server.getVersion(),

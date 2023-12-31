@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web.artemis;
+package adhoc.artemis;
 
 import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
@@ -93,8 +93,8 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         configuration.addConnectorConfiguration("manager-core-connector",
                 new TransportConfiguration(NettyConnectorFactory.class.getName(), managerCoreConnectorProps()));
 
-        //configuration.setGracefulShutdownEnabled(true);
-        //configuration.setGracefulShutdownTimeout(5000);
+        configuration.setGracefulShutdownEnabled(true);
+        configuration.setGracefulShutdownTimeout(3000);
 
         configuration.addClusterConfiguration(clusterConnectionConfiguration());
     }

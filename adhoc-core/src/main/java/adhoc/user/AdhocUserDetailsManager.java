@@ -80,6 +80,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
                 user.getName(),
                 // TODO
                 user.getPassword() == null ? UUID.randomUUID().toString() : user.getPassword(),
+                // NOTE: password null means user is not to be logged in to (i.e. temporary users) so we mark as not "enabled"
                 user.getPassword() != null, true, true, true,
                 user.getAuthorities(),
                 user.getId());

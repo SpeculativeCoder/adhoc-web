@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-public class WebController {
+public class IndexController {
 
     private final CoreProperties coreProperties;
 

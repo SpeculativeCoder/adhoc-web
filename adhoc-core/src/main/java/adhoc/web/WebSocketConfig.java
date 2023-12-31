@@ -24,6 +24,7 @@ package adhoc.web;
 
 import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -42,9 +43,7 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
 
     private final CoreProperties coreProperties;
 
-    @Lazy
-    @Autowired
-    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
     private TaskScheduler taskScheduler;
 
     @Override

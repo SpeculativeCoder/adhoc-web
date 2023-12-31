@@ -28,14 +28,14 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Allows access to CSRF token for the Angular app.
+ */
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 public class CsrfController {
 
-    /**
-     * Allow access to CSRF token for the Angular app.
-     */
     @GetMapping("/csrf")
     public CsrfToken csrf(CsrfToken token) {
         return token;

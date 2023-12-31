@@ -44,7 +44,6 @@ public class ManagerFactionController {
     public FactionDto putFaction(
             @PathVariable("factionId") Long factionId,
             @Valid @RequestBody FactionDto factionDto) {
-
         Verify.verify(Objects.equals(factionId, factionDto.getId()));
 
         return managerFactionService.updateFaction(factionDto);

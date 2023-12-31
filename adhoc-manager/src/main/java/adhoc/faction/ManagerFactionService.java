@@ -36,10 +36,10 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ManagerFactionService {
 
-    private final FactionService factionService;
-
     private final FactionRepository factionRepository;
     private final ObjectiveRepository objectiveRepository;
+
+    private final FactionService factionService;
 
     public FactionDto updateFaction(FactionDto factionDto) {
         return factionService.toDto(
@@ -51,7 +51,7 @@ public class ManagerFactionService {
 
         try (Stream<Faction> factions = factionRepository.streamForUpdateBy()) {
             factions.forEach(faction ->
-                    faction.setScore(faction.getScore() + objectiveRepository.countByFaction(faction)));
+                    faction.setScore(faction.getScore() + (0.1f * objectiveRepository.countByFaction(faction))));
         }
     }
 

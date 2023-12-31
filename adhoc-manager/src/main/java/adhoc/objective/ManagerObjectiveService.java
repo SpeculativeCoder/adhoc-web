@@ -49,8 +49,8 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ManagerObjectiveService {
 
-    private final ServerRepository serverRepository;
     private final ObjectiveRepository objectiveRepository;
+    private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
     private final FactionRepository factionRepository;

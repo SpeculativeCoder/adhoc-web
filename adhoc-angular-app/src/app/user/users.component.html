@@ -34,6 +34,7 @@
         <th scope="col" sortable="id">ID</th>
         <th scope="col" sortable="name">Name</th>
         <th scope="col" sortable="factionId">Faction</th>
+        <th scope="col" sortable="human">Human</th>
         <th scope="col" sortable="score">Score</th>
         <th scope="col" sortable="seen">Last Seen</th>
         <!--      <th scope="col" sortable="created">Created</th>-->
@@ -51,6 +52,7 @@
         <th scope="row"><a routerLink="/users/{{ user.id }}">{{ user.id }}</a></th>
         <td>{{ user.name }}</td>
         <td>{{ getFaction(user.factionId)?.name }}</td>
+        <td>{{ user.human }}</td>
         <td>{{ user.score | number : '1.0-0' }}</td>
         <td>{{ user.seen | simpleDate }}</td>
         <!--      <td>{{ user.created | simpleDate }}</td>-->

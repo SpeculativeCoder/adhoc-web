@@ -46,7 +46,6 @@ public class ManagerServerController {
     public ServerDto putServer(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody ServerDto serverDto) {
-
         Verify.verify(Objects.equals(serverId, serverDto.getId()));
 
         return managerServerService.updateServer(serverDto);
@@ -56,7 +55,6 @@ public class ManagerServerController {
     @PreAuthorize("hasRole('SERVER')")
     public void handleServerStarted(
             @Valid @RequestBody ServerStartedEvent serverStartedEvent) {
-
         log.info("Handling: {}", serverStartedEvent);
 
         managerServerService.handleServerStarted(serverStartedEvent);

@@ -47,13 +47,13 @@ public class ManagerPawnController {
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER')")
     public ServerPawnsEvent handleServerPawns(
-    //public void handleServerPawns(
-            @Valid @RequestBody ServerPawnsEvent serverPawnsEvent) {
+            @Valid @RequestBody ServerPawnsEvent event) {
+        log.debug("Handling: {}", event);
 
-        log.debug("Handling: {}", serverPawnsEvent);
+        List<PawnDto> pawnDtos = managerPawnService.handleServerPawns(event);
 
-        List<PawnDto> pawnDtos = managerPawnService.handleServerPawns(serverPawnsEvent);
-
-        return new ServerPawnsEvent(serverPawnsEvent.getServerId(), pawnDtos);
+        ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
+        log.debug("Sending: {}", serverPawnsEvent);
+        return serverPawnsEvent;
     }
 }

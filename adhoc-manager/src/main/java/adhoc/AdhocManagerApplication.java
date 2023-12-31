@@ -22,8 +22,8 @@
 
 package adhoc;
 
+import adhoc.artemis.ArtemisConfig;
 import adhoc.user.UserRole;
-import adhoc.web.artemis.ArtemisConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;

@@ -48,7 +48,6 @@ public class ManagerObjectiveController {
     public ObjectiveDto putObjective(
             @PathVariable("objectiveId") Long objectiveId,
             @Valid @RequestBody ObjectiveDto objectiveDto) {
-
         Verify.verify(Objects.equals(objectiveId, objectiveDto.getId()));
 
         return managerObjectiveService.updateObjective(objectiveDto);
@@ -68,7 +67,6 @@ public class ManagerObjectiveController {
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
     public ObjectiveTakenEvent handleObjectiveTaken(
             @Valid @RequestBody ObjectiveTakenEvent objectiveTakenEvent) {
-
         log.debug("Handling: {}", objectiveTakenEvent);
 
         managerObjectiveService.handleObjectiveTaken(objectiveTakenEvent);

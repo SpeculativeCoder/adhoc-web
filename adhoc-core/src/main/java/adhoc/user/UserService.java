@@ -108,8 +108,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> findUserByNameOrEmail(String username) {
-        return userRepository.findByNameOrEmail(username, username);
+    public Optional<User> findUserByNameOrEmail(String usernameOrEmail) {
+        return userRepository.findByNameOrEmail(usernameOrEmail, usernameOrEmail);
     }
 
     @Transactional(readOnly = true)
@@ -126,12 +126,14 @@ public class UserService {
         // human can only register user as human, but server may register users as human or bot
         Verify.verify(registerUserRequest.getHuman() || authIsServer);
 
+        String prefix = registerUserRequest.getHuman() ? "Anon" : "Bot";
+
         if (registerUserRequest.getName() == null) {
-            if (registerUserRequest.getHuman()) {
-                registerUserRequest.setName("Anon" + (int) Math.floor(Math.random() * 1000000000)); // TODO
-            } else {
-                registerUserRequest.setName("Bot"); // NOTE: name will be updated below once database id is assigned
-            }
+            //if (registerUserRequest.getHuman()) {
+            registerUserRequest.setName(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
+            //} else {
+            //    registerUserRequest.setName("Bot"); // NOTE: name will be updated below once database id is assigned
+            //}
         }
 
         if (registerUserRequest.getFactionId() == null) {
@@ -150,9 +152,9 @@ public class UserService {
 
         User user = userRepository.save(toEntity(registerUserRequest));
 
-        if (!user.getHuman() && "Bot".equals(user.getName())) {
-            user.setName("Bot" + user.getId());
-        }
+        //if (!user.getHuman() && "Bot".equals(user.getName())) {
+        //    user.setName("Bot" + user.getId());
+        //}
 
         log.debug("register: user={} password*={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
 

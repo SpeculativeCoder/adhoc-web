@@ -61,7 +61,7 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(AWARD_FACTION_SCORES).withIdentity(AWARD_FACTION_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInMinutes(1))
+                        .repeatForever().withIntervalInSeconds(10))
                 .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 

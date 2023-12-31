@@ -46,12 +46,12 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ManagerAreaService {
 
-    private final AreaService areaService;
-
     private final AreaRepository areaRepository;
     private final RegionRepository regionRepository;
     private final ServerRepository serverRepository;
     private final ObjectiveRepository objectiveRepository;
+
+    private final AreaService areaService;
 
     public List<AreaDto> processServerAreas(Long serverId, List<AreaDto> areaDtos) {
         Server server = serverRepository.getReferenceById(serverId);
@@ -89,7 +89,6 @@ public class ManagerAreaService {
     }
 
     Area toEntity(AreaDto areaDto, Area area) {
-
         area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
         area.setIndex(areaDto.getIndex());
         area.setName(areaDto.getName());

@@ -39,44 +39,44 @@ import org.springframework.stereotype.Component;
 public class ManagerQuartzJob implements Job {
 
     private final ManagerServerService managerServerService;
-
     private final ManagerFactionService managerFactionService;
-
     private final ManagerUserService managerUserService;
-
     private final ManagerPawnService managerPawnService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        String jobName = context.getJobDetail().getKey().getName();
         try {
-            String jobName = context.getJobDetail().getKey().getName();
             switch (jobName) {
-                case ManagerQuartzConfig.MANAGE_SERVERS:
-                    // TODO: have these on separate schedules?
-                    managerServerService.manageServers();
-                    managerServerService.manageServerTasks();
-                    break;
-                case ManagerQuartzConfig.AWARD_FACTION_SCORES:
-                    managerFactionService.awardFactionScores();
-                    break;
-                case ManagerQuartzConfig.DECAY_FACTION_SCORES:
-                    managerFactionService.decayFactionScores();
-                    break;
-                case ManagerQuartzConfig.DECAY_USER_SCORES:
-                    managerUserService.decayUserScores();
-                    break;
-                case ManagerQuartzConfig.PURGE_OLD_USERS:
-                    managerUserService.purgeOldUsers();
-                    break;
-                case ManagerQuartzConfig.PURGE_OLD_PAWNS:
-                    managerPawnService.purgeOldPawns();
-                    break;
-                default:
-                    log.error("Skipping unknown job! jobName={}", jobName);
-                    break;
+            case ManagerQuartzConfig.MANAGE_SERVERS:
+                // TODO: have these on separate schedules?
+                managerServerService.manageServers();
+                managerServerService.manageServerTasks();
+                break;
+            case ManagerQuartzConfig.AWARD_FACTION_SCORES:
+                managerFactionService.awardFactionScores();
+                break;
+            case ManagerQuartzConfig.DECAY_FACTION_SCORES:
+                managerFactionService.decayFactionScores();
+                break;
+            case ManagerQuartzConfig.DECAY_USER_SCORES:
+                managerUserService.decayUserScores();
+                break;
+            case ManagerQuartzConfig.PURGE_OLD_USERS:
+                managerUserService.purgeOldUsers();
+                break;
+            case ManagerQuartzConfig.PURGE_OLD_PAWNS:
+                managerPawnService.purgeOldPawns();
+                break;
+            default:
+                log.warn("Skipping unknown manager quartz job! jobName={}", jobName);
+                break;
             }
+
         } catch (Exception e) {
-            log.error("Quartz job exception! message={}", e.getMessage(), e);
+            String message = "Manager quartz job exception! jobName=" + jobName + " message=" + e.getMessage();
+            log.warn(message, e);
+            throw new JobExecutionException(message, e);
         }
     }
 }

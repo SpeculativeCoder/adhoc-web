@@ -56,7 +56,6 @@ public class ManagerUserController {
     public UserDto putUser(
             @PathVariable("userId") Long userId,
             @Valid @RequestBody UserDto userDto) {
-
         Verify.verify(Objects.equals(userId, userDto.getId()));
 
         return managerUserService.updateUser(userDto);
@@ -67,7 +66,6 @@ public class ManagerUserController {
     public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody UserNavigateRequest userNavigateRequest) {
-
         Verify.verify(Objects.equals(serverId, userNavigateRequest.getSourceServerId()));
 
         return managerUserService.serverUserNavigate(userNavigateRequest);
@@ -81,7 +79,6 @@ public class ManagerUserController {
             Authentication authentication,
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) {
-
         Verify.verify(Objects.equals(serverId, userJoinRequest.getServerId()));
 
         return managerUserService.serverUserJoin(userJoinRequest, authentication, httpServletRequest, httpServletResponse);
@@ -95,8 +92,8 @@ public class ManagerUserController {
         log.debug("Handling: {}", event);
 
         UserDefeatedUserEvent userDefeatedUserEvent = managerUserService.handleUserDefeatedUser(event);
-        log.debug("userDefeatedUserEvent: {}", userDefeatedUserEvent);
 
+        log.debug("Sending: {}", userDefeatedUserEvent);
         return userDefeatedUserEvent;
     }
 

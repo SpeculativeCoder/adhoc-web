@@ -53,11 +53,11 @@ public class UserDetailDto {
     private String name;
 
     @NotNull
-    @Min(1)
-    private Long factionId;
+    private Boolean human;
 
     @NotNull
-    private Boolean bot;
+    @Min(1)
+    private Long factionId;
 
     @NotNull
     private Float score;

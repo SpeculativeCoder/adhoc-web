@@ -279,6 +279,9 @@
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="x" type="FLOAT(24)">
                 <constraints nullable="false"/>
             </column>
@@ -288,12 +291,12 @@
             <column name="z" type="FLOAT(24)">
                 <constraints nullable="false"/>
             </column>
-            <column name="faction_id" type="BIGINT"/>
-            <column name="seen" type="TIMESTAMP WITHOUT TIME ZONE">
-                <constraints nullable="false"/>
-            </column>
             <column name="user_id" type="BIGINT"/>
             <column name="human" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="faction_id" type="BIGINT"/>
+            <column name="seen" type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
             </column>
         </createTable>

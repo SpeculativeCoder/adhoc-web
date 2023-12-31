@@ -59,11 +59,12 @@ public class PawnService {
                 pawn.getServer().getId(),
                 pawn.getIndex(),
                 pawn.getName(),
+                pawn.getDescription(),
                 pawn.getX(), pawn.getY(), pawn.getZ(),
+                pawn.getUser() == null ? null : pawn.getUser().getId(),
+                pawn.getHuman(),
                 pawn.getFaction() == null ? null : pawn.getFaction().getId(),
                 pawn.getFaction() == null ? null : pawn.getFaction().getIndex(),
-                pawn.getSeen(),
-                pawn.getUser() == null ? null : pawn.getUser().getId(),
-                pawn.getHuman());
+                pawn.getSeen());
     }
 }

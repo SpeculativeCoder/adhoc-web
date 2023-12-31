@@ -72,6 +72,9 @@ public class Pawn {
     private String name;
 
     @Basic(optional = false)
+    private String description;
+
+    @Basic(optional = false)
     private Float x;
     @Basic(optional = false)
     private Float y;
@@ -79,14 +82,14 @@ public class Pawn {
     private Float z;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Faction faction;
-
-    @Basic(optional = false)
-    private LocalDateTime seen;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @Basic(optional = false)
     private Boolean human;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Faction faction;
+
+    @Basic(optional = false)
+    private LocalDateTime seen;
 }

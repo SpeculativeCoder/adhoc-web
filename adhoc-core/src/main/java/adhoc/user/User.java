@@ -75,12 +75,12 @@ public class User {
     @ToString.Exclude
     private String password;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Faction faction;
-
     @Basic(optional = false)
     @ToString.Include
     private Boolean human;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Faction faction;
 
     @Basic(optional = false)
     private Float score;

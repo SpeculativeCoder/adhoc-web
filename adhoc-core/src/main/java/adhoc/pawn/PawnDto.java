@@ -61,11 +61,20 @@ public class PawnDto {
     private String name;
 
     @NotNull
+    private String description;
+
+    @NotNull
     private Float x;
     @NotNull
     private Float y;
     @NotNull
     private Float z;
+
+    @Min(1)
+    private Long userId;
+
+    @NotNull
+    private Boolean human;
 
     @Min(1)
     private Long factionId;
@@ -74,10 +83,4 @@ public class PawnDto {
     private Integer factionIndex;
 
     private LocalDateTime seen;
-
-    @Min(1)
-    private Long userId;
-
-    @NotNull
-    private Boolean human;
 }

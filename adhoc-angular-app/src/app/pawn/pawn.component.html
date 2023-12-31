@@ -25,35 +25,25 @@
     Pawn {{ pawn.id }}
   </h2>
   <form>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="nameInput">Name</label>
-        <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="pawn.name"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="uuidInput">UUID</label>
+      <input class="form-control" id="uuidInput" name="uuid" type="text" readonly [(ngModel)]="pawn.uuid"/>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="uuidInput">UUID</label>
-        <input class="form-control" id="uuidInput" name="uuid" type="text" readonly [(ngModel)]="pawn.uuid"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="nameInput">Name</label>
+      <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="pawn.name"/>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="serverIdInput">Server</label>
-        <input class="form-control" id="serverIdInput" name="serverId" type="number" readonly [(ngModel)]="pawn.serverId"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="descriptionInput">Description</label>
+      <input class="form-control" id="descriptionInput" name="name" type="text" readonly [(ngModel)]="pawn.description"/>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="indexInput">Index</label>
-        <input class="form-control" id="indexInput" name="index" type="number" readonly [(ngModel)]="pawn.index"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="serverIdInput">Server</label>
+      <input class="form-control" id="serverIdInput" name="serverId" type="number" readonly [(ngModel)]="pawn.serverId"/>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="factionInput">Faction</label>
-        <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(pawn.factionId)?.name"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="indexInput">Index</label>
+      <input class="form-control" id="indexInput" name="index" type="number" readonly [(ngModel)]="pawn.index"/>
     </div>
     <div class="row">
       <div class="col-md-4 mb-3">
@@ -69,23 +59,21 @@
         <input class="form-control" id="zInput" name="z" type="number" readonly [(ngModel)]="pawn.z"/>
       </div>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="seenInput">Last Seen</label>
-        <input class="form-control" id="seenInput" name="seen" type="text" readonly [ngModel]="pawn.seen | simpleDate"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="userInput">User</label>
+      <input class="form-control" id="userInput" name="user" type="number" readonly [(ngModel)]="pawn.userId"/>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="userInput">User</label>
-        <input class="form-control" id="userInput" name="user" type="number" readonly [(ngModel)]="pawn.userId"/>
-      </div>
+    <div class="mb-3 form-check">
+      <input class="form-check-input" id="humanInput" name="human" type="checkbox" readonly [(ngModel)]="pawn.human"/>
+      <label class="form-check-label" for="humanInput">Human</label>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="humanInput">Human</label>
-        <input class="form-control" id="humanInput" name="human" type="checkbox" readonly [(ngModel)]="pawn.human"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="factionInput">Faction</label>
+      <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(pawn.factionId)?.name"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="seenInput">Last Seen</label>
+      <input class="form-control" id="seenInput" name="seen" type="text" readonly [ngModel]="pawn.seen | simpleDate"/>
     </div>
     <div class="row">
       <!--<div class="col-auto mt-3 mb-3">

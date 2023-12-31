@@ -218,8 +218,8 @@ public class UserService {
                 user.getId(),
                 user.getVersion(),
                 user.getName(),
-                user.getFaction().getId(),
                 user.getHuman(),
+                user.getFaction().getId(),
                 user.getScore(),
                 user.getSeen());
     }
@@ -229,8 +229,8 @@ public class UserService {
                 user.getId(),
                 user.getVersion(),
                 user.getName(),
-                user.getFaction().getId(),
                 user.getHuman(),
+                user.getFaction().getId(),
                 user.getScore(),
                 user.getX(),
                 user.getY(),
@@ -253,8 +253,8 @@ public class UserService {
         user.setName(registerUserRequest.getName());
         user.setEmail(registerUserRequest.getEmail());
         user.setPassword(registerUserRequest.getPassword() == null ? null : passwordEncoder.encode(registerUserRequest.getPassword()));
-        user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
         user.setHuman(registerUserRequest.getHuman());
+        user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
         user.setScore(0F);
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());

@@ -27,12 +27,12 @@ export class Pawn {
   serverId?: number;
   index?: number;
   name?: string;
+  description?: string;
   x?: number;
   y?: number;
   z?: number;
-
-  factionId?: number;
-  seen?: Date;
   userId?: number;
   human?: boolean;
+  factionId?: number;
+  seen?: Date;
 }

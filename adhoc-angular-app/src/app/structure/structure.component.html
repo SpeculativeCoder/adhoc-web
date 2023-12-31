@@ -25,29 +25,21 @@
     Structure {{ structure.id }}
   </h2>
   <form>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="nameInput">Name</label>
-        <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="structure.name"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="nameInput">Name</label>
+      <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="structure.name"/>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="uuidInput">UUID</label>
-        <input class="form-control" id="uuidInput" name="uuid" type="text" readonly [(ngModel)]="structure.uuid"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="uuidInput">UUID</label>
+      <input class="form-control" id="uuidInput" name="uuid" type="text" readonly [(ngModel)]="structure.uuid"/>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="typeInput">Type</label>
-        <input class="form-control" id="typeInput" name="type" type="text" readonly [(ngModel)]="structure.type"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="typeInput">Type</label>
+      <input class="form-control" id="typeInput" name="type" type="text" readonly [(ngModel)]="structure.type"/>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="regionInput">Region</label>
-        <input class="form-control" id="regionInput" name="region" type="number" readonly [(ngModel)]="structure.regionId"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="regionInput">Region</label>
+      <input class="form-control" id="regionInput" name="region" type="number" readonly [(ngModel)]="structure.regionId"/>
     </div>
     <div class="row">
       <div class="col-md-4 mb-3">
@@ -91,17 +83,13 @@
         <input class="form-control" id="sizeZInput" name="sizeZ" type="number" readonly [(ngModel)]="structure.sizeZ"/>
       </div>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="factionInput">Faction</label>
-        <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(structure.factionId)?.name"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="userInput">User</label>
+      <input class="form-control" id="userInput" name="user" type="number" readonly [(ngModel)]="structure.userId"/>
     </div>
-    <div class="row">
-      <div class="mb-3">
-        <label class="form-label" for="userInput">User</label>
-        <input class="form-control" id="userInput" name="user" type="number" readonly [(ngModel)]="structure.userId"/>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="factionInput">Faction</label>
+      <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(structure.factionId)?.name"/>
     </div>
     <div class="row">
       <!--<div class="col-auto mt-3 mb-3">

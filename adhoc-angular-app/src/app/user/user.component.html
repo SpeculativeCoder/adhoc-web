@@ -29,6 +29,10 @@
       <label class="form-label" for="nameInput">Name</label>
       <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="user.name"/>
     </div>
+    <div class="mb-3 form-check">
+      <input class="form-check-input" id="humanInput" name="human" type="checkbox" readonly [(ngModel)]="user.human"/>
+      <label class="form-check-label" for="humanInput">Human</label>
+    </div>
     <div class="mb-3">
       <label class="form-label" for="factionInput">Faction</label>
       <input class="form-control" id="factionInput" name="faction" type="faction" readonly [ngModel]="getFaction(user.factionId)?.name"/>
@@ -45,10 +49,6 @@
         </div>
       </div>
     </div> -->
-    </div>
-    <div class="mb-3">
-      <label class="form-label" for="humanInput">Human</label>
-      <input class="form-control" id="humanInput" name="human" type="checkbox" readonly [(ngModel)]="user.human"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="scoreInput">Score</label>

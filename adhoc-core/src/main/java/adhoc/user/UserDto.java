@@ -52,11 +52,11 @@ public class UserDto {
     private String name;
 
     @NotNull
-    @Min(1)
-    private Long factionId;
+    private Boolean human;
 
     @NotNull
-    private Boolean human;
+    @Min(1)
+    private Long factionId;
 
     @NotNull
     private Float score;

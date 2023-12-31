@@ -34,13 +34,14 @@
         <th scope="col" sortable="serverId">Server ID</th>
         <th scope="col" sortable="index">Index</th>
         <th scope="col" sortable="name">Name</th>
-        <th scope="col" sortable="factionId">Faction</th>
+        <th scope="col" sortable="description">Description</th>
         <th scope="col" sortable="x">X</th>
         <th scope="col" sortable="y">Y</th>
         <th scope="col" sortable="z">Z</th>
-        <th scope="col" sortable="seen">Last Seen</th>
         <th scope="col" sortable="userId">User</th>
         <th scope="col" sortable="human">Human</th>
+        <th scope="col" sortable="factionId">Faction</th>
+        <th scope="col" sortable="seen">Last Seen</th>
       </tr>
       </thead>
       <tbody>
@@ -50,13 +51,14 @@
         <td>{{ pawn.serverId }}</td>
         <td>{{ pawn.index }}</td>
         <td>{{ pawn.name }}</td>
-        <td>{{ getFaction(pawn.factionId)?.name }}</td>
+        <td>{{ pawn.description }}</td>
         <td>{{ pawn.x }}</td>
         <td>{{ pawn.y }}</td>
         <td>{{ pawn.z }}</td>
-        <td>{{ pawn.seen | simpleDate }}</td>
         <td>{{ pawn.userId }}</td>
         <td>{{ pawn.human }}</td>
+        <td>{{ getFaction(pawn.factionId)?.name }}</td>
+        <td>{{ pawn.seen | simpleDate }}</td>
       </tr>
       </tbody>
     </table>

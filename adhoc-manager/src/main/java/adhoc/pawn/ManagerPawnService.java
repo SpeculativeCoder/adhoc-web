@@ -87,13 +87,14 @@ public class ManagerPawnService {
         pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
         pawn.setIndex(pawnDto.getIndex());
         pawn.setName(pawnDto.getName());
-        pawn.setFaction(factionRepository.getByIndex(pawnDto.getFactionIndex()));
+        pawn.setDescription(pawnDto.getDescription());
         pawn.setX(pawnDto.getX());
         pawn.setY(pawnDto.getY());
         pawn.setZ(pawnDto.getZ());
-        pawn.setSeen(pawnDto.getSeen());
         pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
         pawn.setHuman(pawnDto.getHuman());
+        pawn.setFaction(factionRepository.getByIndex(pawnDto.getFactionIndex()));
+        pawn.setSeen(pawnDto.getSeen());
 
         return pawn;
     }

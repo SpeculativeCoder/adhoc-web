@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 SpeculativeCoder (https://github.com/SpeculativeCoder)
+ * Copyright 2022-2024 SpeculativeCoder (https://github.com/SpeculativeCoder)
  *
  * Modification of code from Spring Boot (https://spring.io/projects/spring-boot) - subject to Apache License, Version 2.0 (see adjacent *-LICENSE file)
  * https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/logging/logback/ColorConverter.java

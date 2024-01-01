@@ -22,27 +22,26 @@
 
 <configuration>
 
-    <conversionRule conversionWord="acc" converterClass="adhoc.web.logging.AdhocColorConverter" />
+    <conversionRule conversionWord="acc" converterClass="adhoc.web.logging.AdhocColorConverter"/>
     <!--<conversionRule conversionWord="ewtpc" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />-->
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
         <!-- quick/handy way to only show mutating SQL if chasing something down when org.hibernate.SQL logging set to debug -->
-        <!--
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     ("org.hibernate.SQL".equals(logger) &amp;&amp;
-                        !message.startsWith("update") &amp;&amp;
-                        !message.startsWith("insert") &amp;&amp;
-                        !message.startsWith("delete"))
+                    !message.startsWith("update") &amp;&amp;
+                    !message.startsWith("insert") &amp;&amp;
+                    !message.startsWith("delete"))
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
-        -->
-        <!-- message.endsWith("for update") -->
+        </filter>-->
+
+        <!-- !message.endsWith("for update") -->
 
         <!-- suppress some artemis errors - TODO: chase down why these happen -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">

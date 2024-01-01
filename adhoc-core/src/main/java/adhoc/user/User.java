@@ -28,8 +28,6 @@ import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -47,9 +45,9 @@ import java.util.stream.Collectors;
  */
 @Entity(name = "AdhocUser")
 // TODO: unique constraint(s)
-@SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 1)
-@DynamicInsert
-@DynamicUpdate
+@SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 50)
+//@DynamicInsert
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -58,7 +56,7 @@ import java.util.stream.Collectors;
 public class User {
 
     @Id
-    @GeneratedValue(generator = "UserIdSequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UserIdSequence")
     @ToString.Include
     private Long id;
 
@@ -94,6 +92,7 @@ public class User {
 
     @CreationTimestamp
     @Basic(optional = false)
+    @Column(updatable = false)
     private LocalDateTime created;
 
     @UpdateTimestamp

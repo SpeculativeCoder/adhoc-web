@@ -44,7 +44,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User getForUpdateById(Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<User> findForUpdateByHumanFalseAndFactionAndSeenBefore(Faction faction, LocalDateTime seenBefore);
+    Optional<User> findFirstForUpdateByHumanFalseAndFactionAndSeenBefore(Faction faction, LocalDateTime seenBefore);
 
     @Query("select id from AdhocUser where created < :createdBefore and seen is null and password is null and pawns is empty")
     List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(@Param("createdBefore") LocalDateTime createdBefore);

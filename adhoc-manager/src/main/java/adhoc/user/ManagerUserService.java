@@ -112,7 +112,7 @@ public class ManagerUserService {
             Faction faction = factionRepository.getReferenceById(userJoinRequest.getFactionId());
             // bots should try to use existing bot account
             // TODO: avoid using seen (should use serverId)
-            user = userRepository.findForUpdateByHumanFalseAndFactionAndSeenBefore(
+            user = userRepository.findFirstForUpdateByHumanFalseAndFactionAndSeenBefore(
                     faction, LocalDateTime.now().minusMinutes(1)).orElse(null);
         }
 

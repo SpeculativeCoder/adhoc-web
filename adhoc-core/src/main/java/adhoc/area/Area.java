@@ -27,8 +27,6 @@ import adhoc.region.Region;
 import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 
@@ -38,9 +36,9 @@ import java.util.List;
  * they may have to connect to a new server unless the same server manages both the areas.
  */
 @Entity
-@SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 1)
-@DynamicInsert
-@DynamicUpdate
+@SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 50)
+//@DynamicInsert
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -49,7 +47,7 @@ import java.util.List;
 public class Area {
 
     @Id
-    @GeneratedValue(generator = "AreaIdSequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AreaIdSequence")
     @ToString.Include
     private Long id;
 

@@ -124,7 +124,7 @@
             </column>
         </createTable>
 
-        <createSequence sequenceName="server_id_sequence" startValue="1"/>
+        <createSequence sequenceName="server_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="server">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="server_pkey"/>
@@ -163,7 +163,7 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="region"
                                  validate="true"/>
 
-        <createSequence sequenceName="area_id_sequence" startValue="1"/>
+        <createSequence sequenceName="area_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="area">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="area_pkey"/>
@@ -205,7 +205,7 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="server"
                                  validate="true"/>
 
-        <createSequence sequenceName="objective_id_sequence" startValue="1"/>
+        <createSequence sequenceName="objective_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="objective">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="objective_pkey"/>
@@ -261,7 +261,7 @@
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
                                  referencedTableName="objective" validate="true"/>
 
-        <createSequence sequenceName="pawn_id_sequence" startValue="1"/>
+        <createSequence sequenceName="pawn_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="pawn">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pawn_pkey"/>
@@ -310,7 +310,7 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
                                  validate="true"/>
 
-        <createSequence sequenceName="structure_id_sequence" startValue="1"/>
+        <createSequence sequenceName="structure_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="structure">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="structure_pkey"/>

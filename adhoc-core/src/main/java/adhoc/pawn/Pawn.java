@@ -27,8 +27,6 @@ import adhoc.server.Server;
 import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -39,9 +37,9 @@ import java.util.UUID;
  * (intended for an "at a glance" location of bots/users in the world).
  */
 @Entity
-@DynamicInsert
-@DynamicUpdate
-@SequenceGenerator(name = "PawnIdSequence", initialValue = 1, allocationSize = 1)
+//@DynamicInsert
+//@DynamicUpdate
+@SequenceGenerator(name = "PawnIdSequence", initialValue = 1, allocationSize = 50)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -50,7 +48,7 @@ import java.util.UUID;
 public class Pawn {
 
     @Id
-    @GeneratedValue(generator = "PawnIdSequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PawnIdSequence")
     @ToString.Include
     private Long id;
 

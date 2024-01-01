@@ -27,8 +27,6 @@ import adhoc.region.Region;
 import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.UUID;
 
@@ -36,9 +34,9 @@ import java.util.UUID;
  * Structures are objects that are pre-placed or that users have placed in the world e.g. barriers etc.
  */
 @Entity
-@SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 1)
-@DynamicInsert
-@DynamicUpdate
+@SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 50)
+//@DynamicInsert
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -47,7 +45,7 @@ import java.util.UUID;
 public class Structure {
 
     @Id
-    @GeneratedValue(generator = "StructureIdSequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "StructureIdSequence")
     @ToString.Include
     private Long id;
 

@@ -27,7 +27,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
     <changeSet author="adhoc" id="1">
-        <createSequence sequenceName="user_id_sequence" startValue="1"/>
+        <createSequence sequenceName="user_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="adhoc_user">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="adhoc_user_pkey"/>

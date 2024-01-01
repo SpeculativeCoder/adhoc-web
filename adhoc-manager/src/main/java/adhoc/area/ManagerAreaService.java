@@ -22,7 +22,6 @@
 
 package adhoc.area;
 
-import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
@@ -57,30 +56,26 @@ public class ManagerAreaService {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
 
-        Set<Integer> indexes = new TreeSet<>();
+        Set<Integer> areaIndexes = new TreeSet<>();
         areaDtos.forEach(areaDto -> {
             Verify.verify(Objects.equals(region.getId(), areaDto.getRegionId()));
 
-            boolean indexUnique = indexes.add(areaDto.getIndex());
-            Verify.verify(indexUnique);
+            boolean areaIndexIsUnique = areaIndexes.add(areaDto.getIndex());
+            Verify.verify(areaIndexIsUnique);
         });
 
-        try (Stream<Area> areasToDelete = areaRepository.streamForUpdateByRegionAndIndexNotIn(region, indexes)) {
+        try (Stream<Area> areasToDelete = areaRepository.streamForUpdateByRegionAndIndexNotIn(region, areaIndexes)) {
             areasToDelete.forEach(areaToDelete -> {
                 log.info("Deleting unused area: {}", areaToDelete);
 
                 // before deleting unused areas we must unlink any objectives that will become orphaned
-                for (Objective orphanedObjective : areaToDelete.getObjectives()) {
-                    orphanedObjective = objectiveRepository.getForUpdateById(orphanedObjective.getId());
-                    orphanedObjective.setArea(null);
-                }
+                objectiveRepository.updateAreaNullByArea(areaToDelete);
 
                 areaRepository.delete(areaToDelete);
             });
         }
 
         return areaDtos.stream().map(areaDto -> {
-
             Area area = areaRepository.save(toEntity(areaDto,
                     areaRepository.findForUpdateByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)));
 

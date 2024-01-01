@@ -126,20 +126,6 @@ public class UserService {
         // human can only register user as human, but server may register users as human or bot
         Verify.verify(registerUserRequest.getHuman() || authIsServer);
 
-        String prefix = registerUserRequest.getHuman() ? "Anon" : "Bot";
-
-        if (registerUserRequest.getName() == null) {
-            //if (registerUserRequest.getHuman()) {
-            registerUserRequest.setName(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
-            //} else {
-            //    registerUserRequest.setName("Bot"); // NOTE: name will be updated below once database id is assigned
-            //}
-        }
-
-        if (registerUserRequest.getFactionId() == null) {
-            registerUserRequest.setFactionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
-        }
-
         // TODO: think about email check before allowing email input
         Optional<User> optionalUser =
                 registerUserRequest.getEmail() == null
@@ -150,13 +136,7 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        User user = userRepository.save(toEntity(registerUserRequest));
-
-        //if (!user.getHuman() && "Bot".equals(user.getName())) {
-        //    user.setName("Bot" + user.getId());
-        //}
-
-        log.debug("register: user={} password*={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
+        User user = createUser(registerUserRequest);
 
         // if not an auto-register from server - log them in too
         if (!authIsServer) {
@@ -196,6 +176,32 @@ public class UserService {
         }
 
         return ResponseEntity.ok(toDetailDto(user));
+    }
+
+    User createUser(RegisterUserRequest registerUserRequest) {
+
+        if (registerUserRequest.getName() == null) {
+            String prefix = registerUserRequest.getHuman() ? "Anon" : "Bot";
+            //if (registerUserRequest.getHuman()) {
+            registerUserRequest.setName(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
+            //} else {
+            //    registerUserRequest.setName("Bot"); // NOTE: name will be updated below once database id is assigned
+            //}
+        }
+
+        if (registerUserRequest.getFactionId() == null) {
+            registerUserRequest.setFactionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
+        }
+
+        User user = userRepository.save(toEntity(registerUserRequest));
+
+        //if (!user.getHuman() && "Bot".equals(user.getName())) {
+        //    user.setName("Bot" + user.getId());
+        //}
+
+        log.debug("Created User: user={} password*={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
+
+        return user;
     }
 
     /**

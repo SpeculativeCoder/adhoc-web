@@ -79,7 +79,7 @@ public class ManagerUserService {
 
         // existing user? verify token
         if (userJoinRequest.getUserId() != null) {
-            user = userRepository.getForUpdateById(userJoinRequest.getUserId());
+            user = userRepository.getReferenceById(userJoinRequest.getUserId());
             Verify.verify(Objects.equals(user.getFaction().getId(), userJoinRequest.getFactionId()));
 
             Verify.verifyNotNull(userJoinRequest.getToken());
@@ -99,7 +99,8 @@ public class ManagerUserService {
         user.setLastJoin(LocalDateTime.now());
         user.setSeen(user.getLastJoin());
 
-        log.info("userJoin: user={} faction={} server={}", user, user.getFaction(), server);
+        log.info("User Joined: userId={} userName={} factionId={} serverId={}",
+                user.getId(), user.getName(), user.getFaction().getIndex(), server.getId());
 
         return ResponseEntity.ok(userService.toDetailDto(user));
     }
@@ -112,7 +113,7 @@ public class ManagerUserService {
             Faction faction = factionRepository.getReferenceById(userJoinRequest.getFactionId());
             // bots should try to use existing bot account
             // TODO: avoid using seen (should use serverId)
-            user = userRepository.findFirstForUpdateByHumanFalseAndFactionAndSeenBefore(
+            user = userRepository.findFirstByHumanFalseAndFactionAndSeenBefore(
                     faction, LocalDateTime.now().minusMinutes(1)).orElse(null);
         }
 
@@ -123,21 +124,14 @@ public class ManagerUserService {
                     .serverId(userJoinRequest.getServerId())
                     .build();
 
-            // TODO: avoid web stuff
-            ResponseEntity<UserDetailDto> registeredUserDetail =
-                    userService.registerUser(registerUserRequest, authentication, httpServletRequest, httpServletResponse);
-
-            Verify.verify(registeredUserDetail.getStatusCode().is2xxSuccessful());
-            UserDetailDto userDetailDto = Verify.verifyNotNull(registeredUserDetail.getBody());
-
-            user = userRepository.getForUpdateById(userDetailDto.getId());
+            user = userService.createUser(registerUserRequest);
         }
 
         return user;
     }
 
     public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
-        User user = userRepository.getForUpdateById(userNavigateRequest.getUserId());
+        User user = userRepository.getReferenceById(userNavigateRequest.getUserId());
         Server sourceServer = serverRepository.getReferenceById(userNavigateRequest.getSourceServerId());
         Area destinationArea = areaRepository.getReferenceById(userNavigateRequest.getDestinationAreaId());
 

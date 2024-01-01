@@ -22,11 +22,15 @@
 
 package adhoc.objective;
 
+import adhoc.area.Area;
 import adhoc.faction.Faction;
 import adhoc.region.Region;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -46,4 +50,8 @@ public interface ObjectiveRepository extends JpaRepository<Objective, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Stream<Objective> streamForUpdateByRegionAndIndexNotIn(Region region, Collection<Integer> indexNotIn);
+
+    @Modifying
+    @Query("update Objective set version = version + 1, area = null where area = :area")
+    void updateAreaNullByArea(@Param("area") Area area);
 }

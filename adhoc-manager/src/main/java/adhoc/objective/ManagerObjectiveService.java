@@ -69,7 +69,7 @@ public class ManagerObjectiveService {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
 
-        Set<Integer> indexes = new TreeSet<>();
+        Set<Integer> objectiveIndexes = new TreeSet<>();
         objectiveDtos.forEach(objectiveDto -> {
             Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId()));
 
@@ -84,11 +84,11 @@ public class ManagerObjectiveService {
                                 Verify.verify(linkedObjectiveDto.getLinkedObjectiveIndexes().contains(objectiveDto.getIndex())));
             });
 
-            boolean indexUnique = indexes.add(objectiveDto.getIndex());
-            Verify.verify(indexUnique);
+            boolean objectiveIndexIsUnique = objectiveIndexes.add(objectiveDto.getIndex());
+            Verify.verify(objectiveIndexIsUnique);
         });
 
-        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamForUpdateByRegionAndIndexNotIn(region, indexes)) {
+        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamForUpdateByRegionAndIndexNotIn(region, objectiveIndexes)) {
             objectivesToDelete.forEach(objectiveToDelete -> {
                 log.info("Deleting unused objective: {}", objectiveToDelete);
 
@@ -98,13 +98,11 @@ public class ManagerObjectiveService {
 
         // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveDtos.stream().map(objectiveDto -> {
-
             Objective objective = objectiveRepository.save(toEntityStage1(objectiveDto,
                     objectiveRepository.findForUpdateByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)));
 
             return new AbstractMap.SimpleEntry<>(objectiveDto, objective);
         }).toList().stream().map(entry -> {
-
             Objective objective = toEntityStage2(entry.getKey(), entry.getValue());
 
             return objectiveService.toDto(objective);

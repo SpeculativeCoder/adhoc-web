@@ -39,8 +39,11 @@ public class Route53DnsProperties {
     @Value("${adhoc.dns-route53.aws-profile}")
     private String awsProfileForRoute53;
 
+    @Value("${adhoc.dns-route53.zone}")
+    private String route53Zone;
+
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
-        log.info("awsProfileForRoute53={}", awsProfileForRoute53);
+        log.info("awsProfileForRoute53={} route53Zone={}", awsProfileForRoute53, route53Zone);
     }
 }

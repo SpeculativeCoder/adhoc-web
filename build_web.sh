@@ -45,6 +45,7 @@ export SERVER_SECURITY_GROUP_NAME=${SERVER_SECURITY_GROUP_NAME:-${ADHOC_NAME}_de
 
 export ECS_CLUSTER=${ECS_CLUSTER:-${ADHOC_NAME}_dev}
 export ADHOC_DOMAIN=${ADHOC_DOMAIN:-localhost}
+export ROUTE53_ZONE=${ROUTE53_ZONE:-localhost}
 export MANAGER_DOMAIN=${MANAGER_DOMAIN:-manager-dev.${ADHOC_DOMAIN}}
 export KIOSK_DOMAIN=${KIOSK_DOMAIN:-dev.${ADHOC_DOMAIN}}
 export SERVER_DOMAIN=${SERVER_DOMAIN:-server-dev.${ADHOC_DOMAIN}}
@@ -74,6 +75,7 @@ docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
   --build-arg SERVER_SECURITY_GROUP_NAME=${SERVER_SECURITY_GROUP_NAME} \
   --build-arg ECS_CLUSTER=${ECS_CLUSTER} \
   --build-arg ADHOC_DOMAIN=${ADHOC_DOMAIN} \
+  --build-arg ROUTE53_ZONE=${ROUTE53_ZONE} \
   --build-arg MANAGER_DOMAIN=${MANAGER_DOMAIN} \
   --build-arg KIOSK_DOMAIN=${KIOSK_DOMAIN} \
   --build-arg SERVER_DOMAIN=${SERVER_DOMAIN} \
@@ -98,6 +100,7 @@ docker build --tag ${KIOSK_IMAGE} -f docker/adhoc_kiosk.Dockerfile \
   --build-arg SERVER_SECURITY_GROUP_NAME=${SERVER_SECURITY_GROUP_NAME} \
   --build-arg ECS_CLUSTER=${ECS_CLUSTER} \
   --build-arg ADHOC_DOMAIN=${ADHOC_DOMAIN} \
+  --build-arg ROUTE53_ZONE=${ROUTE53_ZONE} \
   --build-arg MANAGER_DOMAIN=${MANAGER_DOMAIN} \
   --build-arg KIOSK_DOMAIN=${KIOSK_DOMAIN} \
   --build-arg SERVER_DOMAIN=${SERVER_DOMAIN} \

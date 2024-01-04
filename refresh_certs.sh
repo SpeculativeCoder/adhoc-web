@@ -38,6 +38,7 @@ export ADHOC_DOMAIN=${ADHOC_DOMAIN:-localhost}
 
 export UNREAL_ENGINE_CERTS_DIR=${UNREAL_ENGINE_CERTS_DIR:-${UNREAL_ENGINE_DIR}/certs}
 
+mkdir -p certs
 mkdir -p ${UNREAL_ENGINE_CERTS_DIR}
 
 # root certificate

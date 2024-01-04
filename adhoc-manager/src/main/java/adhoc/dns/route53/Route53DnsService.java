@@ -24,7 +24,6 @@ package adhoc.dns.route53;
 
 import adhoc.dns.DnsService;
 import adhoc.dns.route53.properties.Route53DnsProperties;
-import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -43,8 +42,6 @@ import java.util.Set;
 @Slf4j
 @RequiredArgsConstructor
 public class Route53DnsService implements DnsService {
-
-    private final CoreProperties coreProperties;
 
     private final Route53DnsProperties route53DnsProperties;
 
@@ -87,7 +84,7 @@ public class Route53DnsService implements DnsService {
 
     private String getHostedZoneId(Route53Client route53Client) {
         ListHostedZonesByNameRequest listHostedZonesByNameRequest = ListHostedZonesByNameRequest.builder()
-                .dnsName(coreProperties.getAdhocDomain())
+                .dnsName(route53DnsProperties.getRoute53Zone())
                 .maxItems("1")
                 .build();
         log.debug("listHostedZonesByNameRequest: {}", listHostedZonesByNameRequest);
@@ -102,8 +99,8 @@ public class Route53DnsService implements DnsService {
         }
 
         HostedZone hostedZone = hostedZones.get(0);
-        if (!hostedZone.name().equals(coreProperties.getAdhocDomain() + ".")) {
-            throw new IllegalStateException("expected hosted zone with name " + coreProperties.getAdhocDomain() + ". but got: " + hostedZone.name());
+        if (!hostedZone.name().equals(route53DnsProperties.getRoute53Zone() + ".")) {
+            throw new IllegalStateException("expected hosted zone with name " + route53DnsProperties.getRoute53Zone() + ". but got: " + hostedZone.name());
         }
 
         String hostedZoneId = hostedZone.id().replace("/hostedzone/", "");

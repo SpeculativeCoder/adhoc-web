@@ -58,10 +58,10 @@ variable "adhoc_region_prod" {
   default     = "us-east-1"
 }
 
-variable "adhoc_domain" {
+variable "route53_zone" {
   type        = string
   nullable    = true
-  description = "Domain in which Adhoc operates e.g. example.com"
+  description = "Route53 zone in which Adhoc operates e.g. example.com"
   default     = null
 }
 
@@ -71,7 +71,7 @@ variable "adhoc_name_dev" {
   description = "Name of the Adhoc project in dev workspace (will be used as a name or a prefix to the name of most resources)"
   default     = "adhoc"
   validation {
-    condition = can(regex("^[a-z0-9_]+$", var.adhoc_name_dev))
+    condition     = can(regex("^[a-z0-9_]+$", var.adhoc_name_dev))
     error_message = "adhoc_name_dev must match regex [a-z0-9_]+"
   }
 }
@@ -82,7 +82,7 @@ variable "adhoc_name_qa" {
   description = "Name of the Adhoc project in qa workspace (will be used as a name or a prefix to the name of most resources)"
   default     = "adhoc"
   validation {
-    condition = can(regex("^[a-z0-9_]+$", var.adhoc_name_qa))
+    condition     = can(regex("^[a-z0-9_]+$", var.adhoc_name_qa))
     error_message = "adhoc_name_qa must match regex [a-z0-9_]+"
   }
 }
@@ -93,7 +93,7 @@ variable "adhoc_name_prod" {
   description = "Name of the Adhoc project in prod workspace (will be used as a name or a prefix to the name of most resources)"
   default     = "adhoc"
   validation {
-    condition = can(regex("^[a-z0-9_]+$", var.adhoc_name_prod))
+    condition     = can(regex("^[a-z0-9_]+$", var.adhoc_name_prod))
     error_message = "adhoc_name_prod must match regex [a-z0-9_]+"
   }
 }
@@ -122,8 +122,8 @@ data "aws_region" "region" {
 }
 
 data "aws_route53_zone" "adhoc" {
-  count = var.adhoc_domain == null ? 0 : 1
-  name  = var.adhoc_domain
+  count = var.route53_zone == null ? 0 : 1
+  name  = var.route53_zone
 }
 
 data "aws_iam_role" "ecs_task_execution_role" {
@@ -131,19 +131,19 @@ data "aws_iam_role" "ecs_task_execution_role" {
 }
 
 data "local_sensitive_file" "adhoc_ca_certificate" {
-  count    = var.adhoc_domain == null ? 0 : 1
+  count    = var.route53_zone == null ? 0 : 1
   #filename = fileexists("${path.root}/../certs/adhoc-ca.cer") ? "${path.root}/../certs/adhoc-ca.cer" : "${path.root}/empty_file"
   filename = "${path.root}/../certs/${local.adhoc_name}-ca.cer"
 }
 
 data "local_sensitive_file" "adhoc_server_certificate" {
-  count    = var.adhoc_domain == null ? 0 : 1
+  count    = var.route53_zone == null ? 0 : 1
   #filename = fileexists("${path.root}/../certs/adhoc.cer") ? "${path.root}/../certs/adhoc.cer" : "${path.root}/empty_file"
   filename = "${path.root}/../certs/${local.adhoc_name}.cer"
 }
 
 data "local_sensitive_file" "adhoc_private_key" {
-  count    = var.adhoc_domain == null ? 0 : 1
+  count    = var.route53_zone == null ? 0 : 1
   #filename = fileexists("${path.root}/../certs/adhoc.key") ? "${path.root}/../certs/adhoc.key" : "${path.root}/empty_file"
   filename = "${path.root}/../certs/${local.adhoc_name}.key"
 }
@@ -155,7 +155,7 @@ resource "aws_iam_policy" "adhoc_manager" {
     {
       Version   = "2012-10-17",
       Statement = flatten([
-        var.adhoc_domain == null ? [] : [
+        var.route53_zone == null ? [] : [
           {
             Sid    = "0",
             Effect = "Allow",
@@ -518,21 +518,21 @@ resource "aws_ssm_parameter" "adhoc_ca_certificate" {
   name  = "${local.adhoc_name}_${terraform.workspace}_ca_certificate"
   type  = "SecureString"
   tier  = "Standard"
-  value = var.adhoc_domain == null ? "unused" : data.local_sensitive_file.adhoc_ca_certificate[0].content
+  value = var.route53_zone == null ? "unused" : data.local_sensitive_file.adhoc_ca_certificate[0].content
 }
 
 resource "aws_ssm_parameter" "adhoc_server_certificate" {
   name  = "${local.adhoc_name}_${terraform.workspace}_server_certificate"
   type  = "SecureString"
   tier  = "Advanced"
-  value = var.adhoc_domain == null ? "unused" : data.local_sensitive_file.adhoc_server_certificate[0].content
+  value = var.route53_zone == null ? "unused" : data.local_sensitive_file.adhoc_server_certificate[0].content
 }
 
 resource "aws_ssm_parameter" "adhoc_private_key" {
   name  = "${local.adhoc_name}_${terraform.workspace}_private_key"
   type  = "SecureString"
   tier  = "Standard"
-  value = var.adhoc_domain == null ? "unused" : data.local_sensitive_file.adhoc_private_key[0].content
+  value = var.route53_zone == null ? "unused" : data.local_sensitive_file.adhoc_private_key[0].content
 }
 
 resource "aws_ssm_parameter" "adhoc_postgres_password" {

@@ -20,3 +20,6 @@ ij_properties_keep_blank_lines = true
 
 [*.xml]
 ij_xml_continuation_indent_size = 8
+
+[*.tf]
+indent_size = 2

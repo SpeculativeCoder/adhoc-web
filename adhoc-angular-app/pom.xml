@@ -104,7 +104,7 @@
             <configuration>
               <resources>
                 <resource>
-                  <directory>target/dist/adhoc-angular-app/browser</directory>
+                  <directory>dist/adhoc-angular-app/browser</directory>
                   <includes>
                     <include>index.html</include>
                   </includes>
@@ -112,7 +112,7 @@
                   <filtering>false</filtering>
                 </resource>
                 <resource>
-                  <directory>target/dist/adhoc-angular-app/browser</directory>
+                  <directory>dist/adhoc-angular-app/browser</directory>
                   <excludes>
                     <exclude>index.html</exclude>
                   </excludes>

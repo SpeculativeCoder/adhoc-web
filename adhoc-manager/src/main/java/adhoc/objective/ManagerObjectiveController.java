@@ -23,7 +23,7 @@
 package adhoc.objective;
 
 import adhoc.objective.event.ObjectiveTakenEvent;
-import com.google.common.base.Verify;
+import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +48,7 @@ public class ManagerObjectiveController {
     public ObjectiveDto putObjective(
             @PathVariable("objectiveId") Long objectiveId,
             @Valid @RequestBody ObjectiveDto objectiveDto) {
-        Verify.verify(Objects.equals(objectiveId, objectiveDto.getId()));
+        Preconditions.checkArgument(Objects.equals(objectiveId, objectiveDto.getId()));
 
         return managerObjectiveService.updateObjective(objectiveDto);
     }

@@ -51,7 +51,7 @@ public class ManagerFactionService {
 
         try (Stream<Faction> factions = factionRepository.streamForUpdateBy()) {
             factions.forEach(faction ->
-                    faction.setScore(faction.getScore() + (0.5f * objectiveRepository.countByFaction(faction))));
+                    faction.setScore(faction.getScore() + (0.01f * objectiveRepository.countByFaction(faction))));
         }
     }
 

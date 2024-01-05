@@ -22,7 +22,7 @@
 
 package adhoc.faction;
 
-import com.google.common.base.Verify;
+import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class ManagerFactionController {
     public FactionDto putFaction(
             @PathVariable("factionId") Long factionId,
             @Valid @RequestBody FactionDto factionDto) {
-        Verify.verify(Objects.equals(factionId, factionDto.getId()));
+        Preconditions.checkArgument(Objects.equals(factionId, factionDto.getId()));
 
         return managerFactionService.updateFaction(factionDto);
     }

@@ -27,7 +27,7 @@ import adhoc.pawn.event.ServerPawnsEvent;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.UserRepository;
-import com.google.common.base.Verify;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -65,7 +65,7 @@ public class ManagerPawnService {
         userRepository.updateServerIdAndSeenByIdIn(serverPawnsEvent.getServerId(), now, userIds);
 
         return serverPawnsEvent.getPawns().stream().map(pawnDto -> {
-            Verify.verify(Objects.equals(server.getId(), pawnDto.getServerId()));
+            Preconditions.checkArgument(Objects.equals(server.getId(), pawnDto.getServerId()));
 
             pawnDto.setSeen(now); // TODO
 

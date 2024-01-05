@@ -23,7 +23,7 @@
 package adhoc.server;
 
 import adhoc.server.event.ServerStartedEvent;
-import com.google.common.base.Verify;
+import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public class ManagerServerController {
     public ServerDto putServer(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody ServerDto serverDto) {
-        Verify.verify(Objects.equals(serverId, serverDto.getId()));
+        Preconditions.checkArgument(Objects.equals(serverId, serverDto.getId()));
 
         return managerServerService.updateServer(serverDto);
     }

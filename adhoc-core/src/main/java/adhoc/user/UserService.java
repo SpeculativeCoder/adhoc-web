@@ -25,7 +25,7 @@ package adhoc.user;
 import adhoc.faction.FactionRepository;
 import adhoc.server.ServerRepository;
 import adhoc.user.request.RegisterUserRequest;
-import com.google.common.base.Verify;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -97,8 +97,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<UserDto> getUsers() {
-        // TODO: sorting
-        return userRepository.findAll(PageRequest.of(0, 100, Sort.Direction.DESC, "id"))
+        return userRepository.findAll(PageRequest.of(0, 100, Sort.Direction.DESC, "score"))
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
@@ -122,9 +121,9 @@ public class UserService {
         boolean authIsServer = authentication != null
                 && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
 
-        Verify.verifyNotNull(registerUserRequest.getHuman());
+        Preconditions.checkNotNull(registerUserRequest.getHuman());
         // human can only register user as human, but server may register users as human or bot
-        Verify.verify(registerUserRequest.getHuman() || authIsServer);
+        Preconditions.checkArgument(registerUserRequest.getHuman() || authIsServer);
 
         // TODO: think about email check before allowing email input
         Optional<User> optionalUser =

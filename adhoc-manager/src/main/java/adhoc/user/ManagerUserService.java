@@ -35,6 +35,7 @@ import adhoc.user.request.RegisterUserRequest;
 import adhoc.user.request.UserJoinRequest;
 import adhoc.user.request.UserNavigateRequest;
 import adhoc.user.response.UserNavigateResponse;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -80,9 +81,9 @@ public class ManagerUserService {
         // existing user? verify token
         if (userJoinRequest.getUserId() != null) {
             user = userRepository.getReferenceById(userJoinRequest.getUserId());
-            Verify.verify(Objects.equals(user.getFaction().getId(), userJoinRequest.getFactionId()));
+            Preconditions.checkArgument(Objects.equals(user.getFaction().getId(), userJoinRequest.getFactionId()));
 
-            Verify.verifyNotNull(userJoinRequest.getToken());
+            Preconditions.checkNotNull(userJoinRequest.getToken());
             Verify.verifyNotNull(user.getToken());
 
             // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
@@ -108,7 +109,7 @@ public class ManagerUserService {
     private User autoRegister(UserJoinRequest userJoinRequest, Authentication authentication, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         User user = null;
 
-        Verify.verifyNotNull(userJoinRequest.getHuman());
+        Preconditions.checkNotNull(userJoinRequest.getHuman());
         if (!userJoinRequest.getHuman()) {
             Faction faction = factionRepository.getReferenceById(userJoinRequest.getFactionId());
             // bots should try to use existing bot account
@@ -135,7 +136,7 @@ public class ManagerUserService {
         Server sourceServer = serverRepository.getReferenceById(userNavigateRequest.getSourceServerId());
         Area destinationArea = areaRepository.getReferenceById(userNavigateRequest.getDestinationAreaId());
 
-        Verify.verify(user.getServer() == sourceServer);
+        Preconditions.checkArgument(user.getServer() == sourceServer);
 
         Server destinationServer = destinationArea.getServer();
         if (destinationServer == null) {

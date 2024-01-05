@@ -31,8 +31,7 @@ import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.UserRepository;
-import com.google.common.base.Verify;
-import com.google.common.collect.Sets;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -71,27 +70,27 @@ public class ManagerObjectiveService {
 
         Set<Integer> objectiveIndexes = new TreeSet<>();
         objectiveDtos.forEach(objectiveDto -> {
-            Verify.verify(Objects.equals(region.getId(), objectiveDto.getRegionId()));
+            Preconditions.checkArgument(Objects.equals(region.getId(), objectiveDto.getRegionId()));
 
             objectiveDto.getLinkedObjectiveIndexes().forEach(linkedObjectiveIndex -> {
-                // self loop not allowed
-                Verify.verify(!Objects.equals(objectiveDto.getIndex(), linkedObjectiveIndex));
+                Preconditions.checkArgument(!Objects.equals(objectiveDto.getIndex(), linkedObjectiveIndex), "self loop not allowed");
 
-                // linked objectives must have matching link back to this objective
-                objectiveDtos.stream()
-                        .filter(otherObjectiveDto -> Objects.equals(otherObjectiveDto.getIndex(), linkedObjectiveIndex))
-                        .forEach(linkedObjectiveDto ->
-                                Verify.verify(linkedObjectiveDto.getLinkedObjectiveIndexes().contains(objectiveDto.getIndex())));
+                Stream<ObjectiveDto> linkedObjectiveDtos = objectiveDtos.stream()
+                        .filter(otherObjectiveDto -> Objects.equals(otherObjectiveDto.getIndex(), linkedObjectiveIndex));
+
+                linkedObjectiveDtos.forEach(linkedObjectiveDto ->
+                        Preconditions.checkArgument(linkedObjectiveDto.getLinkedObjectiveIndexes().contains(objectiveDto.getIndex()),
+                                "linked objectives must have matching backlink"));
             });
 
-            boolean objectiveIndexIsUnique = objectiveIndexes.add(objectiveDto.getIndex());
-            Verify.verify(objectiveIndexIsUnique);
+            boolean objectiveIndexIsUnique =
+                    objectiveIndexes.add(objectiveDto.getIndex());
+            Preconditions.checkArgument(objectiveIndexIsUnique, "objective indexes must be unique");
         });
 
         try (Stream<Objective> objectivesToDelete = objectiveRepository.streamForUpdateByRegionAndIndexNotIn(region, objectiveIndexes)) {
             objectivesToDelete.forEach(objectiveToDelete -> {
                 log.info("Deleting unused objective: {}", objectiveToDelete);
-
                 objectiveRepository.delete(objectiveToDelete);
             });
         }
@@ -145,16 +144,17 @@ public class ManagerObjectiveService {
     Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
-        // update the linked objectives if not set yet or the objective indexes have changed
-        if (objective.getLinkedObjectives() == null ||
-                !objective.getLinkedObjectives().stream().map(Objective::getIndex).collect(Collectors.toSet())
-                        .equals(Sets.newHashSet(objectiveDto.getLinkedObjectiveIndexes()))) {
+        Set<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
+                .map(linkedObjectiveIndex ->
+                        objectiveRepository.getForUpdateByRegionAndIndex(region, linkedObjectiveIndex))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-            objective.setLinkedObjectives(objectiveDto.getLinkedObjectiveIndexes().stream()
-                    .map(linkedObjectiveIndex ->
-                            objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
-                    .collect(Collectors.toSet()));
+        if (objective.getLinkedObjectives() == null) {
+            objective.setLinkedObjectives(new LinkedHashSet<>());
         }
+
+        objective.getLinkedObjectives().retainAll(linkedObjectives);
+        objective.getLinkedObjectives().addAll(linkedObjectives);
 
         return objective;
     }

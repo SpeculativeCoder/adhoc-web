@@ -27,7 +27,7 @@ import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import com.google.common.base.Verify;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -58,29 +58,28 @@ public class ManagerAreaService {
 
         Set<Integer> areaIndexes = new TreeSet<>();
         areaDtos.forEach(areaDto -> {
-            Verify.verify(Objects.equals(region.getId(), areaDto.getRegionId()));
+            Preconditions.checkArgument(Objects.equals(region.getId(), areaDto.getRegionId()));
 
-            boolean areaIndexIsUnique = areaIndexes.add(areaDto.getIndex());
-            Verify.verify(areaIndexIsUnique);
+            boolean areaIndexIsUnique =
+                    areaIndexes.add(areaDto.getIndex());
+            Preconditions.checkArgument(areaIndexIsUnique, "area indexes must be unique");
         });
 
         try (Stream<Area> areasToDelete = areaRepository.streamForUpdateByRegionAndIndexNotIn(region, areaIndexes)) {
             areasToDelete.forEach(areaToDelete -> {
                 log.info("Deleting unused area: {}", areaToDelete);
-
                 // before deleting unused areas we must unlink any objectives that will become orphaned
                 objectiveRepository.updateAreaNullByArea(areaToDelete);
-
                 areaRepository.delete(areaToDelete);
             });
         }
 
-        return areaDtos.stream().map(areaDto -> {
-            Area area = areaRepository.save(toEntity(areaDto,
-                    areaRepository.findForUpdateByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)));
-
-            return areaService.toDto(area);
-        }).toList();
+        return areaDtos.stream()
+                .map(areaDto -> toEntity(areaDto,
+                        areaRepository.findForUpdateByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
+                .map(areaRepository::save)
+                .map(areaService::toDto)
+                .toList();
     }
 
     Area toEntity(AreaDto areaDto, Area area) {

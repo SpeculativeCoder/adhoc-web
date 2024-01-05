@@ -28,7 +28,7 @@ import adhoc.user.event.UserDefeatedUserEvent;
 import adhoc.user.request.UserJoinRequest;
 import adhoc.user.request.UserNavigateRequest;
 import adhoc.user.response.UserNavigateResponse;
-import com.google.common.base.Verify;
+import com.google.common.base.Preconditions;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -56,7 +56,7 @@ public class ManagerUserController {
     public UserDto putUser(
             @PathVariable("userId") Long userId,
             @Valid @RequestBody UserDto userDto) {
-        Verify.verify(Objects.equals(userId, userDto.getId()));
+        Preconditions.checkArgument(Objects.equals(userId, userDto.getId()));
 
         return managerUserService.updateUser(userDto);
     }
@@ -66,7 +66,7 @@ public class ManagerUserController {
     public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody UserNavigateRequest userNavigateRequest) {
-        Verify.verify(Objects.equals(serverId, userNavigateRequest.getSourceServerId()));
+        Preconditions.checkArgument(Objects.equals(serverId, userNavigateRequest.getSourceServerId()));
 
         return managerUserService.serverUserNavigate(userNavigateRequest);
     }
@@ -79,7 +79,7 @@ public class ManagerUserController {
             Authentication authentication,
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) {
-        Verify.verify(Objects.equals(serverId, userJoinRequest.getServerId()));
+        Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()));
 
         return managerUserService.serverUserJoin(userJoinRequest, authentication, httpServletRequest, httpServletResponse);
     }

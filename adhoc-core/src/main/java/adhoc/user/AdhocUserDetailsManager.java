@@ -23,8 +23,11 @@
 package adhoc.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -50,9 +53,10 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
     @Value("${adhoc.server.basic-auth.password:#{null}}")
     private Optional<String> serverBasicAuthPassword;
 
-    private final UserService userService;
-
     private final PasswordEncoder passwordEncoder;
+
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

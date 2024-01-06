@@ -31,17 +31,13 @@ import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -66,26 +62,21 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
-
-    private final HttpServletRequest httpServletRequest;
-    private final HttpServletResponse httpServletResponse;
-
+    
     private final CoreProperties coreProperties;
 
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
 
-    private final AuthenticationConfiguration authenticationConfiguration;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
+    private final RememberMeServices rememberMeServices;
+    private final AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
 
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private PasswordEncoder passwordEncoder;
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private SessionAuthenticationStrategy sessionAuthenticationStrategy;
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private RememberMeServices rememberMeServices;
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
+    private final HttpServletRequest httpServletRequest;
+    private final HttpServletResponse httpServletResponse;
 
     private final WebAuthenticationDetailsSource authenticationDetailsSource = new WebAuthenticationDetailsSource();
     private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
@@ -176,7 +167,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(tempPassword));
         }
 
-        Authentication authentication = getAuthenticationManager().authenticate(authenticationToken);
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         if (tempPassword != null) {
             user.setPassword(null);
@@ -281,13 +272,5 @@ public class UserService {
         user.setServer(registerUserRequest.getServerId() == null ? null : serverRepository.getReferenceById(registerUserRequest.getServerId()));
 
         return user;
-    }
-
-    private AuthenticationManager getAuthenticationManager() {
-        try {
-            return authenticationConfiguration.getAuthenticationManager();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

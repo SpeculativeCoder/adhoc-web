@@ -37,12 +37,10 @@ import adhoc.user.request.UserNavigateRequest;
 import adhoc.user.response.UserNavigateResponse;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,15 +67,13 @@ public class ManagerUserService {
                 toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }
 
-    public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest, Authentication authentication,
-                                                        HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        log.debug("userJoin: human={} userId={} serverId={} factionId={}",
-                userJoinRequest.getHuman(), userJoinRequest.getUserId(), userJoinRequest.getServerId(), userJoinRequest.getFactionId());
+    public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest) {
+        log.debug("userJoin: userId={} human={} factionId={} serverId={}",
+                userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
 
         Server server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
         User user;
-
         // existing user? verify token
         if (userJoinRequest.getUserId() != null) {
             user = userRepository.getReferenceById(userJoinRequest.getUserId());
@@ -93,20 +89,21 @@ public class ManagerUserService {
             }
 
         } else {
-            user = autoRegister(userJoinRequest, authentication, httpServletRequest, httpServletResponse);
+            user = autoRegister(userJoinRequest);
         }
 
         user.setServer(server);
         user.setLastJoin(LocalDateTime.now());
         user.setSeen(user.getLastJoin());
 
-        log.info("User Joined: userId={} userName={} factionId={} serverId={}",
-                user.getId(), user.getName(), user.getFaction().getIndex(), server.getId());
+        log.atLevel(user.getHuman() ? Level.INFO : Level.DEBUG)
+                .log("userJoin: userId={} userName={} userHuman={} factionId={} serverId={}",
+                        user.getId(), user.getName(), user.getHuman(), user.getFaction().getIndex(), server.getId());
 
         return ResponseEntity.ok(userService.toDetailDto(user));
     }
 
-    private User autoRegister(UserJoinRequest userJoinRequest, Authentication authentication, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    private User autoRegister(UserJoinRequest userJoinRequest) {
         User user = null;
 
         Preconditions.checkNotNull(userJoinRequest.getHuman());

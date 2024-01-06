@@ -29,8 +29,6 @@ import adhoc.user.request.UserJoinRequest;
 import adhoc.user.request.UserNavigateRequest;
 import adhoc.user.response.UserNavigateResponse;
 import com.google.common.base.Preconditions;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +36,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -75,13 +72,10 @@ public class ManagerUserController {
     @PreAuthorize("hasRole('SERVER')")
     public ResponseEntity<UserDetailDto> postServerUserJoin(
             @PathVariable("serverId") Long serverId,
-            @Valid @RequestBody UserJoinRequest userJoinRequest,
-            Authentication authentication,
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse) {
+            @Valid @RequestBody UserJoinRequest userJoinRequest) {
         Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()));
 
-        return managerUserService.serverUserJoin(userJoinRequest, authentication, httpServletRequest, httpServletResponse);
+        return managerUserService.serverUserJoin(userJoinRequest);
     }
 
     @MessageMapping("UserDefeatedUser")

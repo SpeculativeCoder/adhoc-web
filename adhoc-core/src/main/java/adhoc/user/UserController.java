@@ -22,7 +22,6 @@
 
 package adhoc.user;
 
-import adhoc.properties.CoreProperties;
 import adhoc.user.request.RegisterUserRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,8 +39,6 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
-
-    private final CoreProperties coreProperties;
 
     private final UserService userService;
 
@@ -76,25 +73,7 @@ public class UserController {
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) {
 
-        if (!coreProperties.getFeatureFlags().contains("development")) {
-            if (registerUserRequest.getEmail() != null) {
-                throw new UnsupportedOperationException("register email not supported yet");
-            }
-            if (registerUserRequest.getPassword() != null) {
-                throw new UnsupportedOperationException("register password not supported yet");
-            }
-            if (registerUserRequest.getName() != null) {
-                throw new UnsupportedOperationException("register name not supported yet");
-            }
-        }
 
-        log.info("register: name={} password*={} factionId={} remoteAddr={} userAgent={}",
-                registerUserRequest.getName(),
-                registerUserRequest.getPassword() == null ? null : "***",
-                registerUserRequest.getFactionId(),
-                httpServletRequest.getRemoteAddr(),
-                httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.]", "?"));
-
-        return userService.registerUser(registerUserRequest, authentication, httpServletRequest, httpServletResponse);
+        return userService.registerUser(registerUserRequest);
     }
 }

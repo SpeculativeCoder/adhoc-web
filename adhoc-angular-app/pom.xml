@@ -97,7 +97,7 @@
         <executions>
           <execution>
             <id>add built angular app as resource</id>
-            <phase>process-sources</phase>
+            <phase>generate-resources</phase>
             <goals>
               <goal>add-resource</goal>
             </goals>

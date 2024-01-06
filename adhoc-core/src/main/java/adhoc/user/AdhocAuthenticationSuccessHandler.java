@@ -46,6 +46,6 @@ public class AdhocAuthenticationSuccessHandler extends SavedRequestAwareAuthenti
 
         log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
 
-        userService.authenticationSuccess(userDetails.getUserId());
+        userService.onAuthenticationSuccess(userDetails.getUserId());
     }
 }

@@ -23,6 +23,7 @@
 package adhoc.user;
 
 import adhoc.faction.FactionRepository;
+import adhoc.properties.CoreProperties;
 import adhoc.server.ServerRepository;
 import adhoc.user.request.RegisterUserRequest;
 import com.google.common.base.Preconditions;
@@ -30,6 +31,7 @@ import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -65,35 +67,29 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final HttpServletRequest httpServletRequest;
+    private final HttpServletResponse httpServletResponse;
+
+    private final CoreProperties coreProperties;
+
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
 
     private final AuthenticationConfiguration authenticationConfiguration;
 
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private PasswordEncoder passwordEncoder;
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private SessionAuthenticationStrategy sessionAuthenticationStrategy;
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private RememberMeServices rememberMeServices;
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
+
     private final WebAuthenticationDetailsSource authenticationDetailsSource = new WebAuthenticationDetailsSource();
     private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
-
-    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
-    @Lazy
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
-    @Lazy
-    @Autowired
-    private SessionAuthenticationStrategy sessionAuthenticationStrategy;
-
-    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
-    @Lazy
-    @Autowired
-    private RememberMeServices rememberMeServices;
-
-    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
-    @Lazy
-    @Autowired
-    private AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
 
     @Transactional(readOnly = true)
     public List<UserDto> getUsers() {
@@ -116,14 +112,33 @@ public class UserService {
         return toDetailDto(userRepository.getReferenceById(userId));
     }
 
-    public ResponseEntity<UserDetailDto> registerUser(RegisterUserRequest registerUserRequest, Authentication authentication,
-                                                      HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        boolean authIsServer = authentication != null
+    public ResponseEntity<UserDetailDto> registerUser(RegisterUserRequest registerUserRequest) {
+        if (!coreProperties.getFeatureFlags().contains("development")) {
+            if (registerUserRequest.getEmail() != null) {
+                throw new UnsupportedOperationException("register email not supported yet");
+            }
+            if (registerUserRequest.getPassword() != null) {
+                throw new UnsupportedOperationException("register password not supported yet");
+            }
+            if (registerUserRequest.getName() != null) {
+                throw new UnsupportedOperationException("register name not supported yet");
+            }
+        }
+
+        log.info("register: name={} password*={} factionId={} remoteAddr={} userAgent={}",
+                registerUserRequest.getName(),
+                registerUserRequest.getPassword() == null ? null : "***",
+                registerUserRequest.getFactionId(),
+                httpServletRequest.getRemoteAddr(),
+                httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.]", "?"));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean authenticationIsServer = authentication != null
                 && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
 
         Preconditions.checkNotNull(registerUserRequest.getHuman());
         // human can only register user as human, but server may register users as human or bot
-        Preconditions.checkArgument(registerUserRequest.getHuman() || authIsServer);
+        Preconditions.checkArgument(registerUserRequest.getHuman() || authenticationIsServer);
 
         // TODO: think about email check before allowing email input
         Optional<User> optionalUser =
@@ -138,47 +153,48 @@ public class UserService {
         User user = createUser(registerUserRequest);
 
         // if not an auto-register from server - log them in too
-        if (!authIsServer) {
-
-            // TODO
-            String tempPassword = null;
-            if (user.getPassword() == null) {
-                tempPassword = UUID.randomUUID().toString();
-            }
-
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    UsernamePasswordAuthenticationToken.unauthenticated(
-                            registerUserRequest.getName(),
-                            tempPassword != null ? tempPassword : registerUserRequest.getPassword());
-            authenticationToken.setDetails(authenticationDetailsSource.buildDetails(httpServletRequest));
-
-            if (tempPassword != null) {
-                user.setPassword(passwordEncoder.encode(tempPassword));
-            }
-
-            authentication = getAuthenticationManager().authenticate(authenticationToken);
-
-            if (tempPassword != null) {
-                user.setPassword(null);
-            }
-
-            sessionAuthenticationStrategy.onAuthentication(authentication, httpServletRequest, httpServletResponse);
-
-            SecurityContext securityContext = securityContextHolderStrategy.createEmptyContext();
-            securityContext.setAuthentication(authentication);
-            securityContextHolderStrategy.setContext(securityContext);
-            securityContextRepository.saveContext(securityContext, httpServletRequest, httpServletResponse);
-
-            rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
-
-            adhocAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
+        if (!authenticationIsServer) {
+            autoLogin(registerUserRequest, user);
         }
 
         return ResponseEntity.ok(toDetailDto(user));
     }
 
-    User createUser(RegisterUserRequest registerUserRequest) {
+    private void autoLogin(RegisterUserRequest registerUserRequest, User user) {
+        String tempPassword = null;
+        if (user.getPassword() == null) {
+            tempPassword = UUID.randomUUID().toString();
+        }
 
+        UsernamePasswordAuthenticationToken authenticationToken =
+                UsernamePasswordAuthenticationToken.unauthenticated(
+                        registerUserRequest.getName(),
+                        tempPassword != null ? tempPassword : registerUserRequest.getPassword());
+        authenticationToken.setDetails(authenticationDetailsSource.buildDetails(httpServletRequest));
+
+        if (tempPassword != null) {
+            user.setPassword(passwordEncoder.encode(tempPassword));
+        }
+
+        Authentication authentication = getAuthenticationManager().authenticate(authenticationToken);
+
+        if (tempPassword != null) {
+            user.setPassword(null);
+        }
+
+        sessionAuthenticationStrategy.onAuthentication(authentication, httpServletRequest, httpServletResponse);
+
+        SecurityContext securityContext = securityContextHolderStrategy.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        securityContextHolderStrategy.setContext(securityContext);
+        securityContextRepository.saveContext(securityContext, httpServletRequest, httpServletResponse);
+
+        rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
+
+        adhocAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
+    }
+
+    User createUser(RegisterUserRequest registerUserRequest) {
         if (registerUserRequest.getName() == null) {
             String prefix = registerUserRequest.getHuman() ? "Anon" : "Bot";
             //if (registerUserRequest.getHuman()) {
@@ -198,7 +214,7 @@ public class UserService {
         //    user.setName("Bot" + user.getId());
         //}
 
-        log.debug("Created User: user={} password*={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
+        log.debug("createUser: user={} password*={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
 
         return user;
     }
@@ -207,15 +223,14 @@ public class UserService {
      * Sets a new "token" every time a user logs in.
      * The "token" is used when logging into an Unreal server to make sure the user is who they say they are.
      */
-    public void authenticationSuccess(Long userId) {
+    void onAuthenticationSuccess(Long userId) {
         User user = userRepository.getReferenceById(userId);
 
         UUID newToken = UUID.randomUUID();
         user.setToken(newToken);
-
         user.setLastLogin(LocalDateTime.now());
 
-        log.debug("authenticationSuccess: id={} name={} token={}", user.getId(), user.getName(), user.getToken());
+        log.debug("onAuthenticationSuccess: id={} name={} human={} token={}", user.getId(), user.getName(), user.getHuman(), user.getToken());
     }
 
     UserDto toDto(User user) {

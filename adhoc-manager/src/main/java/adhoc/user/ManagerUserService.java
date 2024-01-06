@@ -178,7 +178,7 @@ public class ManagerUserService {
         log.trace("Decaying user scores...");
 
         // TODO: multiplier property
-        userRepository.updateScoreMultiply(0.999F);
+        userRepository.updateScoreMultiply(0.98F);
     }
 
     public void purgeOldUsers() {

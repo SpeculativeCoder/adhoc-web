@@ -79,13 +79,13 @@ public class ManagerUserService {
             user = userRepository.getReferenceById(userJoinRequest.getUserId());
             Preconditions.checkArgument(Objects.equals(user.getFaction().getId(), userJoinRequest.getFactionId()));
 
-            Preconditions.checkNotNull(userJoinRequest.getToken());
+            Preconditions.checkArgument(userJoinRequest.getToken() != null);
             Verify.verifyNotNull(user.getToken());
 
             // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
             if (!Objects.equals(user.getToken().toString(), userJoinRequest.getToken())) {
                 log.warn("Token {} mismatch {} for user {}", userJoinRequest.getToken(), user.getToken(), user);
-                throw new IllegalArgumentException("token mismatch");
+                throw new IllegalArgumentException("Token mismatch");
             }
 
         } else {
@@ -106,7 +106,7 @@ public class ManagerUserService {
     private User autoRegister(UserJoinRequest userJoinRequest) {
         User user = null;
 
-        Preconditions.checkNotNull(userJoinRequest.getHuman());
+        Verify.verifyNotNull(userJoinRequest.getHuman());
         if (!userJoinRequest.getHuman()) {
             Faction faction = factionRepository.getReferenceById(userJoinRequest.getFactionId());
             // bots should try to use existing bot account

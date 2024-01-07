@@ -102,18 +102,6 @@ public class UserService {
     }
 
     public UserDetailDto registerUser(RegisterUserRequest registerUserRequest) {
-        if (!coreProperties.getFeatureFlags().contains("development")) {
-            if (registerUserRequest.getEmail() != null) {
-                throw new UnsupportedOperationException("register email not supported yet");
-            }
-            if (registerUserRequest.getPassword() != null) {
-                throw new UnsupportedOperationException("register password not supported yet");
-            }
-            if (registerUserRequest.getName() != null) {
-                throw new UnsupportedOperationException("register name not supported yet");
-            }
-        }
-
         log.info("registerUser: name={} password*={} factionId={} remoteAddr={} userAgent={}",
                 registerUserRequest.getName(),
                 registerUserRequest.getPassword() == null ? null : "***",
@@ -121,13 +109,17 @@ public class UserService {
                 httpServletRequest.getRemoteAddr(),
                 httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?"));
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean authenticationIsServer = authentication != null
-                && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
+        if (!coreProperties.getFeatureFlags().contains("development")) {
+            Preconditions.checkArgument(registerUserRequest.getEmail() == null, "register email not supported yet");
+            Preconditions.checkArgument(registerUserRequest.getPassword() == null, "register password not supported yet");
+            Preconditions.checkArgument(registerUserRequest.getName() == null, "register name not supported yet");
+        }
 
-        Preconditions.checkNotNull(registerUserRequest.getHuman());
+        boolean authenticatedAsServer = isAuthenticatedAsServer();
+
+        Preconditions.checkArgument(registerUserRequest.getHuman() != null);
         // human can only register user as human, but server may register users as human or bot
-        Preconditions.checkArgument(registerUserRequest.getHuman() || authenticationIsServer);
+        Preconditions.checkArgument(registerUserRequest.getHuman() || authenticatedAsServer);
 
         // TODO: think about existing name/email check before allowing name/email input
         Optional<User> existingUser = registerUserRequest.getEmail() == null
@@ -135,7 +127,7 @@ public class UserService {
                 : userRepository.findByNameOrEmail(registerUserRequest.getName(), registerUserRequest.getEmail());
         if (existingUser.isPresent()) {
             log.warn("User name or email already in use: name={} email={}", registerUserRequest.getName(), registerUserRequest.getEmail());
-            throw new IllegalArgumentException("user name or email already in use");
+            throw new IllegalArgumentException("User name or email already in use");
         }
 
         if (registerUserRequest.getName() == null) {
@@ -150,13 +142,19 @@ public class UserService {
         User user = userRepository.save(toEntity(registerUserRequest));
 
         // if not an auto-register from server - log them in too
-        if (!authenticationIsServer) {
+        if (!authenticatedAsServer) {
             autoLogin(registerUserRequest, user);
         }
 
         log.debug("registerUser: user={} password?={} token={}", user, user.getPassword() != null, user.getToken());
 
         return toDetailDto(user);
+    }
+
+    private static boolean isAuthenticatedAsServer() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null
+                && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
     }
 
     private void autoLogin(RegisterUserRequest registerUserRequest, User user) {

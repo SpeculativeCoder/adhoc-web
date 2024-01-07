@@ -34,8 +34,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -62,7 +60,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
-    
+
     private final CoreProperties coreProperties;
 
     private final UserRepository userRepository;
@@ -103,7 +101,7 @@ public class UserService {
         return toDetailDto(userRepository.getReferenceById(userId));
     }
 
-    public ResponseEntity<UserDetailDto> registerUser(RegisterUserRequest registerUserRequest) {
+    public UserDetailDto registerUser(RegisterUserRequest registerUserRequest) {
         if (!coreProperties.getFeatureFlags().contains("development")) {
             if (registerUserRequest.getEmail() != null) {
                 throw new UnsupportedOperationException("register email not supported yet");
@@ -116,12 +114,12 @@ public class UserService {
             }
         }
 
-        log.info("register: name={} password*={} factionId={} remoteAddr={} userAgent={}",
+        log.info("registerUser: name={} password*={} factionId={} remoteAddr={} userAgent={}",
                 registerUserRequest.getName(),
                 registerUserRequest.getPassword() == null ? null : "***",
                 registerUserRequest.getFactionId(),
                 httpServletRequest.getRemoteAddr(),
-                httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.]", "?"));
+                httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean authenticationIsServer = authentication != null
@@ -131,24 +129,34 @@ public class UserService {
         // human can only register user as human, but server may register users as human or bot
         Preconditions.checkArgument(registerUserRequest.getHuman() || authenticationIsServer);
 
-        // TODO: think about email check before allowing email input
-        Optional<User> optionalUser =
-                registerUserRequest.getEmail() == null
-                        ? userRepository.findByName(registerUserRequest.getName())
-                        : userRepository.findByNameOrEmail(registerUserRequest.getName(), registerUserRequest.getEmail());
-        if (optionalUser.isPresent()) {
-            log.warn("Can't register user as name or email already in use: name={} email={}", registerUserRequest.getName(), registerUserRequest.getEmail());
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        // TODO: think about existing name/email check before allowing name/email input
+        Optional<User> existingUser = registerUserRequest.getEmail() == null
+                ? userRepository.findByName(registerUserRequest.getName())
+                : userRepository.findByNameOrEmail(registerUserRequest.getName(), registerUserRequest.getEmail());
+        if (existingUser.isPresent()) {
+            log.warn("User name or email already in use: name={} email={}", registerUserRequest.getName(), registerUserRequest.getEmail());
+            throw new IllegalArgumentException("user name or email already in use");
         }
 
-        User user = createUser(registerUserRequest);
+        if (registerUserRequest.getName() == null) {
+            String prefix = registerUserRequest.getHuman() ? "Anon" : "Bot";
+            registerUserRequest.setName(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
+        }
+
+        if (registerUserRequest.getFactionId() == null) {
+            registerUserRequest.setFactionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
+        }
+
+        User user = userRepository.save(toEntity(registerUserRequest));
 
         // if not an auto-register from server - log them in too
         if (!authenticationIsServer) {
             autoLogin(registerUserRequest, user);
         }
 
-        return ResponseEntity.ok(toDetailDto(user));
+        log.debug("registerUser: user={} password?={} token={}", user, user.getPassword() != null, user.getToken());
+
+        return toDetailDto(user);
     }
 
     private void autoLogin(RegisterUserRequest registerUserRequest, User user) {
@@ -183,31 +191,6 @@ public class UserService {
         rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
 
         adhocAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
-    }
-
-    User createUser(RegisterUserRequest registerUserRequest) {
-        if (registerUserRequest.getName() == null) {
-            String prefix = registerUserRequest.getHuman() ? "Anon" : "Bot";
-            //if (registerUserRequest.getHuman()) {
-            registerUserRequest.setName(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
-            //} else {
-            //    registerUserRequest.setName("Bot"); // NOTE: name will be updated below once database id is assigned
-            //}
-        }
-
-        if (registerUserRequest.getFactionId() == null) {
-            registerUserRequest.setFactionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
-        }
-
-        User user = userRepository.save(toEntity(registerUserRequest));
-
-        //if (!user.getHuman() && "Bot".equals(user.getName())) {
-        //    user.setName("Bot" + user.getId());
-        //}
-
-        log.debug("createUser: user={} password*={} token={}", user, user.getPassword() == null ? null : "***", user.getToken());
-
-        return user;
     }
 
     /**

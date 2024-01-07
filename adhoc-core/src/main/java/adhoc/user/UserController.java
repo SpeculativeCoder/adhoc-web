@@ -74,6 +74,6 @@ public class UserController {
             HttpServletResponse httpServletResponse) {
 
 
-        return userService.registerUser(registerUserRequest);
+        return ResponseEntity.ok(userService.registerUser(registerUserRequest));
     }
 }

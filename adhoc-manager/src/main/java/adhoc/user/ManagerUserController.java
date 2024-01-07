@@ -75,7 +75,7 @@ public class ManagerUserController {
             @Valid @RequestBody UserJoinRequest userJoinRequest) {
         Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()));
 
-        return managerUserService.serverUserJoin(userJoinRequest);
+        return ResponseEntity.ok(managerUserService.serverUserJoin(userJoinRequest));
     }
 
     @MessageMapping("UserDefeatedUser")

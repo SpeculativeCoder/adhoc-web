@@ -67,7 +67,7 @@ public class ManagerUserService {
                 toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }
 
-    public ResponseEntity<UserDetailDto> serverUserJoin(UserJoinRequest userJoinRequest) {
+    public UserDetailDto serverUserJoin(UserJoinRequest userJoinRequest) {
         log.debug("userJoin: userId={} human={} factionId={} serverId={}",
                 userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
 
@@ -85,7 +85,7 @@ public class ManagerUserService {
             // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
             if (!Objects.equals(user.getToken().toString(), userJoinRequest.getToken())) {
                 log.warn("Token {} mismatch {} for user {}", userJoinRequest.getToken(), user.getToken(), user);
-                return ResponseEntity.unprocessableEntity().build();
+                throw new IllegalArgumentException("token mismatch");
             }
 
         } else {
@@ -100,7 +100,7 @@ public class ManagerUserService {
                 .log("userJoin: userId={} userName={} userHuman={} factionId={} serverId={}",
                         user.getId(), user.getName(), user.getHuman(), user.getFaction().getIndex(), server.getId());
 
-        return ResponseEntity.ok(userService.toDetailDto(user));
+        return userService.toDetailDto(user);
     }
 
     private User autoRegister(UserJoinRequest userJoinRequest) {
@@ -122,7 +122,9 @@ public class ManagerUserService {
                     .serverId(userJoinRequest.getServerId())
                     .build();
 
-            user = userService.createUser(registerUserRequest);
+            UserDetailDto userDetailDto = userService.registerUser(registerUserRequest);
+
+            user = userRepository.getReferenceById(userDetailDto.getId());
         }
 
         return user;

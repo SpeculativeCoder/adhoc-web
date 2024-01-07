@@ -162,7 +162,9 @@ public class ManagerUserService {
 
     public UserDefeatedUserEvent handleUserDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
         User user = userRepository.getForUpdateById(serverUserDefeatedUserEvent.getUserId());
-        user.setScore(user.getScore() + 1);
+
+        float scoreToAdd = user.getHuman() ? 1 : 0.01f;
+        user.setScore(user.getScore() + scoreToAdd);
 
         User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
         return new UserDefeatedUserEvent(
@@ -173,7 +175,9 @@ public class ManagerUserService {
     // TODO
     public void handleUserDefeatedBot(UserDefeatedBotEvent userDefeatedBotEvent) {
         User user = userRepository.getForUpdateById(userDefeatedBotEvent.getUserId());
-        user.setScore(user.getScore() + 1);
+
+        float scoreToAdd = user.getHuman() ? 1 : 0.01f;
+        user.setScore(user.getScore() + scoreToAdd);
     }
 
     public void decayUserScores() {

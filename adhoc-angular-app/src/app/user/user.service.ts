@@ -53,7 +53,6 @@ export class UserService {
     this.loginUrl = `${baseUrl}/login`;
 
     this.stomp.observeEvent('UserDefeatedUser').subscribe(body => this.handleUserDefeatedUser(body['userId'], body['defeatedUserId']));
-    this.stomp.observeEvent('UserDefeatedBot').subscribe(body => this.handleUserDefeatedBot(body['userId']));
     this.stomp
       .observeEvent('FactionScoring')
       .subscribe((body: any) => this.handleFactionScoring(body['factionAwardedScores']));
@@ -110,7 +109,8 @@ export class UserService {
       withCredentials: true,
       params: {
         'remember-me': userRegisterRequest.rememberMe || false
-      }}).pipe(
+      }
+    }).pipe(
       mergeMap(user => {
         this.currentUser$.next(user);
         return of(this.currentUser$.value);
@@ -149,10 +149,6 @@ export class UserService {
     this.stomp.send('UserDefeatedUser', {userId: user.id, defeatedUserId: defeatedUser.id});
   }
 
-  userDefeatedBot(user: User) {
-    this.stomp.send('UserDefeatedBot', {userId: user.id});
-  }
-
   handleUserDefeatedUser(userId: number, defeatedUserId: number) {
     // let user: User;
     // let defeatedUser: User;
@@ -165,20 +161,7 @@ export class UserService {
     //   }
     // });
     // user.score++;
-    // this.messages.add(`${user.name} killed ${defeatedUser.name}`);
-    this.messages.addMessage(`User ${userId} killed user ${defeatedUserId}`);
-  }
-
-  handleUserDefeatedBot(userId: number) {
-    // let user: User;
-    // this.users.map(user => {
-    //   if (user.id === userId) {
-    //     user = user;
-    //   }
-    // });
-    // user.score++;
-    // this.messages.add(`${user.name} killed a bot`);
-    this.messages.addMessage(`User ${userId} killed a bot`);
+    this.messages.addMessage(`User ${userId} defeated user ${defeatedUserId}`);
   }
 
   handleFactionScoring(factionIdToAwardedScore: any) {

@@ -70,12 +70,6 @@ export class UsersComponent implements OnInit {
     this.userService.userDefeatedUser(user, defeatedUser);
   }
 
-  userDefeatedBot() {
-    const [user] = this.selectedUsers;
-    this.userService.userDefeatedBot(user);
-  }
-
-
   sortBy(sort: SortEvent) {
     // console.log('sortBy');
     // console.log(sort);

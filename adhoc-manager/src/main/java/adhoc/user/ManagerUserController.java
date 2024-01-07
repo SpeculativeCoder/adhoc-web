@@ -23,7 +23,6 @@
 package adhoc.user;
 
 import adhoc.user.event.ServerUserDefeatedUserEvent;
-import adhoc.user.event.UserDefeatedBotEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
 import adhoc.user.request.UserJoinRequest;
 import adhoc.user.request.UserNavigateRequest;
@@ -89,15 +88,5 @@ public class ManagerUserController {
 
         log.debug("Sending: {}", userDefeatedUserEvent);
         return userDefeatedUserEvent;
-    }
-
-    // TODO
-    @MessageMapping("UserDefeatedBot")
-    @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public void handleUserDefeatedBot(
-            @Valid @RequestBody UserDefeatedBotEvent event) {
-        log.debug("Handling: {}", event);
-
-        managerUserService.handleUserDefeatedBot(event);
     }
 }

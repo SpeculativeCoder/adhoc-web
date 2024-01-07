@@ -29,7 +29,6 @@ import adhoc.faction.FactionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.event.ServerUserDefeatedUserEvent;
-import adhoc.user.event.UserDefeatedBotEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
 import adhoc.user.request.RegisterUserRequest;
 import adhoc.user.request.UserJoinRequest;
@@ -170,14 +169,6 @@ public class ManagerUserService {
         return new UserDefeatedUserEvent(
                 user.getId(), user.getVersion(), user.getName(), user.getHuman(),
                 defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.getHuman());
-    }
-
-    // TODO
-    public void handleUserDefeatedBot(UserDefeatedBotEvent userDefeatedBotEvent) {
-        User user = userRepository.getForUpdateById(userDefeatedBotEvent.getUserId());
-
-        float scoreToAdd = user.getHuman() ? 1 : 0.01f;
-        user.setScore(user.getScore() + scoreToAdd);
     }
 
     public void decayUserScores() {

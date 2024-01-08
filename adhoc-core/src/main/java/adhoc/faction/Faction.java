@@ -22,16 +22,14 @@
 
 package adhoc.faction;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.*;
 
 /**
  * Each user is associated with a faction.
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(name = "faction__index", columnNames = {"index"}))
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor

@@ -89,7 +89,7 @@
             </column>
             <column name="version" type="BIGINT"/>
             <column name="index" type="INTEGER">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true" validateUnique="true" uniqueConstraintName="faction__index"/>
             </column>
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -204,6 +204,7 @@
         <addForeignKeyConstraint baseTableName="area" baseColumnNames="server_id" constraintName="fk7n82egpflqj46utyqnk17qo16" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="server"
                                  validate="true"/>
+        <addUniqueConstraint tableName="area" columnNames="region_id, index" validate="true" constraintName="area__region_id__index"/>
 
         <createSequence sequenceName="objective_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="objective">
@@ -245,6 +246,7 @@
         <addForeignKeyConstraint baseTableName="objective" baseColumnNames="area_id" constraintName="fkunaeqnn9mkt8243jyhds3iqh" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="area"
                                  validate="true"/>
+        <addUniqueConstraint tableName="objective" columnNames="region_id, index" validate="true" constraintName="objective__region_id__index"/>
 
         <createTable tableName="objective_linked_objectives">
             <column name="objective_id" type="BIGINT">

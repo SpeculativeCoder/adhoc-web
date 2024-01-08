@@ -69,7 +69,7 @@ public class ManagerFactionService {
         log.trace("Decaying faction scores...");
 
         // TODO: multiplier property
-        factionRepository.updateScoreMultiply(0.98F);
+        factionRepository.updateScoreMultiply(0.99F);
     }
 
     Faction toEntity(FactionDto factionDto, Faction faction) {

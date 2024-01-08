@@ -34,9 +34,10 @@ import java.util.Set;
  * An objective that can be taken by a faction.
  */
 @Entity
+@SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 50)
+@Table(uniqueConstraints = @UniqueConstraint(name = "objective__region_id__index", columnNames = {"region_id", "index"}))
 //@DynamicInsert
 //@DynamicUpdate
-@SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 50)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

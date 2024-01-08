@@ -159,7 +159,7 @@ public class ManagerUserService {
         User user = userRepository.getForUpdateById(serverUserDefeatedUserEvent.getUserId());
         User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
 
-        float scoreToAdd = user.getHuman() ? 1 : 0.01f;
+        float scoreToAdd = user.getHuman() ? 1 : 0.1f;
         user.setScore(user.getScore() + scoreToAdd);
 
         return new UserDefeatedUserEvent(
@@ -171,7 +171,7 @@ public class ManagerUserService {
         log.trace("Decaying user scores...");
 
         // TODO: multiplier property
-        userRepository.updateScoreMultiply(0.98F);
+        userRepository.updateScoreMultiply(0.99F);
     }
 
     public void purgeOldUsers() {

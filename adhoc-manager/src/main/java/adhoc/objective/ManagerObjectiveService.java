@@ -134,7 +134,9 @@ public class ManagerObjectiveService {
         }
 
         // NOTE: linked objectives will be set in stage 2
-        //objective.setLinkedObjectives(new ArrayList<>());
+        if (objective.getLinkedObjectives() == null) {
+            objective.setLinkedObjectives(new LinkedHashSet<>());
+        }
 
         objective.setArea(areaRepository.getByRegionAndIndex(region, objectiveDto.getAreaIndex()));
 
@@ -146,12 +148,8 @@ public class ManagerObjectiveService {
 
         Set<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
                 .map(linkedObjectiveIndex ->
-                        objectiveRepository.getForUpdateByRegionAndIndex(region, linkedObjectiveIndex))
+                        objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        if (objective.getLinkedObjectives() == null) {
-            objective.setLinkedObjectives(new LinkedHashSet<>());
-        }
 
         objective.getLinkedObjectives().retainAll(linkedObjectives);
         objective.getLinkedObjectives().addAll(linkedObjectives);
@@ -161,7 +159,7 @@ public class ManagerObjectiveService {
 
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
         userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(1, true, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
-        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(0.01f, false, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
+        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(0.1f, false, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
 
         Objective objective = objectiveRepository.getForUpdateById(objectiveTakenEvent.getObjectiveId());
         Faction faction = factionRepository.getForUpdateById(objectiveTakenEvent.getFactionId());

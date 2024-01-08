@@ -58,6 +58,7 @@ public class ManagerHsqldbConfig {
                 ";check_props=true" +
                 ";sql.restrict_exec=true" +
                 ";sql.enforce_names=true" +
+                ";sql.enforce_refs=true" +
                 ";sql.enforce_types=true");
         server.setNoSystemExit(true);
         server.setSilent(true); // TODO

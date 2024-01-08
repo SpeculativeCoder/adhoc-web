@@ -61,7 +61,7 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(AWARD_FACTION_SCORES).withIdentity(AWARD_FACTION_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10))
+                        .repeatForever().withIntervalInSeconds(5))
                 .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 
@@ -70,8 +70,8 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(DECAY_FACTION_SCORES).withIdentity(DECAY_FACTION_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInMinutes(5))
-                .startAt(Date.from(Instant.now().plusSeconds(30))).build();
+                        .repeatForever().withIntervalInSeconds(5))
+                .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 
     @Bean
@@ -79,8 +79,8 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(DECAY_USER_SCORES).withIdentity(DECAY_USER_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInMinutes(5))
-                .startAt(Date.from(Instant.now().plusSeconds(40))).build();
+                        .repeatForever().withIntervalInSeconds(5))
+                .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 
     @Bean
@@ -88,8 +88,8 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(PURGE_OLD_USERS).withIdentity(PURGE_OLD_USERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInMinutes(10))
-                .startAt(Date.from(Instant.now().plusSeconds(50))).build();
+                        .repeatForever().withIntervalInSeconds(5))
+                .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 
     @Bean
@@ -97,8 +97,8 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(PURGE_OLD_PAWNS).withIdentity(PURGE_OLD_PAWNS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInMinutes(1))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                        .repeatForever().withIntervalInSeconds(5))
+                .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 
     @Bean

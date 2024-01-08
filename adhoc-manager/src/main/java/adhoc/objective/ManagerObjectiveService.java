@@ -160,13 +160,14 @@ public class ManagerObjectiveService {
     }
 
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
-        userRepository.updateScoreAddByFactionIdAndSeenAfter(1, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
+        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(1, true, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
+        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(0.01f, false, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
 
-        Faction faction = factionRepository.getForUpdateById(objectiveTakenEvent.getFactionId());
         Objective objective = objectiveRepository.getForUpdateById(objectiveTakenEvent.getObjectiveId());
+        Faction faction = factionRepository.getForUpdateById(objectiveTakenEvent.getFactionId());
 
-        faction.setScore(faction.getScore() + 1);
         objective.setFaction(faction);
+        faction.setScore(faction.getScore() + 1);
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
     }

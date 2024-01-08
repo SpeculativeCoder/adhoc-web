@@ -32,6 +32,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -102,12 +103,14 @@ public class UserService {
     }
 
     public UserDetailDto registerUser(RegisterUserRequest registerUserRequest) {
-        log.info("registerUser: name={} password*={} factionId={} remoteAddr={} userAgent={}",
-                registerUserRequest.getName(),
-                registerUserRequest.getPassword() == null ? null : "***",
-                registerUserRequest.getFactionId(),
-                httpServletRequest.getRemoteAddr(),
-                httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?"));
+        log.atLevel(Optional.ofNullable(registerUserRequest.getHuman()).orElse(false) ? Level.INFO : Level.DEBUG)
+                .log("registerUser: name={} password?={} human={} factionId={} remoteAddr={} userAgent={}",
+                        registerUserRequest.getName(),
+                        registerUserRequest.getPassword() != null,
+                        registerUserRequest.getHuman(),
+                        registerUserRequest.getFactionId(),
+                        httpServletRequest.getRemoteAddr(),
+                        httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?"));
 
         if (!coreProperties.getFeatureFlags().contains("development")) {
             Preconditions.checkArgument(registerUserRequest.getEmail() == null, "register email not supported yet");
@@ -146,7 +149,7 @@ public class UserService {
             autoLogin(registerUserRequest, user);
         }
 
-        log.debug("registerUser: user={} password?={} token={}", user, user.getPassword() != null, user.getToken());
+        log.debug("registerUser: Success: user={} password?={} token={}", user, user.getPassword() != null, user.getToken());
 
         return toDetailDto(user);
     }

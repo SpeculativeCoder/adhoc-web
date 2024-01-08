@@ -24,8 +24,6 @@ package adhoc.user;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
-import adhoc.faction.Faction;
-import adhoc.faction.FactionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.event.ServerUserDefeatedUserEvent;
@@ -55,7 +53,6 @@ import java.util.TreeSet;
 public class ManagerUserService {
 
     private final UserRepository userRepository;
-    private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
     private final AreaRepository areaRepository;
 
@@ -107,11 +104,10 @@ public class ManagerUserService {
 
         Verify.verifyNotNull(userJoinRequest.getHuman());
         if (!userJoinRequest.getHuman()) {
-            Faction faction = factionRepository.getReferenceById(userJoinRequest.getFactionId());
             // bots should try to use existing bot account
             // TODO: avoid using seen (should use serverId)
-            user = userRepository.findFirstByHumanFalseAndFactionAndSeenBefore(
-                    faction, LocalDateTime.now().minusMinutes(1)).orElse(null);
+            user = userRepository.findFirstByHumanFalseAndFactionIdAndSeenBefore(
+                    userJoinRequest.getFactionId(), LocalDateTime.now().minusMinutes(1)).orElse(null);
         }
 
         if (user == null) {
@@ -161,11 +157,11 @@ public class ManagerUserService {
 
     public UserDefeatedUserEvent handleUserDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
         User user = userRepository.getForUpdateById(serverUserDefeatedUserEvent.getUserId());
+        User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
 
         float scoreToAdd = user.getHuman() ? 1 : 0.01f;
         user.setScore(user.getScore() + scoreToAdd);
 
-        User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
         return new UserDefeatedUserEvent(
                 user.getId(), user.getVersion(), user.getName(), user.getHuman(),
                 defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.getHuman());

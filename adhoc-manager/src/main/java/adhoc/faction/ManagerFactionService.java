@@ -23,6 +23,7 @@
 package adhoc.faction;
 
 import adhoc.objective.ObjectiveRepository;
+import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class ManagerFactionService {
 
     private final FactionRepository factionRepository;
     private final ObjectiveRepository objectiveRepository;
+    private final UserRepository userRepository;
 
     private final FactionService factionService;
 
@@ -50,9 +52,17 @@ public class ManagerFactionService {
         log.trace("Awarding faction scores...");
 
         try (Stream<Faction> factions = factionRepository.streamForUpdateBy()) {
-            factions.forEach(faction ->
-                    faction.setScore(faction.getScore() + (0.01f * objectiveRepository.countByFaction(faction))));
+            factions.forEach(faction -> {
+                int count = objectiveRepository.countByFaction(faction);
+
+                faction.setScore(faction.getScore() + 0.01f * count);
+            });
         }
+
+        //userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
+        //        objectiveCount, true, factionId, LocalDateTime.now().minusMinutes(15));
+        //userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
+        //        0.01f * objectiveCount, false, factionId, LocalDateTime.now().minusMinutes(15));
     }
 
     public void decayFactionScores() {

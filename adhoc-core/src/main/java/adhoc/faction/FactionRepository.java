@@ -32,10 +32,6 @@ public interface FactionRepository extends JpaRepository<Faction, Long> {
     Faction getByIndex(Integer index);
 
     @Modifying
-    @Query("update Faction set version = version + 1, score = score + :scoreAdd where id = :factionId")
-    void updateScoreAddByFactionId(@Param("scoreAdd") float scoreAdd, @Param("factionId") Long factionId);
-
-    @Modifying
     @Query("update Faction set version = version + 1, score = score * :scoreMultiply")
     void updateScoreMultiply(@Param("scoreMultiply") float scoreMultiply);
 }

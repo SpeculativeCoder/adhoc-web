@@ -165,9 +165,6 @@ public class ManagerObjectiveService {
     @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
-        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(1.0f, true, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
-        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(0.1f, false, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
-
         Objective objective = objectiveRepository.getReferenceById(objectiveTakenEvent.getObjectiveId());
         Faction faction = factionRepository.getReferenceById(objectiveTakenEvent.getFactionId());
 
@@ -175,5 +172,9 @@ public class ManagerObjectiveService {
         faction.setScore(faction.getScore() + 1.0f);
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
+
+        LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
+        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(1.0f, true, objectiveTakenEvent.getFactionId(), seenAfter);
+        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(0.1f, false, objectiveTakenEvent.getFactionId(), seenAfter);
     }
 }

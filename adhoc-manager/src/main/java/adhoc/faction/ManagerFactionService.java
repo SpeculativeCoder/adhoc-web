@@ -61,19 +61,21 @@ public class ManagerFactionService {
         Map<Faction, Integer> factionsNumObjectives = new LinkedHashMap<>();
 
         for (Faction faction : factionRepository.findAll()) {
-            factionsNumObjectives.put(faction, objectiveRepository.countByFaction(faction));
+            int numObjectives = objectiveRepository.countByFaction(faction);
+            factionsNumObjectives.put(faction, numObjectives);
+
+            faction.setScore(faction.getScore() + 0.1f * numObjectives);
         }
 
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(15);
         for (Map.Entry<Faction, Integer> entry : factionsNumObjectives.entrySet()) {
             Faction faction = entry.getKey();
             int numObjectives = entry.getValue();
 
-            factionRepository.updateScoreAddByFactionId(0.1f * numObjectives, faction.getId());
-
             userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
-                    0.1f * numObjectives, true, faction.getId(), LocalDateTime.now().minusMinutes(15));
+                    0.1f * numObjectives, true, faction.getId(), seenBefore);
             userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
-                    0.01f * numObjectives, false, faction.getId(), LocalDateTime.now().minusMinutes(15));
+                    0.01f * numObjectives, false, faction.getId(), seenBefore);
         }
     }
 

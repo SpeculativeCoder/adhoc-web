@@ -23,9 +23,7 @@
 package adhoc.area;
 
 import adhoc.region.Region;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -35,9 +33,7 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
 
     Area getByRegionAndIndex(Region region, Integer index);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Area> findForUpdateByRegionAndIndex(Region region, Integer index);
+    Optional<Area> findByRegionAndIndex(Region region, Integer index);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Area> streamForUpdateByRegionAndIndexNotIn(Region region, Collection<Integer> indexNotIn);
+    Stream<Area> streamByRegionAndIndexNotIn(Region region, Collection<Integer> indexNotIn);
 }

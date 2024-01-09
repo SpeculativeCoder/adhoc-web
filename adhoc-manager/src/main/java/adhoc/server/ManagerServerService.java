@@ -36,7 +36,6 @@ import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.world.ManagerWorldService;
 import com.google.common.collect.Sets;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -99,7 +98,7 @@ public class ManagerServerService {
     }
 
     public void handleServerStarted(ServerStartedEvent serverStartedEvent) {
-        Server server = serverRepository.getForUpdateById(serverStartedEvent.getServerId());
+        Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
         server.setStatus(ServerStatus.ACTIVE);
         //server.setPrivateIp(serverStartedEvent.getPrivateIp());
@@ -142,7 +141,6 @@ public class ManagerServerService {
             // TODO: assign areas to servers based on player count etc. - for now we just do one server per area
             List<List<Area>> areaGroups = new ArrayList<>();
             for (Area area : region.getAreas()) {
-                entityManager.lock(area, LockModeType.PESSIMISTIC_WRITE);
                 areaGroups.add(Collections.singletonList(area));
             }
 
@@ -157,7 +155,7 @@ public class ManagerServerService {
 
         // TODO: other servers may already be hosting some of the other areas so can't just check first area (but we do for now)
         Area firstArea = areaGroup.get(0);
-        Server server = serverRepository.findFirstForUpdateByAreasContains(firstArea).orElseGet(Server::new);
+        Server server = serverRepository.findFirstByAreasContains(firstArea).orElseGet(Server::new);
 
         if (server.getRegion() == null || !region.getId().equals(server.getRegion().getId())) {
             server.setRegion(region);
@@ -214,7 +212,7 @@ public class ManagerServerService {
         managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
 
         Set<ServerTask> tasksToKeep = Sets.newLinkedHashSet();
-        try (Stream<Server> servers = serverRepository.streamAllForUpdateByAreasNotEmpty()) {
+        try (Stream<Server> servers = serverRepository.streamByAreasNotEmpty()) {
             servers.forEach(server -> {
                 manageServerTask(hostingState, tasksToKeep, server);
             });

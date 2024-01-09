@@ -27,6 +27,8 @@ import adhoc.faction.Faction;
 import adhoc.region.Region;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Set;
 
@@ -36,8 +38,8 @@ import java.util.Set;
 @Entity
 @SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 50)
 @Table(uniqueConstraints = @UniqueConstraint(name = "objective__region_id__index", columnNames = {"region_id", "index"}))
-//@DynamicInsert
-//@DynamicUpdate
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -76,7 +78,7 @@ public class Objective {
     @ManyToOne(fetch = FetchType.LAZY)
     private Faction faction;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     private Set<Objective> linkedObjectives;
 
     @ManyToOne(fetch = FetchType.LAZY)

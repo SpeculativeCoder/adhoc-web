@@ -26,10 +26,15 @@ import adhoc.objective.ObjectiveRepository;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Stream;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Transactional
 @Service
@@ -48,28 +53,37 @@ public class ManagerFactionService {
                 toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId())));
     }
 
+    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void awardFactionScores() {
         log.trace("Awarding faction scores...");
 
-        try (Stream<Faction> factions = factionRepository.streamForUpdateBy()) {
-            factions.forEach(faction -> {
-                int count = objectiveRepository.countByFaction(faction);
+        Map<Faction, Integer> factionsNumObjectives = new LinkedHashMap<>();
 
-                faction.setScore(faction.getScore() + 0.01f * count);
-            });
+        for (Faction faction : factionRepository.findAll()) {
+            factionsNumObjectives.put(faction, objectiveRepository.countByFaction(faction));
         }
 
-        //userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
-        //        objectiveCount, true, factionId, LocalDateTime.now().minusMinutes(15));
-        //userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
-        //        0.01f * objectiveCount, false, factionId, LocalDateTime.now().minusMinutes(15));
+        for (Map.Entry<Faction, Integer> entry : factionsNumObjectives.entrySet()) {
+            Faction faction = entry.getKey();
+            int numObjectives = entry.getValue();
+
+            factionRepository.updateScoreAddByFactionId(0.1f * numObjectives, faction.getId());
+
+            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
+                    0.1f * numObjectives, true, faction.getId(), LocalDateTime.now().minusMinutes(15));
+            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
+                    0.01f * numObjectives, false, faction.getId(), LocalDateTime.now().minusMinutes(15));
+        }
     }
 
+    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void decayFactionScores() {
         log.trace("Decaying faction scores...");
 
         // TODO: multiplier property
-        factionRepository.updateScoreMultiply(0.99F);
+        factionRepository.updateScoreMultiply(0.98f);
     }
 
     Faction toEntity(FactionDto factionDto, Faction faction) {

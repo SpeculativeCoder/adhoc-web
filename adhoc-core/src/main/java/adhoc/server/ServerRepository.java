@@ -23,21 +23,14 @@
 package adhoc.server;
 
 import adhoc.area.Area;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface ServerRepository extends JpaRepository<Server, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Server getForUpdateById(Long id);
+    Optional<Server> findFirstByAreasContains(Area area);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Server> findFirstForUpdateByAreasContains(Area area);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Server> streamAllForUpdateByAreasNotEmpty();
+    Stream<Server> streamByAreasNotEmpty();
 }

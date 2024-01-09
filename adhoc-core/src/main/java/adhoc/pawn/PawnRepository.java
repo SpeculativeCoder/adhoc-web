@@ -23,9 +23,7 @@
 package adhoc.pawn;
 
 import adhoc.server.Server;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -37,8 +35,7 @@ import java.util.UUID;
 
 public interface PawnRepository extends JpaRepository<Pawn, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Pawn> findForUpdateByServerAndUuid(Server server, UUID uuid);
+    Optional<Pawn> findByServerAndUuid(Server server, UUID uuid);
 
     @Modifying
     @Query("delete from Pawn where server = :server and uuid not in :uuidNotIn")

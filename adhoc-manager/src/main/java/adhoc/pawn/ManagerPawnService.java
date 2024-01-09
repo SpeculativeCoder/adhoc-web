@@ -30,6 +30,9 @@ import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,12 +73,14 @@ public class ManagerPawnService {
             pawnDto.setSeen(now); // TODO
 
             Pawn pawn = pawnRepository.save(toEntity(pawnDto,
-                    pawnRepository.findForUpdateByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
+                    pawnRepository.findByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
 
             return pawnService.toDto(pawn);
         }).toList();
     }
 
+    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");
 

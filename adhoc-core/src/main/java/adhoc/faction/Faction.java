@@ -24,14 +24,16 @@ package adhoc.faction;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 /**
  * Each user is associated with a faction.
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "faction__index", columnNames = {"index"}))
-//@DynamicInsert
-//@DynamicUpdate
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

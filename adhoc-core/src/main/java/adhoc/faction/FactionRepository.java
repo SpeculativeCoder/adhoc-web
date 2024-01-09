@@ -22,24 +22,18 @@
 
 package adhoc.faction;
 
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.stream.Stream;
 
 public interface FactionRepository extends JpaRepository<Faction, Long> {
 
     Faction getByIndex(Integer index);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Faction getForUpdateById(Long id);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<Faction> streamForUpdateBy();
+    @Modifying
+    @Query("update Faction set version = version + 1, score = score + :scoreAdd where id = :factionId")
+    void updateScoreAddByFactionId(@Param("scoreAdd") float scoreAdd, @Param("factionId") Long factionId);
 
     @Modifying
     @Query("update Faction set version = version + 1, score = score * :scoreMultiply")

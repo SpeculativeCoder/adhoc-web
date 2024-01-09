@@ -26,6 +26,8 @@ import adhoc.area.Area;
 import adhoc.region.Region;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,9 +35,9 @@ import java.util.List;
 /**
  * This represents a running Unreal server (usually in the cloud) representing one of more areas of a region.
  */
-@Entity(name = "Server")
-//@DynamicInsert
-//@DynamicUpdate
+@Entity
+@DynamicInsert
+@DynamicUpdate
 @SequenceGenerator(name = "ServerIdSequence", initialValue = 1, allocationSize = 50)
 @NoArgsConstructor
 @AllArgsConstructor

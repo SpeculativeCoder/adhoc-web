@@ -47,6 +47,7 @@ public class ManagerQuartzJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String jobName = context.getJobDetail().getKey().getName();
         try {
+            //log.info("jobName={}", jobName);
             switch (jobName) {
             case ManagerQuartzConfig.MANAGE_SERVERS:
                 // TODO: have these on separate schedules?

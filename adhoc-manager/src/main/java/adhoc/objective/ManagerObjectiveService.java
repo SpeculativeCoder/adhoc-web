@@ -34,6 +34,9 @@ import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +67,8 @@ public class ManagerObjectiveService {
                         toEntityStage1(objectiveDto, objectiveRepository.getReferenceById(objectiveDto.getId()))));
     }
 
+    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
@@ -88,7 +93,7 @@ public class ManagerObjectiveService {
             Preconditions.checkArgument(objectiveIndexIsUnique, "objective indexes must be unique");
         });
 
-        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamForUpdateByRegionAndIndexNotIn(region, objectiveIndexes)) {
+        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamByRegionAndIndexNotIn(region, objectiveIndexes)) {
             objectivesToDelete.forEach(objectiveToDelete -> {
                 log.info("Deleting unused objective: {}", objectiveToDelete);
                 objectiveRepository.delete(objectiveToDelete);
@@ -98,7 +103,7 @@ public class ManagerObjectiveService {
         // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveDtos.stream().map(objectiveDto -> {
             Objective objective = objectiveRepository.save(toEntityStage1(objectiveDto,
-                    objectiveRepository.findForUpdateByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)));
+                    objectiveRepository.findByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new)));
 
             return new AbstractMap.SimpleEntry<>(objectiveDto, objective);
         }).toList().stream().map(entry -> {
@@ -157,15 +162,17 @@ public class ManagerObjectiveService {
         return objective;
     }
 
+    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
-        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(1, true, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
+        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(1.0f, true, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
         userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(0.1f, false, objectiveTakenEvent.getFactionId(), LocalDateTime.now().minusMinutes(15));
 
-        Objective objective = objectiveRepository.getForUpdateById(objectiveTakenEvent.getObjectiveId());
-        Faction faction = factionRepository.getForUpdateById(objectiveTakenEvent.getFactionId());
+        Objective objective = objectiveRepository.getReferenceById(objectiveTakenEvent.getObjectiveId());
+        Faction faction = factionRepository.getReferenceById(objectiveTakenEvent.getFactionId());
 
         objective.setFaction(faction);
-        faction.setScore(faction.getScore() + 1);
+        faction.setScore(faction.getScore() + 1.0f);
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
     }

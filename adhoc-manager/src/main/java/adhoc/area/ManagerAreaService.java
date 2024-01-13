@@ -63,13 +63,12 @@ public class ManagerAreaService {
         Region region = server.getRegion();
 
         Set<Integer> areaIndexes = new TreeSet<>();
-        areaDtos.forEach(areaDto -> {
+        for (AreaDto areaDto : areaDtos) {
             Preconditions.checkArgument(Objects.equals(region.getId(), areaDto.getRegionId()));
 
-            boolean areaIndexIsUnique =
-                    areaIndexes.add(areaDto.getIndex());
-            Preconditions.checkArgument(areaIndexIsUnique, "area indexes must be unique");
-        });
+            boolean unique = areaIndexes.add(areaDto.getIndex());
+            Preconditions.checkArgument(unique, "area indexes must be unique");
+        }
 
         try (Stream<Area> areasToDelete = areaRepository.streamByRegionAndIndexNotIn(region, areaIndexes)) {
             areasToDelete.forEach(areaToDelete -> {
@@ -102,7 +101,8 @@ public class ManagerAreaService {
         area.setSizeZ(areaDto.getSizeZ());
         //noinspection OptionalAssignedToNull
         if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
+            area.setServer(areaDto.getServerId().isEmpty() ? null
+                    : serverRepository.getReferenceById(areaDto.getServerId().get()));
         }
 
         return area;

@@ -63,23 +63,26 @@ public class ManagerPawnService {
 
         // update users seen
         Set<Long> userIds = serverPawnsEvent.getPawns().stream()
-                .map(PawnDto::getUserId).filter(Objects::nonNull).collect(Collectors.toCollection(TreeSet::new));
+                .map(PawnDto::getUserId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(TreeSet::new));
         userRepository.updateServerAndSeenByIdIn(server, seen, userIds);
 
         // clean up any pawns that are no longer on this server
         List<UUID> uuids = serverPawnsEvent.getPawns().stream()
-                .map(PawnDto::getUuid).toList();
+                .map(PawnDto::getUuid)
+                .toList();
         pawnRepository.deleteByServerAndUuidNotIn(server, uuids);
 
         return serverPawnsEvent.getPawns().stream().map(pawnDto -> {
             Preconditions.checkArgument(Objects.equals(server.getId(), pawnDto.getServerId()));
 
-            pawnDto.setSeen(seen); // TODO
+            Pawn pawn = toEntity(pawnDto,
+                    pawnRepository.findByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new));
 
-            Pawn pawn = pawnRepository.save(toEntity(pawnDto,
-                    pawnRepository.findByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
+            pawn.setSeen(seen); // TODO
 
-            return pawnService.toDto(pawn);
+            return pawnService.toDto(pawnRepository.save(pawn));
         }).toList();
     }
 

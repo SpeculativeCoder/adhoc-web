@@ -26,7 +26,6 @@ import adhoc.server.Server;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -38,10 +37,10 @@ public interface PawnRepository extends JpaRepository<Pawn, Long> {
     Optional<Pawn> findByServerAndUuid(Server server, UUID uuid);
 
     @Modifying
-    @Query("delete from Pawn where server = :server and uuid not in :uuidNotIn")
-    void deleteByServerAndUuidNotIn(@Param("server") Server server, @Param("uuidNotIn") Collection<UUID> uuidNotIn);
+    @Query("delete from Pawn p where p.server = ?1 and p.uuid not in ?2")
+    void deleteByServerAndUuidNotIn(Server server, Collection<UUID> uuidNotIn);
 
     @Modifying
-    @Query("delete from Pawn where seen < :seenBefore")
-    void deleteBySeenBefore(@Param("seenBefore") LocalDateTime seenBefore);
+    @Query("delete from Pawn p where p.seen < ?1")
+    void deleteBySeenBefore(LocalDateTime seenBefore);
 }

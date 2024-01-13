@@ -36,9 +36,9 @@ import java.util.List;
  * This represents a running Unreal server (usually in the cloud) representing one of more areas of a region.
  */
 @Entity
+@SequenceGenerator(name = "ServerIdSequence", initialValue = 1, allocationSize = 50)
 @DynamicInsert
 @DynamicUpdate
-@SequenceGenerator(name = "ServerIdSequence", initialValue = 1, allocationSize = 50)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -66,7 +66,7 @@ public class ManagerPawnService {
                 .map(PawnDto::getUserId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toCollection(TreeSet::new));
-        userRepository.updateServerAndSeenByIdIn(server, seen, userIds);
+        userRepository.updateSeenByIdIn(seen, userIds);
 
         // clean up any pawns that are no longer on this server
         List<UUID> uuids = serverPawnsEvent.getPawns().stream()

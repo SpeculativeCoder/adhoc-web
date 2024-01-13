@@ -216,7 +216,8 @@ public class UserService {
                 user.getHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
-                user.getSeen());
+                user.getSeen(),
+                user.getServer() == null ? null : user.getServer().getId());
     }
 
     UserDetailDto toDetailDto(User user) {

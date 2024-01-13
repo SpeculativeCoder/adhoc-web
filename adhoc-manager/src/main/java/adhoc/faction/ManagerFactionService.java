@@ -68,8 +68,6 @@ public class ManagerFactionService {
             faction.setScore(faction.getScore() + 0.1f * numObjectives);
         }
 
-        factionRepository.flush();
-
         LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(15);
         for (Map.Entry<Faction, Integer> entry : factionsNumObjectives.entrySet()) {
             Faction faction = entry.getKey();
@@ -88,7 +86,7 @@ public class ManagerFactionService {
         log.trace("Decaying faction scores...");
 
         // TODO: multiplier property
-        factionRepository.updateScoreMultiply(0.98f);
+        factionRepository.updateScoreMultiply(0.99f);
     }
 
     Faction toEntity(FactionDto factionDto, Faction faction) {

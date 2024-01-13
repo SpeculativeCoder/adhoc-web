@@ -23,11 +23,9 @@
 package adhoc.user;
 
 import adhoc.faction.Faction;
-import adhoc.server.Server;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -42,21 +40,21 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findFirstByHumanFalseAndFactionIdAndSeenBefore(Long factionId, LocalDateTime seenBefore);
 
-    @Query("select id from AdhocUser where created < :createdBefore and seen is null and password is null and pawns is empty")
-    List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(@Param("createdBefore") LocalDateTime createdBefore);
+    @Query("select u.id from AdhocUser u where u.created < ?1 and u.seen is null and u.password is null and u.pawns is empty")
+    List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
 
-    @Query("select id from AdhocUser where seen < :seenBefore and password is null and pawns is empty")
-    List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(@Param("seenBefore") LocalDateTime seenBefore);
-
-    @Modifying
-    @Query("update AdhocUser set version = version + 1, server = :server, seen = :seen where id in :idIn")
-    void updateServerAndSeenByIdIn(@Param("server") Server server, @Param("seen") LocalDateTime seen, @Param("idIn") Collection<Long> idIn);
+    @Query("select u.id from AdhocUser u where u.seen < ?1 and u.password is null and u.pawns is empty")
+    List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime seenBefore);
 
     @Modifying
-    @Query("update AdhocUser set version = version + 1, score = score + :scoreAdd where human = :human and faction = :faction and seen > :seenAfter")
-    void updateScoreAddByHumanAndFactionAndSeenAfter(@Param("scoreAdd") float scoreAdd, @Param("human") Boolean human, @Param("faction") Faction faction, @Param("seenAfter") LocalDateTime seenAfter);
+    @Query("update AdhocUser u set u.version = u.version + 1, u.seen = ?1 where u.id in ?2")
+    void updateSeenByIdIn(LocalDateTime seen, Collection<Long> idIn);
 
     @Modifying
-    @Query("update AdhocUser set version = version + 1, score = score * :scoreMultiply")
-    void updateScoreMultiply(@Param("scoreMultiply") float scoreMultiply);
+    @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score + ?1 where u.human = ?2 and u.faction = ?3 and u.seen > ?4")
+    void updateScoreAddByHumanAndFactionAndSeenAfter(float scoreAdd, Boolean human, Faction faction, LocalDateTime seenAfter);
+
+    @Modifying
+    @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score * ?1")
+    void updateScoreMultiply(float scoreMultiply);
 }

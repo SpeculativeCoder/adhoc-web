@@ -55,7 +55,7 @@
       <input class="form-control" id="scoreInput" name="score" type="number" readonly [(ngModel)]="user.score"/>
     </div>
     <div class="mb-3">
-      <label for="seenInput" class="form-label">Last Seen</label>
+      <label class="form-label" for="seenInput">Last Seen</label>
       <input class="form-control" id="seenInput" name="seen" type="text" readonly [ngModel]="user.seen | simpleDate"/>
     </div>
     <!--  <div class="mb-3">-->
@@ -78,6 +78,10 @@
     <!--    <label for="lastJoinInput" class="form-label">Last Join</label>-->
     <!--    <input class="form-control" id="lastJoinInput" name="lastJoin" type="text" readonly [ngModel]="user.lastJoin | simpleDate"/>-->
     <!--  </div>-->
+    <div class="mb-3">
+      <label class="form-label" for="serverIdInput">Server</label>
+      <input class="form-control" id="serverIdInput" name="seen" type="text" readonly [ngModel]="user.serverId"/>
+    </div>
     <div class="row">
       <!--<div class="col-auto mt-3 mb-3">
         <button type="submit" class="btn btn-primary" (click)="save()">Save</button>

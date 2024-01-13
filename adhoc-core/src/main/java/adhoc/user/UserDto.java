@@ -60,4 +60,7 @@ public class UserDto {
     private Float score;
 
     private LocalDateTime seen;
+
+    @Min(1)
+    private Long serverId;
 }

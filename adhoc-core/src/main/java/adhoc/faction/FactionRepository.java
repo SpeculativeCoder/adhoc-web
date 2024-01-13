@@ -25,13 +25,12 @@ package adhoc.faction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 public interface FactionRepository extends JpaRepository<Faction, Long> {
 
     Faction getByIndex(Integer index);
 
     @Modifying
-    @Query("update Faction set version = version + 1, score = score * :scoreMultiply")
-    void updateScoreMultiply(@Param("scoreMultiply") float scoreMultiply);
+    @Query("update Faction f set f.version = f.version + 1, f.score = f.score * ?1")
+    void updateScoreMultiply(float scoreMultiply);
 }

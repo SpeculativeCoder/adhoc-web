@@ -183,7 +183,7 @@ public class ManagerUserService {
         log.trace("Decaying user scores...");
 
         // TODO: multiplier property
-        userRepository.updateScoreMultiply(0.98f);
+        userRepository.updateScoreMultiply(0.99f);
     }
 
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},

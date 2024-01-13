@@ -75,8 +75,8 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
 
         config.setPreservePublishOrder(true);
 
-        //config.configureBrokerChannel()
-        //        .taskExecutor();
+        config.configureBrokerChannel()
+                .taskExecutor();
 
         //config.enableSimpleBroker("/queue", "/topic");
         config.enableStompBrokerRelay("/queue", "/topic")

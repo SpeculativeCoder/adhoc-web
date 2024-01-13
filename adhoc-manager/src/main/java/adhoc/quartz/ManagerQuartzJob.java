@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -46,7 +47,8 @@ public class ManagerQuartzJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String jobName = context.getJobDetail().getKey().getName();
-        try {
+
+        try (MDC.MDCCloseable closeable = MDC.putCloseable("job", jobName)) {
             //log.info("jobName={}", jobName);
             switch (jobName) {
             case ManagerQuartzConfig.MANAGE_SERVERS:

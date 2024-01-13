@@ -270,7 +270,7 @@
             </column>
             <column name="version" type="BIGINT"/>
             <column name="uuid" type="UUID">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true" validateUnique="true" uniqueConstraintName="pawn__uuid"/>
             </column>
             <column name="server_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -311,6 +311,7 @@
         <addForeignKeyConstraint baseTableName="pawn" baseColumnNames="faction_id" constraintName="fkr1p0om4920da2l1yy7al11a5f" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
                                  validate="true"/>
+        <!--<addUniqueConstraint tableName="pawn" columnNames="server_id, uuid" validate="true" constraintName="pawn__server_id__uuid"/>-->
 
         <createSequence sequenceName="structure_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="structure">

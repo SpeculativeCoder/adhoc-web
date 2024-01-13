@@ -26,6 +26,7 @@ import adhoc.objective.ObjectiveRepository;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -53,7 +54,7 @@ public class ManagerFactionService {
                 toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId())));
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void awardFactionScores() {
         log.trace("Awarding faction scores...");
@@ -67,19 +68,21 @@ public class ManagerFactionService {
             faction.setScore(faction.getScore() + 0.1f * numObjectives);
         }
 
+        factionRepository.flush();
+
         LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(15);
         for (Map.Entry<Faction, Integer> entry : factionsNumObjectives.entrySet()) {
             Faction faction = entry.getKey();
             int numObjectives = entry.getValue();
 
-            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
-                    0.1f * numObjectives, true, faction.getId(), seenBefore);
-            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
-                    0.01f * numObjectives, false, faction.getId(), seenBefore);
+            userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(
+                    0.1f * numObjectives, true, faction, seenBefore);
+            userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(
+                    0.01f * numObjectives, false, faction, seenBefore);
         }
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void decayFactionScores() {
         log.trace("Decaying faction scores...");

@@ -266,7 +266,7 @@ public class ManagerWorldService {
 
         // admin user and some faction specific users for testing
 
-        if (userRepository.count() < 1) {
+        if (coreProperties.getFeatureFlags().contains("development")) {
 
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime created = now.minusMinutes(30);

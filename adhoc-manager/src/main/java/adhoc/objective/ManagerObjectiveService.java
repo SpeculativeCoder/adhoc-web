@@ -34,6 +34,7 @@ import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -67,7 +68,7 @@ public class ManagerObjectiveService {
                         toEntityStage1(objectiveDto, objectiveRepository.getReferenceById(objectiveDto.getId()))));
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
         Server server = serverRepository.getReferenceById(serverId);
@@ -162,7 +163,7 @@ public class ManagerObjectiveService {
         return objective;
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
     public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
         Objective objective = objectiveRepository.getReferenceById(objectiveTakenEvent.getObjectiveId());
@@ -173,8 +174,10 @@ public class ManagerObjectiveService {
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
 
+        userRepository.flush();
+
         LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
-        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(1.0f, true, objectiveTakenEvent.getFactionId(), seenAfter);
-        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(0.1f, false, objectiveTakenEvent.getFactionId(), seenAfter);
+        userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(1.0f, true, faction, seenAfter);
+        userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(0.1f, false, faction, seenAfter);
     }
 }

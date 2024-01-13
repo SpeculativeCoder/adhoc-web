@@ -39,9 +39,12 @@ import java.util.UUID;
  * (intended for an "at a glance" location of bots/users in the world).
  */
 @Entity
+@SequenceGenerator(name = "PawnIdSequence", initialValue = 1, allocationSize = 50)
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "pawn__uuid", columnNames = {"uuid"})})
+//@UniqueConstraint(name = "pawn__server_id__uuid", columnNames = {"server_id", "uuid"})})
 @DynamicInsert
 @DynamicUpdate
-@SequenceGenerator(name = "PawnIdSequence", initialValue = 1, allocationSize = 50)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

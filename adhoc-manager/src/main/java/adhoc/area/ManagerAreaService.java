@@ -30,6 +30,7 @@ import adhoc.server.ServerRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -55,7 +56,7 @@ public class ManagerAreaService {
 
     private final AreaService areaService;
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public List<AreaDto> processServerAreas(Long serverId, List<AreaDto> areaDtos) {
         Server server = serverRepository.getReferenceById(serverId);

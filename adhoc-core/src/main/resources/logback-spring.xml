@@ -67,10 +67,21 @@
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
 
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
+                    &amp;&amp; (message.equals("SQL Error: -4861, SQLState: 40001") || message.equals("transaction rollback: serialization failure")))
+                </expression>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->
             <!--<pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%-5p){bright_black} %acc([%15.15t]){bright_black} %acc(%40.40logger{39}){cyan}: %acc(%m%n%ewtpc)</pattern>-->
-            <pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%p){bright_black} %acc([%t]){bright_black} %acc(%logger){cyan}: %acc(%m%n%ex)</pattern>
+            <pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%p){bright_black} %acc([%t]){bright_black} %acc(%X){bright_black} %acc(%logger){cyan}: %acc(%m%n%rEx)</pattern>
             <charset>UTF-8</charset>
         </encoder>
 

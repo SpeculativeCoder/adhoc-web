@@ -37,6 +37,7 @@ import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
@@ -66,7 +67,7 @@ public class ManagerUserService {
                 toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public UserDetailDto serverUserJoin(UserJoinRequest userJoinRequest) {
         log.debug("userJoin: userId={} human={} factionId={} serverId={}",
@@ -130,7 +131,7 @@ public class ManagerUserService {
         return user;
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
         User user = userRepository.getReferenceById(userNavigateRequest.getUserId());
@@ -162,7 +163,7 @@ public class ManagerUserService {
                 destinationServer.getWebSocketUrl()));
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
     public UserDefeatedUserEvent handleUserDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
         User user = userRepository.getReferenceById(serverUserDefeatedUserEvent.getUserId());
@@ -176,7 +177,7 @@ public class ManagerUserService {
                 defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.getHuman());
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void decayUserScores() {
         log.trace("Decaying user scores...");
@@ -185,7 +186,7 @@ public class ManagerUserService {
         userRepository.updateScoreMultiply(0.98f);
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void purgeOldUsers() {
         log.trace("Purging old users...");

@@ -20,36 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.web.logging;
 
-import com.google.common.base.Verify;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @Component
-@Slf4j
-@RequiredArgsConstructor
-public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private UserService userService;
+public class AdhocMdcFilter extends OncePerRequestFilter {
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        Verify.verify(principal instanceof AdhocUserDetails);
-        AdhocUserDetails userDetails = (AdhocUserDetails) principal;
-
-        log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
-
-        userService.onAuthenticationSuccess(userDetails.getUserId());
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            MDC.put("uri", request.getRequestURI());
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove("uri");
+        }
     }
 }

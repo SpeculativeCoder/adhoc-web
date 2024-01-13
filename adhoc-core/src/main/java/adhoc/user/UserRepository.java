@@ -22,6 +22,8 @@
 
 package adhoc.user;
 
+import adhoc.faction.Faction;
+import adhoc.server.Server;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -47,12 +49,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(@Param("seenBefore") LocalDateTime seenBefore);
 
     @Modifying
-    @Query("update AdhocUser set version = version + 1, server.id = :serverId, seen = :seen where id in :idIn")
-    void updateServerIdAndSeenByIdIn(@Param("serverId") Long serverId, @Param("seen") LocalDateTime seen, @Param("idIn") Collection<Long> idIn);
+    @Query("update AdhocUser set version = version + 1, server = :server, seen = :seen where id in :idIn")
+    void updateServerAndSeenByIdIn(@Param("server") Server server, @Param("seen") LocalDateTime seen, @Param("idIn") Collection<Long> idIn);
 
     @Modifying
-    @Query("update AdhocUser set version = version + 1, score = score + :scoreAdd where human = :human and faction.id = :factionId and seen > :seenAfter")
-    void updateScoreAddByHumanAndFactionIdAndSeenAfter(@Param("scoreAdd") float scoreAdd, @Param("human") Boolean human, @Param("factionId") Long factionId, @Param("seenAfter") LocalDateTime seenAfter);
+    @Query("update AdhocUser set version = version + 1, score = score + :scoreAdd where human = :human and faction = :faction and seen > :seenAfter")
+    void updateScoreAddByHumanAndFactionAndSeenAfter(@Param("scoreAdd") float scoreAdd, @Param("human") Boolean human, @Param("faction") Faction faction, @Param("seenAfter") LocalDateTime seenAfter);
 
     @Modifying
     @Query("update AdhocUser set version = version + 1, score = score * :scoreMultiply")

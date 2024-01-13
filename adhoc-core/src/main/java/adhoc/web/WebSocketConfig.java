@@ -23,11 +23,13 @@
 package adhoc.web;
 
 import adhoc.properties.CoreProperties;
+import adhoc.web.logging.AdhocMdcExecutorChannelInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.session.Session;
@@ -73,6 +75,9 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
 
         config.setPreservePublishOrder(true);
 
+        //config.configureBrokerChannel()
+        //        .taskExecutor();
+
         //config.enableSimpleBroker("/queue", "/topic");
         config.enableStompBrokerRelay("/queue", "/topic")
                 .setRelayHost(coreProperties.getMessageBrokerHost())
@@ -80,6 +85,13 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
                 //.setSystemHeartbeatReceiveInterval(Duration.ofSeconds(30).toMillis())
                 //.setSystemHeartbeatSendInterval(Duration.ofSeconds(30).toMillis())
                 .setTaskScheduler(taskScheduler);
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration
+                .interceptors(new AdhocMdcExecutorChannelInterceptor());
+
     }
 }
 

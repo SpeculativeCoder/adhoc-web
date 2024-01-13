@@ -30,6 +30,7 @@ import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -53,24 +54,27 @@ public class ManagerPawnService {
 
     private final PawnService pawnService;
 
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
     public List<PawnDto> handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime seen = LocalDateTime.now();
 
         Server server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
-
-        // clean up any pawns that are no longer on this server
-        List<UUID> uuids = serverPawnsEvent.getPawns().stream().map(PawnDto::getUuid).toList();
-        pawnRepository.deleteByServerAndUuidNotIn(server, uuids);
 
         // update users seen
         Set<Long> userIds = serverPawnsEvent.getPawns().stream()
                 .map(PawnDto::getUserId).filter(Objects::nonNull).collect(Collectors.toCollection(TreeSet::new));
-        userRepository.updateServerIdAndSeenByIdIn(serverPawnsEvent.getServerId(), now, userIds);
+        userRepository.updateServerAndSeenByIdIn(server, seen, userIds);
+
+        // clean up any pawns that are no longer on this server
+        List<UUID> uuids = serverPawnsEvent.getPawns().stream()
+                .map(PawnDto::getUuid).toList();
+        pawnRepository.deleteByServerAndUuidNotIn(server, uuids);
 
         return serverPawnsEvent.getPawns().stream().map(pawnDto -> {
             Preconditions.checkArgument(Objects.equals(server.getId(), pawnDto.getServerId()));
 
-            pawnDto.setSeen(now); // TODO
+            pawnDto.setSeen(seen); // TODO
 
             Pawn pawn = pawnRepository.save(toEntity(pawnDto,
                     pawnRepository.findByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new)));
@@ -79,7 +83,7 @@ public class ManagerPawnService {
         }).toList();
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class,
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");
@@ -98,7 +102,7 @@ public class ManagerPawnService {
         pawn.setZ(pawnDto.getZ());
         pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
         pawn.setHuman(pawnDto.getHuman());
-        pawn.setFaction(factionRepository.getByIndex(pawnDto.getFactionIndex()));
+        pawn.setFaction(pawnDto.getFactionIndex() == null ? null : factionRepository.getByIndex(pawnDto.getFactionIndex()));
         pawn.setSeen(pawnDto.getSeen());
 
         return pawn;

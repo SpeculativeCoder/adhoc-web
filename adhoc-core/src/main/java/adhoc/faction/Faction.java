@@ -42,6 +42,8 @@ import org.hibernate.annotations.DynamicUpdate;
 public class Faction {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FactionIdSequence")
+    @SequenceGenerator(name = "FactionIdSequence", initialValue = 1, allocationSize = 50)
     @ToString.Include
     private Long id;
 

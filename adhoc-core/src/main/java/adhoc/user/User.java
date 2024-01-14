@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
  */
 @Entity(name = "AdhocUser")
 // TODO: unique constraint(s)
-@SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 50)
 @DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor
@@ -59,6 +58,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UserIdSequence")
+    @SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 50)
     @ToString.Include
     private Long id;
 

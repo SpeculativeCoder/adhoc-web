@@ -22,7 +22,7 @@
 
 <ul class="nav justify-content-center">
   <li class="nav-item">
-    <a class="nav-link text-body-emphasis" routerLink="/">{{appTitle}}</a>
+    <a class="nav-link text-body-emphasis" routerLink="/">{{ appTitle }}</a>
   </li>
   <li class="nav-item">
     <a class="nav-link text-body" routerLink="/map">Map</a>
@@ -41,7 +41,7 @@
     <a class="nav-link text-body" routerLink="/objectives">Objectives</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/structures">Structures</a>
+    <a class="nav-link text-body" routerLink="/structures" *ngIf="extra">Structures</a>
   </li>
   <li class="nav-item">
     <a class="nav-link text-body" routerLink="/pawns">Pawns</a>

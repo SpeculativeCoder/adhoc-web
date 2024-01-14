@@ -21,7 +21,7 @@
  */
 
 import {StompService} from './web/stomp.service';
-import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {UserService} from './user/user.service';
@@ -32,6 +32,7 @@ import {HeaderInterceptor} from "./web/http-interceptor/header-interceptor";
 import {PropertiesService} from "./properties/properties.service";
 import {Faction} from "./faction/faction";
 import {appCustomization} from "./app-customization";
+import {appExtra} from "./app-extra";
 
 @Component({
   selector: 'app-root',
@@ -45,6 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
   appTitle = 'WebApp';
 
   featureFlags: string;
+  extra: boolean;
 
   currentUser: User;
   currentUserFaction: Faction;
@@ -59,6 +61,8 @@ export class AppComponent implements OnInit, OnDestroy {
               private configService: PropertiesService,
               private route: ActivatedRoute,
               private router: Router) {
+
+    this.extra = !!appExtra;
   }
 
   ngOnInit() {
@@ -83,11 +87,11 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  // @HostListener("window:beforeunload")
-  // beforeUnload() {
-  //   // disconnect websocket if it is open
-  //   this.stompService.disconnect();
-  // }
+  @HostListener("window:beforeunload")
+  beforeUnload() {
+    // disconnect websocket if it is open
+    this.stompService.disconnect();
+  }
 
   ngOnDestroy() {
   }

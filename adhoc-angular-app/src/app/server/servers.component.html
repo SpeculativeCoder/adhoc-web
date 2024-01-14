@@ -57,7 +57,11 @@
         <td>{{ server.initiated | simpleDate }}</td>
         <td>{{ server.seen | simpleDate }}</td>
         <td>
-          <a *ngIf="server.publicIp" (click)="joinServer(server)" href="javascript:;">Join</a>
+          <button type="button" class="btn btn-primary"
+                  style="--bs-btn-padding-y:0; --bs-btn-font-size: 0.75rem"
+                  *ngIf="server.publicIp" (click)="joinServer(server)">
+            Join
+          </button>
         </td>
       </tr>
       </tbody>

@@ -183,12 +183,12 @@ public class ManagerServerService {
         }
 
         if (server.getId() == null) {
-            server.setName("Server"); // the id will be added after insert (see below)
+            server.setName(""); // the id will be added after insert (see below)
             server.setStatus(ServerStatus.INACTIVE);
 
             server = serverRepository.save(server);
 
-            server.setName("Server " + server.getId().toString());
+            server.setName(server.getId().toString());
 
             log.info("New server {} assigned to region {} areas {}", server.getId(), server.getRegion().getId(),
                     server.getAreas().stream().map(Area::getId).collect(Collectors.toList()));

@@ -36,7 +36,6 @@ import java.util.Set;
  * An objective that can be taken by a faction.
  */
 @Entity
-@SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 50)
 @Table(uniqueConstraints = @UniqueConstraint(name = "objective__region_id__index", columnNames = {"region_id", "index"}))
 @DynamicInsert
 @DynamicUpdate
@@ -49,6 +48,7 @@ public class Objective {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ObjectiveIdSequence")
+    @SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 50)
     @ToString.Include
     private Long id;
 

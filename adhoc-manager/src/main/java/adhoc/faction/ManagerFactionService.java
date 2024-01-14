@@ -65,18 +65,18 @@ public class ManagerFactionService {
             int numObjectives = objectiveRepository.countByFaction(faction);
             factionsNumObjectives.put(faction, numObjectives);
 
-            faction.setScore(faction.getScore() + 0.1f * numObjectives);
+            faction.setScore(faction.getScore() + 0.01f * numObjectives);
         }
 
-        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(15);
+        LocalDateTime seenBefore = LocalDateTime.now().minusHours(48);
         for (Map.Entry<Faction, Integer> entry : factionsNumObjectives.entrySet()) {
             Faction faction = entry.getKey();
             int numObjectives = entry.getValue();
 
             userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(
-                    0.1f * numObjectives, true, faction, seenBefore);
+                    0.01f * numObjectives, true, faction, seenBefore);
             userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(
-                    0.01f * numObjectives, false, faction, seenBefore);
+                    0.001f * numObjectives, false, faction, seenBefore);
         }
     }
 
@@ -86,7 +86,7 @@ public class ManagerFactionService {
         log.trace("Decaying faction scores...");
 
         // TODO: multiplier property
-        factionRepository.updateScoreMultiply(0.99f);
+        factionRepository.updateScoreMultiply(0.999f);
     }
 
     Faction toEntity(FactionDto factionDto, Faction faction) {

@@ -36,7 +36,6 @@ import java.util.UUID;
  * Structures are objects that are pre-placed or that users have placed in the world e.g. barriers etc.
  */
 @Entity
-@SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 50)
 @DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor
@@ -48,6 +47,7 @@ public class Structure {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "StructureIdSequence")
+    @SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 50)
     @ToString.Include
     private Long id;
 

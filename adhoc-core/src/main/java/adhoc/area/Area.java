@@ -38,7 +38,6 @@ import java.util.List;
  * they may have to connect to a new server unless the same server manages both the areas.
  */
 @Entity
-@SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 50)
 @Table(uniqueConstraints = @UniqueConstraint(name = "area__region_id__index", columnNames = {"region_id", "index"}))
 @DynamicInsert
 @DynamicUpdate
@@ -51,6 +50,7 @@ public class Area {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AreaIdSequence")
+    @SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 50)
     @ToString.Include
     private Long id;
 

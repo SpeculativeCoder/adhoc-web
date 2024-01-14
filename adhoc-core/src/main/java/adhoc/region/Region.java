@@ -48,6 +48,8 @@ import java.util.List;
 public class Region {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RegionIdSequence")
+    @SequenceGenerator(name = "RegionIdSequence", initialValue = 1, allocationSize = 50)
     @ToString.Include
     private Long id;
 

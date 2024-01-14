@@ -58,6 +58,7 @@
             drop table if exists region;
         </sql>
 
+        <createSequence sequenceName="world_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="world">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="world_pkey"/>
@@ -83,6 +84,7 @@
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
                                  referencedTableName="world" validate="true"/>
 
+        <createSequence sequenceName="faction_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="faction">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="faction_pkey"/>
@@ -102,6 +104,7 @@
             </column>
         </createTable>
 
+        <createSequence sequenceName="region_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="region">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="region_pkey"/>

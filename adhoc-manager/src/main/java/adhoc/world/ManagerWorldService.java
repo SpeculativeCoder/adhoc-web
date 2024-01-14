@@ -40,6 +40,7 @@ import adhoc.user.User;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
 import adhoc.world.event.WorldUpdatedEvent;
+import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,13 +91,14 @@ public class ManagerWorldService {
         }
 
         World world = new World();
-        world.setId(WorldService.WORLD_ID);
         world = worldRepository.save(world);
+
+        Verify.verify(world.getId().equals(WorldService.WORLD_ID)); // TODO
 
         // insert factions
 
         Faction team1 = new Faction();
-        team1.setId(1L);
+        //team1.setId(1L);
         team1.setIndex(0);
         team1.setName("Alpha");
         team1.setColor("#0088FF");
@@ -104,7 +106,7 @@ public class ManagerWorldService {
         team1 = factionRepository.save(team1);
 
         Faction team2 = new Faction();
-        team2.setId(2L);
+        //team2.setId(2L);
         team2.setIndex(1);
         team2.setName("Beta");
         team2.setColor("#FF2200");
@@ -112,7 +114,7 @@ public class ManagerWorldService {
         team2 = factionRepository.save(team2);
 
         Faction team3 = new Faction();
-        team3.setId(3L);
+        //team3.setId(3L);
         team3.setIndex(2);
         team3.setName("Gamma");
         team3.setColor("#FFFF00");
@@ -120,7 +122,7 @@ public class ManagerWorldService {
         team3 = factionRepository.save(team3);
 
         Faction team4 = new Faction();
-        team4.setId(4L);
+        //team4.setId(4L);
         team4.setIndex(3);
         team4.setName("Delta");
         team4.setColor("#8800FF");
@@ -128,7 +130,7 @@ public class ManagerWorldService {
         team4 = factionRepository.save(team4);
 
         Region region1 = new Region();
-        region1.setId(1L);
+        //region1.setId(1L);
         region1.setName("1");
         // TODO: handle multiple regions
         region1.setMapName(coreProperties.getUnrealProjectRegionMaps().get(0));
@@ -165,7 +167,7 @@ public class ManagerWorldService {
         region1.setAreas(Arrays.asList(area1, area2));
 
         Server server1 = new Server();
-        server1.setName("Server 1");
+        server1.setName("1");
         server1.setMapName(region1.getMapName());
         server1.setX(region1.getX());
         server1.setY(region1.getY());

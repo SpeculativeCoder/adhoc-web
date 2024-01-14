@@ -44,6 +44,8 @@ import java.util.Set;
 public class World {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "WorldIdSequence")
+    @SequenceGenerator(name = "WorldIdSequence", initialValue = 1, allocationSize = 50)
     @ToString.Include
     private Long id;
 

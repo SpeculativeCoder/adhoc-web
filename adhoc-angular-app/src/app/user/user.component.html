@@ -30,7 +30,7 @@
       <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="user.name"/>
     </div>
     <div class="mb-3 form-check">
-      <input class="form-check-input" id="humanInput" name="human" type="checkbox" readonly [(ngModel)]="user.human"/>
+      <input class="form-check-input" id="humanInput" name="human" type="checkbox" readonly [(ngModel)]="user.human" onclick="return false;"/>
       <label class="form-check-label" for="humanInput">Human</label>
     </div>
     <div class="mb-3">

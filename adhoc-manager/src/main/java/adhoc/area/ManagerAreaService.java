@@ -22,7 +22,6 @@
 
 package adhoc.area;
 
-import adhoc.objective.ObjectiveRepository;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
@@ -52,7 +51,6 @@ public class ManagerAreaService {
     private final AreaRepository areaRepository;
     private final RegionRepository regionRepository;
     private final ServerRepository serverRepository;
-    private final ObjectiveRepository objectiveRepository;
 
     private final AreaService areaService;
 

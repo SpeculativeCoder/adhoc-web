@@ -23,6 +23,7 @@
 package adhoc.user;
 
 import adhoc.faction.Faction;
+import adhoc.server.Server;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -50,8 +51,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime seenBefore);
 
     @Modifying
-    @Query("update AdhocUser u set u.version = u.version + 1, u.seen = ?1 where u.id in ?2")
-    void updateSeenByIdIn(LocalDateTime seen, Collection<Long> idIn);
+    @Query("update AdhocUser u set u.version = u.version + 1, u.server = ?1, u.seen = ?2 where u.id in ?3")
+    void updateServerAndSeenByIdIn(Server server, LocalDateTime seen, Collection<Long> idIn);
 
     @Modifying
     @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score + ?1 where u.human = ?2 and u.faction = ?3 and u.seen > ?4")

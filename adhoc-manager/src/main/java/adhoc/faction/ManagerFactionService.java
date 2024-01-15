@@ -34,8 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 @Transactional
 @Service
@@ -59,24 +58,23 @@ public class ManagerFactionService {
     public void awardFactionScores() {
         log.trace("Awarding faction scores...");
 
-        Map<Faction, Integer> factionsNumObjectives = new LinkedHashMap<>();
+        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
+                objectiveRepository.getFactionObjectiveCounts();
 
-        for (Faction faction : factionRepository.findAll()) {
-            int numObjectives = objectiveRepository.countByFaction(faction);
-            factionsNumObjectives.put(faction, numObjectives);
-
-            faction.setScore(faction.getScore() + 0.01f * numObjectives);
+        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
+            //log.debug("{}: {}", factionObjectiveCount.getFaction(), factionObjectiveCount.getObjectiveCount());
+            factionRepository.updateScoreAddById(0.01f * factionObjectiveCount.getObjectiveCount(), factionObjectiveCount.getFaction().getId());
+            //Faction faction = factionObjectiveCount.getFaction();
+            //faction.setScore(faction.getScore() + 0.01f * factionObjectiveCount.getObjectiveCount());
         }
 
         LocalDateTime seenBefore = LocalDateTime.now().minusHours(48);
-        for (Map.Entry<Faction, Integer> entry : factionsNumObjectives.entrySet()) {
-            Faction faction = entry.getKey();
-            int numObjectives = entry.getValue();
 
+        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
             userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(
-                    0.01f * numObjectives, true, faction, seenBefore);
+                    0.01f * factionObjectiveCount.getObjectiveCount(), true, factionObjectiveCount.getFaction(), seenBefore);
             userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(
-                    0.001f * numObjectives, false, faction, seenBefore);
+                    0.001f * factionObjectiveCount.getObjectiveCount(), false, factionObjectiveCount.getFaction(), seenBefore);
         }
     }
 

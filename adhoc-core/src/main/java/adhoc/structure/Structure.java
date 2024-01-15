@@ -27,7 +27,6 @@ import adhoc.region.Region;
 import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.UUID;
@@ -36,7 +35,7 @@ import java.util.UUID;
  * Structures are objects that are pre-placed or that users have placed in the world e.g. barriers etc.
  */
 @Entity
-@DynamicInsert
+//@DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor

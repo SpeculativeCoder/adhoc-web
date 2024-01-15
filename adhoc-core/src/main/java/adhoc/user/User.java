@@ -28,7 +28,6 @@ import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -47,7 +46,7 @@ import java.util.stream.Collectors;
  */
 @Entity(name = "AdhocUser")
 // TODO: unique constraint(s)
-@DynamicInsert
+//@DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor

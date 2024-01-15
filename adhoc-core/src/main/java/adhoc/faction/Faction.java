@@ -24,7 +24,6 @@ package adhoc.faction;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 /**
@@ -32,7 +31,7 @@ import org.hibernate.annotations.DynamicUpdate;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "faction__index", columnNames = {"index"}))
-@DynamicInsert
+//@DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor

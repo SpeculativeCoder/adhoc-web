@@ -27,7 +27,6 @@ import adhoc.server.Server;
 import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -41,7 +40,7 @@ import java.util.UUID;
 @Table(uniqueConstraints = {@UniqueConstraint(name = "pawn__uuid", columnNames = {"uuid"})})
 //@UniqueConstraint(name = "pawn__server_id__uuid", columnNames = {"server_id", "uuid"})})
 //@DynamicInsert
-@DynamicUpdate
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

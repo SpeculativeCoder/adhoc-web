@@ -78,6 +78,18 @@
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
 
+        <!-- TODO -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    ("org.hibernate.orm.jdbc.batch".equals(logger)
+                    &amp;&amp; (message.equals("HHH100503: On release of batch it still contained JDBC statements") || message.startsWith("HHH100501: Exception executing batch")))
+                </expression>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->
             <!--<pattern>%acc(%d{HH:mm:ss.SSS}){bright_black} %acc(%-5p){bright_black} %acc([%15.15t]){bright_black} %acc(%40.40logger{39}){cyan}: %acc(%m%n%ewtpc)</pattern>-->

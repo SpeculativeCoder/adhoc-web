@@ -62,19 +62,22 @@ public class ManagerFactionService {
                 objectiveRepository.getFactionObjectiveCounts();
 
         for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
-            //log.debug("{}: {}", factionObjectiveCount.getFaction(), factionObjectiveCount.getObjectiveCount());
-            factionRepository.updateScoreAddById(0.01f * factionObjectiveCount.getObjectiveCount(), factionObjectiveCount.getFaction().getId());
-            //Faction faction = factionObjectiveCount.getFaction();
-            //faction.setScore(faction.getScore() + 0.01f * factionObjectiveCount.getObjectiveCount());
+            Faction faction = factionObjectiveCount.getFaction();
+            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
+
+            factionRepository.updateScoreAddById(0.01f * objectiveCount, faction.getId());
         }
 
         LocalDateTime seenBefore = LocalDateTime.now().minusHours(48);
 
         for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
+            Faction faction = factionObjectiveCount.getFaction();
+            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
+
             userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(
-                    0.01f * factionObjectiveCount.getObjectiveCount(), true, factionObjectiveCount.getFaction(), seenBefore);
+                    0.01f * objectiveCount, true, faction, seenBefore);
             userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(
-                    0.001f * factionObjectiveCount.getObjectiveCount(), false, factionObjectiveCount.getFaction(), seenBefore);
+                    0.001f * objectiveCount, false, faction, seenBefore);
         }
     }
 

@@ -49,6 +49,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -188,6 +189,19 @@ public class ManagerUserService {
 
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
+    public void leaveUnseenUsers() {
+        log.trace("Leaving unseen users...");
+
+        try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(LocalDateTime.now().minusMinutes(15))) {
+            users.forEach(user -> {
+                log.info("Leaving unseen user {} from server {}", user.getId(), user.getServer().getId());
+                user.setServer(null);
+            });
+        }
+    }
+
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void purgeOldUsers() {
         log.trace("Purging old users...");
 
@@ -195,7 +209,6 @@ public class ManagerUserService {
 
         // regular cleanup of anon users who had a temp account created but never were seen in a server
         oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
-
         // regular cleanup of anon users who were last seen in a server a long time ago
         oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
 

@@ -44,6 +44,7 @@ public class ManagerQuartzConfig {
     public static final String AWARD_FACTION_SCORES = "awardFactionScores";
     public static final String DECAY_FACTION_SCORES = "decayFactionScores";
     public static final String DECAY_USER_SCORES = "decayUserScores";
+    public static final String LEAVE_UNSEEN_USERS = "unlinkUnseenUsers";
     public static final String PURGE_OLD_USERS = "purgeOldUsers";
     public static final String PURGE_OLD_PAWNS = "purgeOldPawns";
 
@@ -78,6 +79,15 @@ public class ManagerQuartzConfig {
     public Trigger decayUserScoresTrigger() {
         return TriggerBuilder.newTrigger()
                 .forJob(DECAY_USER_SCORES).withIdentity(DECAY_USER_SCORES)
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                        .repeatForever().withIntervalInSeconds(5))
+                .startAt(Date.from(Instant.now().plusSeconds(10))).build();
+    }
+
+    @Bean
+    public Trigger leaveUnseenUsersTrigger() {
+        return TriggerBuilder.newTrigger()
+                .forJob(LEAVE_UNSEEN_USERS).withIdentity(LEAVE_UNSEEN_USERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(5))
                 .startAt(Date.from(Instant.now().plusSeconds(10))).build();
@@ -119,6 +129,11 @@ public class ManagerQuartzConfig {
     @Bean
     public JobDetail decayUserScoresJobDetail() {
         return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(DECAY_USER_SCORES).storeDurably().build();
+    }
+
+    @Bean
+    public JobDetail leaveUnseenUsersJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(LEAVE_UNSEEN_USERS).storeDurably().build();
     }
 
     @Bean

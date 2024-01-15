@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -39,6 +40,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByNameOrEmail(String name, String email);
 
     Optional<User> findFirstByHumanFalseAndFactionIdAndSeenBefore(Long factionId, LocalDateTime seenBefore);
+
+    Stream<User> streamByServerNotNullAndSeenBefore(LocalDateTime seenBefore);
 
     @Query("select u.id from AdhocUser u where u.created < ?1 and u.seen is null and u.password is null and u.pawns is empty")
     List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);

@@ -65,6 +65,9 @@ public class ManagerQuartzJob implements Job {
             case ManagerQuartzConfig.DECAY_USER_SCORES:
                 managerUserService.decayUserScores();
                 break;
+            case ManagerQuartzConfig.LEAVE_UNSEEN_USERS:
+                managerUserService.leaveUnseenUsers();
+                break;
             case ManagerQuartzConfig.PURGE_OLD_USERS:
                 managerUserService.purgeOldUsers();
                 break;

@@ -23,6 +23,7 @@
 package adhoc.objective;
 
 import adhoc.objective.event.ObjectiveTakenEvent;
+import adhoc.objective.event.ServerObjectiveTakenEvent;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -66,12 +67,10 @@ public class ManagerObjectiveController {
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
     public ObjectiveTakenEvent handleObjectiveTaken(
-            @Valid @RequestBody ObjectiveTakenEvent objectiveTakenEvent) {
-        log.debug("Handling: {}", objectiveTakenEvent);
+            @Valid @RequestBody ServerObjectiveTakenEvent event) {
+        log.debug("Handling: {}", event);
 
-        managerObjectiveService.handleObjectiveTaken(objectiveTakenEvent);
-
-        return objectiveTakenEvent;
+        return managerObjectiveService.handleObjectiveTaken(event);
     }
 
 }

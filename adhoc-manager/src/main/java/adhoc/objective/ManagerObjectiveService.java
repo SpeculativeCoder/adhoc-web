@@ -26,6 +26,7 @@ import adhoc.area.AreaRepository;
 import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
 import adhoc.objective.event.ObjectiveTakenEvent;
+import adhoc.objective.event.ServerObjectiveTakenEvent;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
@@ -166,9 +167,9 @@ public class ManagerObjectiveService {
 
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
-    public void handleObjectiveTaken(ObjectiveTakenEvent objectiveTakenEvent) {
-        Objective objective = objectiveRepository.getReferenceById(objectiveTakenEvent.getObjectiveId());
-        Faction faction = factionRepository.getReferenceById(objectiveTakenEvent.getFactionId());
+    public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
+        Objective objective = objectiveRepository.getReferenceById(event.getObjectiveId());
+        Faction faction = factionRepository.getReferenceById(event.getFactionId());
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
 
@@ -178,5 +179,7 @@ public class ManagerObjectiveService {
         LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
         userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(1.0f, true, faction, seenAfter);
         userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(0.1f, false, faction, seenAfter);
+
+        return new ObjectiveTakenEvent(objective.getId(), objective.getVersion(), faction.getId(), faction.getVersion());
     }
 }

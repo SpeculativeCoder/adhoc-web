@@ -68,6 +68,16 @@ public class ManagerUserService {
                 toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }
 
+    private User toEntity(UserDto userDto, User user) {
+        // TODO
+        //user.setName(userDto.getName());
+        //user.setFaction(user.getFaction());
+
+        user.setUpdated(LocalDateTime.now());
+
+        return user;
+    }
+
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public UserDetailDto serverUserJoin(UserJoinRequest userJoinRequest) {
@@ -218,15 +228,4 @@ public class ManagerUserService {
 
         userRepository.deleteAllByIdInBatch(oldUserIds);
     }
-
-    private User toEntity(UserDto userDto, User user) {
-        // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
-    }
-
 }

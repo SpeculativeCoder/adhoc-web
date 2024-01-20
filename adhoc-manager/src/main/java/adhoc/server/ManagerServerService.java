@@ -67,6 +67,8 @@ public class ManagerServerService {
     private final DnsService dnsService;
     private final ServerService serverService;
 
+    private final AreaGroupsFactory areaGroupsFactory;
+
     private final SimpMessageSendingOperations stomp;
     private final EntityManager entityManager;
 
@@ -144,13 +146,9 @@ public class ManagerServerService {
         for (Region region : regions) {
             log.trace("Managing servers for region {}", region.getId());
 
-            // TODO: assign areas to servers based on player count etc. - for now we just do one server per area
-            List<List<Area>> areaGroups = new ArrayList<>();
-            for (Area area : region.getAreas()) {
-                areaGroups.add(Collections.singletonList(area));
-            }
+            List<Set<Area>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
 
-            for (List<Area> areaGroup : areaGroups) {
+            for (Set<Area> areaGroup : areaGroups) {
                 manageServer(region, areaGroup);
             }
         }
@@ -163,11 +161,11 @@ public class ManagerServerService {
         }
     }
 
-    private void manageServer(Region region, List<Area> areaGroup) {
+    private void manageServer(Region region, Set<Area> areaGroup) {
         log.trace("Managing server for region {} and area group {}", region.getId(), areaGroup);
 
         // TODO: other servers may already be hosting some of the other areas so can't just check first area (but we do for now)
-        Area firstArea = areaGroup.get(0);
+        Area firstArea = areaGroup.iterator().next();
         Server server = serverRepository.findFirstByAreasContains(firstArea).orElseGet(Server::new);
 
         if (server.getRegion() == null || !region.getId().equals(server.getRegion().getId())) {

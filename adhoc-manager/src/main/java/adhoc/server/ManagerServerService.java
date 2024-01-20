@@ -34,6 +34,7 @@ import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.world.ManagerWorldService;
+import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -210,16 +211,18 @@ public class ManagerServerService {
         // get state of running containers
         HostingState hostingState = hostingService.poll();
         log.debug("manageHostingTasks: hostingState={}", hostingState);
-        if (hostingState == null) {
-            throw new IllegalStateException("hostingState is null");
-        }
+        Verify.verifyNotNull(hostingState, "hostingState must not be null");
 
         managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
 
         Set<ServerTask> tasksToKeep = Sets.newLinkedHashSet();
         try (Stream<Server> servers = serverRepository.streamByAreasNotEmpty()) {
             servers.forEach(server -> {
-                manageServerTask(hostingState, tasksToKeep, server);
+                ServerTask task = hostingState.getServerTasks().get(server.getId());
+                if (task != null) {
+                    tasksToKeep.add(task);
+                }
+                manageServerTask(server, Optional.ofNullable(task));
             });
         }
 
@@ -231,18 +234,19 @@ public class ManagerServerService {
         }
     }
 
-    private void manageServerTask(HostingState hostingState, Set<ServerTask> tasksToKeep, Server server) {
-        ServerTask task = hostingState.getServerTasks().get(server.getId());
-
+    private void manageServerTask(Server server, Optional<ServerTask> existingTask) {
         boolean sendEvent = false;
-        if (task != null) {
-            tasksToKeep.add(task);
+
+        if (existingTask.isPresent()) {
+            ServerTask task = existingTask.get();
+
             server.setSeen(LocalDateTime.now());
 
             if (!Objects.equals(server.getPrivateIp(), task.getPrivateIp())) {
                 server.setPrivateIp(task.getPrivateIp());
                 sendEvent = true;
             }
+
             if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
                 if (task.getPublicIp() != null) {
                     server.setStatus(ServerStatus.ACTIVE);
@@ -263,12 +267,14 @@ public class ManagerServerService {
                 server.setPublicIp(task.getPublicIp());
                 sendEvent = true;
             }
+
             if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
                 server.setPublicWebSocketPort(task.getPublicWebSocketPort());
                 sendEvent = true;
             }
 
-        } else if (task == null) {
+        } else {
+
             if (server.getStatus() == ServerStatus.ACTIVE) {
                 log.warn("Server {} seems to have stopped running!", server.getId());
                 server.setStatus(ServerStatus.INACTIVE);

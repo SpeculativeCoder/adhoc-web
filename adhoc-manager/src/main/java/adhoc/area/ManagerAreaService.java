@@ -54,6 +54,25 @@ public class ManagerAreaService {
 
     private final AreaService areaService;
 
+    Area toEntity(AreaDto areaDto, Area area) {
+        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
+        area.setIndex(areaDto.getIndex());
+        area.setName(areaDto.getName());
+        area.setX(areaDto.getX());
+        area.setY(areaDto.getY());
+        area.setZ(areaDto.getZ());
+        area.setSizeX(areaDto.getSizeX());
+        area.setSizeY(areaDto.getSizeY());
+        area.setSizeZ(areaDto.getSizeZ());
+        //noinspection OptionalAssignedToNull
+        if (areaDto.getServerId() != null) {
+            area.setServer(areaDto.getServerId().isEmpty() ? null
+                    : serverRepository.getReferenceById(areaDto.getServerId().get()));
+        }
+
+        return area;
+    }
+
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public List<AreaDto> processServerAreas(Long serverId, List<AreaDto> areaDtos) {
@@ -85,24 +104,5 @@ public class ManagerAreaService {
                 .map(areaRepository::save)
                 .map(areaService::toDto)
                 .toList();
-    }
-
-    Area toEntity(AreaDto areaDto, Area area) {
-        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
-        area.setIndex(areaDto.getIndex());
-        area.setName(areaDto.getName());
-        area.setX(areaDto.getX());
-        area.setY(areaDto.getY());
-        area.setZ(areaDto.getZ());
-        area.setSizeX(areaDto.getSizeX());
-        area.setSizeY(areaDto.getSizeY());
-        area.setSizeZ(areaDto.getSizeZ());
-        //noinspection OptionalAssignedToNull
-        if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().isEmpty() ? null
-                    : serverRepository.getReferenceById(areaDto.getServerId().get()));
-        }
-
-        return area;
     }
 }

@@ -97,17 +97,17 @@ public class ManagerServerService {
         return server;
     }
 
-    public void handleServerStarted(ServerStartedEvent serverStartedEvent) {
+    public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
         Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
         server.setStatus(ServerStatus.ACTIVE);
         //server.setPrivateIp(serverStartedEvent.getPrivateIp());
         //server.setManagerHost(server.getManagerHost());
 
-        sendServerUpdatedEvent(server);
+        return toServerUpdatedEvent(server);
     }
 
-    private void sendServerUpdatedEvent(Server server) {
+    private static ServerUpdatedEvent toServerUpdatedEvent(Server server) {
         ServerUpdatedEvent event = new ServerUpdatedEvent(
                 server.getId(),
                 server.getVersion(),
@@ -121,6 +121,11 @@ public class ManagerServerService {
                 server.getPublicIp(),
                 server.getPublicWebSocketPort(),
                 server.getWebSocketUrl());
+        return event;
+    }
+
+    private void sendServerUpdatedEvent(Server server) {
+        ServerUpdatedEvent event = toServerUpdatedEvent(server);
 
         log.info("Sending: {}", event);
         stomp.convertAndSend("/topic/events", event);

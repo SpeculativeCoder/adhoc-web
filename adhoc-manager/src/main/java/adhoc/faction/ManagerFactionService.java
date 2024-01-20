@@ -53,6 +53,16 @@ public class ManagerFactionService {
                 toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId())));
     }
 
+    Faction toEntity(FactionDto factionDto, Faction faction) {
+        faction.setId(faction.getId());
+        faction.setIndex(faction.getIndex());
+        faction.setName(factionDto.getName());
+        faction.setColor(factionDto.getColor());
+        faction.setScore(factionDto.getScore());
+
+        return faction;
+    }
+
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void awardFactionScores() {
@@ -70,6 +80,7 @@ public class ManagerFactionService {
 
         LocalDateTime seenBefore = LocalDateTime.now().minusHours(48);
 
+        // TODO: move to user
         for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
             Faction faction = factionObjectiveCount.getFaction();
             Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
@@ -88,15 +99,5 @@ public class ManagerFactionService {
 
         // TODO: multiplier property
         factionRepository.updateScoreMultiply(0.999f);
-    }
-
-    Faction toEntity(FactionDto factionDto, Faction faction) {
-        faction.setId(faction.getId());
-        faction.setIndex(faction.getIndex());
-        faction.setName(factionDto.getName());
-        faction.setColor(factionDto.getColor());
-        faction.setScore(factionDto.getScore());
-
-        return faction;
     }
 }

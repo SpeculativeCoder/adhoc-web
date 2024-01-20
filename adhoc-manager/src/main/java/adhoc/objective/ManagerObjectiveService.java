@@ -69,6 +69,51 @@ public class ManagerObjectiveService {
                         objectiveRepository.getReferenceById(objectiveDto.getId()))));
     }
 
+    Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
+        Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
+
+        objective.setRegion(region);
+        objective.setIndex(objectiveDto.getIndex());
+
+        objective.setName(objectiveDto.getName());
+
+        objective.setX(objectiveDto.getX());
+        objective.setY(objectiveDto.getY());
+        objective.setZ(objectiveDto.getZ());
+
+        objective.setInitialFaction(objectiveDto.getInitialFactionIndex() == null ? null
+                : factionRepository.getByIndex(objectiveDto.getInitialFactionIndex()));
+
+        //noinspection OptionalAssignedToNull
+        if (objectiveDto.getFactionIndex() != null) {
+            objective.setFaction(objectiveDto.getFactionIndex().isEmpty() ? null
+                    : factionRepository.getByIndex(objectiveDto.getFactionIndex().get()));
+        }
+
+        // NOTE: linked objectives will be set in stage 2
+        if (objective.getLinkedObjectives() == null) {
+            objective.setLinkedObjectives(new LinkedHashSet<>());
+        }
+
+        objective.setArea(areaRepository.getByRegionAndIndex(region, objectiveDto.getAreaIndex()));
+
+        return objective;
+    }
+
+    Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
+        Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
+
+        Set<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
+                .map(linkedObjectiveIndex ->
+                        objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        objective.getLinkedObjectives().retainAll(linkedObjectives);
+        objective.getLinkedObjectives().addAll(linkedObjectives);
+
+        return objective;
+    }
+
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
@@ -118,51 +163,6 @@ public class ManagerObjectiveService {
 
             return objectiveService.toDto(objective);
         }).toList();
-    }
-
-    Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
-        Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
-
-        objective.setRegion(region);
-        objective.setIndex(objectiveDto.getIndex());
-
-        objective.setName(objectiveDto.getName());
-
-        objective.setX(objectiveDto.getX());
-        objective.setY(objectiveDto.getY());
-        objective.setZ(objectiveDto.getZ());
-
-        objective.setInitialFaction(objectiveDto.getInitialFactionIndex() == null ? null
-                : factionRepository.getByIndex(objectiveDto.getInitialFactionIndex()));
-
-        //noinspection OptionalAssignedToNull
-        if (objectiveDto.getFactionIndex() != null) {
-            objective.setFaction(objectiveDto.getFactionIndex().isEmpty() ? null
-                    : factionRepository.getByIndex(objectiveDto.getFactionIndex().get()));
-        }
-
-        // NOTE: linked objectives will be set in stage 2
-        if (objective.getLinkedObjectives() == null) {
-            objective.setLinkedObjectives(new LinkedHashSet<>());
-        }
-
-        objective.setArea(areaRepository.getByRegionAndIndex(region, objectiveDto.getAreaIndex()));
-
-        return objective;
-    }
-
-    Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
-        Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
-
-        Set<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
-                .map(linkedObjectiveIndex ->
-                        objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        objective.getLinkedObjectives().retainAll(linkedObjectives);
-        objective.getLinkedObjectives().addAll(linkedObjectives);
-
-        return objective;
     }
 
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},

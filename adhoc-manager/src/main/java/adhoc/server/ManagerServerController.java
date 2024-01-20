@@ -23,6 +23,7 @@
 package adhoc.server;
 
 import adhoc.server.event.ServerStartedEvent;
+import adhoc.server.event.ServerUpdatedEvent;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,10 +54,10 @@ public class ManagerServerController {
 
     @MessageMapping("ServerStarted")
     @PreAuthorize("hasRole('SERVER')")
-    public void handleServerStarted(
+    public ServerUpdatedEvent handleServerStarted(
             @Valid @RequestBody ServerStartedEvent serverStartedEvent) {
         log.info("Handling: {}", serverStartedEvent);
 
-        managerServerService.handleServerStarted(serverStartedEvent);
+        return managerServerService.handleServerStarted(serverStartedEvent);
     }
 }

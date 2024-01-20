@@ -54,6 +54,23 @@ public class ManagerPawnService {
 
     private final PawnService pawnService;
 
+    Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
+        pawn.setUuid(pawnDto.getUuid());
+        pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
+        pawn.setIndex(pawnDto.getIndex());
+        pawn.setName(pawnDto.getName());
+        pawn.setDescription(pawnDto.getDescription());
+        pawn.setX(pawnDto.getX());
+        pawn.setY(pawnDto.getY());
+        pawn.setZ(pawnDto.getZ());
+        pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
+        pawn.setHuman(pawnDto.getHuman());
+        pawn.setFaction(pawnDto.getFactionIndex() == null ? null : factionRepository.getByIndex(pawnDto.getFactionIndex()));
+        pawn.setSeen(pawnDto.getSeen());
+
+        return pawn;
+    }
+
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
     public List<PawnDto> handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
@@ -92,22 +109,5 @@ public class ManagerPawnService {
         log.trace("Purging old pawns...");
 
         pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(5));
-    }
-
-    Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
-        pawn.setUuid(pawnDto.getUuid());
-        pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
-        pawn.setIndex(pawnDto.getIndex());
-        pawn.setName(pawnDto.getName());
-        pawn.setDescription(pawnDto.getDescription());
-        pawn.setX(pawnDto.getX());
-        pawn.setY(pawnDto.getY());
-        pawn.setZ(pawnDto.getZ());
-        pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
-        pawn.setHuman(pawnDto.getHuman());
-        pawn.setFaction(pawnDto.getFactionIndex() == null ? null : factionRepository.getByIndex(pawnDto.getFactionIndex()));
-        pawn.setSeen(pawnDto.getSeen());
-
-        return pawn;
     }
 }

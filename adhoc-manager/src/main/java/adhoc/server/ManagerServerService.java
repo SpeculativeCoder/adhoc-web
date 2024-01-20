@@ -154,6 +154,13 @@ public class ManagerServerService {
                 manageServer(region, areaGroup);
             }
         }
+
+        try (Stream<Server> unusedServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmpty()) {
+            unusedServers.forEach(unusedServer -> {
+                log.info("Deleting unused server {}", unusedServer);
+                serverRepository.delete(unusedServer);
+            });
+        }
     }
 
     private void manageServer(Region region, List<Area> areaGroup) {

@@ -23,7 +23,9 @@
 package adhoc.server;
 
 import adhoc.area.Area;
+import adhoc.pawn.Pawn;
 import adhoc.region.Region;
+import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -87,4 +89,10 @@ public class Server {
     private LocalDateTime initiated;
 
     private LocalDateTime seen;
+
+    @OneToMany(mappedBy = "server")
+    private List<User> users;
+
+    @OneToMany(mappedBy = "server")
+    private List<Pawn> pawns;
 }

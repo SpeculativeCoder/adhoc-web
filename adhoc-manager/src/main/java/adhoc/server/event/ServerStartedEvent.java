@@ -43,10 +43,6 @@ public class ServerStartedEvent implements Event {
     @Min(1)
     private Long serverId;
 
-    //@NotNull
-    @Min(0)
-    private Long serverVersion;
-
     @NotEmpty
     private String privateIp;
 

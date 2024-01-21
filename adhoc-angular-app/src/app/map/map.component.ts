@@ -371,8 +371,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
           let serverGroup = new fabric.Group([serverRect, serverText], {
             originX: 'center',
             originY: 'center',
-            left: server.x,
-            top: -server.y,
+            left: area.x, // TODO: server?
+            top: -area.y, // TODO: server?
             selectable: true,
             lockMovementX: true,
             lockMovementY: true,

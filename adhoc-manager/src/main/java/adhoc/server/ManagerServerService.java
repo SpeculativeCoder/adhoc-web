@@ -127,13 +127,6 @@ public class ManagerServerService {
         return event;
     }
 
-    private void sendServerUpdatedEvent(Server server) {
-        ServerUpdatedEvent event = toServerUpdatedEvent(server);
-
-        log.info("Sending: {}", event);
-        stomp.convertAndSend("/topic/events", event);
-    }
-
     /**
      * Manage the required servers to represent the areas within each region.
      * This will typically be based on number of players in each area.
@@ -147,9 +140,15 @@ public class ManagerServerService {
             log.trace("Managing servers for region {}", region.getId());
 
             List<Set<Area>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
+            log.trace("areaGroups: {}", areaGroups);
 
             for (Set<Area> areaGroup : areaGroups) {
-                manageServer(region, areaGroup);
+                Optional<ServerUpdatedEvent> optionalEvent = manageServer(region, areaGroup);
+                optionalEvent.ifPresent(event -> {
+                    // TODO
+                    log.info("Sending: {}", event);
+                    stomp.convertAndSend("/topic/events", event);
+                });
             }
         }
 
@@ -161,18 +160,22 @@ public class ManagerServerService {
         }
     }
 
-    private void manageServer(Region region, Set<Area> areaGroup) {
+    private Optional<ServerUpdatedEvent> manageServer(Region region, Set<Area> areaGroup) {
         log.trace("Managing server for region {} and area group {}", region.getId(), areaGroup);
 
-        // TODO: other servers may already be hosting some of the other areas so can't just check first area (but we do for now)
+        boolean sendEvent = false;
+
+        // TODO: prefer areas that have humans in them
         Area firstArea = areaGroup.iterator().next();
         Server server = serverRepository.findFirstByAreasContains(firstArea).orElseGet(Server::new);
 
         if (server.getRegion() == null || !region.getId().equals(server.getRegion().getId())) {
             server.setRegion(region);
+            sendEvent = true;
         }
         if (!region.getMapName().equals(server.getMapName())) {
             server.setMapName(region.getMapName());
+            sendEvent = true;
         }
 
         // TODO: average across all the areas
@@ -182,14 +185,31 @@ public class ManagerServerService {
             server.setX(firstArea.getX());
             server.setY(firstArea.getY());
             server.setZ(firstArea.getZ());
+            sendEvent = true;
         }
 
-        if (server.getAreas() == null ||
-                !server.getAreas().stream().map(Area::getId).collect(Collectors.toSet())
-                        .equals(areaGroup.stream().map(Area::getId).collect(Collectors.toSet()))) {
-            server.setAreas(new ArrayList<>(areaGroup));
-            for (Area area : server.getAreas()) {
+
+        if (server.getAreas() == null) {
+            server.setAreas(new ArrayList<>());
+            sendEvent = true;
+        }
+        // remove areas no longer represented by this server
+        for (Iterator<Area> iter = server.getAreas().iterator(); iter.hasNext(); ) {
+            Area existingArea = iter.next();
+            if (!areaGroup.contains(existingArea)) {
+                log.info("Server {} no longer contains area {}", server.getId(), existingArea.getId());
+                iter.remove();
+                existingArea.setServer(null);
+                sendEvent = true;
+            }
+        }
+        // link new areas represented by this server
+        for (Area area : areaGroup) {
+            if (!server.getAreas().contains(area)) {
+                log.info("Server {} now contains area {}", server.getId(), area.getId());
+                server.getAreas().add(area);
                 area.setServer(server);
+                sendEvent = true;
             }
         }
 
@@ -202,8 +222,11 @@ public class ManagerServerService {
             server.setName(server.getId().toString());
 
             log.info("New server {} assigned to region {} areas {}", server.getId(), server.getRegion().getId(),
-                    server.getAreas().stream().map(Area::getId).collect(Collectors.toList()));
+                    server.getAreas().stream().map(Area::getId).toList());
+            sendEvent = true;
         }
+
+        return sendEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
     }
 
     /**
@@ -314,7 +337,9 @@ public class ManagerServerService {
         }
 
         if (sendEvent) {
-            sendServerUpdatedEvent(server);
+            ServerUpdatedEvent event = toServerUpdatedEvent(server);
+            log.info("Sending: {}", event);
+            stomp.convertAndSend("/topic/events", event);
         }
     }
 

@@ -135,12 +135,11 @@ public class ManagerServerService {
         log.trace("Managing servers...");
 
         List<Region> regions = regionRepository.findAll();
-
         for (Region region : regions) {
             log.trace("Managing servers for region {}", region.getId());
 
             List<Set<Area>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
-            log.trace("areaGroups: {}", areaGroups);
+            log.trace("Region {} area groups: {}", region.getId(), areaGroups);
 
             for (Set<Area> areaGroup : areaGroups) {
                 Optional<ServerUpdatedEvent> optionalEvent = manageServer(region, areaGroup);
@@ -165,29 +164,32 @@ public class ManagerServerService {
 
         boolean sendEvent = false;
 
-        // TODO: prefer areas that have humans in them
         Area firstArea = areaGroup.iterator().next();
-        Server server = serverRepository.findFirstByAreasContains(firstArea).orElseGet(Server::new);
+        // TODO: average across all the areas
+        Float areaGroupX = firstArea.getX();
+        Float areaGroupY = firstArea.getY();
+        Float areaGroupZ = firstArea.getZ();
 
-        if (server.getRegion() == null || !region.getId().equals(server.getRegion().getId())) {
+        // TODO: prefer searching by area(s) that have human(s) in them
+        Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
+
+        if (server.getRegion() != region) {
             server.setRegion(region);
             sendEvent = true;
         }
-        if (!region.getMapName().equals(server.getMapName())) {
+        if (!Objects.equals(server.getMapName(), region.getMapName())) {
             server.setMapName(region.getMapName());
             sendEvent = true;
         }
 
-        // TODO: average across all the areas
-        if (!firstArea.getX().equals(server.getX())
-                || !firstArea.getY().equals(server.getY())
-                || !firstArea.getZ().equals(server.getZ())) {
+        if (!Objects.equals(server.getX(), areaGroupX)
+                || !Objects.equals(server.getY(), areaGroupY)
+                || !Objects.equals(server.getZ(), areaGroupZ)) {
             server.setX(firstArea.getX());
             server.setY(firstArea.getY());
             server.setZ(firstArea.getZ());
             sendEvent = true;
         }
-
 
         if (server.getAreas() == null) {
             server.setAreas(new ArrayList<>());

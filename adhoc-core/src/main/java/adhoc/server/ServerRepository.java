@@ -23,6 +23,7 @@
 package adhoc.server;
 
 import adhoc.area.Area;
+import adhoc.region.Region;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -30,7 +31,7 @@ import java.util.stream.Stream;
 
 public interface ServerRepository extends JpaRepository<Server, Long> {
 
-    Optional<Server> findFirstByAreasContains(Area area);
+    Optional<Server> findFirstByRegionAndAreasContains(Region region, Area area);
 
     Stream<Server> streamByAreasNotEmpty();
 

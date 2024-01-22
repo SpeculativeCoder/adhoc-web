@@ -158,11 +158,12 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
 
   private loadData() {
     forkJoin([
+      // TODO: all should be refresh
       this.regionService.getRegions(),
-      this.areaService.getAreas(),
-      this.objectiveService.getObjectives(),
+      this.areaService.refreshAreas(),
+      this.objectiveService.refreshObjectives(),
       this.serverService.getServers(),
-      this.factionService.getFactions(),
+      this.factionService.refreshFactions(),
       this.pawnService.getPawns(),
     ]).subscribe(data => {
       let pawns: Pawn[];

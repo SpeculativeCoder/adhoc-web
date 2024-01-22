@@ -26,5 +26,6 @@ public enum ServerStatus {
     INACTIVE,
     STARTING,
     ACTIVE,
+    STOPPING,
     ERROR
 }

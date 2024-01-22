@@ -35,7 +35,6 @@ import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.world.ManagerWorldService;
 import com.google.common.base.Verify;
-import com.google.common.collect.Sets;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -142,9 +141,11 @@ public class ManagerServerService {
             log.trace("Region {} area groups: {}", region.getId(), areaGroups);
 
             for (Set<Area> areaGroup : areaGroups) {
-                Optional<ServerUpdatedEvent> optionalEvent = manageServer(region, areaGroup);
+                Optional<ServerUpdatedEvent> optionalEvent =
+                        manageServer(region, areaGroup);
+
+                // TODO
                 optionalEvent.ifPresent(event -> {
-                    // TODO
                     log.info("Sending: {}", event);
                     stomp.convertAndSend("/topic/events", event);
                 });
@@ -245,26 +246,33 @@ public class ManagerServerService {
 
         managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
 
-        Set<ServerTask> tasksToKeep = Sets.newLinkedHashSet();
-        try (Stream<Server> servers = serverRepository.streamByAreasNotEmpty()) {
+        try (Stream<Server> servers = serverRepository.streamBy()) {
             servers.forEach(server -> {
                 ServerTask task = hostingState.getServerTasks().get(server.getId());
-                if (task != null) {
-                    tasksToKeep.add(task);
-                }
-                manageServerTask(server, Optional.ofNullable(task));
+                Optional<ServerUpdatedEvent> optionalEvent =
+                        manageServerTask(server, Optional.ofNullable(task));
+
+                // TODO
+                optionalEvent.ifPresent(event -> {
+                    log.info("Sending: {}", event);
+                    stomp.convertAndSend("/topic/events", event);
+                });
             });
         }
 
-        for (ServerTask task : hostingState.getServerTasks().values()) {
-            if (!tasksToKeep.contains(task)) {
-                log.debug("Need to stop task {}", task);
+        // any tasks for servers which don't exist should be stopped (typically this is cleanup)
+        for (Map.Entry<Long, ServerTask> entry : hostingState.getServerTasks().entrySet()) {
+            Long serverId = entry.getKey();
+            ServerTask task = entry.getValue();
+
+            if (!serverRepository.existsById(serverId)) {
+                log.debug("Server {} does not exist - need to stop task {}", serverId, task);
                 hostingService.stopServerTask(task);
             }
         }
     }
 
-    private void manageServerTask(Server server, Optional<ServerTask> existingTask) {
+    private Optional<ServerUpdatedEvent> manageServerTask(Server server, Optional<ServerTask> existingTask) {
         boolean sendEvent = false;
 
         if (existingTask.isPresent()) {
@@ -303,55 +311,73 @@ public class ManagerServerService {
                 sendEvent = true;
             }
 
+            if (server.getAreas().isEmpty() && server.getStatus() == ServerStatus.ACTIVE) {
+                log.info("Server {} has no assigned areas - need to stop task {}", server.getId(), task);
+                hostingService.stopServerTask(task);
+                server.setStatus(ServerStatus.STOPPING);
+                sendEvent = true;
+            }
+
         } else {
 
-            if (server.getStatus() == ServerStatus.ACTIVE) {
-                log.warn("Server {} seems to have stopped running!", server.getId());
+            if (server.getStatus() != ServerStatus.INACTIVE) {
+                if (server.getStatus() != ServerStatus.STOPPING) {
+                    log.warn("Server {} task has stopped unexpectedly!", server.getId());
+                } else {
+                    log.info("Server {} task has stopped successfully", server.getId());
+                }
                 server.setStatus(ServerStatus.INACTIVE);
+            }
 
+            if (server.getPrivateIp() != null) {
                 server.setPrivateIp(null);
-                server.setPublicIp(null);
-                server.setPublicWebSocketPort(null);
+                sendEvent = true;
+            }
 
+            if (server.getPublicIp() != null) {
+                server.setPublicIp(null);
+                sendEvent = true;
+            }
+
+            if (server.getPublicWebSocketPort() != null) {
+                server.setPublicWebSocketPort(null);
+                sendEvent = true;
+            }
+
+            if (server.getInitiated() != null) {
                 server.setInitiated(null);
+                sendEvent = true;
+            }
+
+            if (server.getSeen() != null) {
                 server.setSeen(null);
                 sendEvent = true;
+            }
 
-            } else if (server.getStatus() == ServerStatus.INACTIVE) {
-                // don't start a server unless it will be able to connect to a manager
-                //if (hostingState.getManagerHosts().isEmpty()) {
-                //    log.warn("Need to start server {} but no manager(s) available!", server.getId());
-                //} else {
-                log.info("Need to start server {}", server.getId());
+            if (!server.getAreas().isEmpty()) {
+                log.info("Server {} has assigned areas {} - need to start task", server.getId(),
+                        server.getAreas().stream().map(Area::getId).toList());
                 try {
-                    hostingService.startServerTask(server); //, hostingState.getManagerHosts());
+                    hostingService.startServerTask(server);
                     server.setStatus(ServerStatus.STARTING);
                     server.setInitiated(LocalDateTime.now());
-                    //server.setManagerHost(hostingState.getManagerHosts().iterator().next());
                     sendEvent = true;
                 } catch (Exception e) {
                     log.warn("Failed to start server {}!", server.getId(), e);
                     server.setStatus(ServerStatus.ERROR);
-                    //throw new RuntimeException("Failed to start server "+server.getId(), e);
                 }
-                //}
             }
         }
 
-        if (sendEvent) {
-            ServerUpdatedEvent event = toServerUpdatedEvent(server);
-            log.info("Sending: {}", event);
-            stomp.convertAndSend("/topic/events", event);
-        }
+        return sendEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
     }
 
     private void stopAllServerTasks() {
         // get state of running containers
         HostingState hostingState = hostingService.poll();
         log.debug("stopAllTasks: hostingState={}", hostingState);
-        if (hostingState == null) {
-            return;
-        }
+        Verify.verifyNotNull(hostingState, "hostingState must not be null");
+
         for (ServerTask task : hostingState.getServerTasks().values()) {
             log.debug("Stopping task {}", task);
             hostingService.stopServerTask(task);

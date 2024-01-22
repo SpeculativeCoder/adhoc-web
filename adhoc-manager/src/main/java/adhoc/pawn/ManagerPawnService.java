@@ -108,6 +108,6 @@ public class ManagerPawnService {
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");
 
-        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(5));
+        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
     }
 }

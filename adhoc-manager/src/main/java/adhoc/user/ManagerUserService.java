@@ -202,7 +202,7 @@ public class ManagerUserService {
     public void leaveUnseenUsers() {
         log.trace("Leaving unseen users...");
 
-        try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(LocalDateTime.now().minusMinutes(15))) {
+        try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(LocalDateTime.now().minusMinutes(5))) {
             users.forEach(user -> {
                 log.info("Leaving unseen user {} from server {}", user.getId(), user.getServer().getId());
                 user.setServer(null);

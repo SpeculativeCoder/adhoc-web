@@ -24,5 +24,9 @@ package adhoc.region;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.stream.Stream;
+
 public interface RegionRepository extends JpaRepository<Region, Long> {
+
+    Stream<Region> streamBy();
 }

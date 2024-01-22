@@ -54,7 +54,7 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(MANAGE_SERVERS).withIdentity(MANAGE_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(30))
+                        .repeatForever().withIntervalInSeconds(10))
                 .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 

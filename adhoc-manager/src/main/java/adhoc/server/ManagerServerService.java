@@ -33,6 +33,7 @@ import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
+import adhoc.web.event.Event;
 import adhoc.world.ManagerWorldService;
 import com.google.common.base.Verify;
 import jakarta.persistence.EntityManager;
@@ -130,26 +131,20 @@ public class ManagerServerService {
      * Manage the required servers to represent the areas within each region.
      * This will typically be based on number of players in each area.
      */
-    public void manageServers() {
+    public List<? extends Event> manageServers() {
         log.trace("Managing servers...");
+        List<Event> events = new ArrayList<>();
 
-        List<Region> regions = regionRepository.findAll();
-        for (Region region : regions) {
-            log.trace("Managing servers for region {}", region.getId());
+        try (Stream<Region> regions = regionRepository.streamBy()) {
+            regions.forEach(region -> {
+                log.trace("Managing servers for region {}", region);
 
-            List<Set<Area>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
-            log.trace("Region {} area groups: {}", region.getId(), areaGroups);
+                List<Set<Area>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
+                log.trace("Region {} area groups: {}", region.getId(), areaGroups);
 
-            for (Set<Area> areaGroup : areaGroups) {
-                Optional<ServerUpdatedEvent> optionalEvent =
-                        manageServer(region, areaGroup);
-
-                // TODO
-                optionalEvent.ifPresent(event -> {
-                    log.info("Sending: {}", event);
-                    stomp.convertAndSend("/topic/events", event);
-                });
-            }
+                areaGroups.forEach(areaGroup ->
+                        manageServer(region, areaGroup).ifPresent(events::add));
+            });
         }
 
         try (Stream<Server> unusedServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmpty()) {
@@ -158,12 +153,13 @@ public class ManagerServerService {
                 serverRepository.delete(unusedServer);
             });
         }
+
+        return events;
     }
 
     private Optional<ServerUpdatedEvent> manageServer(Region region, Set<Area> areaGroup) {
-        log.trace("Managing server for region {} and area group {}", region.getId(), areaGroup);
-
-        boolean sendEvent = false;
+        log.trace("Managing server for region {} area group {}", region.getId(), areaGroup);
+        boolean changed = false;
 
         Area firstArea = areaGroup.iterator().next();
         // TODO: average across all the areas
@@ -172,15 +168,16 @@ public class ManagerServerService {
         Float areaGroupZ = firstArea.getZ();
 
         // TODO: prefer searching by area(s) that have human(s) in them
-        Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
+        Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea)
+                .orElseGet(Server::new);
 
         if (server.getRegion() != region) {
             server.setRegion(region);
-            sendEvent = true;
+            changed = true;
         }
         if (!Objects.equals(server.getMapName(), region.getMapName())) {
             server.setMapName(region.getMapName());
-            sendEvent = true;
+            changed = true;
         }
 
         if (!Objects.equals(server.getX(), areaGroupX)
@@ -189,12 +186,12 @@ public class ManagerServerService {
             server.setX(firstArea.getX());
             server.setY(firstArea.getY());
             server.setZ(firstArea.getZ());
-            sendEvent = true;
+            changed = true;
         }
 
         if (server.getAreas() == null) {
             server.setAreas(new ArrayList<>());
-            sendEvent = true;
+            changed = true;
         }
         // remove areas no longer represented by this server
         for (Iterator<Area> iter = server.getAreas().iterator(); iter.hasNext(); ) {
@@ -203,7 +200,7 @@ public class ManagerServerService {
                 log.info("Server {} no longer contains area {}", server.getId(), existingArea.getId());
                 iter.remove();
                 existingArea.setServer(null);
-                sendEvent = true;
+                changed = true;
             }
         }
         // link new areas represented by this server
@@ -212,7 +209,7 @@ public class ManagerServerService {
                 log.info("Server {} now contains area {}", server.getId(), area.getId());
                 server.getAreas().add(area);
                 area.setServer(server);
-                sendEvent = true;
+                changed = true;
             }
         }
 
@@ -226,18 +223,19 @@ public class ManagerServerService {
 
             log.info("New server {} assigned to region {} areas {}", server.getId(), server.getRegion().getId(),
                     server.getAreas().stream().map(Area::getId).toList());
-            sendEvent = true;
+            changed = true;
         }
 
-        return sendEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+        return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
     }
 
     /**
      * Manage the server tasks in the hosting service, creating new ones and/or tearing down old ones as required
      * by the current servers.
      */
-    public void manageServerTasks() {
+    public List<? extends Event> manageServerTasks() {
         log.trace("Managing server tasks...");
+        List<Event> events = new ArrayList<>();
 
         // get state of running containers
         HostingState hostingState = hostingService.poll();
@@ -248,15 +246,16 @@ public class ManagerServerService {
 
         try (Stream<Server> servers = serverRepository.streamBy()) {
             servers.forEach(server -> {
-                ServerTask task = hostingState.getServerTasks().get(server.getId());
-                Optional<ServerUpdatedEvent> optionalEvent =
-                        manageServerTask(server, Optional.ofNullable(task));
+                ServerTask existingTask = hostingState.getServerTasks().get(server.getId());
 
-                // TODO
-                optionalEvent.ifPresent(event -> {
-                    log.info("Sending: {}", event);
-                    stomp.convertAndSend("/topic/events", event);
-                });
+                Optional<ServerUpdatedEvent> optionalServerUpdatedEvent;
+                if (existingTask != null) {
+                    optionalServerUpdatedEvent = manageExistingServerTask(existingTask, server);
+                } else {
+                    optionalServerUpdatedEvent = manageMissingServerTask(server);
+                }
+
+                optionalServerUpdatedEvent.ifPresent(events::add);
             });
         }
 
@@ -270,106 +269,109 @@ public class ManagerServerService {
                 hostingService.stopServerTask(task);
             }
         }
+
+        return events;
     }
 
-    private Optional<ServerUpdatedEvent> manageServerTask(Server server, Optional<ServerTask> existingTask) {
-        boolean sendEvent = false;
+    private Optional<ServerUpdatedEvent> manageExistingServerTask(ServerTask task, Server server) {
+        log.trace("Managing existing server task {} for server {}", task, server);
+        boolean changed = false;
 
-        if (existingTask.isPresent()) {
-            ServerTask task = existingTask.get();
+        server.setSeen(LocalDateTime.now());
 
-            server.setSeen(LocalDateTime.now());
+        if (!Objects.equals(server.getPrivateIp(), task.getPrivateIp())) {
+            server.setPrivateIp(task.getPrivateIp());
+            changed = true;
+        }
 
-            if (!Objects.equals(server.getPrivateIp(), task.getPrivateIp())) {
-                server.setPrivateIp(task.getPrivateIp());
-                sendEvent = true;
+        if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
+            if (task.getPublicIp() != null) {
+                server.setStatus(ServerStatus.ACTIVE);
+
+                String serverHost = server.getId() + "-" + managerProperties.getServerDomain();
+
+                int webSocketPort = Verify.verifyNotNull(task.getPublicWebSocketPort(),
+                        "public web socket port not available from task when constructing url");
+                String webSocketUrl = (serverProperties.getSsl().isEnabled() ?
+                        "wss://" + serverHost : "ws://" + task.getPublicIp()) +
+                        ":" + webSocketPort;
+                server.setWebSocketUrl(webSocketUrl);
+
+                dnsService.createOrUpdateDnsRecord(serverHost, Collections.singleton(task.getPublicIp()));
             }
+            server.setPublicIp(task.getPublicIp());
+            changed = true;
+        }
 
-            if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
-                if (task.getPublicIp() != null) {
-                    server.setStatus(ServerStatus.ACTIVE);
+        if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
+            server.setPublicWebSocketPort(task.getPublicWebSocketPort());
+            changed = true;
+        }
 
-                    String serverHost = server.getId() + "-" + managerProperties.getServerDomain();
+        if (server.getAreas().isEmpty() && server.getStatus() == ServerStatus.ACTIVE) {
+            log.info("Server {} has no assigned areas - need to stop task {}", server.getId(), task);
+            hostingService.stopServerTask(task);
+            server.setStatus(ServerStatus.STOPPING);
+            changed = true;
+        }
 
-                    int webSocketPort = Objects.requireNonNull(task.getPublicWebSocketPort(),
-                            "web socket port not available from task when constructing url");
+        return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+    }
 
-                    String webSocketUrl = (serverProperties.getSsl().isEnabled() ?
-                            "wss://" + serverHost : "ws://" + task.getPublicIp()) +
-                            ":" + webSocketPort;
 
-                    server.setWebSocketUrl(webSocketUrl);
+    private Optional<ServerUpdatedEvent> manageMissingServerTask(Server server) {
+        log.trace("Managing missing server task for server {}", server);
+        boolean changed = false;
 
-                    dnsService.createOrUpdateDnsRecord(serverHost, Collections.singleton(task.getPublicIp()));
-                }
-                server.setPublicIp(task.getPublicIp());
-                sendEvent = true;
+        if (server.getStatus() != ServerStatus.INACTIVE) {
+            if (server.getStatus() != ServerStatus.STOPPING) {
+                log.warn("Server {} task has stopped unexpectedly!", server.getId());
+            } else {
+                log.info("Server {} task has stopped successfully", server.getId());
             }
+            server.setStatus(ServerStatus.INACTIVE);
+        }
 
-            if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
-                server.setPublicWebSocketPort(task.getPublicWebSocketPort());
-                sendEvent = true;
-            }
+        if (server.getPrivateIp() != null) {
+            server.setPrivateIp(null);
+            changed = true;
+        }
 
-            if (server.getAreas().isEmpty() && server.getStatus() == ServerStatus.ACTIVE) {
-                log.info("Server {} has no assigned areas - need to stop task {}", server.getId(), task);
-                hostingService.stopServerTask(task);
-                server.setStatus(ServerStatus.STOPPING);
-                sendEvent = true;
-            }
+        if (server.getPublicIp() != null) {
+            server.setPublicIp(null);
+            changed = true;
+        }
 
-        } else {
+        if (server.getPublicWebSocketPort() != null) {
+            server.setPublicWebSocketPort(null);
+            changed = true;
+        }
 
-            if (server.getStatus() != ServerStatus.INACTIVE) {
-                if (server.getStatus() != ServerStatus.STOPPING) {
-                    log.warn("Server {} task has stopped unexpectedly!", server.getId());
-                } else {
-                    log.info("Server {} task has stopped successfully", server.getId());
-                }
-                server.setStatus(ServerStatus.INACTIVE);
-            }
+        if (server.getInitiated() != null) {
+            server.setInitiated(null);
+            changed = true;
+        }
 
-            if (server.getPrivateIp() != null) {
-                server.setPrivateIp(null);
-                sendEvent = true;
-            }
+        if (server.getSeen() != null) {
+            server.setSeen(null);
+            changed = true;
+        }
 
-            if (server.getPublicIp() != null) {
-                server.setPublicIp(null);
-                sendEvent = true;
-            }
-
-            if (server.getPublicWebSocketPort() != null) {
-                server.setPublicWebSocketPort(null);
-                sendEvent = true;
-            }
-
-            if (server.getInitiated() != null) {
-                server.setInitiated(null);
-                sendEvent = true;
-            }
-
-            if (server.getSeen() != null) {
-                server.setSeen(null);
-                sendEvent = true;
-            }
-
-            if (!server.getAreas().isEmpty()) {
-                log.info("Server {} has assigned areas {} - need to start task", server.getId(),
-                        server.getAreas().stream().map(Area::getId).toList());
-                try {
-                    hostingService.startServerTask(server);
-                    server.setStatus(ServerStatus.STARTING);
-                    server.setInitiated(LocalDateTime.now());
-                    sendEvent = true;
-                } catch (Exception e) {
-                    log.warn("Failed to start server {}!", server.getId(), e);
-                    server.setStatus(ServerStatus.ERROR);
-                }
+        if (!server.getAreas().isEmpty()) {
+            log.info("Server {} has assigned areas {} - need to start task", server.getId(),
+                    server.getAreas().stream().map(Area::getId).toList());
+            try {
+                hostingService.startServerTask(server);
+                server.setStatus(ServerStatus.STARTING);
+                server.setInitiated(LocalDateTime.now());
+                changed = true;
+            } catch (Exception e) {
+                log.warn("Failed to start server {}!", server.getId(), e);
+                server.setStatus(ServerStatus.ERROR);
             }
         }
 
-        return sendEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+        return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
     }
 
     private void stopAllServerTasks() {

@@ -26,13 +26,18 @@ import adhoc.faction.ManagerFactionService;
 import adhoc.pawn.ManagerPawnService;
 import adhoc.server.ManagerServerService;
 import adhoc.user.ManagerUserService;
+import adhoc.web.event.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.MDC;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -44,18 +49,22 @@ public class ManagerQuartzJob implements Job {
     private final ManagerUserService managerUserService;
     private final ManagerPawnService managerPawnService;
 
+    private final SimpMessageSendingOperations stomp;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String jobName = context.getJobDetail().getKey().getName();
+
+        List<? extends Event> events = Collections.emptyList();
 
         try (MDC.MDCCloseable closeable = MDC.putCloseable("job", jobName)) {
             //log.info("jobName={}", jobName);
             switch (jobName) {
             case ManagerQuartzConfig.MANAGE_SERVERS:
-                managerServerService.manageServers();
+                events = managerServerService.manageServers();
                 break;
             case ManagerQuartzConfig.MANAGE_SERVER_TASKS:
-                managerServerService.manageServerTasks();
+                events = managerServerService.manageServerTasks();
                 break;
             case ManagerQuartzConfig.AWARD_FACTION_SCORES:
                 managerFactionService.awardFactionScores();
@@ -78,6 +87,11 @@ public class ManagerQuartzJob implements Job {
             default:
                 log.warn("Skipping unknown manager quartz job! jobName={}", jobName);
                 break;
+            }
+
+            for (Event event : events) {
+                log.info("Sending: {}", event);
+                stomp.convertAndSend("/topic/events", event);
             }
 
         } catch (Exception e) {

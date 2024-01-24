@@ -204,7 +204,8 @@ public class ManagerUserService {
 
         try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(LocalDateTime.now().minusMinutes(5))) {
             users.forEach(user -> {
-                log.info("Leaving unseen user {} from server {}", user.getId(), user.getServer().getId());
+                log.atLevel(Boolean.TRUE == user.getHuman() ? Level.INFO : Level.DEBUG)
+                        .log("Leaving unseen user {} from server {}", user, user.getServer());
                 user.setServer(null);
             });
         }

@@ -197,7 +197,7 @@ public class ManagerServerService {
         for (Iterator<Area> iter = server.getAreas().iterator(); iter.hasNext(); ) {
             Area existingArea = iter.next();
             if (!areaGroup.contains(existingArea)) {
-                log.info("Server {} no longer contains area {}", server.getId(), existingArea.getId());
+                log.info("Server {} no longer contains area {}", server, existingArea);
                 iter.remove();
                 existingArea.setServer(null);
                 changed = true;
@@ -206,7 +206,7 @@ public class ManagerServerService {
         // link new areas represented by this server
         for (Area area : areaGroup) {
             if (!server.getAreas().contains(area)) {
-                log.info("Server {} now contains area {}", server.getId(), area.getId());
+                log.info("Server {} now contains area {}", server, area);
                 server.getAreas().add(area);
                 area.setServer(server);
                 changed = true;

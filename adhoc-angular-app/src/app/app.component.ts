@@ -21,7 +21,7 @@
  */
 
 import {StompService} from './web/stomp.service';
-import {Component, ElementRef, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {UserService} from './user/user.service';
@@ -87,11 +87,11 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  @HostListener("window:beforeunload")
-  beforeUnload() {
-    // disconnect websocket if it is open
-    this.stompService.disconnect();
-  }
+  // @HostListener("window:beforeunload")
+  // beforeUnload() {
+  //   // disconnect websocket if it is open
+  //   this.stompService.disconnect();
+  // }
 
   ngOnDestroy() {
   }

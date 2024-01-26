@@ -22,47 +22,51 @@
 
 <ul class="nav justify-content-center">
   <li class="nav-item">
-    <a class="nav-link text-body-emphasis" routerLink="/">{{ appTitle }}</a>
+    <a class="nav-link" routerLink="/"><strong>{{ appTitle }}</strong></a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/map">Map</a>
+    <a class="nav-link" routerLink="/pages/eula">EULA</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/servers">Servers</a>
+    <a class="nav-link" routerLink="/pages/about">About</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" routerLink="/map">Map</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" routerLink="/servers">Servers</a>
   </li>
   <!-- *ngIf="currentUser && currentUser.roles.indexOf('ADMIN') != -1" -->
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/regions">Regions</a>
+    <a class="nav-link" routerLink="/regions">Regions</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/areas">Areas</a>
+    <a class="nav-link" routerLink="/areas">Areas</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/objectives">Objectives</a>
+    <a class="nav-link" routerLink="/objectives">Objectives</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/structures" *ngIf="extra">Structures</a>
+    <a class="nav-link" routerLink="/structures" *ngIf="extra">Structures</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/pawns">Pawns</a>
+    <a class="nav-link" routerLink="/pawns">Pawns</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/factions">Factions</a>
+    <a class="nav-link" routerLink="/factions">Factions</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/users">Users</a>
+    <a class="nav-link" routerLink="/users">Users</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/login-or-register" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
-      <b>Login&nbsp;or&nbsp;Register</b>
+    <a class="nav-link" routerLink="/login-or-register" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
+      <em>Login&nbsp;or&nbsp;Register</em>
     </a>
-    <a class="nav-link text-body disabled" *ngIf="currentUser">
-      <small>
-        {{ currentUser?.name }}
-        <span [ngStyle]="{'color': currentUserFaction?.color}">
-          <span class="small oi oi-person"></span>
-        </span>
-      </small>
+    <a class="nav-link disabled" *ngIf="currentUser">
+      <small>{{ currentUser?.name }} </small>
+      <span [ngStyle]="{'color': currentUserFaction?.color}">
+        <small><span class="small oi oi-person"></span></small>
+      </span>
     </a>
   </li>
   <li class="nav-item dropdown">
@@ -84,11 +88,7 @@
 
 <!--<app-messages></app-messages>-->
 
+<!--
 <ul class="nav justify-content-center fixed-bottom bg-body">
-  <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/pages/eula">EULA</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-body" routerLink="/pages/about">About</a>
-  </li>
 </ul>
+-->

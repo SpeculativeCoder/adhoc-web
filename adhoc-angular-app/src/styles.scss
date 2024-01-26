@@ -20,35 +20,43 @@
  * SOFTWARE.
  */
 
-@import "../node_modules/bootstrap/scss/bootstrap";
-
 @import "../node_modules/bootstrap/scss/functions";
 
 $enable-dark-mode: true;
 $color-mode-type: data;
 
-$body-bg:                   $gray-100;
-$body-bg-dark:              $gray-800;
-
-//$body-bg: #FFF;
-//$body-color: #000;
+//$primary: #0FF;
 
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/variables-dark";
 
-@import "../node_modules/bootstrap/scss/maps";
-@import "../node_modules/bootstrap/scss/mixins";
-@import "../node_modules/bootstrap/scss/root";
+$body-color: $gray-700;
+$body-color-dark: $gray-300;
 
-@import "../node_modules/bootstrap/scss/utilities";
-@import "../node_modules/bootstrap/scss/reboot";
-@import "../node_modules/bootstrap/scss/type";
-@import "../node_modules/bootstrap/scss/images";
-@import "../node_modules/bootstrap/scss/containers";
-@import "../node_modules/bootstrap/scss/grid";
-@import "../node_modules/bootstrap/scss/helpers";
+$body-bg: $gray-200;
+$body-bg-dark: $gray-800;
 
-@import "../node_modules/bootstrap/scss/utilities/api";
+$link-color: $gray-700;
+$link-color-dark: $gray-300;
+
+$link-hover-color: $black;
+$link-hover-color-dark: $white;
+
+//@import "../node_modules/bootstrap/scss/maps";
+//@import "../node_modules/bootstrap/scss/mixins";
+//@import "../node_modules/bootstrap/scss/root";
+//
+//@import "../node_modules/bootstrap/scss/utilities";
+//@import "../node_modules/bootstrap/scss/reboot";
+//@import "../node_modules/bootstrap/scss/type";
+//@import "../node_modules/bootstrap/scss/images";
+//@import "../node_modules/bootstrap/scss/containers";
+//@import "../node_modules/bootstrap/scss/grid";
+//@import "../node_modules/bootstrap/scss/helpers";
+//
+//@import "../node_modules/bootstrap/scss/utilities/api";
+
+@import "../node_modules/bootstrap/scss/bootstrap";
 
 @import "../node_modules/open-iconic/font/css/open-iconic-bootstrap.css";
 

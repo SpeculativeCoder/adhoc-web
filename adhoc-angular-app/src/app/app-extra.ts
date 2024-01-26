@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-//import {extra} from "./adhoc-angular-app-extra/extra";
+//import {extra} from "./adhoc-angular-extra/extra";
 
 /** if adhoc-angular-app-extra is available this can be set to <tt>extra</tt> */
 export const appExtra = null;

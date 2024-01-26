@@ -42,7 +42,7 @@ testem.log
 Thumbs.db
 
 # Adhoc extra functionality
-/src/app/adhoc-angular-app-extra/
+/src/app/adhoc-angular-extra/
 
 # Adhoc app customization
 /src/customization/

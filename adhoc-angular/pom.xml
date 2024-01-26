@@ -32,10 +32,10 @@
   </parent>
 
   <groupId>adhoc</groupId>
-  <artifactId>adhoc-angular-app</artifactId>
+  <artifactId>adhoc-angular</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>adhoc-angular-app</name>
-  <description>adhoc-angular-app</description>
+  <name>adhoc-angular</name>
+  <description>adhoc-angular</description>
 
   <properties>
     <angular-app-customization></angular-app-customization>
@@ -104,7 +104,7 @@
             <configuration>
               <resources>
                 <resource>
-                  <directory>dist/adhoc-angular-app/browser</directory>
+                  <directory>dist/adhoc-angular/browser</directory>
                   <includes>
                     <include>index.html</include>
                   </includes>
@@ -112,7 +112,7 @@
                   <filtering>false</filtering>
                 </resource>
                 <resource>
-                  <directory>dist/adhoc-angular-app/browser</directory>
+                  <directory>dist/adhoc-angular/browser</directory>
                   <excludes>
                     <exclude>index.html</exclude>
                   </excludes>

@@ -22,5 +22,5 @@
 
 //import {extra} from "./adhoc-angular-extra/extra";
 
-/** if adhoc-angular-app-extra is available this can be set to <tt>extra</tt> */
+/** if adhoc-angular-extra is available this can be set to <tt>extra</tt> */
 export const appExtra = null;

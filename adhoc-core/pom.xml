@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>adhoc</groupId>
-            <artifactId>adhoc-angular-app</artifactId>
+            <artifactId>adhoc-angular</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

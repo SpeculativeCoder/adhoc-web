@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "adhoc-angular-app": {
+    "adhoc-angular": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/adhoc-angular-app",
+            "outputPath": "dist/adhoc-angular",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -82,13 +82,13 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "adhoc-angular-app:build:production"
+              "buildTarget": "adhoc-angular:build:production"
             },
             "development": {
-              "buildTarget": "adhoc-angular-app:build:development"
+              "buildTarget": "adhoc-angular:build:development"
             },
             "customization": {
-              "buildTarget": "adhoc-angular-app:build:customization"
+              "buildTarget": "adhoc-angular:build:customization"
             }
           },
           "defaultConfiguration": "development"
@@ -96,7 +96,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "adhoc-angular-app:build"
+            "buildTarget": "adhoc-angular:build"
           }
         },
         "test": {

@@ -37,7 +37,6 @@ export class Server {
   publicIp?: string;
   publicWebSocketPort?: number;
   webSocketUrl?: string;
-
-  initiated?: Date;
-  seen?: Date;
+  initiated?: string;
+  seen?: string;
 }

@@ -29,12 +29,12 @@ export class User {
   factionId?: number;
   human?: boolean;
   score?: number;
-  //created?: Date;
-  //updated?: Date;
-  //lastLogin?: Date;
-  //lastJoin?: Date;
-  seen?: Date;
-  roles?: String[];
-  token?: String;
+  //created?: string;
+  //updated?: string;
+  //lastLogin?: string;
+  //lastJoin?: string;
+  seen?: string;
+  roles?: string[];
+  token?: string;
   serverId?: number;
 }

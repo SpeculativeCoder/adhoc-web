@@ -31,5 +31,5 @@ export class Emission {
   pitch?: number;
   yaw?: number;
   roll?: number;
-  timestamp?: Date;
+  timestamp?: string;
 }

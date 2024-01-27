@@ -34,5 +34,5 @@ export class Pawn {
   userId?: number;
   human?: boolean;
   factionId?: number;
-  seen?: Date;
+  seen?: string;
 }

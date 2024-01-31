@@ -22,15 +22,12 @@
 
 import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {appCustomization} from '../../app-customization';
 
 @Component({
   selector: 'app-page',
   templateUrl: './page.component.html'
 })
 export class PageComponent {
-
-  adhocEnvironment = appCustomization;
 
   page: string;
 

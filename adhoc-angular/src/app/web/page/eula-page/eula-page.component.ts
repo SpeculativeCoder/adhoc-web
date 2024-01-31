@@ -21,7 +21,7 @@
  */
 
 import {Component} from '@angular/core';
-import {appCustomization} from '../../../app-customization';
+import {appConstants} from '../../../app-constants';
 
 @Component({
   selector: 'app-eula',
@@ -29,5 +29,6 @@ import {appCustomization} from '../../../app-customization';
 })
 export class EulaPageComponent {
 
-  adhocEnvironment = appCustomization;
+  appTitle = appConstants.appTitle;
+  appDeveloper = appConstants.appDeveloper;
 }

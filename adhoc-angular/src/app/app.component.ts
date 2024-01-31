@@ -31,8 +31,9 @@ import {CsrfService} from "./web/csrf.service";
 import {HeaderInterceptor} from "./web/http-interceptor/header-interceptor";
 import {PropertiesService} from "./properties/properties.service";
 import {Faction} from "./faction/faction";
-import {appCustomization} from "./app-customization";
+import {appConstants} from "./app-constants";
 import {appExtra} from "./app-extra";
+import {Meta} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-root',
@@ -43,7 +44,7 @@ import {appExtra} from "./app-extra";
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, OnDestroy {
-  appTitle = 'WebApp';
+  appTitle = appConstants.appTitle;
 
   featureFlags: string;
   extra: boolean;
@@ -60,14 +61,16 @@ export class AppComponent implements OnInit, OnDestroy {
               private elementRef: ElementRef,
               private configService: PropertiesService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private meta: Meta) {
 
     this.extra = !!appExtra;
   }
 
   ngOnInit() {
     this.featureFlags = this.configService.featureFlags;
-    this.appTitle = appCustomization.appTitle;
+
+    this.meta.addTag({name: 'description', content: appConstants.appDescription});
 
     this.userService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser = currentUser;

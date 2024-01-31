@@ -55,44 +55,41 @@
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
 
-        <springProfile name="db-hsqldb">
+        <!-- suppress no data warnings from hsqldb UPDATEs etc. which don't update any columns -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
+                    &amp;&amp; (message.equals("SQL Warning Code: -1100, SQLState: 02000") || message.equals("no data")))
+                </expression>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
 
-            <!-- suppress no data warnings from hsqldb UPDATEs etc. which don't update any columns -->
-            <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-                <evaluator>
-                    <expression>
-                        ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
-                        &amp;&amp; (message.equals("SQL Warning Code: -1100, SQLState: 02000") || message.equals("no data")))
-                    </expression>
-                </evaluator>
-                <onMatch>DENY</onMatch>
-                <onMismatch>NEUTRAL</onMismatch>
-            </filter>
+        <!-- TODO -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
+                    &amp;&amp; (message.equals("SQL Error: -4861, SQLState: 40001") || message.equals("transaction rollback: serialization failure")))
+                </expression>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
 
-            <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-                <evaluator>
-                    <expression>
-                        ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
-                        &amp;&amp; (message.equals("SQL Error: -4861, SQLState: 40001") || message.equals("transaction rollback: serialization failure")))
-                    </expression>
-                </evaluator>
-                <onMatch>DENY</onMatch>
-                <onMismatch>NEUTRAL</onMismatch>
-            </filter>
-
-            <!-- TODO -->
-            <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-                <evaluator>
-                    <expression>
-                        ("org.hibernate.orm.jdbc.batch".equals(logger)
-                        &amp;&amp; (message.equals("HHH100503: On release of batch it still contained JDBC statements") || message.startsWith("HHH100501: Exception executing batch")))
-                    </expression>
-                </evaluator>
-                <onMatch>DENY</onMatch>
-                <onMismatch>NEUTRAL</onMismatch>
-            </filter>
-
-        </springProfile>
+        <!-- TODO -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    ("org.hibernate.orm.jdbc.batch".equals(logger)
+                    &amp;&amp; (message.equals("HHH100503: On release of batch it still contained JDBC statements") || message.startsWith("HHH100501: Exception executing batch")))
+                </expression>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
 
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->

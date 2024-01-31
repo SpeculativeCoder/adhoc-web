@@ -21,8 +21,9 @@
  */
 
 /** you can create a copy of this in src/customization and tailor it to your needs */
-export const appCustomization = {
+export const appConstants = {
   appTitle: 'WebApp',
+  appDescription: 'Web Application',
   appDeveloper: 'the developer(s) of this web page / application',
 
   /** any additional about information (e.g. assets used etc.) can go in here */

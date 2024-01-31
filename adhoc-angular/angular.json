@@ -67,8 +67,8 @@
             "customization": {
               "fileReplacements": [
                 {
-                  "replace": "src/app/app-customization.ts",
-                  "with": "src/customization/app-customization.ts"
+                  "replace": "src/app/app-constants.ts",
+                  "with": "src/customization/app-constants.ts"
                 }
               ]
             }

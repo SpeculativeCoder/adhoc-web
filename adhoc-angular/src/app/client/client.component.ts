@@ -24,10 +24,10 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {PropertiesService} from "../properties/properties.service";
-import {appCustomization} from "../app-customization";
 import {AreaService} from "../area/area.service";
 import {UserService} from "../user/user.service";
 import {ServerService} from "../server/server.service";
+import {appConstants} from "../app-constants";
 
 @Component({
   selector: 'app-client',
@@ -35,10 +35,10 @@ import {ServerService} from "../server/server.service";
 })
 export class ClientComponent implements OnInit {
 
+  appTitle = appConstants.appTitle;
+
   showClient: boolean;
   showCompatibilityWarning: boolean;
-
-  appEnvironment = appCustomization;
 
   clientUrl: SafeResourceUrl;
 

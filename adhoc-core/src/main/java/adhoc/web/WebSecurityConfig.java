@@ -72,6 +72,7 @@ public class WebSecurityConfig<S extends Session> {
                         //.requestMatchers("/ws/stomp/user/**").permitAll()
                         .requestMatchers("/ws/stomp/server/**").hasAnyRole("SERVER")
                         .requestMatchers("/ws/stomp/**").denyAll()
+                        .requestMatchers("/HTML5Client/**").hasAnyRole("USER") // TODO
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers("/api/**").permitAll() // TODO: some should be for logged in only

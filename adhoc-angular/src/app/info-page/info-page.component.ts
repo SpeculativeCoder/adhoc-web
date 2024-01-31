@@ -24,10 +24,10 @@ import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
-  selector: 'app-page',
-  templateUrl: './page.component.html'
+  selector: 'info-page',
+  templateUrl: './info-page.component.html'
 })
-export class PageComponent {
+export class InfoPageComponent {
 
   page: string;
 

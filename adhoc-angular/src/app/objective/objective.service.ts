@@ -22,14 +22,14 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {MessageService} from '../web/message/message.service';
+import {MessageService} from '../message/message.service';
 import {Observable, of} from 'rxjs';
 import {Objective} from './objective';
 import {Faction} from '../faction/faction';
-import {StompService} from '../web/stomp.service';
+import {StompService} from '../core/stomp.service';
 import {map} from 'rxjs/operators';
 import {FactionService} from '../faction/faction.service';
-import {CsrfService} from "../web/csrf.service";
+import {CsrfService} from "../core/csrf.service";
 
 @Injectable({
   providedIn: 'root'

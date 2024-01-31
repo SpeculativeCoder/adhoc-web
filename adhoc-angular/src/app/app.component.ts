@@ -20,15 +20,15 @@
  * SOFTWARE.
  */
 
-import {StompService} from './web/stomp.service';
+import {StompService} from './core/stomp.service';
 import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {UserService} from './user/user.service';
 import {User} from './user/user';
 import {ObjectiveService} from "./objective/objective.service";
-import {CsrfService} from "./web/csrf.service";
-import {HeaderInterceptor} from "./web/http-interceptor/header-interceptor";
+import {CsrfService} from "./core/csrf.service";
+import {HeaderInterceptor} from "./core/http-interceptor/header-interceptor";
 import {PropertiesService} from "./properties/properties.service";
 import {Faction} from "./faction/faction";
 import {appConstants} from "./app-constants";

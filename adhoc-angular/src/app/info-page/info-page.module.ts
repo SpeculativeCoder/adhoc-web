@@ -20,15 +20,21 @@
  * SOFTWARE.
  */
 
-import {Component} from '@angular/core';
-import {appConstants} from '../../../app-constants';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {InfoPageComponent} from "./info-page.component";
+import {AboutComponent} from "./about/about.component";
+import {EulaComponent} from "./eula/eula.component";
 
-@Component({
-  selector: 'app-eula',
-  templateUrl: './eula-page.component.html'
+@NgModule({
+  declarations: [
+    InfoPageComponent,
+    AboutComponent,
+    EulaComponent
+  ],
+  imports: [
+    CommonModule
+  ]
 })
-export class EulaPageComponent {
-
-  appTitle = appConstants.appTitle;
-  appDeveloper = appConstants.appDeveloper;
+export class InfoPageModule {
 }

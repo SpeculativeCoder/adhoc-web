@@ -20,21 +20,24 @@
  * SOFTWARE.
  */
 
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {PageComponent} from "./page.component";
-import {AboutPageComponent} from "./about-page/about-page.component";
-import {EulaPageComponent} from "./eula-page/eula-page.component";
+import {Component, SecurityContext} from '@angular/core';
+import {appConstants} from "../../app-constants";
+import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 
-@NgModule({
-  declarations: [
-    PageComponent,
-    AboutPageComponent,
-    EulaPageComponent
-  ],
-  imports: [
-    CommonModule
-  ]
+@Component({
+  selector: 'app-about',
+  templateUrl: './about.component.html'
 })
-export class PageModule {
+export class AboutComponent {
+
+  appTitle = appConstants.appTitle;
+  appDescription = appConstants.appDescription;
+  appDeveloper = appConstants.appDeveloper;
+
+  aboutPageMoreHtml: SafeHtml;
+
+  constructor(private sanitizer: DomSanitizer) {
+    this.aboutPageMoreHtml = sanitizer.sanitize(SecurityContext.HTML, appConstants.aboutPageMoreHtml);
+  }
+
 }

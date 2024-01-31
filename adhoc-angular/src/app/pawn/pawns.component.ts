@@ -26,7 +26,7 @@ import {Pawn} from './pawn';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
-import {SortEvent} from '../web/table-sort/header-sort.component';
+import {SortEvent} from '../shared/table-sort/header-sort.component';
 
 @Component({
   selector: 'app-pawns',

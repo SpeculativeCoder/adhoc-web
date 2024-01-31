@@ -23,9 +23,9 @@
 import {Inject, Injectable} from '@angular/core';
 import {User} from './user';
 import {HttpClient} from '@angular/common/http';
-import {MessageService} from '../web/message/message.service';
+import {MessageService} from '../message/message.service';
 import {BehaviorSubject, mergeMap, Observable, of, take} from 'rxjs';
-import {StompService} from '../web/stomp.service';
+import {StompService} from '../core/stomp.service';
 import {map} from 'rxjs/operators';
 import {PropertiesService} from "../properties/properties.service";
 import {Router} from "@angular/router";

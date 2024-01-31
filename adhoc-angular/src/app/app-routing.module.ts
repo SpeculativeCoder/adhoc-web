@@ -40,7 +40,7 @@ import {StructuresComponent} from "./structure/structures.component";
 import {StructureComponent} from "./structure/structure.component";
 import {PawnsComponent} from "./pawn/pawns.component";
 import {PawnComponent} from "./pawn/pawn.component";
-import {PageComponent} from "./web/page/page.component";
+import {InfoPageComponent} from "./info-page/info-page.component";
 import {ClientComponent} from "./client/client.component";
 
 const routes: Routes = [
@@ -63,7 +63,7 @@ const routes: Routes = [
   {path: 'users', title: 'Users', component: UsersComponent},
   {path: 'users/:id', title: 'User', component: UserComponent},
   {path: 'login-or-register', title: 'Login or Register', component: LoginOrRegisterComponent},
-  {path: 'pages/:page', component: PageComponent},
+  {path: 'pages/:page', component: InfoPageComponent},
   {path: 'client/area/:areaId', title: 'Client', component: ClientComponent},
 ];
 

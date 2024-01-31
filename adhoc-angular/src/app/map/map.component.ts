@@ -38,9 +38,9 @@ import {Pawn} from "../pawn/pawn";
 import {PawnService} from "../pawn/pawn.service";
 import {PropertiesService} from "../properties/properties.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {StompService} from "../web/stomp.service";
+import {StompService} from "../core/stomp.service";
 import {DOCUMENT} from "@angular/common";
-import {CsrfService} from "../web/csrf.service";
+import {CsrfService} from "../core/csrf.service";
 import {MapComponentExtraInterface} from "./map-component-extra-interface";
 import {appExtra} from "../app-extra";
 

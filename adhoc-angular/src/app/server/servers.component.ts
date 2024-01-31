@@ -27,7 +27,7 @@ import {Server} from './server';
 import {ServerService} from './server.service';
 import {User} from '../user/user';
 import {PropertiesService} from "../properties/properties.service";
-import {SortEvent} from "../web/table-sort/header-sort.component";
+import {SortEvent} from "../shared/table-sort/header-sort.component";
 import {Router} from "@angular/router";
 
 @Component({

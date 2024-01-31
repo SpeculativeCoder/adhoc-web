@@ -20,24 +20,15 @@
  * SOFTWARE.
  */
 
-import {Component, SecurityContext} from '@angular/core';
-import {appConstants} from "../../../app-constants";
-import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
+import {Component} from '@angular/core';
+import {appConstants} from '../../app-constants';
 
 @Component({
-  selector: 'app-about',
-  templateUrl: './about-page.component.html'
+  selector: 'app-eula',
+  templateUrl: './eula.component.html'
 })
-export class AboutPageComponent {
+export class EulaComponent {
 
   appTitle = appConstants.appTitle;
-  appDescription = appConstants.appDescription;
   appDeveloper = appConstants.appDeveloper;
-
-  aboutPageMoreHtml: SafeHtml;
-
-  constructor(private sanitizer: DomSanitizer) {
-    this.aboutPageMoreHtml = sanitizer.sanitize(SecurityContext.HTML, appConstants.aboutPageMoreHtml);
-  }
-
 }

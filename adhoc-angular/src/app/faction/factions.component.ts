@@ -23,8 +23,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Faction} from './faction';
 import {FactionService} from './faction.service';
-import {BehaviorSubject, Observable} from "rxjs";
-import {SortEvent} from "../web/table-sort/header-sort.component";
+import {SortEvent} from "../shared/table-sort/header-sort.component";
 import {User} from "../user/user";
 
 @Component({

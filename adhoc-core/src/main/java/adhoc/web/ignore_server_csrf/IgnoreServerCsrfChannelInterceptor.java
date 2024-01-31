@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web.server_ignore_csrf;
+package adhoc.web.ignore_server_csrf;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +32,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Web socket communication with Unreal server does not require CSRF.
+ * Web socket connection from Unreal server does not require CSRF.
  */
 @Slf4j
 @RequiredArgsConstructor
-public class ServerIgnoreCsrfChannelInterceptor implements ChannelInterceptor {
+public class IgnoreServerCsrfChannelInterceptor implements ChannelInterceptor {
 
     private final ChannelInterceptor delegate;
 

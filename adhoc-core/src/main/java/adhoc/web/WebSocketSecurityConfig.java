@@ -22,7 +22,7 @@
 
 package adhoc.web;
 
-import adhoc.web.server_ignore_csrf.ServerIgnoreCsrfChannelInterceptor;
+import adhoc.web.ignore_server_csrf.IgnoreServerCsrfChannelInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -40,7 +40,7 @@ public class WebSocketSecurityConfig {
     @Primary
     @Bean(name = "csrfChannelInterceptor")
     public ChannelInterceptor csrfChannelInterceptor() {
-        return new ServerIgnoreCsrfChannelInterceptor(new XorCsrfChannelInterceptor());
+        return new IgnoreServerCsrfChannelInterceptor(new XorCsrfChannelInterceptor());
     }
 
     @Bean

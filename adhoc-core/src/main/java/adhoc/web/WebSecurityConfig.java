@@ -23,7 +23,7 @@
 package adhoc.web;
 
 import adhoc.user.AdhocAuthenticationSuccessHandler;
-import adhoc.web.server_ignore_csrf.ServerRequestMatcher;
+import adhoc.web.ignore_server_csrf.ServerRequestMatcher;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,13 +57,13 @@ public class WebSecurityConfig<S extends Session> {
 
     private final AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
 
-    private final ServerRequestMatcher serverRequestMatcher;
-
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     private final FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, RememberMeServices rememberMeServices,
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   ServerRequestMatcher serverRequestMatcher,
+                                                   RememberMeServices rememberMeServices,
                                                    SpringSessionBackedSessionRegistry<S> sessionRegistry) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
@@ -108,6 +108,11 @@ public class WebSecurityConfig<S extends Session> {
                 .rememberMe(remember -> remember
                         .rememberMeServices(rememberMeServices))
                 .build();
+    }
+
+    @Bean
+    public ServerRequestMatcher serverRequestMatcher() {
+        return new ServerRequestMatcher();
     }
 
     @Bean

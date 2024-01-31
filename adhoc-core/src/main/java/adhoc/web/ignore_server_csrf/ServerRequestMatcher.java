@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.web.server_ignore_csrf;
+package adhoc.web.ignore_server_csrf;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,16 +28,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 /**
- * Communication with Unreal server does not require CSRF.
- * This matcher provides a way to identify server requests so that we can ignore CSRF for them.
+ * This matcher provides a way to identify server requests.
+ * Can be used, for instance, to ignore CSRF checking on web requests from Unreal server.
  */
 @Slf4j
-@Component
 public class ServerRequestMatcher implements RequestMatcher {
 
     @Value("${adhoc.server.basic-auth.username:#{null}}")

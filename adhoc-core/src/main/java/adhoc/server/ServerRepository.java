@@ -26,6 +26,7 @@ import adhoc.area.Area;
 import adhoc.region.Region;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -35,5 +36,5 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
 
     Stream<Server> streamBy();
 
-    Stream<Server> streamByAreasEmptyAndUsersEmptyAndPawnsEmpty();
+    Stream<Server> streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(LocalDateTime seenBefore);
 }

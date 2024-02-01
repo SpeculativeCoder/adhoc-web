@@ -147,7 +147,8 @@ public class ManagerServerService {
             });
         }
 
-        try (Stream<Server> unusedServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmpty()) {
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
+        try (Stream<Server> unusedServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
             unusedServers.forEach(unusedServer -> {
                 log.info("Deleting unused server {}", unusedServer);
                 serverRepository.delete(unusedServer);
@@ -347,15 +348,15 @@ public class ManagerServerService {
             changed = true;
         }
 
-        if (server.getInitiated() != null) {
-            server.setInitiated(null);
-            changed = true;
-        }
+        //if (server.getInitiated() != null) {
+        //    server.setInitiated(null);
+        //    changed = true;
+        //}
 
-        if (server.getSeen() != null) {
-            server.setSeen(null);
-            changed = true;
-        }
+        //if (server.getSeen() != null) {
+        //    server.setSeen(null);
+        //    changed = true;
+        //}
 
         if (!server.getAreas().isEmpty()) {
             log.info("Server {} has assigned areas {} - need to start task", server.getId(),

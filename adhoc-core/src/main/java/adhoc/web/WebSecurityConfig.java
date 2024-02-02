@@ -51,8 +51,8 @@ import org.springframework.session.security.web.authentication.SpringSessionReme
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class WebSecurityConfig<S extends Session> {
 
     private final AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;

@@ -27,7 +27,6 @@ import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,11 +40,11 @@ public class RobotsController {
     private final CoreProperties coreProperties;
 
     @GetMapping(value = "/robots.txt", produces = "text/plain")
-    public ResponseEntity<ClassPathResource> getRobotsTxt() {
+    public ClassPathResource getRobotsTxt() {
         if (coreProperties.getFeatureFlags().contains("development")) {
-            return ResponseEntity.ok(classPathResource("/robots/robots_development.txt"));
+            return classPathResource("/robots/robots_development.txt");
         } else {
-            return ResponseEntity.ok(classPathResource("/robots/robots.txt"));
+            return classPathResource("/robots/robots.txt");
         }
     }
 

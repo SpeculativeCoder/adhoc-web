@@ -48,7 +48,12 @@
         <th scope="row"><a routerLink="/servers/{{ server.id }}">{{ server.id }}</a></th>
         <td>{{ server.name }}</td>
         <td>{{ server.regionId }}</td>
-        <td>{{ server.areaIds }}</td>
+        <td>
+          <ng-container *ngFor="let areaId of server.areaIds; last as isLast">
+            <span>{{ areaId }}</span>
+            <span *ngIf="!isLast">, </span>
+          </ng-container>
+        </td>
         <td>{{ server.mapName }}</td>
         <td>{{ server.x }}</td>
         <td>{{ server.y }}</td>
@@ -58,7 +63,7 @@
         <td>{{ server.seen | simpleDate }}</td>
         <td>
           <button type="button" class="btn btn-primary"
-                  style="--bs-btn-padding-y:0; --bs-btn-font-size: 0.75rem"
+                  style="--bs-btn-padding-y: 0; --bs-btn-font-size: 0.75rem"
                   *ngIf="server.publicIp" (click)="joinServer(server)">
             Join
           </button>

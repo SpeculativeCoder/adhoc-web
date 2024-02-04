@@ -263,7 +263,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     this.canvas.add(terrainRect);
 
     for (const region of this.regions) {
-      let regionText = new fabric.IText("Region " + region.name, {
+      let regionText = new fabric.IText(`${region.name}`, {
         originX: 'center',
         originY: 'center',
         left: region.x,
@@ -294,7 +294,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         hoverCursor: 'default',
         selectable: false,
       });
-      let areaText = new fabric.IText("Area " + area.name, {
+      let areaText = new fabric.IText(`${area.name}`, {
         originX: 'center',
         originY: 'top',
         left: area.x,
@@ -346,7 +346,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     for (const area of this.areas) {
       for (const server of this.servers) {
         if (server.publicIp && server.areaIds.indexOf(area.id) != -1) {
-          let label = `Area ${area.name} - Server ${server.name}\n(double click to join)`;
+          let label = `${server.name}\n(double click to join)`;
           let serverText = new fabric.IText(label, {
             originX: 'center',
             originY: 'center',

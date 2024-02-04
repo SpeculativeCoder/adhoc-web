@@ -131,7 +131,7 @@ public class ManagerWorldService {
 
         Region region1 = new Region();
         //region1.setId(1L);
-        region1.setName("1");
+        region1.setName("Region 1");
         // TODO: handle multiple regions
         region1.setMapName(coreProperties.getUnrealProjectRegionMaps().get(0));
         region1.setX(1750F);
@@ -167,7 +167,7 @@ public class ManagerWorldService {
         region1.setAreas(Arrays.asList(area1, area2));
 
         Server server1 = new Server();
-        server1.setName("1");
+        server1.setName("Server 1");
         server1.setMapName(region1.getMapName());
         server1.setX(region1.getX());
         server1.setY(region1.getY());

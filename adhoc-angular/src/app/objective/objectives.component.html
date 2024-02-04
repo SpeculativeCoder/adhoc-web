@@ -51,7 +51,12 @@
         <td>{{ objective.y }}</td>
         <td>{{ objective.z }}</td>
         <td>{{ objective.areaId }}</td>
-        <td>{{ objective.linkedObjectiveIds }}</td>
+        <td>
+          <ng-container *ngFor="let linkedObjectiveId of objective.linkedObjectiveIds; last as isLast">
+            <span>{{ linkedObjectiveId }}</span>
+            <span *ngIf="!isLast">, </span>
+          </ng-container>
+        </td>
         <td>{{ getFaction(objective.factionId)?.name }}</td>
         <!-- <div *ngIf="false" ngbDropdown class="d-inline-block btn-block">
            <button class="btn btn-sm btn-outline-dark btn-block" id="changeFactionDropdown" ngbDropdownToggle>

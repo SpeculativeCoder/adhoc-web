@@ -30,13 +30,16 @@ $color-mode-type: data;
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/variables-dark";
 
-$body-color: $gray-900;
+//$body-color: $gray-900;
+$body-color: $gray-700;
 $body-color-dark: $gray-300;
 
-$body-bg: $white;
+//$body-bg: $white;
+$body-bg: $gray-100;
 $body-bg-dark: $gray-900;
 
-$link-color: $gray-900;
+//$link-color: $gray-900;
+$link-color: $gray-700;
 $link-color-dark: $gray-300;
 
 $link-hover-color: $black;

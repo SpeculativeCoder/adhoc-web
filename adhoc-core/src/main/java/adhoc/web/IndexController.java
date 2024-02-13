@@ -23,19 +23,20 @@
 package adhoc.web;
 
 import adhoc.properties.CoreProperties;
+import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Serves up the index.html which provides the Angular app.
  */
-@Controller
+@RestController
 @Slf4j
 @RequiredArgsConstructor
 public class IndexController {
@@ -58,10 +59,10 @@ public class IndexController {
             "/pages/**",
             "/client/**"
     })
-    public String getIndex(Model model) {
-        //model.addAttribute("MODE", applicationMode);
-        model.addAttribute("FEATURE_FLAGS", coreProperties.getFeatureFlags());
-        return "index.html";
+    public ModelAndView getIndex() {
+        //noinspection SpringMVCViewInspection
+        return new ModelAndView("index",
+                ImmutableMap.of("FEATURE_FLAGS", coreProperties.getFeatureFlags()));
     }
 
     @GetMapping("/favicon.ico")
@@ -77,8 +78,3 @@ public class IndexController {
         return null;
     }
 }
-
-//@GetMapping("/robots.txt")
-//public String getRobotsTxt() {
-//    return "robots.txt";
-//}

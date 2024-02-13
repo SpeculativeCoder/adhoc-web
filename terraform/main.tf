@@ -802,10 +802,11 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
       logConfiguration      = {
         logDriver = "awslogs",
         options   = {
-          awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/${local.adhoc_name}_${terraform.workspace}_manager"
-          awslogs-region        = data.aws_region.region.name
-          awslogs-stream-prefix = "ecs"
+          awslogs-create-group      = "true"
+          awslogs-group             = "/ecs/${local.adhoc_name}_${terraform.workspace}_manager"
+          awslogs-region            = data.aws_region.region.name
+          awslogs-stream-prefix     = "ecs"
+          awslogs-multiline-pattern = "^(ERROR|WARN|INFO|DEBUG|TRACE)"
         },
         secretOptions = [
         ]
@@ -903,10 +904,11 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
       logConfiguration      = {
         logDriver = "awslogs",
         options   = {
-          awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/${local.adhoc_name}_${terraform.workspace}_kiosk"
-          awslogs-region        = data.aws_region.region.name
-          awslogs-stream-prefix = "ecs"
+          awslogs-create-group      = "true"
+          awslogs-group             = "/ecs/${local.adhoc_name}_${terraform.workspace}_kiosk"
+          awslogs-region            = data.aws_region.region.name
+          awslogs-stream-prefix     = "ecs"
+          awslogs-multiline-pattern = "^(ERROR|WARN|INFO|DEBUG|TRACE)"
         },
         secretOptions = [
         ]

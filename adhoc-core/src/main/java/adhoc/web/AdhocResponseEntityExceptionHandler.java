@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-/** Extension of default WebMvc exception handler to gracefully handle some additional exceptions. */
+/** Extension of default Spring MVC exception handler to gracefully handle some additional exceptions. */
 @ControllerAdvice
 public class AdhocResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 

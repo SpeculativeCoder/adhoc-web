@@ -94,8 +94,3 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
 
     }
 }
-
-//@Autowired
-//public void setTaskScheduler(@Lazy TaskScheduler taskScheduler) {
-//    this.taskScheduler = taskScheduler;
-//}

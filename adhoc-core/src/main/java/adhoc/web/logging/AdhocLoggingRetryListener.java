@@ -20,36 +20,20 @@
  * SOFTWARE.
  */
 
-package adhoc.web.ignore_server_csrf;
+package adhoc.web.logging;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.interceptor.MethodInvocationRetryCallback;
+import org.springframework.retry.listener.MethodInvocationRetryListenerSupport;
+import org.springframework.stereotype.Component;
 
-/**
- * Web socket connection from Unreal server does not require CSRF.
- */
+@Component
 @Slf4j
-@RequiredArgsConstructor
-public class IgnoreServerCsrfChannelInterceptor implements ChannelInterceptor {
-
-    private final ChannelInterceptor delegate;
+public class AdhocLoggingRetryListener extends MethodInvocationRetryListenerSupport {
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken &&
-                authenticationToken.getAuthorities()
-                        .stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()))) {
-            return message;
-        }
-
-        return delegate.preSend(message, channel);
+    protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
+        log.info("doOnError: label={} context={}", callback.getLabel(), context);
     }
 }

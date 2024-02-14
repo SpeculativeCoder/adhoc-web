@@ -23,7 +23,6 @@
 package adhoc.web;
 
 import adhoc.user.AdhocAuthenticationSuccessHandler;
-import adhoc.web.ignore_server_csrf.ServerRequestMatcher;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,14 +54,13 @@ import org.springframework.session.security.web.authentication.SpringSessionReme
 @RequiredArgsConstructor
 public class WebSecurityConfig<S extends Session> {
 
-    private final AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
-
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     private final FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   ServerRequestMatcher serverRequestMatcher,
+                                                   AdhocServerRequestMatcher adhocServerRequestMatcher,
+                                                   AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler,
                                                    RememberMeServices rememberMeServices,
                                                    SpringSessionBackedSessionRegistry<S> sessionRegistry) throws Exception {
         return http
@@ -90,7 +88,7 @@ public class WebSecurityConfig<S extends Session> {
                         //.ignoringRequestMatchers("/ws/stomp/user/**")
                         //.ignoringRequestMatchers("/ws/stomp/server/**")
                         // we don't want CSRF on requests from Unreal server
-                        .ignoringRequestMatchers(serverRequestMatcher))
+                        .ignoringRequestMatchers(adhocServerRequestMatcher))
                 .cors(cors -> Customizer.withDefaults())
                 .sessionManagement(session -> session
                         .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
@@ -108,11 +106,6 @@ public class WebSecurityConfig<S extends Session> {
                 .rememberMe(remember -> remember
                         .rememberMeServices(rememberMeServices))
                 .build();
-    }
-
-    @Bean
-    public ServerRequestMatcher serverRequestMatcher() {
-        return new ServerRequestMatcher();
     }
 
     @Bean
@@ -162,51 +155,3 @@ public class WebSecurityConfig<S extends Session> {
 //				User.withUsername("admin").password(passwordEncoder.encode("password")).roles("ADMIN").build()) {
 //		};
 //	}
-
-//@Component
-//public class AdhocCsrfTokenRepository implements CsrfTokenRepository {
-//
-//    private static final String SERVER_CSRF_TOKEN = "SERVER";
-//
-//    private HttpSessionCsrfTokenRepository delegate = new HttpSessionCsrfTokenRepository();
-//
-//    @Override
-//    public CsrfToken generateToken(HttpServletRequest request) {
-//        CsrfToken csrfToken = delegate.generateToken(request);
-//
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        System.err.println(authentication);
-//        if (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken) {
-//            if (authenticationToken.getAuthorities()
-//                    .stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()))) {
-//
-//                csrfToken = new DefaultCsrfToken(csrfToken.getHeaderName(), csrfToken.getParameterName(), SERVER_CSRF_TOKEN);
-//            }
-//        }
-//
-//        System.err.println(csrfToken == null ? null : ReflectionToStringBuilder.toString(csrfToken));
-//        return csrfToken;
-//    }
-//
-//    @Override
-//    public void saveToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response) {
-//        delegate.saveToken(token, request, response);
-//    }
-//
-//    @Override
-//    public CsrfToken loadToken(HttpServletRequest request) {
-//        CsrfToken csrfToken = delegate.loadToken(request);
-//
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        System.err.println(authentication);
-//        if (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken) {
-//            if (authenticationToken.getAuthorities()
-//                    .stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()))) {
-//                csrfToken = new DefaultCsrfToken(csrfToken.getHeaderName(), csrfToken.getParameterName(), SERVER_CSRF_TOKEN);
-//            }
-//        }
-//
-//        System.err.println(csrfToken == null ? null : ReflectionToStringBuilder.toString(csrfToken));
-//        return csrfToken;
-//    }
-//}

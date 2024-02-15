@@ -26,6 +26,7 @@ import adhoc.faction.FactionRepository;
 import adhoc.properties.CoreProperties;
 import adhoc.server.ServerRepository;
 import adhoc.user.request.RegisterUserRequest;
+import adhoc.web.authentication.AdhocAuthenticationSuccessHandler;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
@@ -198,7 +199,7 @@ public class UserService {
      * Sets a new "token" every time a user logs in.
      * The "token" is used when logging into an Unreal server to make sure the user is who they say they are.
      */
-    void onAuthenticationSuccess(Long userId) {
+    public void onAuthenticationSuccess(Long userId) {
         User user = userRepository.getReferenceById(userId);
 
         UUID newToken = UUID.randomUUID();

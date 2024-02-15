@@ -22,7 +22,7 @@
 
 package adhoc.web;
 
-import adhoc.user.AdhocAuthenticationSuccessHandler;
+import adhoc.web.authentication.AdhocAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

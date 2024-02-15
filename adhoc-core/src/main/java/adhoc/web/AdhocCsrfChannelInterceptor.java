@@ -35,8 +35,8 @@ import org.springframework.security.messaging.web.csrf.XorCsrfChannelInterceptor
 import org.springframework.stereotype.Component;
 
 /**
- * CSRF channel interceptor that ignores CSRF for web socket connection from Unreal server.
- * All other requests are handled as usual by a Spring {@link XorCsrfChannelInterceptor}.
+ * Replacement for Spring CSRF channel interceptor. This ignores CSRF for web socket connections from Unreal server.
+ * All other requests are handled as usual by the Spring {@link XorCsrfChannelInterceptor}.
  */
 @Primary
 @Component("csrfChannelInterceptor")

@@ -343,53 +343,52 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       }
     }
 
-    for (const area of this.areas) {
-      for (const server of this.servers) {
-        if (server.publicIp && server.areaIds.indexOf(area.id) != -1) {
-          let label = `${server.name}\n(double click to join)`;
-          let serverText = new fabric.IText(label, {
-            originX: 'center',
-            originY: 'center',
-            fontFamily: 'sans-serif',
-            fontSize: 14 * (1 / this.mapScale),
-            textAlign: 'center',
-            fill: '#DDDDDD',
-            editable: false,
-            selectable: false,
-            padding: 5,
+    for (const server of this.servers) {
+      if (server.publicIp) {
+        let label = `${server.name}\n(double click to join)`;
+        let serverText = new fabric.IText(label, {
+          originX: 'center',
+          originY: 'center',
+          fontFamily: 'sans-serif',
+          fontSize: 14 * (1 / this.mapScale),
+          textAlign: 'center',
+          fill: '#DDDDDD',
+          editable: false,
+          selectable: false,
+          padding: 5,
+        });
+        let serverRect = new fabric.Rect({
+          originX: 'center',
+          originY: 'center',
+          width: serverText.get('width') + 20 * (1 / this.mapScale),
+          height: serverText.get('height') + 20 * (1 / this.mapScale),
+          stroke: '#888888',
+          strokeWidth: 2 * (1 / this.mapScale),
+          fill: '#444444DD',
+          selectable: false,
+          hasControls: false,
+        });
+        let serverGroup = new fabric.Group([serverRect, serverText], {
+          originX: 'center',
+          originY: 'center',
+          left: server.x,
+          top: -server.y,
+          selectable: true,
+          lockMovementX: true,
+          lockMovementY: true,
+          lockRotation: true,
+          hasControls: false,
+          hoverCursor: 'pointer',
+        });
+        serverGroup.on('mousedblclick', () => {
+          // TODO: should be to zone with preferred server
+          this.router.navigate(['client', 'area', server.areaIds[0]], {
+            // queryParams: {
+            //   areaId: area.id
+            // }
           });
-          let serverRect = new fabric.Rect({
-            originX: 'center',
-            originY: 'center',
-            width: serverText.get('width') + 20 * (1 / this.mapScale),
-            height: serverText.get('height') + 20 * (1 / this.mapScale),
-            stroke: '#888888',
-            strokeWidth: 2 * (1 / this.mapScale),
-            fill: '#444444DD',
-            selectable: false,
-            hasControls: false,
-          });
-          let serverGroup = new fabric.Group([serverRect, serverText], {
-            originX: 'center',
-            originY: 'center',
-            left: area.x, // TODO: server?
-            top: -area.y, // TODO: server?
-            selectable: true,
-            lockMovementX: true,
-            lockMovementY: true,
-            lockRotation: true,
-            hasControls: false,
-            hoverCursor: 'pointer',
-          });
-          serverGroup.on('mousedblclick', () => {
-            this.router.navigate(['client', 'area', area.id], {
-              // queryParams: {
-              //   areaId: area.id
-              // }
-            });
-          });
-          this.canvas.add(serverGroup);
-        }
+        });
+        this.canvas.add(serverGroup);
       }
     }
 

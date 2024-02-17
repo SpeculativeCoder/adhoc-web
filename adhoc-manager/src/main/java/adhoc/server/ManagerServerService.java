@@ -162,13 +162,12 @@ public class ManagerServerService {
         log.trace("Managing server for region {} area group {}", region.getId(), areaGroup);
         boolean changed = false;
 
-        Area firstArea = areaGroup.iterator().next();
-        // TODO: average across all the areas
-        Float areaGroupX = firstArea.getX();
-        Float areaGroupY = firstArea.getY();
-        Float areaGroupZ = firstArea.getZ();
+        Float areaGroupX = (float) areaGroup.stream().mapToDouble(Area::getX).average().orElseThrow();
+        Float areaGroupY = (float) areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
+        Float areaGroupZ = (float) areaGroup.stream().mapToDouble(Area::getZ).average().orElseThrow();
 
         // TODO: prefer searching by area(s) that have human(s) in them
+        Area firstArea = areaGroup.iterator().next();
         Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea)
                 .orElseGet(Server::new);
 
@@ -184,9 +183,9 @@ public class ManagerServerService {
         if (!Objects.equals(server.getX(), areaGroupX)
                 || !Objects.equals(server.getY(), areaGroupY)
                 || !Objects.equals(server.getZ(), areaGroupZ)) {
-            server.setX(firstArea.getX());
-            server.setY(firstArea.getY());
-            server.setZ(firstArea.getZ());
+            server.setX(areaGroupX);
+            server.setY(areaGroupY);
+            server.setZ(areaGroupZ);
             changed = true;
         }
 

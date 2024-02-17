@@ -23,8 +23,8 @@
 
 <configuration>
 
-    <conversionRule conversionWord="color" converterClass="adhoc.web.logging.AdhocColorConverter"/>
-    <conversionRule conversionWord="newlines" converterClass="adhoc.web.logging.AdhocNewlinesConverter"/>
+    <conversionRule conversionWord="color" converterClass="adhoc.system.logging.AdhocColorConverter"/>
+    <conversionRule conversionWord="newlines" converterClass="adhoc.system.logging.AdhocNewlinesConverter"/>
     <!--<conversionRule conversionWord="ewtpc" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />-->
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

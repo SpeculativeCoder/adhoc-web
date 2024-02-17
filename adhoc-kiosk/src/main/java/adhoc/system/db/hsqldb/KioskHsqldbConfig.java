@@ -20,29 +20,46 @@
  * SOFTWARE.
  */
 
-package adhoc;
+package adhoc.system.db.hsqldb;
 
-import adhoc.system.artemis.ArtemisConfig;
-import adhoc.user.UserRole;
+import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
-/**
- * When running as a manager, this application talks to a {@link adhoc.hosting.HostingService}
- * to ensure servers are representing each area in each region (and will start / stop servers accordingly).
- * There will likely only be a few (and typically just 1) manager application(s) running.
- * <p>
- * Servers communicate with the manager to let it know about events occurring in the world.
- * Events are handled by the manager and then emitted in the {@link ArtemisConfig} cluster for kiosks to observe.
- * <p>
- * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the manager.
- */
+@Configuration
+@Profile("db-hsqldb")
 @Slf4j
 @RequiredArgsConstructor
-public class AdhocManagerApplication extends AbstractAdhocApplication {
+public class KioskHsqldbConfig {
 
-    public static void main(String[] args) {
-        SpringApplication.run(AdhocManagerApplication.class, args); //.start();
+    private final CoreProperties coreProperties;
+
+    private final DataSourceProperties dataSourceProperties;
+
+    @Bean
+    public JdbcConnectionDetails dataSourceProperties() {
+        return new JdbcConnectionDetails() {
+
+            @Override
+            public String getJdbcUrl() {
+                return !dataSourceProperties.getUrl().isEmpty()
+                        ? dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://" + coreProperties.getManagerHost() + ":9001/adhoc";
+            }
+
+            @Override
+            public String getUsername() {
+                return dataSourceProperties.getUsername();
+            }
+
+            @Override
+            public String getPassword() {
+                return dataSourceProperties.getPassword();
+            }
+        };
     }
 }

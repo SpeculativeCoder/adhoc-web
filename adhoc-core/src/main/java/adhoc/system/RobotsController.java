@@ -20,29 +20,39 @@
  * SOFTWARE.
  */
 
-package adhoc;
+package adhoc.system;
 
-import adhoc.system.artemis.ArtemisConfig;
-import adhoc.user.UserRole;
+import adhoc.properties.CoreProperties;
+import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.SpringApplication;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * When running as a manager, this application talks to a {@link adhoc.hosting.HostingService}
- * to ensure servers are representing each area in each region (and will start / stop servers accordingly).
- * There will likely only be a few (and typically just 1) manager application(s) running.
- * <p>
- * Servers communicate with the manager to let it know about events occurring in the world.
- * Events are handled by the manager and then emitted in the {@link ArtemisConfig} cluster for kiosks to observe.
- * <p>
- * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the manager.
- */
+import java.util.Objects;
+
+@RestController
 @Slf4j
 @RequiredArgsConstructor
-public class AdhocManagerApplication extends AbstractAdhocApplication {
+public class RobotsController {
 
-    public static void main(String[] args) {
-        SpringApplication.run(AdhocManagerApplication.class, args); //.start();
+    private final CoreProperties coreProperties;
+
+    @GetMapping(value = "/robots.txt", produces = "text/plain")
+    public ClassPathResource getRobotsTxt() {
+        if (coreProperties.getFeatureFlags().contains("development")) {
+            return classPathResource("/robots/robots_development.txt");
+        } else {
+            return classPathResource("/robots/robots.txt");
+        }
+    }
+
+    private ClassPathResource classPathResource(String path) {
+        ClassPathResource resource = new ClassPathResource(path);
+        // ensure nothing unexpected due to path normalization etc.
+        Verify.verify(Objects.equals("/" + resource.getPath(), path));
+        Verify.verify(resource.getPath().startsWith("robots/"));
+        return resource;
     }
 }

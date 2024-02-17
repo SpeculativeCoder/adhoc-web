@@ -20,25 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.event;
+package adhoc.system.logging;
 
-import adhoc.system.event.Event;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.util.Map;
+import java.io.IOException;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class FactionScoringEvent implements Event {
+@Component
+public class AdhocMdcFilter extends OncePerRequestFilter {
 
-    @NotNull
-    private Map<Long, Integer> factionAwardedScores;
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            MDC.put("uri", request.getRequestURI());
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove("uri");
+        }
+    }
 }

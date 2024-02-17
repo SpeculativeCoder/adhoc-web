@@ -20,25 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.event;
+package adhoc.system.util;
 
-import adhoc.system.event.Event;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import java.util.UUID;
 
-import java.util.Map;
+public class RandomUUIDGenerator {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class FactionScoringEvent implements Event {
-
-    @NotNull
-    private Map<Long, Integer> factionAwardedScores;
+    public static void main(String[] args) {
+        System.err.println(UUID.randomUUID());
+    }
 }

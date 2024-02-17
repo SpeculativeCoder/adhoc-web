@@ -20,25 +20,19 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.event;
+package adhoc.system.event;
 
-import adhoc.system.event.Event;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.Map;
+/**
+ * All our Stomp events will implement this interface to provide an easy mapping to an event type based on class name of
+ * the event.
+ */
+@JsonPropertyOrder("eventType")
+public interface Event {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class FactionScoringEvent implements Event {
-
-    @NotNull
-    private Map<Long, Integer> factionAwardedScores;
+    // for output in JSON
+    default String getEventType() {
+        return getClass().getSimpleName().replaceFirst("Event$", "");
+    }
 }

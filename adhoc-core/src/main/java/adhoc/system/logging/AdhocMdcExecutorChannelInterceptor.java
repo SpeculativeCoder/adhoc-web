@@ -20,25 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.event;
+package adhoc.system.logging;
 
-import adhoc.system.event.Event;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ExecutorChannelInterceptor;
 
-import java.util.Map;
+@Slf4j
+public class AdhocMdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class FactionScoringEvent implements Event {
+    @Override
+    public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        MDC.put("dest", accessor.getDestination());
+        return message;
+    }
 
-    @NotNull
-    private Map<Long, Integer> factionAwardedScores;
+    @Override
+    public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
+        MDC.remove("dest");
+    }
 }

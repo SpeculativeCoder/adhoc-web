@@ -23,7 +23,7 @@
 package adhoc.pawn.event;
 
 import adhoc.pawn.PawnDto;
-import adhoc.web.event.Event;
+import adhoc.system.event.Event;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

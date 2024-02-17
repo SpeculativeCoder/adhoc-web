@@ -20,29 +20,37 @@
  * SOFTWARE.
  */
 
-package adhoc;
+package adhoc.system.authentication;
 
-import adhoc.system.artemis.ArtemisConfig;
-import adhoc.user.UserRole;
+import adhoc.user.UserService;
+import com.google.common.base.Verify;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.SpringApplication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
-/**
- * When running as a manager, this application talks to a {@link adhoc.hosting.HostingService}
- * to ensure servers are representing each area in each region (and will start / stop servers accordingly).
- * There will likely only be a few (and typically just 1) manager application(s) running.
- * <p>
- * Servers communicate with the manager to let it know about events occurring in the world.
- * Events are handled by the manager and then emitted in the {@link ArtemisConfig} cluster for kiosks to observe.
- * <p>
- * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the manager.
- */
+@Component
 @Slf4j
 @RequiredArgsConstructor
-public class AdhocManagerApplication extends AbstractAdhocApplication {
+public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    public static void main(String[] args) {
-        SpringApplication.run(AdhocManagerApplication.class, args); //.start();
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private UserService userService;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        Verify.verify(principal instanceof AdhocUserDetails);
+        AdhocUserDetails userDetails = (AdhocUserDetails) principal;
+
+        log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
+
+        userService.onAuthenticationSuccess(userDetails.getUserId());
     }
 }

@@ -22,7 +22,7 @@
 
 package adhoc.world.event;
 
-import adhoc.web.event.Event;
+import adhoc.system.event.Event;
 import adhoc.world.WorldDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -20,25 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.event;
+package adhoc.system.logging;
 
-import adhoc.system.event.Event;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.pattern.CompositeConverter;
 
-import java.util.Map;
+public class AdhocNewlinesConverter extends CompositeConverter<ILoggingEvent> {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class FactionScoringEvent implements Event {
-
-    @NotNull
-    private Map<Long, Integer> factionAwardedScores;
+    @Override
+    protected String transform(ILoggingEvent event, String in) {
+        // TODO
+        return in.replace("\r", "\\r").replace("\n", "\\n");
+    }
 }

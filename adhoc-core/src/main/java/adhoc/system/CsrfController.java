@@ -20,25 +20,24 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.event;
+package adhoc.system;
 
-import adhoc.system.event.Event;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+/**
+ * Allows access to CSRF token for the Angular app.
+ */
+@RestController
+@Slf4j
+@RequiredArgsConstructor
+public class CsrfController {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class FactionScoringEvent implements Event {
-
-    @NotNull
-    private Map<Long, Integer> factionAwardedScores;
+    @GetMapping("/csrf")
+    public CsrfToken csrf(CsrfToken token) {
+        return token;
+    }
 }

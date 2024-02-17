@@ -20,25 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.event;
+package adhoc.system;
 
-import adhoc.system.event.Event;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
+import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
+import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
 
-import java.util.Map;
+@Configuration
+@EnableWebSocketSecurity
+public class WebSocketSecurityConfig {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class FactionScoringEvent implements Event {
+    @Bean
+    AuthorizationManager<Message<?>> messageAuthorizationManager(
+            MessageMatcherDelegatingAuthorizationManager.Builder messages) {
 
-    @NotNull
-    private Map<Long, Integer> factionAwardedScores;
+        messages.nullDestMatcher().permitAll();
+        messages.simpSubscribeDestMatchers("/topic/events/**").permitAll();
+        messages.simpMessageDestMatchers("/app/**").hasAnyRole("SERVER");
+        messages.anyMessage().denyAll();
+
+        return messages.build();
+    }
 }

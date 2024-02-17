@@ -20,25 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.event;
+package adhoc.system.authentication;
 
-import adhoc.system.event.Event;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Map;
+import java.util.Collection;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class FactionScoringEvent implements Event {
+public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {
 
-    @NotNull
-    private Map<Long, Integer> factionAwardedScores;
+    @Getter
+    private final Long userId;
+
+    public AdhocUserDetails(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long userId) {
+        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+        this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " userId=" + userId;
+    }
 }

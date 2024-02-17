@@ -33,7 +33,7 @@ import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
-import adhoc.web.event.Event;
+import adhoc.system.event.Event;
 import adhoc.world.ManagerWorldService;
 import com.google.common.base.Verify;
 import jakarta.persistence.EntityManager;

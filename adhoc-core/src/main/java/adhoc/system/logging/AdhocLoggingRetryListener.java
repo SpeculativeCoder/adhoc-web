@@ -20,25 +20,20 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.event;
+package adhoc.system.logging;
 
-import adhoc.system.event.Event;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.interceptor.MethodInvocationRetryCallback;
+import org.springframework.retry.listener.MethodInvocationRetryListenerSupport;
+import org.springframework.stereotype.Component;
 
-import java.util.Map;
+@Component
+@Slf4j
+public class AdhocLoggingRetryListener extends MethodInvocationRetryListenerSupport {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class FactionScoringEvent implements Event {
-
-    @NotNull
-    private Map<Long, Integer> factionAwardedScores;
+    @Override
+    protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
+        log.info("doOnError: label={} context={}", callback.getLabel(), context);
+    }
 }

@@ -49,7 +49,8 @@ public class ManagerObjectiveController {
     public ObjectiveDto putObjective(
             @PathVariable("objectiveId") Long objectiveId,
             @Valid @RequestBody ObjectiveDto objectiveDto) {
-        Preconditions.checkArgument(Objects.equals(objectiveId, objectiveDto.getId()));
+        Preconditions.checkArgument(Objects.equals(objectiveId, objectiveDto.getId()),
+                "Objective ID mismatch: %s != %s", objectiveId, objectiveDto.getId());
 
         return managerObjectiveService.updateObjective(objectiveDto);
     }

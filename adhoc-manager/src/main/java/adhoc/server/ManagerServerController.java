@@ -47,7 +47,8 @@ public class ManagerServerController {
     public ServerDto putServer(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody ServerDto serverDto) {
-        Preconditions.checkArgument(Objects.equals(serverId, serverDto.getId()));
+        Preconditions.checkArgument(Objects.equals(serverId, serverDto.getId()),
+                "Server ID mismatch: %s != %s", serverId, serverDto.getId());
 
         return managerServerService.updateServer(serverDto);
     }

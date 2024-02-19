@@ -52,7 +52,8 @@ public class ManagerUserController {
     public UserDto putUser(
             @PathVariable("userId") Long userId,
             @Valid @RequestBody UserDto userDto) {
-        Preconditions.checkArgument(Objects.equals(userId, userDto.getId()));
+        Preconditions.checkArgument(Objects.equals(userId, userDto.getId()),
+                "User ID mismatch: %s != %s", userId, userDto.getId());
 
         return managerUserService.updateUser(userDto);
     }
@@ -62,7 +63,8 @@ public class ManagerUserController {
     public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody UserNavigateRequest userNavigateRequest) {
-        Preconditions.checkArgument(Objects.equals(serverId, userNavigateRequest.getSourceServerId()));
+        Preconditions.checkArgument(Objects.equals(serverId, userNavigateRequest.getSourceServerId()),
+                "Server ID mismatch: %s != %s", serverId, userNavigateRequest.getSourceServerId());
 
         return managerUserService.serverUserNavigate(userNavigateRequest);
     }
@@ -72,7 +74,8 @@ public class ManagerUserController {
     public ResponseEntity<UserDetailDto> postServerUserJoin(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody UserJoinRequest userJoinRequest) {
-        Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()));
+        Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()),
+                "Server ID mismatch: %s != %s", serverId, userJoinRequest.getServerId());
 
         return ResponseEntity.ok(managerUserService.serverUserJoin(userJoinRequest));
     }

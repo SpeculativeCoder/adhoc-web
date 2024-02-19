@@ -22,6 +22,7 @@
 
 package adhoc.area;
 
+import adhoc.objective.Objective;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
@@ -81,19 +82,20 @@ public class ManagerAreaService {
 
         Set<Integer> areaIndexes = new TreeSet<>();
         for (AreaDto areaDto : areaDtos) {
-            Preconditions.checkArgument(Objects.equals(region.getId(), areaDto.getRegionId()));
+            Preconditions.checkArgument(Objects.equals(region.getId(), areaDto.getRegionId()),
+                    "Region ID mismatch: %s != %s", region.getId(), areaDto.getRegionId());
 
             boolean unique = areaIndexes.add(areaDto.getIndex());
-            Preconditions.checkArgument(unique, "area indexes must be unique");
+            Preconditions.checkArgument(unique, "Area index not unique: %s", areaDto.getIndex());
         }
 
         try (Stream<Area> areasToDelete = areaRepository.streamByRegionAndIndexNotIn(region, areaIndexes)) {
             areasToDelete.forEach(areaToDelete -> {
                 log.info("Deleting unused area: {}", areaToDelete);
                 // before deleting unused areas we must unlink any objectives that will become orphaned
-                areaToDelete.getObjectives().forEach(orphanedObjective -> {
+                for (Objective orphanedObjective : areaToDelete.getObjectives()) {
                     orphanedObjective.setArea(null);
-                });
+                }
                 areaRepository.delete(areaToDelete);
             });
         }

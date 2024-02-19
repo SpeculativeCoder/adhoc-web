@@ -64,9 +64,11 @@ public class ManagerObjectiveService {
 
     public ObjectiveDto updateObjective(ObjectiveDto objectiveDto) {
         // NOTE: this is a two stage save to allow linked objectives to be set too
-        return objectiveService.toDto(
-                toEntityStage2(objectiveDto, toEntityStage1(objectiveDto,
-                        objectiveRepository.getReferenceById(objectiveDto.getId()))));
+        Objective objective = toEntityStage1(objectiveDto, objectiveRepository.getReferenceById(objectiveDto.getId()));
+
+        objective = toEntityStage2(objectiveDto, objective);
+
+        return objectiveService.toDto(objective);
     }
 
     Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
@@ -126,18 +128,18 @@ public class ManagerObjectiveService {
 
             objectiveDto.getLinkedObjectiveIndexes().forEach(linkedObjectiveIndex -> {
                 Preconditions.checkArgument(!Objects.equals(objectiveDto.getIndex(), linkedObjectiveIndex),
-                        "self loop not allowed");
+                        "Self loop not allowed: %s -> %s", objectiveDto.getIndex(), linkedObjectiveIndex);
 
                 for (ObjectiveDto otherObjectiveDto : objectiveDtos) {
                     if (Objects.equals(otherObjectiveDto.getIndex(), linkedObjectiveIndex)) {
                         Preconditions.checkArgument(otherObjectiveDto.getLinkedObjectiveIndexes().contains(objectiveDto.getIndex()),
-                                "linked objectives must have matching backlink");
+                                "Linked objectives must have matching backlink: %s -> %s", otherObjectiveDto.getIndex(), linkedObjectiveIndex);
                     }
                 }
             });
 
             boolean unique = objectiveIndexes.add(objectiveDto.getIndex());
-            Preconditions.checkArgument(unique, "objective indexes must be unique");
+            Preconditions.checkArgument(unique, "Objective index not unique: %s", objectiveDto.getIndex());
         }
 
         try (Stream<Objective> objectivesToDelete = objectiveRepository.streamByRegionAndIndexNotIn(region, objectiveIndexes)) {

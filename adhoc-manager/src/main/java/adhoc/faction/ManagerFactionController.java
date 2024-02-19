@@ -44,7 +44,8 @@ public class ManagerFactionController {
     public FactionDto putFaction(
             @PathVariable("factionId") Long factionId,
             @Valid @RequestBody FactionDto factionDto) {
-        Preconditions.checkArgument(Objects.equals(factionId, factionDto.getId()));
+        Preconditions.checkArgument(Objects.equals(factionId, factionDto.getId()),
+                "Faction ID mismatch: %s != %s", factionId, factionDto.getId());
 
         return managerFactionService.updateFaction(factionDto);
     }

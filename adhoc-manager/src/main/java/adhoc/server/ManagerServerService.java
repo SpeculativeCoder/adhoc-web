@@ -74,8 +74,9 @@ public class ManagerServerService {
     private final EntityManager entityManager;
 
     public ServerDto updateServer(ServerDto serverDto) {
-        return serverService.toDto(
-                toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId())));
+        Server server = toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));
+
+        return serverService.toDto(server);
     }
 
     Server toEntity(ServerDto serverDto, Server server) {
@@ -169,8 +170,7 @@ public class ManagerServerService {
 
         // TODO: prefer searching by area(s) that have human(s) in them
         Area firstArea = areaGroup.iterator().next();
-        Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea)
-                .orElseGet(Server::new);
+        Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
 
         if (server.getRegion() != region) {
             server.setRegion(region);
@@ -241,7 +241,7 @@ public class ManagerServerService {
         // get state of running containers
         HostingState hostingState = hostingService.poll();
         log.debug("manageHostingTasks: hostingState={}", hostingState);
-        Verify.verifyNotNull(hostingState, "hostingState must not be null");
+        Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
 
         Optional<WorldUpdatedEvent> optionalWorldUpdatedEvent =
                 managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
@@ -380,7 +380,7 @@ public class ManagerServerService {
         // get state of running containers
         HostingState hostingState = hostingService.poll();
         log.debug("stopAllTasks: hostingState={}", hostingState);
-        Verify.verifyNotNull(hostingState, "hostingState must not be null");
+        Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
 
         for (ServerTask task : hostingState.getServerTasks().values()) {
             log.debug("Stopping task {}", task);

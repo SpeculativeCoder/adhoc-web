@@ -49,8 +49,9 @@ public class ManagerFactionService {
     private final FactionService factionService;
 
     public FactionDto updateFaction(FactionDto factionDto) {
-        return factionService.toDto(
-                toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId())));
+        Faction faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
+
+        return factionService.toDto(faction);
     }
 
     Faction toEntity(FactionDto factionDto, Faction faction) {

@@ -35,6 +35,7 @@ import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
 import adhoc.world.ManagerWorldService;
+import adhoc.world.event.WorldUpdatedEvent;
 import com.google.common.base.Verify;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -242,18 +243,19 @@ public class ManagerServerService {
         log.debug("manageHostingTasks: hostingState={}", hostingState);
         Verify.verifyNotNull(hostingState, "hostingState must not be null");
 
-        managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
+        Optional<WorldUpdatedEvent> optionalWorldUpdatedEvent =
+                managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
+
+        optionalWorldUpdatedEvent.ifPresent(events::add);
 
         try (Stream<Server> servers = serverRepository.streamBy()) {
             servers.forEach(server -> {
                 ServerTask existingTask = hostingState.getServerTasks().get(server.getId());
 
-                Optional<ServerUpdatedEvent> optionalServerUpdatedEvent;
-                if (existingTask != null) {
-                    optionalServerUpdatedEvent = manageExistingServerTask(existingTask, server);
-                } else {
-                    optionalServerUpdatedEvent = manageMissingServerTask(server);
-                }
+                Optional<ServerUpdatedEvent> optionalServerUpdatedEvent =
+                        existingTask != null
+                                ? manageExistingServerTask(existingTask, server)
+                                : manageMissingServerTask(server);
 
                 optionalServerUpdatedEvent.ifPresent(events::add);
             });

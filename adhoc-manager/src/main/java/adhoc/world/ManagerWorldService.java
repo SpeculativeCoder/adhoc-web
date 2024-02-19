@@ -54,6 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -355,7 +356,7 @@ public class ManagerWorldService {
         }
     }
 
-    public void updateManagerAndKioskHosts(Set<String> managerHosts, Set<String> kioskHosts) {
+    public Optional<WorldUpdatedEvent> updateManagerAndKioskHosts(Set<String> managerHosts, Set<String> kioskHosts) {
         World world = worldRepository.getReferenceById(WorldService.WORLD_ID);
 
         boolean emitEvent = false;
@@ -373,15 +374,10 @@ public class ManagerWorldService {
             emitEvent = true;
         }
 
-        if (emitEvent) {
-            sendWorldUpdatedEvent(world);
-        }
+        return emitEvent ? Optional.of(toWorldUpdatedEvent(world)) : Optional.empty();
     }
 
-    private void sendWorldUpdatedEvent(World world) {
-        WorldUpdatedEvent event = new WorldUpdatedEvent(worldService.toDto(world));
-
-        log.info("Sending: {}", event);
-        stomp.convertAndSend("/topic/events", event);
+    private WorldUpdatedEvent toWorldUpdatedEvent(World world) {
+        return new WorldUpdatedEvent(worldService.toDto(world));
     }
 }

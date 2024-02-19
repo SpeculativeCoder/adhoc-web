@@ -56,7 +56,7 @@ public class ManagerServerController {
     @PreAuthorize("hasRole('SERVER')")
     public ServerUpdatedEvent handleServerStarted(
             @Valid @RequestBody ServerStartedEvent serverStartedEvent) {
-        log.info("Handling: {}", serverStartedEvent);
+        log.debug("Handling: {}", serverStartedEvent);
 
         return managerServerService.handleServerStarted(serverStartedEvent);
     }

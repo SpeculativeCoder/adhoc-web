@@ -244,7 +244,7 @@ public class EcsHostingService implements HostingService {
         //Preconditions.checkNotNull(managerHosts);
         //Preconditions.checkArgument(!managerHosts.isEmpty());
 
-        log.info("Starting task for server {}", server.getId()); // with manager host(s) {}", managerHosts);
+        log.info("Starting task for {}", server); // with manager host(s) {}", managerHosts);
 
         try (EcsClient ecsClient = ecsClient();
              Ec2Client ec2Client = ec2Client()) {
@@ -338,10 +338,11 @@ public class EcsHostingService implements HostingService {
                                                     .build())
                                     .build())
                     .build();
-            log.info("runTaskRequest: {}", runTaskRequest);
+            log.debug("runTaskRequest: {}", runTaskRequest);
 
             RunTaskResponse runTaskResponse = ecsClient.runTask(runTaskRequest);
-            log.trace("runTaskResponse: {}", runTaskResponse);
+            log.debug("runTaskResponse: {}", runTaskResponse);
+
             if (runTaskResponse.hasFailures() && !runTaskResponse.failures().isEmpty()) {
                 log.error("Run task failure: {}", runTaskResponse.failures());
                 // TODO: hosting exception
@@ -352,7 +353,7 @@ public class EcsHostingService implements HostingService {
 
     @Override
     public void stopServerTask(ServerTask task) {
-        log.info("Stopping task {}", task.getTaskId());
+        log.info("Stopping {}", task);
 
         try (EcsClient ecsClient = ecsClient()) {
             ecsClient.stopTask(StopTaskRequest.builder().task(task.getTaskId()).cluster(ecsHostingProperties.getEcsCluster()).build());

@@ -177,7 +177,7 @@ public class DockerHostingService implements HostingService {
 
     @Override
     public void startServerTask(Server server) { //, Set<String> managerHosts) {
-        log.info("Starting Docker container for server {}", server.getId()); // linked to managers {}", managerHosts);
+        log.info("Starting Docker container for {}", server); // linked to managers {}", managerHosts);
         int publicWebSocketPort = calculatePublicWebSocketPort(server.getId());
 
         CreateContainerResponse createdContainer = dockerClient()

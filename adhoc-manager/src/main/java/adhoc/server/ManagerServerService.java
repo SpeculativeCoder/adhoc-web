@@ -219,7 +219,7 @@ public class ManagerServerService {
 
             server = serverRepository.save(server);
 
-            server.setName("Server " + server.getId().toString());
+            server.setName("S" + server.getId().toString());
 
             log.info("New server {} assigned to region {} areas {}", server.getId(), server.getRegion().getId(),
                     server.getAreas().stream().map(Area::getId).toList());

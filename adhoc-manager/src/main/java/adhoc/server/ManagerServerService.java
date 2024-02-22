@@ -222,8 +222,7 @@ public class ManagerServerService {
 
             server.setName("S" + server.getId().toString());
 
-            log.info("New server {} assigned to region {} areas {}", server.getId(), server.getRegion().getId(),
-                    server.getAreas().stream().map(Area::getId).toList());
+            log.info("New server {} assigned to region {} areas {}", server, server.getRegion(), server.getAreas());
             changed = true;
         }
 
@@ -240,7 +239,7 @@ public class ManagerServerService {
 
         // get state of running containers
         HostingState hostingState = hostingService.poll();
-        log.debug("manageHostingTasks: hostingState={}", hostingState);
+        log.debug("manageServerTasks: hostingState={}", hostingState);
         Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
 
         Optional<WorldUpdatedEvent> optionalWorldUpdatedEvent =
@@ -379,7 +378,7 @@ public class ManagerServerService {
     private void stopAllServerTasks() {
         // get state of running containers
         HostingState hostingState = hostingService.poll();
-        log.debug("stopAllTasks: hostingState={}", hostingState);
+        log.debug("stopAllServerTasks: hostingState={}", hostingState);
         Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
 
         for (ServerTask task : hostingState.getServerTasks().values()) {

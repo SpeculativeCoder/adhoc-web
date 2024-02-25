@@ -22,7 +22,6 @@
 
 package adhoc;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -30,12 +29,17 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.security.Security;
+
 @SpringBootApplication
 @EnableConfigurationProperties
 @EnableScheduling
 @EnableCaching
 @EnableRetry
 @Slf4j
-@RequiredArgsConstructor
 public abstract class AbstractAdhocApplication {
+
+    AbstractAdhocApplication() {
+        Security.setProperty("networkaddress.cache.ttl", "60");
+    }
 }

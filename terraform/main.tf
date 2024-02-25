@@ -227,21 +227,24 @@ resource "aws_iam_access_key" "adhoc_manager" {
 }
 
 resource "aws_vpc" "adhoc" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-  tags                 = {
+  cidr_block                       = "10.0.0.0/16"
+  enable_dns_hostnames             = true
+  enable_dns_support               = true
+  assign_generated_ipv6_cidr_block = true
+  tags                             = {
     Name = "${local.adhoc_name}_${terraform.workspace}"
   }
 }
 
 resource "aws_subnet" "adhoc_a" {
-  vpc_id                  = aws_vpc.adhoc.id
-  cidr_block              = "10.0.0.0/24"
+  vpc_id                          = aws_vpc.adhoc.id
+  cidr_block                      = "10.0.0.0/24"
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.adhoc.ipv6_cidr_block, 8, 0)
   # TODO: multi subnets / zones
-  availability_zone       = "${data.aws_region.region.name}a"
-  map_public_ip_on_launch = true
-  tags                    = {
+  availability_zone               = "${data.aws_region.region.name}a"
+  map_public_ip_on_launch         = true
+  assign_ipv6_address_on_creation = true
+  tags                            = {
     Name = "${local.adhoc_name}_${terraform.workspace}_a"
   }
 }
@@ -254,6 +257,12 @@ resource "aws_route" "adhoc" {
   route_table_id         = aws_vpc.adhoc.default_route_table_id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.adhoc.id
+}
+
+resource "aws_route" "adhoc_ipv6" {
+  route_table_id              = aws_vpc.adhoc.default_route_table_id
+  destination_ipv6_cidr_block = "::/0"
+  gateway_id                  = aws_internet_gateway.adhoc.id
 }
 
 #resource "aws_route_table_association" "adhoc" {
@@ -326,6 +335,9 @@ resource "aws_security_group_rule" "adhoc_manager_egress" {
   cidr_blocks       = [
     "0.0.0.0/0"
   ]
+  ipv6_cidr_blocks = [
+    "::/0"
+  ]
 }
 
 resource "aws_security_group_rule" "adhoc_kiosk_ingress_https" {
@@ -368,6 +380,9 @@ resource "aws_security_group_rule" "adhoc_kiosk_egress" {
   cidr_blocks       = [
     "0.0.0.0/0"
   ]
+  ipv6_cidr_blocks = [
+    "::/0"
+  ]
 }
 
 resource "aws_security_group_rule" "adhoc_server_ingress_wss" {
@@ -389,6 +404,9 @@ resource "aws_security_group_rule" "adhoc_server_egress" {
   protocol          = "-1"
   cidr_blocks       = [
     "0.0.0.0/0"
+  ]
+  ipv6_cidr_blocks = [
+    "::/0"
   ]
 }
 

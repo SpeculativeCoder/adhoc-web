@@ -88,8 +88,7 @@ public class ManagerObjectiveService {
 
         //noinspection OptionalAssignedToNull
         if (objectiveDto.getFactionIndex() != null) {
-            objective.setFaction(objectiveDto.getFactionIndex().isEmpty() ? null
-                    : factionRepository.getByIndex(objectiveDto.getFactionIndex().get()));
+            objective.setFaction(objectiveDto.getFactionIndex().map(factionRepository::getByIndex).orElse(null));
         }
 
         // NOTE: linked objectives will be set in stage 2

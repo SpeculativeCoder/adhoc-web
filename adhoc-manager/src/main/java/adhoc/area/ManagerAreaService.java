@@ -67,8 +67,7 @@ public class ManagerAreaService {
         area.setSizeZ(areaDto.getSizeZ());
         //noinspection OptionalAssignedToNull
         if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().isEmpty() ? null
-                    : serverRepository.getReferenceById(areaDto.getServerId().get()));
+            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
         }
 
         return area;

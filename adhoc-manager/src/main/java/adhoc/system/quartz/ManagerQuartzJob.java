@@ -90,7 +90,7 @@ public class ManagerQuartzJob implements Job {
             }
 
             for (Event event : events) {
-                log.info("Sending: {}", event);
+                log.debug("Sending: {}", event);
                 stomp.convertAndSend("/topic/events", event);
             }
 

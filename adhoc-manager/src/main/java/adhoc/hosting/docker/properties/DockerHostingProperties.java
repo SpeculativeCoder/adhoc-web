@@ -26,6 +26,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,6 +38,11 @@ public class DockerHostingProperties {
 
     @Value("${adhoc.docker.host}")
     private String dockerHost;
+
+    @EventListener
+    public void contextRefreshed(ContextRefreshedEvent event) {
+        log.info("dockerHost={}", dockerHost);
+    }
 }
 
 //    @Value("${server.ssl.trust-certificate}")

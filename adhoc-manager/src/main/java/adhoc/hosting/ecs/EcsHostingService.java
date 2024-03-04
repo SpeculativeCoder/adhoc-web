@@ -244,7 +244,7 @@ public class EcsHostingService implements HostingService {
         //Preconditions.checkNotNull(managerHosts);
         //Preconditions.checkArgument(!managerHosts.isEmpty());
 
-        log.info("Starting task for {}", server); // with manager host(s) {}", managerHosts);
+        log.debug("Starting task for {}", server); // with manager host(s) {}", managerHosts);
 
         try (EcsClient ecsClient = ecsClient();
              Ec2Client ec2Client = ec2Client()) {
@@ -353,7 +353,7 @@ public class EcsHostingService implements HostingService {
 
     @Override
     public void stopServerTask(ServerTask task) {
-        log.info("Stopping {}", task);
+        log.debug("Stopping {}", task);
 
         try (EcsClient ecsClient = ecsClient()) {
             ecsClient.stopTask(StopTaskRequest.builder().task(task.getTaskId()).cluster(ecsHostingProperties.getEcsCluster()).build());

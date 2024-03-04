@@ -79,13 +79,13 @@ public class LocalHostingService implements HostingService {
 
     @Override
     public void startServerTask(Server server) { //, Set<String> managerHosts) {
-        log.info("Assuming locally running {}", server);
+        log.debug("Assuming locally running {}", server);
         serverIds.add(server.getId());
     }
 
     @Override
     public void stopServerTask(ServerTask task) {
-        log.warn("Ignoring request to stop {}", task);
+        log.debug("Ignoring request to stop {}", task);
     }
 
 }

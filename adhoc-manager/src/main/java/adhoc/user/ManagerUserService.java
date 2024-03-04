@@ -110,7 +110,7 @@ public class ManagerUserService {
         user.setSeen(user.getLastJoin());
 
         log.atLevel(user.getHuman() ? Level.INFO : Level.DEBUG)
-                .log("userJoin: userId={} userName={} userHuman={} factionId={} serverId={}",
+                .log("User joined: userId={} userName={} userHuman={} factionId={} serverId={}",
                         user.getId(), user.getName(), user.getHuman(), user.getFaction().getIndex(), server.getId());
 
         return userService.toDetailDto(user);
@@ -203,10 +203,16 @@ public class ManagerUserService {
         log.trace("Leaving unseen users...");
 
         try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(LocalDateTime.now().minusMinutes(5))) {
-            users.forEach(user -> {
-                log.atLevel(Boolean.TRUE == user.getHuman() ? Level.INFO : Level.DEBUG)
-                        .log("Leaving unseen user {} from server {}", user, user.getServer());
-                user.setServer(null);
+            users.forEach(unseenUser -> {
+                // TODO: common path?
+                unseenUser.setServer(null);
+                log.atLevel(Boolean.TRUE == unseenUser.getHuman() ? Level.INFO : Level.DEBUG)
+                        .log("User left: id={} name={} password?={} human={} factionIndex={}",
+                                unseenUser.getId(),
+                                unseenUser.getName(),
+                                unseenUser.getPassword() != null,
+                                unseenUser.getHuman(),
+                                unseenUser.getFaction().getIndex());
             });
         }
     }
@@ -224,7 +230,7 @@ public class ManagerUserService {
         oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
 
         if (!oldUserIds.isEmpty()) {
-            log.info("Purging old users: {}", oldUserIds);
+            log.debug("Purging old users: {}", oldUserIds);
         }
 
         userRepository.deleteAllByIdInBatch(oldUserIds);

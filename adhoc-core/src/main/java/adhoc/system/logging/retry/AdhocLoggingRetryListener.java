@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging;
+package adhoc.system.logging.retry;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.RetryContext;
@@ -34,6 +34,6 @@ public class AdhocLoggingRetryListener extends MethodInvocationRetryListenerSupp
 
     @Override
     protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
-        log.info("doOnError: label={} context={}", callback.getLabel(), context);
+        log.debug("doOnError: label={} context={}", callback.getLabel(), context);
     }
 }

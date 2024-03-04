@@ -152,7 +152,7 @@ public class ManagerServerService {
         LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
         try (Stream<Server> unusedServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
             unusedServers.forEach(unusedServer -> {
-                log.info("Deleting unused server {}", unusedServer);
+                log.debug("Deleting unused server {}", unusedServer);
                 serverRepository.delete(unusedServer);
             });
         }
@@ -198,7 +198,7 @@ public class ManagerServerService {
         for (Iterator<Area> iter = server.getAreas().iterator(); iter.hasNext(); ) {
             Area existingArea = iter.next();
             if (!areaGroup.contains(existingArea)) {
-                log.info("Server {} no longer contains area {}", server, existingArea);
+                log.debug("Server {} no longer contains area {}", server, existingArea);
                 iter.remove();
                 existingArea.setServer(null);
                 changed = true;
@@ -207,7 +207,7 @@ public class ManagerServerService {
         // link new areas represented by this server
         for (Area area : areaGroup) {
             if (!server.getAreas().contains(area)) {
-                log.info("Server {} now contains area {}", server, area);
+                log.debug("Server {} now contains area {}", server, area);
                 server.getAreas().add(area);
                 area.setServer(server);
                 changed = true;
@@ -222,7 +222,7 @@ public class ManagerServerService {
 
             server.setName("S" + server.getId().toString());
 
-            log.info("New server {} assigned to region {} areas {}", server, server.getRegion(), server.getAreas());
+            log.debug("New server {} assigned to region {} areas {}", server, server.getRegion(), server.getAreas());
             changed = true;
         }
 
@@ -310,7 +310,7 @@ public class ManagerServerService {
         }
 
         if (server.getAreas().isEmpty() && server.getStatus() == ServerStatus.ACTIVE) {
-            log.info("Server {} has no assigned areas - need to stop task {}", server.getId(), task);
+            log.debug("Server {} has no assigned areas - need to stop task {}", server.getId(), task);
             hostingService.stopServerTask(task);
             server.setStatus(ServerStatus.STOPPING);
             changed = true;
@@ -328,7 +328,7 @@ public class ManagerServerService {
             if (server.getStatus() != ServerStatus.STOPPING) {
                 log.warn("Server {} task has stopped unexpectedly!", server.getId());
             } else {
-                log.info("Server {} task has stopped successfully", server.getId());
+                log.debug("Server {} task has stopped successfully", server.getId());
             }
             server.setStatus(ServerStatus.INACTIVE);
         }
@@ -359,7 +359,7 @@ public class ManagerServerService {
         //}
 
         if (!server.getAreas().isEmpty()) {
-            log.info("Server {} has assigned areas {} - need to start task", server.getId(),
+            log.debug("Server {} has assigned areas {} - need to start task", server.getId(),
                     server.getAreas().stream().map(Area::getId).toList());
             try {
                 hostingService.startServerTask(server);

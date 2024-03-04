@@ -25,8 +25,8 @@ package adhoc.user;
 import adhoc.faction.FactionRepository;
 import adhoc.properties.CoreProperties;
 import adhoc.server.ServerRepository;
-import adhoc.user.request.RegisterUserRequest;
 import adhoc.system.authentication.AdhocAuthenticationSuccessHandler;
+import adhoc.user.request.RegisterUserRequest;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
@@ -104,14 +104,16 @@ public class UserService {
     }
 
     public UserDetailDto registerUser(RegisterUserRequest registerUserRequest) {
-        log.atLevel(Optional.ofNullable(registerUserRequest.getHuman()).orElse(false) ? Level.INFO : Level.DEBUG)
-                .log("registerUser: name={} password?={} human={} factionId={} remoteAddr={} userAgent={}",
-                        registerUserRequest.getName(),
-                        registerUserRequest.getPassword() != null,
-                        registerUserRequest.getHuman(),
-                        registerUserRequest.getFactionId(),
-                        httpServletRequest.getRemoteAddr(),
-                        httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?"));
+        String userAgent = determineUserAgent();
+        String remoteAddr = determineRemoteAddr();
+
+        log.debug("registerUser: name={} password?={} human={} factionId={} remoteAddr={} userAgent={}",
+                registerUserRequest.getName(),
+                registerUserRequest.getPassword() != null,
+                registerUserRequest.getHuman(),
+                registerUserRequest.getFactionId(),
+                remoteAddr,
+                userAgent);
 
         if (!coreProperties.getFeatureFlags().contains("development")) {
             Preconditions.checkArgument(registerUserRequest.getEmail() == null, "register email not supported yet");
@@ -150,9 +152,25 @@ public class UserService {
             autoLogin(registerUserRequest, user);
         }
 
-        log.debug("registerUser: Success: user={} password?={} token={}", user, user.getPassword() != null, user.getToken());
+        log.atLevel(Optional.ofNullable(registerUserRequest.getHuman()).orElse(false) ? Level.INFO : Level.DEBUG)
+                .log("User registered: id={} name={} password?={} human={} factionIndex={} remoteAddr={} userAgent={}",
+                        user.getId(),
+                        user.getName(),
+                        user.getPassword() != null,
+                        user.getHuman(),
+                        user.getFaction().getIndex(),
+                        remoteAddr,
+                        userAgent);
 
         return toDetailDto(user);
+    }
+
+    private String determineRemoteAddr() {
+        return httpServletRequest.getRemoteAddr();
+    }
+
+    private String determineUserAgent() {
+        return httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?");
     }
 
     private static boolean isAuthenticatedAsServer() {

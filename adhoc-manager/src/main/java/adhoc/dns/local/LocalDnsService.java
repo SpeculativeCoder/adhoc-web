@@ -36,7 +36,7 @@ public class LocalDnsService implements DnsService {
 
     @Override
     public void createOrUpdateDnsRecord(String domain, Set<String> ips) {
-        log.info("Domain {} should map to IPs {} (e.g. in Windows hosts file)", domain, ips);
+        log.info("Assuming {} maps to IPs {} (e.g. in Windows hosts file)", domain, ips);
 
         // TODO: actually look at hosts file to check the mapping is there?
     }

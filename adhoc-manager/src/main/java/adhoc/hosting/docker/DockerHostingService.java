@@ -43,8 +43,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -78,11 +76,6 @@ public class DockerHostingService implements HostingService {
     private final DockerHostingProperties dockerHostingProperties;
 
     private final ServerProperties serverProperties;
-
-    @EventListener
-    public void contextRefreshed(ContextRefreshedEvent event) {
-        log.info("dockerHost={}", dockerHostingProperties.getDockerHost());
-    }
 
     private DockerClientConfig dockerClientConfig() {
         return new DefaultDockerClientConfig.Builder()
@@ -125,7 +118,7 @@ public class DockerHostingService implements HostingService {
         kioskHosts.add(DEFAULT_KIOSK_HOST);
 
         for (Container container : containers) {
-            //log.info("state: {}", container.getState());
+            //log.debug("state: {}", container.getState());
 
             InspectContainerResponse inspectedContainer = dockerClient.inspectContainerCmd(container.getId()).exec();
             log.trace("inspectedContainer: {}", inspectedContainer);
@@ -177,7 +170,7 @@ public class DockerHostingService implements HostingService {
 
     @Override
     public void startServerTask(Server server) { //, Set<String> managerHosts) {
-        log.info("Starting Docker container for {}", server); // linked to managers {}", managerHosts);
+        log.debug("Starting Docker container for {}", server); // linked to managers {}", managerHosts);
         int publicWebSocketPort = calculatePublicWebSocketPort(server.getId());
 
         CreateContainerResponse createdContainer = dockerClient()

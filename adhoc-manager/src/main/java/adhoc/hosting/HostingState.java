@@ -22,13 +22,14 @@
 
 package adhoc.hosting;
 
+import adhoc.task.KioskTask;
+import adhoc.task.ManagerTask;
 import adhoc.task.ServerTask;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * State of a hosting service e.g. details about all the tasks running in our AWS ECS cluster.
@@ -37,21 +38,19 @@ import java.util.Set;
 @Builder(toBuilder = true)
 public class HostingState {
 
-    private final Set<String> managerHosts;
-
-    private final Set<String> kioskHosts;
-
+    private final List<ManagerTask> managerTasks;
+    private final List<KioskTask> kioskTasks;
     private final List<ServerTask> serverTasks;
 
     public HostingState() {
-        this.managerHosts = Collections.emptySet();
-        this.kioskHosts = Collections.emptySet();
+        this.managerTasks = Collections.emptyList();
+        this.kioskTasks = Collections.emptyList();
         this.serverTasks = Collections.emptyList();
     }
 
-    public HostingState(Set<String> managerHosts, Set<String> kioskHosts, List<ServerTask> serverTasks) {
-        this.managerHosts = Collections.unmodifiableSet(managerHosts);
-        this.kioskHosts = Collections.unmodifiableSet(kioskHosts);
+    public HostingState(List<ManagerTask> managerTasks, List<KioskTask> kioskTasks, List<ServerTask> serverTasks) {
+        this.managerTasks = Collections.unmodifiableList(managerTasks);
+        this.kioskTasks = Collections.unmodifiableList(kioskTasks);
         this.serverTasks = Collections.unmodifiableList(serverTasks);
     }
 

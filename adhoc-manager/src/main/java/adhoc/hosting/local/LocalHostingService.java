@@ -26,6 +26,8 @@ import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
+import adhoc.task.KioskTask;
+import adhoc.task.ManagerTask;
 import adhoc.task.ServerTask;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -55,9 +56,19 @@ public class LocalHostingService implements HostingService {
     @Override
     public HostingState poll() {
 
-        Set<String> managerHosts = Collections.singleton("localhost");
-        Set<String> kioskHosts = Collections.singleton("localhost");
+        List<ManagerTask> managerTasks = new ArrayList<>();
+        List<KioskTask> kioskTasks = new ArrayList<>();
         List<ServerTask> serverTasks = new ArrayList<>();
+
+        ManagerTask managerTask = new ManagerTask();
+        managerTask.setPrivateIp("127.0.0.1");
+        managerTask.setPublicIp("127.0.0.1");
+        managerTasks.add(managerTask);
+
+        KioskTask kioskTask = new KioskTask();
+        kioskTask.setPrivateIp("127.0.0.1");
+        kioskTask.setPublicIp("127.0.0.1");
+        kioskTasks.add(kioskTask);
 
         List<Server> servers = serverRepository.findAll();
 
@@ -77,7 +88,7 @@ public class LocalHostingService implements HostingService {
             }
         }
 
-        return new HostingState(managerHosts, kioskHosts, serverTasks);
+        return new HostingState(managerTasks, kioskTasks, serverTasks);
     }
 
     @Override

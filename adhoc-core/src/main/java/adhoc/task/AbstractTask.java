@@ -23,9 +23,7 @@
 package adhoc.task;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * TODO: WIP
@@ -35,6 +33,9 @@ import lombok.ToString;
  */
 @Entity(name = "Task")
 @Inheritance(strategy = InheritanceType.JOINED)
+//@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString

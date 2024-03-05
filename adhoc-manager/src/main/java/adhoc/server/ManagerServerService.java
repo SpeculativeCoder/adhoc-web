@@ -33,6 +33,8 @@ import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
+import adhoc.task.KioskTask;
+import adhoc.task.ManagerTask;
 import adhoc.task.ServerTask;
 import adhoc.task.ServerTaskRepository;
 import adhoc.world.ManagerWorldService;
@@ -244,7 +246,9 @@ public class ManagerServerService {
         Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
 
         Optional<WorldUpdatedEvent> optionalWorldUpdatedEvent =
-                managerWorldService.updateManagerAndKioskHosts(hostingState.getManagerHosts(), hostingState.getKioskHosts());
+                managerWorldService.updateManagerAndKioskHosts(
+                        hostingState.getManagerTasks().stream().map(ManagerTask::getPublicIp).collect(Collectors.toSet()),
+                        hostingState.getKioskTasks().stream().map(KioskTask::getPublicIp).collect(Collectors.toSet()));
 
         optionalWorldUpdatedEvent.ifPresent(events::add);
 

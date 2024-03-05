@@ -23,11 +23,12 @@
 package adhoc.task;
 
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
+//@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString

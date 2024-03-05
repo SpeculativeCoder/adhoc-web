@@ -110,7 +110,7 @@ public class DockerHostingService implements HostingService {
 
         Set<String> managerHosts = new LinkedHashSet<>();
         Set<String> kioskHosts = new LinkedHashSet<>();
-        Map<Long, ServerTask> serverTasks = new LinkedHashMap<>();
+        List<ServerTask> serverTasks = new ArrayList<>();
 
         // assume manager running on Docker host (unless we find a adhoc_manager container in Docker)
         managerHosts.add(DEFAULT_MANAGER_HOST);
@@ -153,12 +153,12 @@ public class DockerHostingService implements HostingService {
 
                         ServerTask task = new ServerTask();
                         task.setIdentifier(inspectedContainer.getId());
-                        //task.setServerId(serverId);
                         task.setPrivateIp(privateIp);
                         task.setPublicIp("127.0.0.1");
                         task.setPublicWebSocketPort(calculatePublicWebSocketPort(serverId));
+                        task.setServerId(serverId);
 
-                        serverTasks.put(serverId, task);
+                        serverTasks.add(task);
                         break;
                     }
                 }

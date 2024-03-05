@@ -44,10 +44,7 @@ import software.amazon.awssdk.services.ec2.model.*;
 import software.amazon.awssdk.services.ecs.EcsClient;
 import software.amazon.awssdk.services.ecs.model.*;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -90,7 +87,7 @@ public class EcsHostingService implements HostingService {
 
         Set<String> managerHosts = new LinkedHashSet<>();
         Set<String> kioskHosts = new LinkedHashSet<>();
-        Map<Long, ServerTask> serverTasks = new LinkedHashMap<>();
+        List<ServerTask> serverTasks = new ArrayList<>();
 
         LinkedHashSet<String> managerNetworkInterfaceIds = new LinkedHashSet<>();
         LinkedHashSet<String> kioskNetworkInterfaceIds = new LinkedHashSet<>();
@@ -180,10 +177,10 @@ public class EcsHostingService implements HostingService {
                                     }
 
                                     ServerTask serverTask = new ServerTask();
-                                    //hostingTask.setServerId(serverId);
                                     serverTask.setIdentifier(task.taskArn());
                                     serverTask.setPrivateIp(privateIp);
-                                    serverTasks.put(serverId, serverTask);
+                                    serverTask.setServerId(serverId);
+                                    serverTasks.add(serverTask);
 
                                     // we do another bulk call to the container service to actually get the public IPs
                                     // so keep a mapping of network interface ID to the task

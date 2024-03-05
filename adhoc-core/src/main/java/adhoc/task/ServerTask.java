@@ -32,4 +32,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ServerTask extends AbstractTask {
+
+    private Long serverId;
 }

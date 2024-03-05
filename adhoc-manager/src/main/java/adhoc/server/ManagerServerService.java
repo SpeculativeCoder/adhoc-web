@@ -250,7 +250,10 @@ public class ManagerServerService {
 
         try (Stream<Server> servers = serverRepository.streamBy()) {
             servers.forEach(server -> {
-                ServerTask existingTask = hostingState.getServerTasks().get(server.getId());
+                ServerTask existingTask = hostingState.getServerTasks().stream()
+                        .filter(serverTask -> server.getId().equals(serverTask.getServerId()))
+                        .findFirst()
+                        .orElse(null);
 
                 Optional<ServerUpdatedEvent> optionalServerUpdatedEvent =
                         existingTask != null
@@ -262,13 +265,10 @@ public class ManagerServerService {
         }
 
         // any tasks for servers which don't exist should be stopped (typically this is cleanup)
-        for (Map.Entry<Long, ServerTask> entry : hostingState.getServerTasks().entrySet()) {
-            Long serverId = entry.getKey();
-            ServerTask task = entry.getValue();
-
-            if (!serverRepository.existsById(serverId)) {
-                log.debug("Server {} does not exist - need to stop task {}", serverId, task);
-                hostingService.stopServerTask(task);
+        for (ServerTask serverTask : hostingState.getServerTasks()) {
+            if (!serverRepository.existsById(serverTask.getServerId())) {
+                log.debug("Server {} does not exist - need to stop task {}", serverTask.getServerId(), serverTask);
+                hostingService.stopServerTask(serverTask);
             }
         }
 
@@ -382,7 +382,7 @@ public class ManagerServerService {
         log.debug("stopAllServerTasks: hostingState={}", hostingState);
         Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
 
-        for (ServerTask task : hostingState.getServerTasks().values()) {
+        for (ServerTask task : hostingState.getServerTasks()) {
             log.debug("Stopping task {}", task);
             hostingService.stopServerTask(task);
         }

@@ -33,7 +33,10 @@ import org.apache.activemq.artemis.utils.collections.ConcurrentHashSet;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Treats whatever server is running on 127.0.0.1 as the task for ALL servers.
@@ -54,7 +57,7 @@ public class LocalHostingService implements HostingService {
 
         Set<String> managerHosts = Collections.singleton("localhost");
         Set<String> kioskHosts = Collections.singleton("localhost");
-        Map<Long, ServerTask> serverTasks = new LinkedHashMap<>();
+        List<ServerTask> serverTasks = new ArrayList<>();
 
         List<Server> servers = serverRepository.findAll();
 
@@ -64,13 +67,13 @@ public class LocalHostingService implements HostingService {
                 ServerTask serverTask = new ServerTask();
 
                 serverTask.setIdentifier("local-task-" + server.getId());
-                //task.setServerId(server.getId());
                 //task.setManagerHost("127.0.0.1");
                 serverTask.setPrivateIp("127.0.0.1");
                 serverTask.setPublicIp("127.0.0.1");
                 serverTask.setPublicWebSocketPort(8889);
+                serverTask.setServerId(server.getId());
 
-                serverTasks.put(server.getId(), serverTask);
+                serverTasks.add(serverTask);
             }
         }
 
@@ -79,13 +82,17 @@ public class LocalHostingService implements HostingService {
 
     @Override
     public void startServerTask(Server server) { //, Set<String> managerHosts) {
-        log.debug("Assuming locally running {}", server);
+        log.debug("Assuming local task for server {}", server);
         serverIds.add(server.getId());
     }
 
     @Override
     public void stopServerTask(ServerTask task) {
-        log.debug("Ignoring request to stop {}", task);
+        if (!serverIds.contains(task.getServerId())) {
+            log.warn("Tried to stop non existing assumed local server task {}", task);
+            return;
+        }
+        log.debug("No longer assuming local server task {}", task);
+        serverIds.remove(task.getServerId());
     }
-
 }

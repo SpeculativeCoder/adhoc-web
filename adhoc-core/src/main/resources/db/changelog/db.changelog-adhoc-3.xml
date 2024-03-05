@@ -461,6 +461,7 @@
                              primaryKey="true"
                              primaryKeyName="pk_server_task"/>
             </column>
+            <column name="server_id" type="BIGINT"/>
         </createTable>
         <addForeignKeyConstraint
                 baseColumnNames="id"

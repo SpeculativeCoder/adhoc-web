@@ -25,11 +25,11 @@ package adhoc.hosting.docker;
 import adhoc.area.Area;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
-import adhoc.hosting.ServerTask;
 import adhoc.hosting.docker.properties.DockerHostingProperties;
 import adhoc.properties.CoreProperties;
 import adhoc.properties.ManagerProperties;
 import adhoc.server.Server;
+import adhoc.task.ServerTask;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
@@ -152,7 +152,7 @@ public class DockerHostingService implements HostingService {
                         Long serverId = parseServerId(serverIdMatcher.group(1));
 
                         ServerTask task = new ServerTask();
-                        task.setTaskId(inspectedContainer.getId());
+                        task.setIdentifier(inspectedContainer.getId());
                         //task.setServerId(serverId);
                         task.setPrivateIp(privateIp);
                         task.setPublicIp("127.0.0.1");
@@ -216,7 +216,7 @@ public class DockerHostingService implements HostingService {
     @Override
     public void stopServerTask(ServerTask task) {
         dockerClient()
-                .removeContainerCmd(task.getTaskId())
+                .removeContainerCmd(task.getIdentifier())
                 .withForce(true)
                 .exec();
     }

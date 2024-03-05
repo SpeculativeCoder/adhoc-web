@@ -20,24 +20,45 @@
  * SOFTWARE.
  */
 
-package adhoc.dns.local;
+package adhoc.task;
 
-import adhoc.dns.DnsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
+@Transactional
 @Service
-@Profile({"dns-local"})
 @Slf4j
-public class LocalDnsService implements DnsService {
+@RequiredArgsConstructor
+public class TaskService {
 
-    @Override
-    public void createOrUpdateDnsRecord(String domain, Set<String> ips) {
-        log.info("Assuming DNS entry (e.g. in Windows hosts file): domain={} ips={}", domain, ips);
+    private final AbstractTaskRepository abstractTaskRepository;
 
-        // TODO: actually look at hosts file to check the mapping is there?
+    @Transactional(readOnly = true)
+    public List<TaskDto> getTasks() {
+        return abstractTaskRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "id"))
+                .stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public TaskDto getTask(Long taskId) {
+        return toDto(abstractTaskRepository.getReferenceById(taskId));
+    }
+
+    TaskDto toDto(AbstractTask task) {
+        return new TaskDto(
+                task.getId(),
+                task.getVersion(),
+                task.getType().name(),
+                task.getIdentifier(),
+                task.getPrivateIp(),
+                task.getPublicIp(),
+                task instanceof ServerTask serverTask ? serverTask.getPublicWebSocketPort() : null);
     }
 }

@@ -20,39 +20,21 @@
  * SOFTWARE.
  */
 
-package adhoc.hosting;
+package adhoc.task;
 
-import adhoc.task.ServerTask;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
-/**
- * State of a hosting service e.g. details about all the tasks running in our AWS ECS cluster.
- */
-@Data
 @Builder(toBuilder = true)
-public class HostingState {
-
-    private final Set<String> managerHosts;
-
-    private final Set<String> kioskHosts;
-
-    private final Map<Long, ServerTask> serverTasks;
-
-    public HostingState() {
-        this.managerHosts = Collections.emptySet();
-        this.kioskHosts = Collections.emptySet();
-        this.serverTasks = Collections.emptyMap();
-    }
-
-    public HostingState(Set<String> managerHosts, Set<String> kioskHosts, Map<Long, ServerTask> serverTasks) {
-        this.managerHosts = Collections.unmodifiableSet(managerHosts);
-        this.kioskHosts = Collections.unmodifiableSet(kioskHosts);
-        this.serverTasks = Collections.unmodifiableMap(serverTasks);
-    }
-
+@Jacksonized
+public record TaskDto(
+        @Min(1) Long id,
+        @Min(0) Long version,
+        String type,
+        @NotNull String identifier,
+        String privateIp,
+        String publicIp,
+        Integer publicWebSocketPort) {
 }

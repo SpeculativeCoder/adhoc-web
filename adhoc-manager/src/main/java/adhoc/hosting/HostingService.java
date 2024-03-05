@@ -23,6 +23,7 @@
 package adhoc.hosting;
 
 import adhoc.server.Server;
+import adhoc.task.ServerTask;
 
 /**
  * A hosting service that can spin up Unreal servers on demand e.g. an ECS cluster that can spin up Unreal servers.

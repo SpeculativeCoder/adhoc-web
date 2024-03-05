@@ -25,11 +25,11 @@ package adhoc.hosting.ecs;
 import adhoc.area.Area;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
-import adhoc.hosting.ServerTask;
 import adhoc.hosting.ecs.properties.EcsHostingProperties;
 import adhoc.properties.CoreProperties;
 import adhoc.properties.ManagerProperties;
 import adhoc.server.Server;
+import adhoc.task.ServerTask;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -181,7 +181,7 @@ public class EcsHostingService implements HostingService {
 
                                     ServerTask serverTask = new ServerTask();
                                     //hostingTask.setServerId(serverId);
-                                    serverTask.setTaskId(task.taskArn());
+                                    serverTask.setIdentifier(task.taskArn());
                                     serverTask.setPrivateIp(privateIp);
                                     serverTasks.put(serverId, serverTask);
 
@@ -356,7 +356,7 @@ public class EcsHostingService implements HostingService {
         log.debug("Stopping {}", task);
 
         try (EcsClient ecsClient = ecsClient()) {
-            ecsClient.stopTask(StopTaskRequest.builder().task(task.getTaskId()).cluster(ecsHostingProperties.getEcsCluster()).build());
+            ecsClient.stopTask(StopTaskRequest.builder().task(task.getIdentifier()).cluster(ecsHostingProperties.getEcsCluster()).build());
         }
     }
 }

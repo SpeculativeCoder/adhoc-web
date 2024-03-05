@@ -20,39 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.hosting;
+package adhoc.task;
 
-import adhoc.task.ServerTask;
-import lombok.Builder;
-import lombok.Data;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
-/**
- * State of a hosting service e.g. details about all the tasks running in our AWS ECS cluster.
- */
-@Data
-@Builder(toBuilder = true)
-public class HostingState {
-
-    private final Set<String> managerHosts;
-
-    private final Set<String> kioskHosts;
-
-    private final Map<Long, ServerTask> serverTasks;
-
-    public HostingState() {
-        this.managerHosts = Collections.emptySet();
-        this.kioskHosts = Collections.emptySet();
-        this.serverTasks = Collections.emptyMap();
-    }
-
-    public HostingState(Set<String> managerHosts, Set<String> kioskHosts, Map<Long, ServerTask> serverTasks) {
-        this.managerHosts = Collections.unmodifiableSet(managerHosts);
-        this.kioskHosts = Collections.unmodifiableSet(kioskHosts);
-        this.serverTasks = Collections.unmodifiableMap(serverTasks);
-    }
-
+@Entity
+@Getter
+@Setter
+@ToString
+public class ServerTask extends AbstractTask {
 }

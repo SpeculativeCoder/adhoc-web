@@ -69,7 +69,7 @@
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
 
-        <!-- TODO -->
+        <!-- pessimistic locking failure messages -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
@@ -81,12 +81,24 @@
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
 
-        <!-- TODO -->
+        <!-- batch insert failures -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     ("org.hibernate.orm.jdbc.batch".equals(logger)
                     &amp;&amp; (message.equals("HHH100503: On release of batch it still contained JDBC statements") || message.startsWith("HHH100501: Exception executing batch")))
+                </expression>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+
+        <!-- web browser stomp disconnection failures -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(logger)
+                    &amp;&amp; (message.startsWith("Failed to forward DISCONNECT ")))
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>

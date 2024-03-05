@@ -20,31 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.hosting;
+package adhoc.task;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-/**
- * Information about a container running an Unreal server in the hosting service e.g. a task in an AWS ECS cluster.
- */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-public class ServerTask {
-
-    /** Unique identifier of the task within the hosting service. */
-    private String taskId;
-
-    /** IP that is reachable within the hosting service but not externally. */
-    private String privateIp;
-
-    /** Public IP visible to users. */
-    private String publicIp;
-
-    /** Web socket port visible to users (typically 8898) */
-    private Integer publicWebSocketPort;
+@Entity
+@Getter
+@Setter
+@ToString
+public class ManagerTask extends AbstractTask {
 }

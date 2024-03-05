@@ -56,6 +56,10 @@
             drop table if exists structure;
             drop table if exists faction;
             drop table if exists region;
+            drop table if exists task;
+            drop table if exists manager_task;
+            drop table if exists kiosk_task;
+            drop table if exists server_task;
         </sql>
 
         <createSequence sequenceName="world_id_sequence" startValue="1" incrementBy="50"/>
@@ -259,6 +263,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <addPrimaryKey columnNames="objective_id, linked_objectives_id"
+                       constraintName="pk_objective_linked_objectives"
+                       tableName="objective_linked_objectives"/>
         <addForeignKeyConstraint baseTableName="objective_linked_objectives" baseColumnNames="objective_id" constraintName="fk63hnadpknb5s6hpdn5ntncpco"
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
                                  referencedTableName="objective" validate="true"/>
@@ -382,6 +389,85 @@
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="structure" constraintName="fkc8m9lkv9k0q4ogotr6uaup85s" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
                                  referencedTableName="adhoc_user" validate="true"/>
+
+        <createSequence sequenceName="task_id_sequence"
+                        startValue="1"
+                        incrementBy="50"/>
+        <createTable tableName="task">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_task_id"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="identifier"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="private_ip"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="public_ip"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="public_web_socket_port"
+                    type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="manager_task">
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_manager_task"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseColumnNames="id"
+                baseTableName="manager_task"
+                constraintName="fk_manager_task_id"
+                referencedColumnNames="id"
+                referencedTableName="task"/>
+
+        <createTable tableName="kiosk_task">
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_kiosk_task"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseColumnNames="id"
+                baseTableName="kiosk_task"
+                constraintName="fk_kiosk_task_id"
+                referencedColumnNames="id"
+                referencedTableName="task"/>
+
+        <createTable tableName="server_task">
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_server_task"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseColumnNames="id"
+                baseTableName="server_task"
+                constraintName="fk_server_task_id"
+                referencedColumnNames="id"
+                referencedTableName="task"/>
     </changeSet>
 
 </databaseChangeLog>

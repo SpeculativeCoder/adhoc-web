@@ -20,39 +20,36 @@
  * SOFTWARE.
  */
 
-package adhoc.hosting;
+package adhoc.task;
 
-import adhoc.task.ServerTask;
-import lombok.Builder;
-import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
-/**
- * State of a hosting service e.g. details about all the tasks running in our AWS ECS cluster.
- */
-@Data
-@Builder(toBuilder = true)
-public class HostingState {
+@RestController
+@RequestMapping("/api")
+@Slf4j
+@RequiredArgsConstructor
+public class TaskController {
 
-    private final Set<String> managerHosts;
+    private final TaskService taskService;
 
-    private final Set<String> kioskHosts;
+    @GetMapping("/tasks")
+    public List<TaskDto> getTasks() {
 
-    private final Map<Long, ServerTask> serverTasks;
-
-    public HostingState() {
-        this.managerHosts = Collections.emptySet();
-        this.kioskHosts = Collections.emptySet();
-        this.serverTasks = Collections.emptyMap();
+        // TODO: sorting
+        return taskService.getTasks();
     }
 
-    public HostingState(Set<String> managerHosts, Set<String> kioskHosts, Map<Long, ServerTask> serverTasks) {
-        this.managerHosts = Collections.unmodifiableSet(managerHosts);
-        this.kioskHosts = Collections.unmodifiableSet(kioskHosts);
-        this.serverTasks = Collections.unmodifiableMap(serverTasks);
-    }
+    @GetMapping("/tasks/{taskId}")
+    public TaskDto getTask(
+            @PathVariable("taskId") Long taskId) {
 
+        return taskService.getTask(taskId);
+    }
 }

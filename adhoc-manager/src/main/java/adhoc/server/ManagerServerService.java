@@ -27,13 +27,14 @@ import adhoc.area.AreaRepository;
 import adhoc.dns.DnsService;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
-import adhoc.hosting.ServerTask;
 import adhoc.properties.ManagerProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
+import adhoc.task.ServerTask;
+import adhoc.task.ServerTaskRepository;
 import adhoc.world.ManagerWorldService;
 import adhoc.world.event.WorldUpdatedEvent;
 import com.google.common.base.Verify;
@@ -55,13 +56,13 @@ import java.util.stream.Stream;
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerServerService {
-
     private final ManagerProperties managerProperties;
     private final ServerProperties serverProperties;
 
     private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
+    private final ServerTaskRepository serverTaskRepository;
 
     private final ManagerWorldService managerWorldService;
     private final HostingService hostingService;

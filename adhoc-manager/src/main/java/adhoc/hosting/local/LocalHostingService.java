@@ -24,9 +24,9 @@ package adhoc.hosting.local;
 
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
-import adhoc.hosting.ServerTask;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
+import adhoc.task.ServerTask;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.artemis.utils.collections.ConcurrentHashSet;
@@ -63,7 +63,7 @@ public class LocalHostingService implements HostingService {
 
                 ServerTask serverTask = new ServerTask();
 
-                serverTask.setTaskId("local-task-" + server.getId());
+                serverTask.setIdentifier("local-task-" + server.getId());
                 //task.setServerId(server.getId());
                 //task.setManagerHost("127.0.0.1");
                 serverTask.setPrivateIp("127.0.0.1");

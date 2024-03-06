@@ -22,6 +22,7 @@
 
 package adhoc.task;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +41,8 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
 
+    private final HttpServletRequest httpServletRequest;
+
     @Transactional(readOnly = true)
     public List<TaskDto> getTasks() {
         return taskRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "id"))
@@ -56,9 +59,10 @@ public class TaskService {
                 task.getId(),
                 task.getVersion(),
                 task.getTaskType().name(),
-                task.getTaskIdentifier(),
-                task.getPrivateIp(),
+                httpServletRequest.isUserInRole("ROLE_DEBUG") ? task.getTaskIdentifier() : null,
+                httpServletRequest.isUserInRole("ROLE_DEBUG") ? task.getPrivateIp() : null,
                 task.getPublicIp(),
-                task.getPublicWebSocketPort());
+                task.getPublicWebSocketPort(),
+                task instanceof ServerTask serverTask ? serverTask.getServerId() : null);
     }
 }

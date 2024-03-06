@@ -52,7 +52,7 @@ export class PawnsComponent implements OnInit {
   sortBy(sort: SortEvent) {
     // console.log('sortBy');
     // console.log(sort);
-    this.pawns.sort((a: Pawn, b: Pawn) => {
+    this.pawns.sort((a: any, b: any) => {
       const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
       return sort.direction === 'asc' ? result : -result;
     });

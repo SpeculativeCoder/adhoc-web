@@ -20,34 +20,45 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {Region} from "./region";
-import {forkJoin} from "rxjs";
-import {RegionService} from "./region.service";
-import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {Inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Task} from './task';
+import {StompService} from '../core/stomp.service';
+import {map} from 'rxjs/operators';
 
-@Component({
-  selector: 'app-regions',
-  templateUrl: './regions.component.html'
+@Injectable({
+  providedIn: 'root'
 })
-export class RegionsComponent implements OnInit {
-  regions: Region[] = [];
+export class TaskService {
 
-  constructor(private regionService: RegionService) {
+  private readonly tasksUrl: string;
+
+  private tasks: Task[] = [];
+
+  constructor(
+    @Inject('BASE_URL') baseUrl: string,
+    private http: HttpClient,
+    private stomp: StompService
+  ) {
+    this.tasksUrl = `${baseUrl}/api/tasks`;
   }
 
-  ngOnInit() {
-    forkJoin([this.regionService.getRegions()]).subscribe(data => {
-      [this.regions] = data;
-    });
+  getTasks(): Observable<Task[]> {
+    return this.http.get<Task[]>(this.tasksUrl).pipe(
+      map(tasks => {
+        this.tasks ? this.tasks.length = 0 : this.tasks = [];
+        this.tasks.push(...tasks);
+        return this.tasks;
+      }));
   }
 
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.regions.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
+  getTask(id: number): Observable<Task> {
+    return this.http.get<Task>(`${this.tasksUrl}/${id}`);
   }
+
+  updateTask(task: Task): Observable<Task> {
+    return this.http.put<Task>(`${this.tasksUrl}/${task.id}`, task);
+  }
+
 }

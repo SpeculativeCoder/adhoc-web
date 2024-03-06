@@ -38,6 +38,10 @@
         <th scope="col" sortable="y">Y</th>
         <th scope="col" sortable="z">Z</th>
         <th scope="col" sortable="status">Status</th>
+        <th scope="col" sortable="privateIp">Private IP</th>
+        <th scope="col" sortable="publicIp">Public IP</th>
+        <th scope="col" sortable="publicWebSocketPort">Public Web Socket Port</th>
+        <th scope="col" sortable="webSocketURL">Web Socket URL</th>
         <th scope="col" sortable="initiated">Initiated</th>
         <th scope="col" sortable="seen">Last Seen</th>
         <th scope="col"></th>
@@ -59,6 +63,10 @@
         <td>{{ server.y }}</td>
         <td>{{ server.z }}</td>
         <td>{{ server.status }}</td>
+        <td>{{ server.privateIp }}</td>
+        <td>{{ server.publicIp }}</td>
+        <td>{{ server.publicWebSocketPort }}</td>
+        <td>{{ server.webSocketUrl }}</td>
         <td>{{ server.initiated | simpleDate }}</td>
         <td>{{ server.seen | simpleDate }}</td>
         <td>

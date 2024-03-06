@@ -25,7 +25,6 @@ import {Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
-import {User} from '../user/user';
 import {PropertiesService} from "../properties/properties.service";
 import {SortEvent} from "../shared/table-sort/header-sort.component";
 import {Router} from "@angular/router";
@@ -71,7 +70,7 @@ export class ServersComponent implements OnInit {
   sortBy(sort: SortEvent) {
     // console.log('sortBy');
     // console.log(sort);
-    this.servers.sort((a: User, b: User) => {
+    this.servers.sort((a: any, b: any) => {
       const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
       return sort.direction === 'asc' ? result : -result;
     });

@@ -24,7 +24,6 @@ import {Component, OnInit} from '@angular/core';
 import {Faction} from './faction';
 import {FactionService} from './faction.service';
 import {SortEvent} from "../shared/table-sort/header-sort.component";
-import {User} from "../user/user";
 
 @Component({
   selector: 'app-factions',
@@ -43,7 +42,7 @@ export class FactionsComponent implements OnInit {
   sortBy(sort: SortEvent) {
     // console.log('sortBy');
     // console.log(sort);
-    this.factions.sort((a: User, b: User) => {
+    this.factions.sort((a: any, b: any) => {
       const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
       return sort.direction === 'asc' ? result : -result;
     });

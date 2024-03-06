@@ -25,7 +25,6 @@ import {forkJoin} from "rxjs";
 import {Area} from "./area";
 import {AreaService} from "./area.service";
 import {SortEvent} from "../shared/table-sort/header-sort.component";
-import {User} from "../user/user";
 
 @Component({
   selector: 'app-areas',
@@ -46,7 +45,7 @@ export class AreasComponent implements OnInit {
   sortBy(sort: SortEvent) {
     // console.log('sortBy');
     // console.log(sort);
-    this.areas.sort((a: User, b: User) => {
+    this.areas.sort((a: any, b: any) => {
       const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
       return sort.direction === 'asc' ? result : -result;
     });

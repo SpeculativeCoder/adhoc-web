@@ -42,12 +42,16 @@ import {PawnsComponent} from "./pawn/pawns.component";
 import {PawnComponent} from "./pawn/pawn.component";
 import {InfoPageComponent} from "./info-page/info-page.component";
 import {ClientComponent} from "./client/client.component";
+import {TasksComponent} from "./task/tasks.component";
+import {TaskComponent} from "./task/task.component";
 
 const routes: Routes = [
   {path: '', component: MapComponent},
   {path: 'map', title: 'Map', component: MapComponent},
   {path: 'servers', title: 'Servers', component: ServersComponent},
   {path: 'servers/:id', title: 'Server', component: ServerComponent},
+  {path: 'tasks', title: 'Tasks', component: TasksComponent},
+  {path: 'tasks/:id', title: 'Task', component: TaskComponent},
   {path: 'regions', title: 'Regions', component: RegionsComponent},
   {path: 'regions/:id', title: 'Region', component: RegionComponent},
   {path: 'areas', title: 'Areas', component: AreasComponent},

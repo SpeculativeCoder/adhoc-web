@@ -27,65 +27,79 @@
   <form>
     <div class="mb-3">
       <label class="form-label" for="nameInput">Name</label>
-      <input class="form-control" id="nameInput" name="name" type="text" readonly [ngModel]="server.name"/>
+      <input class="form-control" id="nameInput" name="name" type="text" readonly
+             [ngModel]="server.name"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="regionInput">Region</label>
-      <input class="form-control" id="regionInput" name="region" type="number" readonly [(ngModel)]="server.regionId"/>
+      <input class="form-control" id="regionInput" name="region" type="number" readonly
+             [(ngModel)]="server.regionId"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="areaInput">Areas</label>
-      <input class="form-control" id="areaInput" name="area" type="text" readonly [(ngModel)]="server.areaIds"/>
+      <input class="form-control" id="areaInput" name="area" type="text" readonly
+             [(ngModel)]="server.areaIds"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="mapNameInput">Map</label>
-      <input class="form-control" id="mapNameInput" name="mapName" type="text" readonly [ngModel]="server.mapName"/>
+      <input class="form-control" id="mapNameInput" name="mapName" type="text" readonly
+             [ngModel]="server.mapName"/>
     </div>
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label" for="xInput">X</label>
-        <input class="form-control" id="xInput" name="x" type="number" readonly [(ngModel)]="server.x"/>
+        <input class="form-control" id="xInput" name="x" type="number" readonly
+               [(ngModel)]="server.x"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="yInput">Y</label>
-        <input class="form-control" id="yInput" name="y" type="number" readonly [(ngModel)]="server.y"/>
+        <input class="form-control" id="yInput" name="y" type="number" readonly
+               [(ngModel)]="server.y"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="zInput">Z</label>
-        <input class="form-control" id="zInput" name="z" type="number" readonly [(ngModel)]="server.z"/>
+        <input class="form-control" id="zInput" name="z" type="number" readonly
+               [(ngModel)]="server.z"/>
       </div>
     </div>
     <div class="mb-3">
       <label class="form-label" for="statusInput">Status</label>
-      <input class="form-control" id="statusInput" name="status" type="text" readonly [ngModel]="server.status"/>
+      <input class="form-control" id="statusInput" name="status" type="text" readonly
+             [ngModel]="server.status"/>
     </div>
     <!--<div class="mb-3">
       <label class="form-label" for="managerHostInput">Manager Host</label>
       <input class="form-control" id="managerHostInput" name="managerHost" type="text" readonly [(ngModel)]="server.managerHost"/>
-    </div>
+    </div>-->
     <div class="mb-3">
       <label class="form-label" for="privateIpInput">Private IP</label>
-      <input class="form-control" id="privateIpInput" name="privateIp" type="text" readonly [(ngModel)]="server.privateIp"/>
+      <input class="form-control" id="privateIpInput" name="privateIp" type="text" readonly
+             [(ngModel)]="server.privateIp"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="publicIpInput">Public IP</label>
-      <input class="form-control" id="publicIpInput" name="publicIp" type="text" readonly [(ngModel)]="server.publicIp"/>
+      <input class="form-control" id="publicIpInput" name="publicIp" type="text" readonly
+             [(ngModel)]="server.publicIp"/>
     </div>
     <div class="mb-3">
-      <label class="form-label" for="publicWebSocketPortInput">Port</label>
-      <input class="form-control" id="publicWebSocketPortInput" name="publicWebSocketPort" type="number" readonly [(ngModel)]="server.publicWebSocketPort"/>
-    </div>-->
-    <!--  <div class="mb-3">
-        <label class="form-label" for="webSocketUrlInput">Private IP</label>
-        <input class="form-control" id="webSocketUrlInput" name="webSocketUrl" type="text" readonly [(ngModel)]="server.webSocketUrl"/>
-      </div>-->
+      <label class="form-label" for="publicWebSocketPort">Public Web Socket Port</label>
+      <input class="form-control" id="publicWebSocketPort" name="publicWebSocketPort" type="number" readonly
+             [(ngModel)]="server.publicWebSocketPort"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="webSocketUrlInput">Web Socket URL</label>
+      <input class="form-control" id="webSocketUrlInput" name="webSocketUrl" type="text" readonly
+             [(ngModel)]="server.webSocketUrl"/>
+    </div>
     <div class="mb-3">
       <label class="form-label" for="initiatedInput">Initiated</label>
-      <input class="form-control" id="initiatedInput" name="seen" type="text" readonly [ngModel]="server.initiated | simpleDate"/>
+      <input class="form-control" id="initiatedInput" name="seen" type="text" readonly
+             [ngModel]="server.initiated | simpleDate"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="seenInput">Last Seen</label>
-      <input class="form-control" id="seenInput" name="seen" type="text" readonly [ngModel]="server.seen | simpleDate"/>
+      <input class="form-control" id="seenInput" name="seen" type="text" readonly
+             [ngModel]="server.seen | simpleDate"/>
     </div>
     <div class="row">
       <!--<div class="col-auto mt-3 mb-3">

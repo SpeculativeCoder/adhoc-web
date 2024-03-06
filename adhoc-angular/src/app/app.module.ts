@@ -57,6 +57,8 @@ import {ClientComponent} from './client/client.component';
 import {InfoPageModule} from "./info-page/info-page.module";
 import {AppTitleStrategy} from "./app-title-strategy";
 import {TitleStrategy} from "@angular/router";
+import {TasksComponent} from "./task/tasks.component";
+import {TaskComponent} from "./task/task.component";
 
 @NgModule({
   declarations: [
@@ -68,6 +70,8 @@ import {TitleStrategy} from "@angular/router";
     MapComponent,
     ServersComponent,
     ServerComponent,
+    TasksComponent,
+    TaskComponent,
     RegionsComponent,
     RegionComponent,
     AreasComponent,

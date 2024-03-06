@@ -21,42 +21,35 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {ObjectiveService} from './objective.service';
-import {Objective} from './objective';
-import {FactionService} from '../faction/faction.service';
-import {Faction} from '../faction/faction';
 import {forkJoin} from 'rxjs';
+import {Task} from './task';
+import {TaskService} from './task.service';
 import {SortEvent} from "../shared/table-sort/header-sort.component";
 
 @Component({
-  selector: 'app-objectives',
-  templateUrl: './objectives.component.html'
+  selector: 'app-tasks',
+  templateUrl: './tasks.component.html'
 })
-export class ObjectivesComponent implements OnInit {
-  objectives: Objective[] = [];
-  factions: Faction[] = [];
+export class TasksComponent implements OnInit {
+  tasks: Task[] = [];
 
-  constructor(private objectiveService: ObjectiveService, private factionService: FactionService) {
+  constructor(private taskService: TaskService) {
   }
 
   ngOnInit() {
-    forkJoin([this.objectiveService.getObjectives(), this.factionService.getFactions()]).subscribe(data => {
-      [this.objectives, this.factions] = data;
+    forkJoin([this.taskService.getTasks()]).subscribe(data => {
+      [this.tasks] = data;
     });
   }
 
-  getFaction(factionId: number): Faction {
-    return this.factions.find(faction => faction.id === factionId);
-  }
-
-  changeFaction(objective: Objective, faction: Faction) {
-    this.objectiveService.objectiveTaken(objective, faction);
+  getTask(id: number): Task {
+    return this.tasks.find(task => task.id === id);
   }
 
   sortBy(sort: SortEvent) {
     // console.log('sortBy');
     // console.log(sort);
-    this.objectives.sort((a: any, b: any) => {
+    this.tasks.sort((a: any, b: any) => {
       const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
       return sort.direction === 'asc' ? result : -result;
     });

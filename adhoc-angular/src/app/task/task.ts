@@ -20,34 +20,12 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {Region} from "./region";
-import {forkJoin} from "rxjs";
-import {RegionService} from "./region.service";
-import {SortEvent} from "../shared/table-sort/header-sort.component";
-
-@Component({
-  selector: 'app-regions',
-  templateUrl: './regions.component.html'
-})
-export class RegionsComponent implements OnInit {
-  regions: Region[] = [];
-
-  constructor(private regionService: RegionService) {
-  }
-
-  ngOnInit() {
-    forkJoin([this.regionService.getRegions()]).subscribe(data => {
-      [this.regions] = data;
-    });
-  }
-
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.regions.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
-  }
+export class Task {
+  id?: number;
+  version?: number;
+  type?: string;
+  taskIdentifier?: string;
+  privateIp?: string;
+  publicIp?: string;
+  publicWebSocketPort?: number;
 }

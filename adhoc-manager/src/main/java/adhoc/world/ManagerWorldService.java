@@ -286,7 +286,7 @@ public class ManagerWorldService {
             u0.setUpdated(created);
             u0.setSeen(seen);
             //if (webProperties.getFeatureFlags().contains("development")) {
-            u0.setRoles(Sets.newHashSet(UserRole.USER)); // TODO: restore User.Role.ADMIN,
+            u0.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG)); // TODO: restore User.Role.ADMIN,
             //}
             u0 = userRepository.save(u0);
 

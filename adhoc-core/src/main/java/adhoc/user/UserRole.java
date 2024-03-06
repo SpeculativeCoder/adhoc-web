@@ -25,5 +25,6 @@ package adhoc.user;
 public enum UserRole {
     ADMIN,
     USER,
-    SERVER
+    SERVER,
+    DEBUG,
 }

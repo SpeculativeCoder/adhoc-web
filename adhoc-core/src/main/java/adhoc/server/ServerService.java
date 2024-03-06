@@ -23,12 +23,13 @@
 package adhoc.server;
 
 import adhoc.area.Area;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,8 @@ import java.util.stream.Collectors;
 public class ServerService {
 
     private final ServerRepository serverRepository;
+
+    private final HttpServletRequest httpServletRequest;
 
     @Transactional(readOnly = true)
     public List<ServerDto> getServers() {
@@ -64,7 +67,9 @@ public class ServerService {
                 server.getX(), server.getY(), server.getZ(),
                 server.getStatus().name(),
                 server.getManagerHost(),
-                server.getPrivateIp(), server.getPublicIp(), server.getPublicWebSocketPort(),
+                httpServletRequest.isUserInRole("ROLE_DEBUG") ? server.getPrivateIp() : null,
+                server.getPublicIp(),
+                server.getPublicWebSocketPort(),
                 server.getWebSocketUrl(),
                 server.getInitiated(),
                 server.getSeen());

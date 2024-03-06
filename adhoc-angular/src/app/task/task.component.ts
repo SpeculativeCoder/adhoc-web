@@ -21,44 +21,39 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {ObjectiveService} from './objective.service';
-import {Objective} from './objective';
-import {FactionService} from '../faction/faction.service';
-import {Faction} from '../faction/faction';
+import {Task} from './task';
+import {ActivatedRoute, Router} from '@angular/router';
+import {TaskService} from './task.service';
 import {forkJoin} from 'rxjs';
-import {SortEvent} from "../shared/table-sort/header-sort.component";
 
 @Component({
-  selector: 'app-objectives',
-  templateUrl: './objectives.component.html'
+  selector: 'app-tasks',
+  templateUrl: './task.component.html'
 })
-export class ObjectivesComponent implements OnInit {
-  objectives: Objective[] = [];
-  factions: Faction[] = [];
+export class TaskComponent implements OnInit {
+  task: Task = {};
 
-  constructor(private objectiveService: ObjectiveService, private factionService: FactionService) {
+  constructor(
+    private route: ActivatedRoute,
+    private taskService: TaskService,
+    private router: Router
+  ) {
   }
 
   ngOnInit() {
-    forkJoin([this.objectiveService.getObjectives(), this.factionService.getFactions()]).subscribe(data => {
-      [this.objectives, this.factions] = data;
+    const taskId = +this.route.snapshot.paramMap.get('id');
+    forkJoin([this.taskService.getTask(taskId)]).subscribe(data => {
+      [this.task] = data;
     });
   }
 
-  getFaction(factionId: number): Faction {
-    return this.factions.find(faction => faction.id === factionId);
-  }
-
-  changeFaction(objective: Objective, faction: Faction) {
-    this.objectiveService.objectiveTaken(objective, faction);
-  }
-
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.objectives.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
+  save() {
+    this.taskService.updateTask(this.task).subscribe(task => {
+      this.task = task;
     });
+  }
+
+  back() {
+    this.router.navigateByUrl('/tasks');
   }
 }

@@ -393,20 +393,26 @@
         <createSequence sequenceName="task_id_sequence"
                         startValue="1"
                         incrementBy="50"/>
-        <createTable tableName="task">
+
+        <!--<createTable tableName="task">
             <column name="id" type="BIGINT">
                 <constraints nullable="false"
                              primaryKey="true"
                              primaryKeyName="pk_task_id"/>
             </column>
+        </createTable>-->
+
+        <createTable tableName="manager_task">
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_manager_task"/>
+            </column>
             <column name="version" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="type"
-                    type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="identifier"
+            <column name="task_identifier"
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -424,20 +430,12 @@
             </column>
         </createTable>
 
-        <createTable tableName="manager_task">
-            <column name="id"
-                    type="BIGINT">
-                <constraints nullable="false"
-                             primaryKey="true"
-                             primaryKeyName="pk_manager_task"/>
-            </column>
-        </createTable>
-        <addForeignKeyConstraint
+        <!--<addForeignKeyConstraint
                 baseColumnNames="id"
                 baseTableName="manager_task"
                 constraintName="fk_manager_task_id"
                 referencedColumnNames="id"
-                referencedTableName="task"/>
+                referencedTableName="task"/>-->
 
         <createTable tableName="kiosk_task">
             <column name="id"
@@ -446,13 +444,33 @@
                              primaryKey="true"
                              primaryKeyName="pk_kiosk_task"/>
             </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="task_identifier"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="private_ip"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="public_ip"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="public_web_socket_port"
+                    type="INT">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
-        <addForeignKeyConstraint
+
+        <!--<addForeignKeyConstraint
                 baseColumnNames="id"
                 baseTableName="kiosk_task"
                 constraintName="fk_kiosk_task_id"
                 referencedColumnNames="id"
-                referencedTableName="task"/>
+                referencedTableName="task"/>-->
 
         <createTable tableName="server_task">
             <column name="id"
@@ -461,14 +479,36 @@
                              primaryKey="true"
                              primaryKeyName="pk_server_task"/>
             </column>
-            <column name="server_id" type="BIGINT"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="task_identifier"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="private_ip"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="public_ip"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="public_web_socket_port"
+                    type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="server_id"
+                    type="BIGINT"/>
         </createTable>
-        <addForeignKeyConstraint
+
+        <!--<addForeignKeyConstraint
                 baseColumnNames="id"
                 baseTableName="server_task"
                 constraintName="fk_server_task_id"
                 referencedColumnNames="id"
-                referencedTableName="task"/>
+                referencedTableName="task"/>-->
+
     </changeSet>
 
 </databaseChangeLog>

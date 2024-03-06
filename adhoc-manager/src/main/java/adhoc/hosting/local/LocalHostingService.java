@@ -77,7 +77,7 @@ public class LocalHostingService implements HostingService {
 
                 ServerTask serverTask = new ServerTask();
 
-                serverTask.setIdentifier("local-task-" + server.getId());
+                serverTask.setTaskIdentifier("local-task-" + server.getId());
                 //task.setManagerHost("127.0.0.1");
                 serverTask.setPrivateIp("127.0.0.1");
                 serverTask.setPublicIp("127.0.0.1");

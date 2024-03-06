@@ -171,7 +171,7 @@ public class DockerHostingService implements HostingService {
                         Long serverId = parseServerId(serverIdMatcher.group(1));
 
                         ServerTask task = new ServerTask();
-                        task.setIdentifier(inspectedContainer.getId());
+                        task.setTaskIdentifier(inspectedContainer.getId());
                         task.setPrivateIp(privateIp);
                         task.setPublicIp("127.0.0.1");
                         task.setPublicWebSocketPort(calculatePublicWebSocketPort(serverId));
@@ -235,7 +235,7 @@ public class DockerHostingService implements HostingService {
     @Override
     public void stopServerTask(ServerTask task) {
         dockerClient()
-                .removeContainerCmd(task.getIdentifier())
+                .removeContainerCmd(task.getTaskIdentifier())
                 .withForce(true)
                 .exec();
     }

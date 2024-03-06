@@ -33,10 +33,7 @@ import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
-import adhoc.task.KioskTask;
-import adhoc.task.ManagerTask;
-import adhoc.task.ServerTask;
-import adhoc.task.ServerTaskRepository;
+import adhoc.task.*;
 import adhoc.world.ManagerWorldService;
 import adhoc.world.event.WorldUpdatedEvent;
 import com.google.common.base.Verify;
@@ -64,6 +61,8 @@ public class ManagerServerService {
     private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
+    private final ManagerTaskRepository managerTaskRepository;
+    private final KioskTaskRepository kioskTaskRepository;
     private final ServerTaskRepository serverTaskRepository;
 
     private final ManagerWorldService managerWorldService;
@@ -244,6 +243,20 @@ public class ManagerServerService {
         HostingState hostingState = hostingService.poll();
         log.debug("manageServerTasks: hostingState={}", hostingState);
         Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
+
+        // TODO: WIP
+        List<String> taskIdentifiers = new ArrayList<>();
+        for (ServerTask task : hostingState.getServerTasks()) {
+            ServerTask serverTask = serverTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(ServerTask::new);
+            serverTask.setTaskIdentifier(task.getTaskIdentifier());
+            serverTask.setPrivateIp(task.getPrivateIp());
+            serverTask.setPublicIp(task.getPublicIp());
+            serverTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
+            serverTask.setServerId(task.getServerId());
+            serverTaskRepository.save(serverTask);
+            taskIdentifiers.add(serverTask.getTaskIdentifier());
+        }
+        serverTaskRepository.deleteByTaskIdentifierNotIn(taskIdentifiers);
 
         Optional<WorldUpdatedEvent> optionalWorldUpdatedEvent =
                 managerWorldService.updateManagerAndKioskHosts(

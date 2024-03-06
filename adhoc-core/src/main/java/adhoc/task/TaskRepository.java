@@ -25,5 +25,5 @@ package adhoc.task;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 // TODO
-public interface AbstractTaskRepository extends JpaRepository<AbstractTask, Long> {
+public interface TaskRepository extends JpaRepository<Task, Long> {
 }

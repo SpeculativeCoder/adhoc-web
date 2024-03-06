@@ -38,27 +38,27 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TaskService {
 
-    private final AbstractTaskRepository abstractTaskRepository;
+    private final TaskRepository taskRepository;
 
     @Transactional(readOnly = true)
     public List<TaskDto> getTasks() {
-        return abstractTaskRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "id"))
+        return taskRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "id"))
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public TaskDto getTask(Long taskId) {
-        return toDto(abstractTaskRepository.getReferenceById(taskId));
+        return toDto(taskRepository.getReferenceById(taskId));
     }
 
-    TaskDto toDto(AbstractTask task) {
+    TaskDto toDto(Task task) {
         return new TaskDto(
                 task.getId(),
                 task.getVersion(),
-                task.getType().name(),
-                task.getIdentifier(),
+                task.getTaskType().name(),
+                task.getTaskIdentifier(),
                 task.getPrivateIp(),
                 task.getPublicIp(),
-                task instanceof ServerTask serverTask ? serverTask.getPublicWebSocketPort() : null);
+                task.getPublicWebSocketPort());
     }
 }

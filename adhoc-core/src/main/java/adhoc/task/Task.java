@@ -31,15 +31,15 @@ import lombok.*;
  * There will be at least one task for the manager, one or more tasks for the kiosk (to handle load),
  * and then many server tasks to run the Unreal servers (which will be spun up and spun down as needed by population).
  */
-@Entity(name = "Task")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 //@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public abstract class AbstractTask {
+public abstract class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TaskIdSequence")
@@ -51,13 +51,9 @@ public abstract class AbstractTask {
     @Column(nullable = false)
     private Long version;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TaskType type;
-
     /** Identifier of the task within the hosting service (e.g. task ARN of AWS ECS task). */
     @Column(nullable = false)
-    private String identifier;
+    private String taskIdentifier;
 
     /** IP that is reachable within the hosting service but not externally. */
     @Column(nullable = false)
@@ -70,4 +66,6 @@ public abstract class AbstractTask {
     /** Web socket port visible to users (for server tasks this is typically 8898) */
     @Column(nullable = false)
     private Integer publicWebSocketPort;
+
+    public abstract TaskType getTaskType();
 }

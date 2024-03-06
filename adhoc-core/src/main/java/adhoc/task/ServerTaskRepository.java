@@ -23,6 +23,17 @@
 package adhoc.task;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.Collection;
+import java.util.Optional;
 
 public interface ServerTaskRepository extends JpaRepository<ServerTask, Long> {
+
+    Optional<ServerTask> findByTaskIdentifier(String taskIdentifier);
+
+    @Modifying
+    @Query("delete from ServerTask st where st.taskIdentifier not in ?1")
+    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
 }

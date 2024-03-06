@@ -22,22 +22,7 @@
 
 package adhoc.task;
 
-import jakarta.persistence.Entity;
-import lombok.*;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Entity
-//@SuperBuilder(toBuilder = true)
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
-public class ServerTask extends Task {
-
-    private Long serverId;
-
-    @Override
-    public TaskType getTaskType() {
-        return TaskType.SERVER;
-    }
+public interface KioskTaskRepository extends JpaRepository<KioskTask, Long> {
 }

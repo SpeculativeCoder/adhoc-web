@@ -146,7 +146,7 @@ public class EcsHostingService implements HostingService {
                         log.trace("Found manager. networkInterfaceId={}", networkInterfaceId);
 
                         ManagerTask managerTask = new ManagerTask();
-                        managerTask.setIdentifier(task.taskArn());
+                        managerTask.setTaskIdentifier(task.taskArn());
                         managerTask.setPrivateIp(privateIp);
                         managerNetworkInterfaceIds.put(networkInterfaceId, managerTask);
 
@@ -154,7 +154,7 @@ public class EcsHostingService implements HostingService {
                         log.trace("Found kiosk. networkInterfaceId={}", networkInterfaceId);
 
                         KioskTask kioskTask = new KioskTask();
-                        kioskTask.setIdentifier(task.taskArn());
+                        kioskTask.setTaskIdentifier(task.taskArn());
                         kioskTask.setPrivateIp(privateIp);
                         kioskNetworkInterfaceIds.put(networkInterfaceId, kioskTask);
 
@@ -177,7 +177,7 @@ public class EcsHostingService implements HostingService {
                                     }
 
                                     ServerTask serverTask = new ServerTask();
-                                    serverTask.setIdentifier(task.taskArn());
+                                    serverTask.setTaskIdentifier(task.taskArn());
                                     serverTask.setPrivateIp(privateIp);
                                     serverTask.setServerId(serverId);
                                     serverNetworkInterfaceIds.put(networkInterfaceId, serverTask);
@@ -352,7 +352,7 @@ public class EcsHostingService implements HostingService {
         log.debug("Stopping {}", task);
 
         try (EcsClient ecsClient = ecsClient()) {
-            ecsClient.stopTask(StopTaskRequest.builder().task(task.getIdentifier()).cluster(ecsHostingProperties.getEcsCluster()).build());
+            ecsClient.stopTask(StopTaskRequest.builder().task(task.getTaskIdentifier()).cluster(ecsHostingProperties.getEcsCluster()).build());
         }
     }
 }

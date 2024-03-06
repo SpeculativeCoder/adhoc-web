@@ -35,5 +35,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class KioskTask extends AbstractTask {
+public class KioskTask extends Task {
+
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.KIOSK;
+    }
 }

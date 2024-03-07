@@ -49,6 +49,7 @@ public class IndexController {
             "/login-or-register/**",
             "/map/**",
             "/servers/**",
+            "/tasks/**",
             "/regions/**",
             "/areas/**",
             "/objectives/**",

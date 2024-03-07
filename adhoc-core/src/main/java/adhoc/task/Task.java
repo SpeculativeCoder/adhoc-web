@@ -63,9 +63,5 @@ public abstract class Task {
     @Column(nullable = false)
     private String publicIp;
 
-    /** Web socket port visible to users (for server tasks this is typically 8898) */
-    @Column(nullable = false)
-    private Integer publicWebSocketPort;
-
     public abstract TaskType getTaskType();
 }

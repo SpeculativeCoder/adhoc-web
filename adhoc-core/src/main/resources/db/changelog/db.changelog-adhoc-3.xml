@@ -424,10 +424,6 @@
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="public_web_socket_port"
-                    type="INT">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
 
         <!--<addForeignKeyConstraint
@@ -457,10 +453,6 @@
             </column>
             <column name="public_ip"
                     type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="public_web_socket_port"
-                    type="INT">
                 <constraints nullable="false"/>
             </column>
         </createTable>

@@ -62,7 +62,7 @@ public class TaskService {
                 httpServletRequest.isUserInRole("ROLE_DEBUG") ? task.getTaskIdentifier() : null,
                 httpServletRequest.isUserInRole("ROLE_DEBUG") ? task.getPrivateIp() : null,
                 task.getPublicIp(),
-                task.getPublicWebSocketPort(),
+                task instanceof ServerTask serverTask ? serverTask.getPublicWebSocketPort() : null,
                 task instanceof ServerTask serverTask ? serverTask.getServerId() : null);
     }
 }

@@ -29,6 +29,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Collection;
 import java.util.Optional;
 
+// TODO: common
 public interface ServerTaskRepository extends JpaRepository<ServerTask, Long> {
 
     Optional<ServerTask> findByTaskIdentifier(String taskIdentifier);

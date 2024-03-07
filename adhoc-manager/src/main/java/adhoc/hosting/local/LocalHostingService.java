@@ -61,11 +61,13 @@ public class LocalHostingService implements HostingService {
         List<ServerTask> serverTasks = new ArrayList<>();
 
         ManagerTask managerTask = new ManagerTask();
+        managerTask.setTaskIdentifier("local-manager-task");
         managerTask.setPrivateIp("127.0.0.1");
         managerTask.setPublicIp("127.0.0.1");
         managerTasks.add(managerTask);
 
         KioskTask kioskTask = new KioskTask();
+        kioskTask.setTaskIdentifier("local-kiosk-task");
         kioskTask.setPrivateIp("127.0.0.1");
         kioskTask.setPublicIp("127.0.0.1");
         kioskTasks.add(kioskTask);
@@ -77,7 +79,7 @@ public class LocalHostingService implements HostingService {
 
                 ServerTask serverTask = new ServerTask();
 
-                serverTask.setTaskIdentifier("local-task-" + server.getId());
+                serverTask.setTaskIdentifier("local-server-task-" + server.getId());
                 //task.setManagerHost("127.0.0.1");
                 serverTask.setPrivateIp("127.0.0.1");
                 serverTask.setPublicIp("127.0.0.1");

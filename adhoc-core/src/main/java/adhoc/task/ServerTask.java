@@ -22,6 +22,7 @@
 
 package adhoc.task;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.*;
 
@@ -33,6 +34,10 @@ import lombok.*;
 @Setter
 @ToString
 public class ServerTask extends Task {
+
+    /** Web socket port visible to users (for server tasks this is typically 8898) */
+    @Column(nullable = false)
+    private Integer publicWebSocketPort;
 
     private Long serverId;
 

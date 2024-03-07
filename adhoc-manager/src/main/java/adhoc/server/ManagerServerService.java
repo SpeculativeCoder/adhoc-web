@@ -245,7 +245,35 @@ public class ManagerServerService {
         Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
 
         // TODO: WIP
-        List<String> taskIdentifiers = new ArrayList<>();
+        List<String> managerTaskIdentifiers = new ArrayList<>();
+        for (ManagerTask task : hostingState.getManagerTasks()) {
+            ManagerTask managerTask = managerTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(ManagerTask::new);
+            managerTask.setTaskIdentifier(task.getTaskIdentifier());
+            managerTask.setPrivateIp(task.getPrivateIp());
+            managerTask.setPublicIp(task.getPublicIp());
+            //managerTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
+            //managerTask.setManagerId(task.getManagerId());
+            managerTaskRepository.save(managerTask);
+            managerTaskIdentifiers.add(managerTask.getTaskIdentifier());
+        }
+        managerTaskRepository.deleteByTaskIdentifierNotIn(managerTaskIdentifiers);
+
+        // TODO: WIP
+        List<String> kioskTaskIdentifiers = new ArrayList<>();
+        for (KioskTask task : hostingState.getKioskTasks()) {
+            KioskTask kioskTask = kioskTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(KioskTask::new);
+            kioskTask.setTaskIdentifier(task.getTaskIdentifier());
+            kioskTask.setPrivateIp(task.getPrivateIp());
+            kioskTask.setPublicIp(task.getPublicIp());
+            //kioskTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
+            //kioskTask.setKioskId(task.getKioskId());
+            kioskTaskRepository.save(kioskTask);
+            kioskTaskIdentifiers.add(kioskTask.getTaskIdentifier());
+        }
+        kioskTaskRepository.deleteByTaskIdentifierNotIn(kioskTaskIdentifiers);
+
+        // TODO: WIP
+        List<String> serverTaskIdentifiers = new ArrayList<>();
         for (ServerTask task : hostingState.getServerTasks()) {
             ServerTask serverTask = serverTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(ServerTask::new);
             serverTask.setTaskIdentifier(task.getTaskIdentifier());
@@ -254,9 +282,9 @@ public class ManagerServerService {
             serverTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
             serverTask.setServerId(task.getServerId());
             serverTaskRepository.save(serverTask);
-            taskIdentifiers.add(serverTask.getTaskIdentifier());
+            serverTaskIdentifiers.add(serverTask.getTaskIdentifier());
         }
-        serverTaskRepository.deleteByTaskIdentifierNotIn(taskIdentifiers);
+        serverTaskRepository.deleteByTaskIdentifierNotIn(serverTaskIdentifiers);
 
         Optional<WorldUpdatedEvent> optionalWorldUpdatedEvent =
                 managerWorldService.updateManagerAndKioskHosts(

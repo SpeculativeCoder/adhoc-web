@@ -267,93 +267,90 @@ public class ManagerWorldService {
         objectiveB2.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveA3, objectiveB1)
                 .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
 
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime userCreated = now.minusMinutes(30);
+        LocalDateTime userSeen = now.minusMinutes(5);
+
         // admin user and some faction specific users for testing
 
         if (coreProperties.getFeatureFlags().contains("development")) {
-
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime created = now.minusMinutes(30);
-            LocalDateTime seen = now.minusMinutes(5);
-
-            User u0 = new User();
-            u0.setName("admin");
-            u0.setEmail("admin@" + coreProperties.getAdhocDomain());
-            u0.setFaction(team1);
-            u0.setHuman(true);
-            u0.setScore(0F);
-            u0.setPassword(passwordEncoder.encode(managerProperties.getDefaultAdminPassword()));
-            u0.setCreated(created);
-            u0.setUpdated(created);
-            u0.setSeen(seen);
-            //if (webProperties.getFeatureFlags().contains("development")) {
-            u0.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG)); // TODO: restore User.Role.ADMIN,
-            //}
-            u0 = userRepository.save(u0);
-
-            User u1 = new User();
-            u1.setName("TestAlpha");
-            u1.setEmail("testalpha@" + coreProperties.getAdhocDomain());
-            u1.setFaction(team1);
-            u1.setHuman(true);
-            u1.setScore(0F);
-            u1.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
-            u1.setCreated(created);
-            u1.setUpdated(created);
-            u1.setSeen(seen);
-            u1.setRoles(Sets.newHashSet(UserRole.USER));
-            u1 = userRepository.save(u1);
-
-            User u2 = new User();
-            u2.setName("TestBeta");
-            u2.setEmail("testbeta@" + coreProperties.getAdhocDomain());
-            u2.setFaction(team2);
-            u2.setHuman(true);
-            u2.setScore(10F);
-            u2.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
-            u2.setCreated(created);
-            u2.setUpdated(created);
-            u2.setSeen(seen);
-            u2.setRoles(Sets.newHashSet(UserRole.USER));
-            u2 = userRepository.save(u2);
-
-            User u3 = new User();
-            u3.setName("TestDelta");
-            u3.setEmail("testdelta@" + coreProperties.getAdhocDomain());
-            u3.setFaction(team3);
-            u3.setHuman(true);
-            u3.setScore(20F);
-            u3.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
-            u3.setCreated(created);
-            u3.setUpdated(created);
-            //u3.setSeen(seen);
-            u3.setRoles(Sets.newHashSet(UserRole.USER));
-            u3 = userRepository.save(u3);
-
-            User u4 = new User();
-            u4.setName("TestGamma");
-            u4.setEmail("testgamma@" + coreProperties.getAdhocDomain());
-            u4.setFaction(team4);
-            u4.setHuman(true);
-            u4.setScore(30F);
-            u4.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
-            u4.setCreated(created);
-            u4.setUpdated(created);
-            //u4.setSeen(seen);
-            u4.setRoles(Sets.newHashSet(UserRole.USER));
-            u4 = userRepository.save(u4);
-
-            //Pawn pawn1 = new Pawn();
-            //pawn1.setName("Pawn 1");
-            //pawn1.setServer(server1);
-            //pawn1.setIndex(0);
-            //pawn1.setFaction(blueTeam);
-            //pawn1.setX(200F);
-            //pawn1.setY(200F);
-            //pawn1.setZ(0F);
-            //pawn1.setSeen(LocalDateTime.now());
-            //pawn1.setUser(u1);
-            //pawn1 = pawnRepository.save(pawn1);
+            User adminUser = new User();
+            adminUser.setName("admin");
+            adminUser.setEmail("admin@" + coreProperties.getAdhocDomain());
+            adminUser.setFaction(team1);
+            adminUser.setHuman(true);
+            adminUser.setScore(0F);
+            adminUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultAdminPassword()));
+            adminUser.setCreated(userCreated);
+            adminUser.setUpdated(userCreated);
+            adminUser.setSeen(userSeen);
+            adminUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG)); // TODO: restore User.Role.ADMIN,
+            adminUser = userRepository.save(adminUser);
         }
+
+        User alphaUser = new User();
+        alphaUser.setName("TestAlpha");
+        alphaUser.setEmail("testalpha@" + coreProperties.getAdhocDomain());
+        alphaUser.setFaction(team1);
+        alphaUser.setHuman(true);
+        alphaUser.setScore(0F);
+        alphaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
+        alphaUser.setCreated(userCreated);
+        alphaUser.setUpdated(userCreated);
+        alphaUser.setSeen(userSeen);
+        alphaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
+        alphaUser = userRepository.save(alphaUser);
+
+        User betaUser = new User();
+        betaUser.setName("TestBeta");
+        betaUser.setEmail("testbeta@" + coreProperties.getAdhocDomain());
+        betaUser.setFaction(team2);
+        betaUser.setHuman(true);
+        betaUser.setScore(10F);
+        betaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
+        betaUser.setCreated(userCreated);
+        betaUser.setUpdated(userCreated);
+        betaUser.setSeen(userSeen);
+        betaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
+        betaUser = userRepository.save(betaUser);
+
+        User deltaUser = new User();
+        deltaUser.setName("TestDelta");
+        deltaUser.setEmail("testdelta@" + coreProperties.getAdhocDomain());
+        deltaUser.setFaction(team3);
+        deltaUser.setHuman(true);
+        deltaUser.setScore(20F);
+        deltaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
+        deltaUser.setCreated(userCreated);
+        deltaUser.setUpdated(userCreated);
+        //deltaUser.setSeen(seen);
+        deltaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
+        deltaUser = userRepository.save(deltaUser);
+
+        User gammaUser = new User();
+        gammaUser.setName("TestGamma");
+        gammaUser.setEmail("testgamma@" + coreProperties.getAdhocDomain());
+        gammaUser.setFaction(team4);
+        gammaUser.setHuman(true);
+        gammaUser.setScore(30F);
+        gammaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
+        gammaUser.setCreated(userCreated);
+        gammaUser.setUpdated(userCreated);
+        //gammaUser.setSeen(seen);
+        gammaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
+        gammaUser = userRepository.save(gammaUser);
+
+        //Pawn pawn1 = new Pawn();
+        //pawn1.setName("Pawn 1");
+        //pawn1.setServer(server1);
+        //pawn1.setIndex(0);
+        //pawn1.setFaction(blueTeam);
+        //pawn1.setX(200F);
+        //pawn1.setY(200F);
+        //pawn1.setZ(0F);
+        //pawn1.setSeen(LocalDateTime.now());
+        //pawn1.setUser(alphaUser);
+        //pawn1 = pawnRepository.save(pawn1);
     }
 
     public Optional<WorldUpdatedEvent> updateManagerAndKioskHosts(Set<String> managerHosts, Set<String> kioskHosts) {

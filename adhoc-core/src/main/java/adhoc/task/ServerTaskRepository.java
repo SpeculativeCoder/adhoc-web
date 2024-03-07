@@ -37,4 +37,6 @@ public interface ServerTaskRepository extends JpaRepository<ServerTask, Long> {
     @Modifying
     @Query("delete from ServerTask st where st.taskIdentifier not in ?1")
     void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
+
+    Optional<ServerTask> findByServerId(Long serverId);
 }

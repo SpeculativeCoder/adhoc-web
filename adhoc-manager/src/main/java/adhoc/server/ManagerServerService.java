@@ -286,6 +286,7 @@ public class ManagerServerService {
         }
         serverTaskRepository.deleteByTaskIdentifierNotIn(serverTaskIdentifiers);
 
+        // TODO
         Optional<WorldUpdatedEvent> optionalWorldUpdatedEvent =
                 managerWorldService.updateManagerAndKioskHosts(
                         hostingState.getManagerTasks().stream().map(ManagerTask::getPublicIp).collect(Collectors.toSet()),
@@ -295,9 +296,8 @@ public class ManagerServerService {
 
         try (Stream<Server> servers = serverRepository.streamBy()) {
             servers.forEach(server -> {
-                ServerTask existingTask = hostingState.getServerTasks().stream()
-                        .filter(serverTask -> server.getId().equals(serverTask.getServerId()))
-                        .findFirst()
+                // TODO
+                ServerTask existingTask = serverTaskRepository.findByServerId(server.getId())
                         .orElse(null);
 
                 Optional<ServerUpdatedEvent> optionalServerUpdatedEvent =

@@ -22,6 +22,7 @@
 
 package adhoc.system;
 
+import adhoc.properties.CoreProperties;
 import adhoc.system.authentication.AdhocAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -47,12 +48,17 @@ import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @Slf4j
 @RequiredArgsConstructor
 public class WebSecurityConfig<S extends Session> {
+
+    private final CoreProperties coreProperties;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     private final FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository;
@@ -105,7 +111,18 @@ public class WebSecurityConfig<S extends Session> {
                 .httpBasic(Customizer.withDefaults())
                 .rememberMe(remember -> remember
                         .rememberMeServices(rememberMeServices))
+                .anonymous(anonymous ->
+                        anonymous.authorities(anonymousAuthorities().toArray(new String[0])))
                 .build();
+    }
+
+    private Set<String> anonymousAuthorities() {
+        Set<String> anonymousAuthorities = new LinkedHashSet<>();
+        anonymousAuthorities.add("ROLE_ANONYMOUS");
+        if (coreProperties.getFeatureFlags().contains("development")) {
+            anonymousAuthorities.add("ROLE_DEBUG");
+        }
+        return anonymousAuthorities;
     }
 
     @Bean

@@ -23,8 +23,8 @@
 package adhoc.user;
 
 public enum UserRole {
-    ADMIN,
-    USER,
-    SERVER,
-    DEBUG,
+    ADMIN, // access to administration functions / information (TODO)
+    USER, // normal logged in user
+    SERVER, // unreal server
+    DEBUG, // see non-sensitive but noisy debug information (on for admin user, test users, and all users in development environment)
 }

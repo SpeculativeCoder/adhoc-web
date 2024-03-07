@@ -23,11 +23,14 @@
 package adhoc.server;
 
 import adhoc.area.Area;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +45,7 @@ public class ServerService {
 
     private final ServerRepository serverRepository;
 
-    private final HttpServletRequest httpServletRequest;
+    private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
     @Transactional(readOnly = true)
     public List<ServerDto> getServers() {
@@ -56,6 +59,11 @@ public class ServerService {
     }
 
     ServerDto toDto(Server server) {
+        Authentication authentication = securityContextHolderStrategy.getContext().getAuthentication();
+        boolean hasDebugRole = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_DEBUG"::equals);
+
         return new ServerDto(
                 server.getId(),
                 server.getVersion(),
@@ -67,7 +75,7 @@ public class ServerService {
                 server.getX(), server.getY(), server.getZ(),
                 server.getStatus().name(),
                 server.getManagerHost(),
-                httpServletRequest.isUserInRole("ROLE_DEBUG") ? server.getPrivateIp() : null,
+                hasDebugRole ? server.getPrivateIp() : null,
                 server.getPublicIp(),
                 server.getPublicWebSocketPort(),
                 server.getWebSocketUrl(),

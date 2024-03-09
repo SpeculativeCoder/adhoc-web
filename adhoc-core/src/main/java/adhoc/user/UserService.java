@@ -51,6 +51,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -270,7 +271,7 @@ public class UserService {
         user.setPassword(registerUserRequest.getPassword() == null ? null : passwordEncoder.encode(registerUserRequest.getPassword()));
         user.setHuman(registerUserRequest.getHuman());
         user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
-        user.setScore(0.0);
+        user.setScore(BigDecimal.valueOf(0.0));
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());
         user.setServer(registerUserRequest.getServerId() == null ? null : serverRepository.getReferenceById(registerUserRequest.getServerId()));

@@ -45,6 +45,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
@@ -180,8 +181,8 @@ public class ManagerUserService {
         User user = userRepository.getReferenceById(serverUserDefeatedUserEvent.getUserId());
         User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
 
-        double scoreToAdd = user.getHuman() ? 1.0f : 0.1f;
-        user.setScore(user.getScore() + scoreToAdd);
+        BigDecimal scoreAdd = BigDecimal.valueOf(user.getHuman() ? 1.0f : 0.1f);
+        user.setScore(user.getScore().add(scoreAdd));
 
         return new UserDefeatedUserEvent(
                 user.getId(), user.getVersion(), user.getName(), user.getHuman(),
@@ -194,7 +195,7 @@ public class ManagerUserService {
         log.trace("Decaying user scores...");
 
         // TODO: multiplier property
-        userRepository.updateScoreMultiply(0.999);
+        userRepository.updateScoreMultiply(BigDecimal.valueOf(0.999));
     }
 
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},

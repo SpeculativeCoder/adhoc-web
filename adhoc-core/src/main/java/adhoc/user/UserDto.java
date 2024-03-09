@@ -30,6 +30,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -57,7 +58,7 @@ public class UserDto {
     private Long factionId;
 
     @NotNull
-    private Double score;
+    private BigDecimal score;
 
     private LocalDateTime seen;
 

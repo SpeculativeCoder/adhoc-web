@@ -107,7 +107,7 @@
             <column name="color" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="score" type="DOUBLE">
+            <column name="score" type="DECIMAL">
                 <constraints nullable="false"/>
             </column>
         </createTable>

@@ -26,6 +26,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
+
 public interface FactionRepository extends JpaRepository<Faction, Long> {
 
     Faction getByIndex(Integer index);
@@ -34,11 +36,11 @@ public interface FactionRepository extends JpaRepository<Faction, Long> {
     // TODO
     //@Query("update Faction f set f.version = f.version + 1, f.score = f.score + ?1 where f.id = ?2")
     @Query(nativeQuery = true, value = "update faction f set f.version = f.version + 1, f.score = f.score + ?1 where f.id = ?2")
-    void updateScoreAddById(Double scoreAdd, Long factionId);
+    void updateScoreAddById(BigDecimal scoreAdd, Long factionId);
 
     @Modifying
     // TODO
     //@Query("update Faction f set f.version = f.version + 1, f.score = f.score * ?1")
     @Query(nativeQuery = true, value = "update faction f set f.version = f.version + 1, f.score = f.score * ?1")
-    void updateScoreMultiply(Double scoreMultiply);
+    void updateScoreMultiply(BigDecimal scoreMultiply);
 }

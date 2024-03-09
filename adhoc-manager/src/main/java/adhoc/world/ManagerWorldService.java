@@ -51,6 +51,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -103,7 +104,7 @@ public class ManagerWorldService {
         team1.setIndex(0);
         team1.setName("Alpha");
         team1.setColor("#0088FF");
-        team1.setScore(0.0);
+        team1.setScore(BigDecimal.valueOf(0.0));
         team1 = factionRepository.save(team1);
 
         Faction team2 = new Faction();
@@ -111,7 +112,7 @@ public class ManagerWorldService {
         team2.setIndex(1);
         team2.setName("Beta");
         team2.setColor("#FF2200");
-        team2.setScore(0.0);
+        team2.setScore(BigDecimal.valueOf(0.0));
         team2 = factionRepository.save(team2);
 
         Faction team3 = new Faction();
@@ -119,7 +120,7 @@ public class ManagerWorldService {
         team3.setIndex(2);
         team3.setName("Gamma");
         team3.setColor("#FFFF00");
-        team3.setScore(0.0);
+        team3.setScore(BigDecimal.valueOf(0.0));
         team3 = factionRepository.save(team3);
 
         Faction team4 = new Faction();
@@ -127,7 +128,7 @@ public class ManagerWorldService {
         team4.setIndex(3);
         team4.setName("Delta");
         team4.setColor("#8800FF");
-        team4.setScore(0.0);
+        team4.setScore(BigDecimal.valueOf(0.0));
         team4 = factionRepository.save(team4);
 
         Region region1 = new Region();
@@ -279,7 +280,7 @@ public class ManagerWorldService {
             adminUser.setEmail("admin@" + coreProperties.getAdhocDomain());
             adminUser.setFaction(team1);
             adminUser.setHuman(true);
-            adminUser.setScore(0.0);
+            adminUser.setScore(BigDecimal.valueOf(0.0));
             adminUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultAdminPassword()));
             adminUser.setCreated(userCreated);
             adminUser.setUpdated(userCreated);
@@ -293,7 +294,7 @@ public class ManagerWorldService {
         alphaUser.setEmail("testalpha@" + coreProperties.getAdhocDomain());
         alphaUser.setFaction(team1);
         alphaUser.setHuman(true);
-        alphaUser.setScore(0.0);
+        alphaUser.setScore(BigDecimal.valueOf(0.0));
         alphaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
         alphaUser.setCreated(userCreated);
         alphaUser.setUpdated(userCreated);
@@ -306,7 +307,7 @@ public class ManagerWorldService {
         betaUser.setEmail("testbeta@" + coreProperties.getAdhocDomain());
         betaUser.setFaction(team2);
         betaUser.setHuman(true);
-        betaUser.setScore(10.0);
+        betaUser.setScore(BigDecimal.valueOf(10.0));
         betaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
         betaUser.setCreated(userCreated);
         betaUser.setUpdated(userCreated);
@@ -319,7 +320,7 @@ public class ManagerWorldService {
         deltaUser.setEmail("testdelta@" + coreProperties.getAdhocDomain());
         deltaUser.setFaction(team3);
         deltaUser.setHuman(true);
-        deltaUser.setScore(20.0);
+        deltaUser.setScore(BigDecimal.valueOf(20.0));
         deltaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
         deltaUser.setCreated(userCreated);
         deltaUser.setUpdated(userCreated);
@@ -332,7 +333,7 @@ public class ManagerWorldService {
         gammaUser.setEmail("testgamma@" + coreProperties.getAdhocDomain());
         gammaUser.setFaction(team4);
         gammaUser.setHuman(true);
-        gammaUser.setScore(30.0);
+        gammaUser.setScore(BigDecimal.valueOf(30.0));
         gammaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
         gammaUser.setCreated(userCreated);
         gammaUser.setUpdated(userCreated);

@@ -30,6 +30,8 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
+
 @Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -54,5 +56,5 @@ public class FactionDto {
 
     @NotNull
     @Min(0)
-    private Double score;
+    private BigDecimal score;
 }

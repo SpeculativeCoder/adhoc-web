@@ -33,6 +33,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -76,7 +77,9 @@ public class ManagerFactionService {
             Faction faction = factionObjectiveCount.getFaction();
             Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
-            factionRepository.updateScoreAddById(0.01 * objectiveCount, faction.getId());
+            BigDecimal scoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
+
+            factionRepository.updateScoreAddById(scoreAdd, faction.getId());
         }
 
         LocalDateTime seenBefore = LocalDateTime.now().minusHours(48);
@@ -86,10 +89,11 @@ public class ManagerFactionService {
             Faction faction = factionObjectiveCount.getFaction();
             Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
-            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
-                    0.01 * objectiveCount, true, faction.getId(), seenBefore);
-            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
-                    0.001 * objectiveCount, false, faction.getId(), seenBefore);
+            BigDecimal humanScoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
+            BigDecimal nonHumanScoreAdd = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
+
+            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(humanScoreAdd, true, faction.getId(), seenBefore);
+            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(nonHumanScoreAdd, false, faction.getId(), seenBefore);
         }
     }
 
@@ -99,6 +103,8 @@ public class ManagerFactionService {
         log.trace("Decaying faction scores...");
 
         // TODO: multiplier property
-        factionRepository.updateScoreMultiply(0.999);
+        BigDecimal scoreMultiply = BigDecimal.valueOf(0.999);
+
+        factionRepository.updateScoreMultiply(scoreMultiply);
     }
 }

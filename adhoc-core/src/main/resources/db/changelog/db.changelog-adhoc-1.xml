@@ -46,7 +46,7 @@
             <column name="faction_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="score" type="DOUBLE">
+            <column name="score" type="DECIMAL">
                 <constraints nullable="false"/>
             </column>
             <column name="x" type="DOUBLE"/>

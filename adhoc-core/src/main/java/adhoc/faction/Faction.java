@@ -25,6 +25,8 @@ package adhoc.faction;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 /**
  * Each user is associated with a faction.
  */
@@ -60,5 +62,5 @@ public class Faction {
     private String color;
 
     @Column(nullable = false)
-    private Double score;
+    private BigDecimal score;
 }

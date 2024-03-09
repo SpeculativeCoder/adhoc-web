@@ -32,6 +32,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -81,7 +82,7 @@ public class User {
     private Faction faction;
 
     @Column(nullable = false)
-    private Double score;
+    private BigDecimal score;
 
     private Double x;
     private Double y;

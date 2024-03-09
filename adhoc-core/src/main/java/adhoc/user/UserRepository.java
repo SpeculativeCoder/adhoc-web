@@ -27,6 +27,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -57,11 +58,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // TODO
     //@Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score + ?1 where u.human = ?2 and u.faction = ?3 and u.seen > ?4")
     @Query(nativeQuery = true, value = "update adhoc_user u set u.version = u.version + 1, u.score = u.score + ?1 where u.human = ?2 and u.faction_id = ?3 and u.seen > ?4")
-    void updateScoreAddByHumanAndFactionIdAndSeenAfter(Double scoreAdd, Boolean human, Long factionId, LocalDateTime seenAfter);
+    void updateScoreAddByHumanAndFactionIdAndSeenAfter(BigDecimal scoreAdd, Boolean human, Long factionId, LocalDateTime seenAfter);
 
     @Modifying
     // TODO
     //@Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score * ?1")
     @Query(nativeQuery = true, value = "update adhoc_user u set u.version = u.version + 1, u.score = u.score * ?1")
-    void updateScoreMultiply(Double scoreMultiply);
+    void updateScoreMultiply(BigDecimal scoreMultiply);
 }

@@ -42,6 +42,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -175,11 +176,11 @@ public class ManagerObjectiveService {
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
 
         objective.setFaction(faction);
-        faction.setScore(faction.getScore() + 1.0f);
+        faction.setScore(faction.getScore().add(BigDecimal.valueOf(1.0)));
 
         LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
-        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(1.0, true, faction.getId(), seenAfter);
-        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(0.1, false, faction.getId(), seenAfter);
+        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(BigDecimal.valueOf(1.0), true, faction.getId(), seenAfter);
+        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(BigDecimal.valueOf(0.1), false, faction.getId(), seenAfter);
 
         return new ObjectiveTakenEvent(objective.getId(), objective.getVersion(), faction.getId(), faction.getVersion());
     }

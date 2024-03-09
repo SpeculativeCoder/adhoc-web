@@ -119,9 +119,9 @@ public class WebSecurityConfig<S extends Session> {
     private Set<String> anonymousAuthorities() {
         Set<String> anonymousAuthorities = new LinkedHashSet<>();
         anonymousAuthorities.add("ROLE_ANONYMOUS");
-        if (coreProperties.getFeatureFlags().contains("development")) {
-            anonymousAuthorities.add("ROLE_DEBUG");
-        }
+        //if (coreProperties.getFeatureFlags().contains("development")) {
+        //    anonymousAuthorities.add("ROLE_" + UserRole.DEBUG.name());
+        //}
         return anonymousAuthorities;
     }
 

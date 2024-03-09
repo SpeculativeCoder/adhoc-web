@@ -22,6 +22,7 @@
 
 package adhoc.system.authentication;
 
+import adhoc.properties.CoreProperties;
 import adhoc.user.User;
 import adhoc.user.UserRole;
 import adhoc.user.UserService;
@@ -31,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,9 +40,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Consults the ADHOC_USER table for user info.
@@ -55,6 +55,8 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
     private Optional<String> serverBasicAuthUsername;
     @Value("${adhoc.server.basic-auth.password:#{null}}")
     private Optional<String> serverBasicAuthPassword;
+
+    private final CoreProperties coreProperties;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -83,13 +85,18 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
 
         log.debug("loadUserByUsername: user={} token={}", user, user.getToken());
 
+        Collection<GrantedAuthority> authorities = new LinkedHashSet<>(user.getAuthorities());
+        if (coreProperties.getFeatureFlags().contains("development")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + UserRole.DEBUG.name()));
+        }
+
         AdhocUserDetails userDetails = new AdhocUserDetails(
                 user.getName(),
                 // TODO
                 user.getPassword() == null ? UUID.randomUUID().toString() : user.getPassword(),
                 // NOTE: password null means user is not to be logged in to (i.e. temporary users) so we mark as not "enabled"
                 user.getPassword() != null, true, true, true,
-                user.getAuthorities(),
+                authorities,
                 user.getId());
 
         return userDetails;

@@ -31,7 +31,6 @@ import java.math.BigDecimal;
  * Each user is associated with a faction.
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "faction__index", columnNames = {"index"}))
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
@@ -51,7 +50,7 @@ public class Faction {
     @Column(nullable = false)
     private Long version;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Integer index;
 
     @Column(nullable = false)

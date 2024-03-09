@@ -37,8 +37,6 @@ import java.util.UUID;
  * (intended for an "at a glance" location of bots/users in the world).
  */
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name = "pawn__uuid", columnNames = {"uuid"})})
-//@UniqueConstraint(name = "pawn__server_id__uuid", columnNames = {"server_id", "uuid"})})
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
@@ -58,7 +56,7 @@ public class Pawn {
     @Column(nullable = false)
     private Long version;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private UUID uuid;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

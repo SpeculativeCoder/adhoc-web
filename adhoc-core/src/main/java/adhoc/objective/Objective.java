@@ -34,7 +34,7 @@ import java.util.Set;
  * An objective that can be taken by a faction.
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "objective__region_id__index", columnNames = {"region_id", "index"}))
+@Table(uniqueConstraints = @UniqueConstraint(name = "uc_objective_region_id_index", columnNames = {"region_id", "index"}))
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor

@@ -36,7 +36,7 @@ import java.util.List;
  * they may have to connect to a new server unless the same server manages both the areas.
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "area__region_id__index", columnNames = {"region_id", "index"}))
+@Table(uniqueConstraints = @UniqueConstraint(name = "uc_area_region_id_index", columnNames = {"region_id", "index"}))
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor

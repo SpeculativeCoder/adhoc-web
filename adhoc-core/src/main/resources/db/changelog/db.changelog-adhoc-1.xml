@@ -30,7 +30,7 @@
         <createSequence sequenceName="user_id_sequence" startValue="1" incrementBy="50"/>
         <createTable tableName="adhoc_user">
             <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="adhoc_user_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_adhocuser"/>
             </column>
             <column name="version" type="BIGINT">
                 <constraints nullable="false"/>
@@ -66,12 +66,9 @@
             <column name="token" type="UUID"/>
             <column name="server_id" type="BIGINT"/>
         </createTable>
-        <!--<addForeignKeyConstraint baseTableName="adhoc_user" baseColumnNames="faction_id" constraintName="fks8beh8jbi10ep37shuw6glpwt" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
-                                 validate="true"/>-->
-        <!--<addForeignKeyConstraint baseTableName="adhoc_user" baseColumnNames="server_id" constraintName="fkgg1e86vvf7mmostuh72ib3htc" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="server"
-                                 validate="true"/>-->
+
+        <!-- NOTE: deliberately no foreign keys for adhoc_user on faction and server.
+        this is so we can nuke all tables except adhoc_user during development process (for now) -->
 
         <createTable tableName="adhoc_user_roles">
             <column name="adhoc_user_id" type="BIGINT">
@@ -79,7 +76,7 @@
             </column>
             <column name="roles" type="TINYINT"/>
         </createTable>
-        <addForeignKeyConstraint baseTableName="adhoc_user_roles" baseColumnNames="adhoc_user_id" constraintName="fkbpj40nowvqa5m1p39ceopxbcp"
+        <addForeignKeyConstraint baseTableName="adhoc_user_roles" baseColumnNames="adhoc_user_id" constraintName="fk_adhocuserroles_on_adhocuser"
                                  deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
                                  referencedTableName="adhoc_user" validate="true"/>
     </changeSet>

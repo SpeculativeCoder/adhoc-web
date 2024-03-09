@@ -58,6 +58,7 @@ public class TaskService {
     }
 
     TaskDto toDto(Task task) {
+        // TODO
         Authentication authentication = securityContextHolderStrategy.getContext().getAuthentication();
         boolean hasDebugRole = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

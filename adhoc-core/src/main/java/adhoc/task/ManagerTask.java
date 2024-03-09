@@ -29,9 +29,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-//@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
-//@AllArgsConstructor
 @Getter
 @Setter
 @ToString

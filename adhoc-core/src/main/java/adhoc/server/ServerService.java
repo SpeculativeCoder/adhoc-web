@@ -59,6 +59,7 @@ public class ServerService {
     }
 
     ServerDto toDto(Server server) {
+        // TODO
         Authentication authentication = securityContextHolderStrategy.getContext().getAuthentication();
         boolean hasDebugRole = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

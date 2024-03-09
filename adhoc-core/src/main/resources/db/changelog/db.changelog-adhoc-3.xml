@@ -56,354 +56,550 @@
             drop table if exists structure;
             drop table if exists faction;
             drop table if exists region;
-            drop table if exists task;
             drop table if exists manager_task;
             drop table if exists kiosk_task;
             drop table if exists server_task;
         </sql>
 
-        <createSequence sequenceName="world_id_sequence" startValue="1" incrementBy="50"/>
+        <createSequence sequenceName="world_id_sequence"
+                        startValue="1"
+                        incrementBy="50"/>
+
         <createTable tableName="world">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_world"/>
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_world"/>
             </column>
             <column name="version" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
         <createTable tableName="world_manager_hosts">
-            <column name="world_id" type="BIGINT">
+            <column name="world_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="manager_hosts" type="VARCHAR(255)"/>
+            <column name="manager_hosts"
+                    type="VARCHAR(255)"/>
         </createTable>
+
         <createTable tableName="world_kiosk_hosts">
-            <column name="world_id" type="BIGINT">
+            <column name="world_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="kiosk_hosts" type="VARCHAR(255)"/>
+            <column name="kiosk_hosts"
+                    type="VARCHAR(255)"/>
         </createTable>
-        <addForeignKeyConstraint baseColumnNames="world_id" baseTableName="world_manager_hosts" constraintName="fk_worldmanagerhosts_on_world"
-                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
-                                 referencedTableName="world" validate="true"/>
-        <addForeignKeyConstraint baseColumnNames="world_id" baseTableName="world_kiosk_hosts" constraintName="fk_worldkioskhosts_on_world"
-                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
-                                 referencedTableName="world" validate="true"/>
 
-        <createSequence sequenceName="faction_id_sequence" startValue="1" incrementBy="50"/>
+        <addForeignKeyConstraint baseColumnNames="world_id"
+                                 baseTableName="world_manager_hosts"
+                                 constraintName="fk_worldmanagerhosts_on_world"
+                                 referencedColumnNames="id"
+                                 referencedTableName="world"/>
+
+        <addForeignKeyConstraint baseColumnNames="world_id"
+                                 baseTableName="world_kiosk_hosts"
+                                 constraintName="fk_worldkioskhosts_on_world"
+                                 referencedColumnNames="id"
+                                 referencedTableName="world"/>
+
+        <createSequence sequenceName="faction_id_sequence"
+                        startValue="1"
+                        incrementBy="50"/>
+
         <createTable tableName="faction">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_faction"/>
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_faction"/>
             </column>
-            <column name="version" type="BIGINT">
+            <column name="version"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="index" type="INTEGER">
-                <constraints nullable="false" unique="true" validateUnique="true" uniqueConstraintName="uc_faction_index"/>
+            <column name="index"
+                    type="INTEGER">
+                <constraints nullable="false"
+                             unique="true"
+                             uniqueConstraintName="uc_faction_index"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="color" type="VARCHAR(255)">
+            <column name="color"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="score" type="DECIMAL">
+            <column name="score"
+                    type="DECIMAL">
                 <constraints nullable="false"/>
             </column>
         </createTable>
 
-        <createSequence sequenceName="region_id_sequence" startValue="1" incrementBy="50"/>
+        <createSequence sequenceName="region_id_sequence"
+                        startValue="1"
+                        incrementBy="50"/>
+
         <createTable tableName="region">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_region"/>
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_region"/>
             </column>
-            <column name="version" type="BIGINT">
+            <column name="version"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="map_name" type="VARCHAR(255)">
+            <column name="map_name"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="x" type="DOUBLE">
+            <column name="x"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="y" type="DOUBLE">
+            <column name="y"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="z" type="DOUBLE">
+            <column name="z"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
         </createTable>
 
-        <createSequence sequenceName="server_id_sequence" startValue="1" incrementBy="50"/>
+        <createSequence sequenceName="server_id_sequence"
+                        startValue="1"
+                        incrementBy="50"/>
+
         <createTable tableName="server">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_server"/>
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_server"/>
             </column>
-            <column name="version" type="BIGINT">
+            <column name="version"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="region_id" type="BIGINT">
+            <column name="region_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="map_name" type="VARCHAR(255)">
+            <column name="map_name"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="x" type="DOUBLE">
+            <column name="x"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="y" type="DOUBLE">
+            <column name="y"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="z" type="DOUBLE">
+            <column name="z"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="TINYINT">
+            <column name="status"
+                    type="TINYINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="manager_host" type="VARCHAR(255)"/>
-            <column name="private_ip" type="VARCHAR(255)"/>
-            <column name="public_ip" type="VARCHAR(255)"/>
-            <column name="public_web_socket_port" type="INTEGER"/>
-            <column name="web_socket_url" type="VARCHAR(255)"/>
-            <column name="initiated" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="seen" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="manager_host"
+                    type="VARCHAR(255)"/>
+            <column name="private_ip"
+                    type="VARCHAR(255)"/>
+            <column name="public_ip"
+                    type="VARCHAR(255)"/>
+            <column name="public_web_socket_port"
+                    type="INTEGER"/>
+            <column name="web_socket_url"
+                    type="VARCHAR(255)"/>
+            <column name="initiated"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="seen"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
         </createTable>
-        <addForeignKeyConstraint baseTableName="server" baseColumnNames="region_id" constraintName="fk_server_on_region" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="region"
-                                 validate="true"/>
 
-        <createSequence sequenceName="area_id_sequence" startValue="1" incrementBy="50"/>
+        <addForeignKeyConstraint baseColumnNames="region_id"
+                                 baseTableName="server"
+                                 constraintName="fk_server_on_region"
+                                 referencedColumnNames="id"
+                                 referencedTableName="region"/>
+
+        <createSequence sequenceName="area_id_sequence"
+                        startValue="1"
+                        incrementBy="50"/>
+
         <createTable tableName="area">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_area"/>
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_area"/>
             </column>
-            <column name="version" type="BIGINT">
+            <column name="version"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="region_id" type="BIGINT">
+            <column name="region_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="index" type="INTEGER">
+            <column name="index"
+                    type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="x" type="DOUBLE">
+            <column name="x"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="y" type="DOUBLE">
+            <column name="y"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="z" type="DOUBLE">
+            <column name="z"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="sizex" type="DOUBLE">
+            <column name="sizex"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="sizey" type="DOUBLE">
+            <column name="sizey"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="sizez" type="DOUBLE">
+            <column name="sizez"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="server_id" type="BIGINT"/>
+            <column name="server_id"
+                    type="BIGINT"/>
         </createTable>
-        <addForeignKeyConstraint baseTableName="area" baseColumnNames="region_id" constraintName="fk_area_on_region" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="region"
-                                 validate="true"/>
-        <addForeignKeyConstraint baseTableName="area" baseColumnNames="server_id" constraintName="fk_area_on_server" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="server"
-                                 validate="true"/>
-        <addUniqueConstraint tableName="area" columnNames="region_id, index" validate="true" constraintName="uc_area_region_id_index"/>
 
-        <createSequence sequenceName="objective_id_sequence" startValue="1" incrementBy="50"/>
+        <addForeignKeyConstraint baseColumnNames="region_id"
+                                 baseTableName="area"
+                                 constraintName="fk_area_on_region"
+                                 referencedColumnNames="id"
+                                 referencedTableName="region"/>
+
+        <addForeignKeyConstraint baseColumnNames="server_id"
+                                 baseTableName="area"
+                                 constraintName="fk_area_on_server"
+                                 referencedColumnNames="id"
+                                 referencedTableName="server"/>
+
+        <addUniqueConstraint columnNames="region_id, index"
+                             constraintName="uc_area_region_id_index"
+                             tableName="area"/>
+
+        <createSequence sequenceName="objective_id_sequence"
+                        startValue="1"
+                        incrementBy="50"/>
+
         <createTable tableName="objective">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_objective"/>
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_objective"/>
             </column>
-            <column name="version" type="BIGINT">
+            <column name="version"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="region_id" type="BIGINT">
+            <column name="region_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="index" type="INTEGER">
+            <column name="index"
+                    type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="x" type="DOUBLE">
+            <column name="x"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="y" type="DOUBLE">
+            <column name="y"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="z" type="DOUBLE">
+            <column name="z"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="initial_faction_id" type="BIGINT"/>
-            <column name="faction_id" type="BIGINT"/>
-            <column name="area_id" type="BIGINT"/>
+            <column name="initial_faction_id"
+                    type="BIGINT"/>
+            <column name="faction_id"
+                    type="BIGINT"/>
+            <column name="area_id"
+                    type="BIGINT"/>
         </createTable>
-        <addForeignKeyConstraint baseTableName="objective" baseColumnNames="region_id" constraintName="fk_objective_on_region" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="region"
-                                 validate="true"/>
-        <addForeignKeyConstraint baseTableName="objective" baseColumnNames="initial_faction_id" constraintName="fk_objective_on_initial_faction" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
-                                 validate="true"/>
-        <addForeignKeyConstraint baseTableName="objective" baseColumnNames="faction_id" constraintName="fk_objective_on_faction" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
-                                 validate="true"/>
-        <addForeignKeyConstraint baseTableName="objective" baseColumnNames="area_id" constraintName="fk_objective_on_area" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="area"
-                                 validate="true"/>
-        <addUniqueConstraint tableName="objective" columnNames="region_id, index" validate="true" constraintName="uc_objective_region_id_index"/>
+
+        <addForeignKeyConstraint baseColumnNames="region_id"
+                                 baseTableName="objective"
+                                 constraintName="fk_objective_on_region"
+                                 referencedColumnNames="id"
+                                 referencedTableName="region"/>
+
+        <addForeignKeyConstraint baseColumnNames="initial_faction_id"
+                                 baseTableName="objective"
+                                 constraintName="fk_objective_on_initial_faction"
+                                 referencedColumnNames="id"
+                                 referencedTableName="faction"/>
+
+        <addForeignKeyConstraint baseColumnNames="faction_id"
+                                 baseTableName="objective"
+                                 constraintName="fk_objective_on_faction"
+                                 referencedColumnNames="id"
+                                 referencedTableName="faction"/>
+
+        <addForeignKeyConstraint baseColumnNames="area_id"
+                                 baseTableName="objective"
+                                 constraintName="fk_objective_on_area"
+                                 referencedColumnNames="id"
+                                 referencedTableName="area"/>
+
+        <addUniqueConstraint columnNames="region_id, index"
+                             constraintName="uc_objective_region_id_index"
+                             tableName="objective"/>
 
         <createTable tableName="objective_linked_objectives">
-            <column name="objective_id" type="BIGINT">
+            <column name="objective_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="linked_objectives_id" type="BIGINT">
+            <column name="linked_objectives_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
         <addPrimaryKey columnNames="objective_id, linked_objectives_id"
                        constraintName="pk_objectivelinkedobjectives"
                        tableName="objective_linked_objectives"/>
-        <addForeignKeyConstraint baseTableName="objective_linked_objectives" baseColumnNames="objective_id" constraintName="fk_objectivelinkedobjectives_on_objective"
-                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
-                                 referencedTableName="objective" validate="true"/>
-        <addForeignKeyConstraint baseTableName="objective_linked_objectives" baseColumnNames="linked_objectives_id" constraintName="fk_objectivelinkedobjectives_on_linkedobjectives"
-                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
-                                 referencedTableName="objective" validate="true"/>
 
-        <createSequence sequenceName="pawn_id_sequence" startValue="1" incrementBy="50"/>
+        <addForeignKeyConstraint baseColumnNames="objective_id"
+                                 baseTableName="objective_linked_objectives"
+                                 constraintName="fk_objectivelinkedobjectives_on_objective"
+                                 referencedColumnNames="id"
+                                 referencedTableName="objective"/>
+
+        <addForeignKeyConstraint baseColumnNames="linked_objectives_id"
+                                 baseTableName="objective_linked_objectives"
+                                 constraintName="fk_objectivelinkedobjectives_on_linkedobjectives"
+                                 referencedColumnNames="id"
+                                 referencedTableName="objective"/>
+
+        <createSequence sequenceName="pawn_id_sequence"
+                        startValue="1"
+                        incrementBy="50"/>
+
         <createTable tableName="pawn">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_pawn"/>
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_pawn"/>
             </column>
-            <column name="version" type="BIGINT">
+            <column name="version"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="UUID">
-                <constraints nullable="false" unique="true" validateUnique="true" uniqueConstraintName="uc_pawn_uuid"/>
+            <column name="uuid"
+                    type="UUID">
+                <constraints nullable="false"
+                             unique="true"
+                             uniqueConstraintName="uc_pawn_uuid"/>
             </column>
-            <column name="server_id" type="BIGINT">
+            <column name="server_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="index" type="INTEGER">
+            <column name="index"
+                    type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR(255)">
+            <column name="description"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="x" type="DOUBLE">
+            <column name="x"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="y" type="DOUBLE">
+            <column name="y"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="z" type="DOUBLE">
+            <column name="z"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="BIGINT"/>
-            <column name="human" type="BOOLEAN">
+            <column name="user_id"
+                    type="BIGINT"/>
+            <column name="human"
+                    type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="faction_id" type="BIGINT"/>
-            <column name="seen" type="TIMESTAMP WITHOUT TIME ZONE">
+            <column name="faction_id"
+                    type="BIGINT"/>
+            <column name="seen"
+                    type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint baseTableName="pawn" baseColumnNames="server_id" constraintName="fk_pawn_on_server" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="server"
-                                 validate="true"/>
-        <addForeignKeyConstraint baseTableName="pawn" baseColumnNames="user_id" constraintName="fk_pawn_on_user" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
-                                 referencedTableName="adhoc_user" validate="true"/>
-        <addForeignKeyConstraint baseTableName="pawn" baseColumnNames="faction_id" constraintName="fk_pawn_on_faction" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
-                                 validate="true"/>
 
-        <createSequence sequenceName="structure_id_sequence" startValue="1" incrementBy="50"/>
+        <addForeignKeyConstraint baseColumnNames="server_id"
+                                 baseTableName="pawn"
+                                 constraintName="fk_pawn_on_server"
+                                 referencedColumnNames="id"
+                                 referencedTableName="server"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="pawn"
+                                 constraintName="fk_pawn_on_user"
+                                 referencedColumnNames="id"
+                                 referencedTableName="adhoc_user"/>
+
+        <addForeignKeyConstraint baseColumnNames="faction_id"
+                                 baseTableName="pawn"
+                                 constraintName="fk_pawn_on_faction"
+                                 referencedColumnNames="id"
+                                 referencedTableName="faction"/>
+
+        <createSequence sequenceName="structure_id_sequence"
+                        startValue="1"
+                        incrementBy="50"/>
+
         <createTable tableName="structure">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_structure"/>
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_structure"/>
             </column>
-            <column name="version" type="BIGINT">
+            <column name="version"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="uuid" type="UUID">
+            <column name="uuid"
+                    type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="type" type="VARCHAR(255)">
+            <column name="type"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="region_id" type="BIGINT">
+            <column name="region_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="x" type="DOUBLE">
+            <column name="x"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="y" type="DOUBLE">
+            <column name="y"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="z" type="DOUBLE">
+            <column name="z"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="pitch" type="DOUBLE">
+            <column name="pitch"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="yaw" type="DOUBLE">
+            <column name="yaw"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="roll" type="DOUBLE">
+            <column name="roll"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="scalex" type="DOUBLE">
+            <column name="scalex"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="scaley" type="DOUBLE">
+            <column name="scaley"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="scalez" type="DOUBLE">
+            <column name="scalez"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="sizex" type="DOUBLE">
+            <column name="sizex"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="sizey" type="DOUBLE">
+            <column name="sizey"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="sizez" type="DOUBLE">
+            <column name="sizez"
+                    type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="faction_id" type="BIGINT"/>
-            <column name="user_id" type="BIGINT"/>
+            <column name="faction_id"
+                    type="BIGINT"/>
+            <column name="user_id"
+                    type="BIGINT"/>
         </createTable>
-        <addForeignKeyConstraint baseColumnNames="region_id" baseTableName="structure" constraintName="fk_structure_on_region" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="region"
-                                 validate="true"/>
-        <addForeignKeyConstraint baseColumnNames="faction_id" baseTableName="structure" constraintName="fk_structure_on_faction" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="faction"
-                                 validate="true"/>
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="structure" constraintName="fk_structure_on_user" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
-                                 referencedTableName="adhoc_user" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="region_id"
+                                 baseTableName="structure"
+                                 constraintName="fk_structure_on_region"
+                                 referencedColumnNames="id"
+                                 referencedTableName="region"/>
+
+        <addForeignKeyConstraint baseColumnNames="faction_id"
+                                 baseTableName="structure"
+                                 constraintName="fk_structure_on_faction"
+                                 referencedColumnNames="id"
+                                 referencedTableName="faction"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="structure"
+                                 constraintName="fk_structure_on_user"
+                                 referencedColumnNames="id"
+                                 referencedTableName="adhoc_user"/>
 
         <createSequence sequenceName="task_id_sequence"
                         startValue="1"

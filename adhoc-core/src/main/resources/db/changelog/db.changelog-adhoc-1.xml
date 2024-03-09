@@ -27,58 +27,89 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
     <changeSet author="adhoc" id="1">
-        <createSequence sequenceName="user_id_sequence" startValue="1" incrementBy="50"/>
+
+        <createSequence sequenceName="user_id_sequence"
+                        startValue="1"
+                        incrementBy="50"/>
+
         <createTable tableName="adhoc_user">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_adhocuser"/>
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_adhocuser"/>
             </column>
-            <column name="version" type="BIGINT">
+            <column name="version"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="name"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="email" type="VARCHAR(255)"/>
-            <column name="password" type="VARCHAR(255)"/>
-            <column name="human" type="BOOLEAN">
+            <column name="email"
+                    type="VARCHAR(255)"/>
+            <column name="password"
+                    type="VARCHAR(255)"/>
+            <column name="human"
+                    type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="faction_id" type="BIGINT">
+            <column name="faction_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="score" type="DECIMAL">
+            <column name="score"
+                    type="DECIMAL">
                 <constraints nullable="false"/>
             </column>
-            <column name="x" type="DOUBLE"/>
-            <column name="y" type="DOUBLE"/>
-            <column name="z" type="DOUBLE"/>
-            <column name="pitch" type="DOUBLE"/>
-            <column name="yaw" type="DOUBLE"/>
-            <column name="created" type="TIMESTAMP WITHOUT TIME ZONE">
+            <column name="x"
+                    type="DOUBLE"/>
+            <column name="y"
+                    type="DOUBLE"/>
+            <column name="z"
+                    type="DOUBLE"/>
+            <column name="pitch"
+                    type="DOUBLE"/>
+            <column name="yaw"
+                    type="DOUBLE"/>
+            <column name="created"
+                    type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
             </column>
-            <column name="updated" type="TIMESTAMP WITHOUT TIME ZONE">
+            <column name="updated"
+                    type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_login" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="last_join" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="seen" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="token" type="UUID"/>
-            <column name="server_id" type="BIGINT"/>
+            <column name="last_login"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="last_join"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="seen"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="token"
+                    type="UUID"/>
+            <column name="server_id"
+                    type="BIGINT"/>
         </createTable>
 
         <!-- NOTE: deliberately no foreign keys for adhoc_user on faction and server.
         this is so we can nuke all tables except adhoc_user during development process (for now) -->
 
         <createTable tableName="adhoc_user_roles">
-            <column name="adhoc_user_id" type="BIGINT">
+            <column name="adhoc_user_id"
+                    type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="roles" type="TINYINT"/>
+            <column name="roles"
+                    type="TINYINT"/>
         </createTable>
-        <addForeignKeyConstraint baseTableName="adhoc_user_roles" baseColumnNames="adhoc_user_id" constraintName="fk_adhocuserroles_on_adhocuser"
-                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
-                                 referencedTableName="adhoc_user" validate="true"/>
+
+        <addForeignKeyConstraint baseColumnNames="adhoc_user_id"
+                                 baseTableName="adhoc_user_roles"
+                                 constraintName="fk_adhocuserroles_on_adhocuser"
+                                 referencedColumnNames="id"
+                                 referencedTableName="adhoc_user"/>
     </changeSet>
 
 </databaseChangeLog>

@@ -61,11 +61,11 @@ public class ServerDto {
     private String mapName;
 
     @NotNull
-    private Float x;
+    private Double x;
     @NotNull
-    private Float y;
+    private Double y;
     @NotNull
-    private Float z;
+    private Double z;
 
     @NotEmpty
     private String status;

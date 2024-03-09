@@ -32,7 +32,9 @@
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="adhoc_user_pkey"/>
             </column>
-            <column name="version" type="BIGINT"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -44,14 +46,14 @@
             <column name="faction_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="score" type="FLOAT(24)">
+            <column name="score" type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="x" type="FLOAT(24)"/>
-            <column name="y" type="FLOAT(24)"/>
-            <column name="z" type="FLOAT(24)"/>
-            <column name="pitch" type="FLOAT(24)"/>
-            <column name="yaw" type="FLOAT(24)"/>
+            <column name="x" type="DOUBLE"/>
+            <column name="y" type="DOUBLE"/>
+            <column name="z" type="DOUBLE"/>
+            <column name="pitch" type="DOUBLE"/>
+            <column name="yaw" type="DOUBLE"/>
             <column name="created" type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
             </column>

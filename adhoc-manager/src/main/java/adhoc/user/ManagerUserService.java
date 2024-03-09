@@ -180,7 +180,7 @@ public class ManagerUserService {
         User user = userRepository.getReferenceById(serverUserDefeatedUserEvent.getUserId());
         User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
 
-        float scoreToAdd = user.getHuman() ? 1.0f : 0.1f;
+        double scoreToAdd = user.getHuman() ? 1.0f : 0.1f;
         user.setScore(user.getScore() + scoreToAdd);
 
         return new UserDefeatedUserEvent(
@@ -194,7 +194,7 @@ public class ManagerUserService {
         log.trace("Decaying user scores...");
 
         // TODO: multiplier property
-        userRepository.updateScoreMultiply(0.999f);
+        userRepository.updateScoreMultiply(0.999);
     }
 
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},

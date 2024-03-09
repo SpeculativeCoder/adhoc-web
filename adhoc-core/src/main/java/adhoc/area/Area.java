@@ -53,32 +53,32 @@ public class Area {
     private Long id;
 
     @Version
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Region region;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Integer index;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     @ToString.Include
     private String name;
 
-    @Basic(optional = false)
-    private Float x;
-    @Basic(optional = false)
-    private Float y;
-    @Basic(optional = false)
-    private Float z;
+    @Column(nullable = false)
+    private Double x;
+    @Column(nullable = false)
+    private Double y;
+    @Column(nullable = false)
+    private Double z;
 
-    @Basic(optional = false)
-    private Float sizeX;
-    @Basic(optional = false)
-    private Float sizeY;
-    @Basic(optional = false)
-    private Float sizeZ;
+    @Column(nullable = false)
+    private Double sizeX;
+    @Column(nullable = false)
+    private Double sizeY;
+    @Column(nullable = false)
+    private Double sizeZ;
 
     @OneToMany(mappedBy = "area")
     private List<Objective> objectives;

@@ -56,18 +56,18 @@ public class AreaDto {
     private String name;
 
     @NotNull
-    private Float x;
+    private Double x;
     @NotNull
-    private Float y;
+    private Double y;
     @NotNull
-    private Float z;
+    private Double z;
 
     @NotNull
-    private Float sizeX;
+    private Double sizeX;
     @NotNull
-    private Float sizeY;
+    private Double sizeY;
     @NotNull
-    private Float sizeZ;
+    private Double sizeZ;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private Optional<@Min(1) Long> serverId;

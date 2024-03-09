@@ -52,24 +52,24 @@ public class Region {
     private Long id;
 
     @Version
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Long version;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     @ToString.Include
     private String name;
 
     /** Name of map/level in Unreal project. */
-    @Basic(optional = false)
+    @Column(nullable = false)
     @ToString.Include
     private String mapName;
 
-    @Basic(optional = false)
-    private Float x;
-    @Basic(optional = false)
-    private Float y;
-    @Basic(optional = false)
-    private Float z;
+    @Column(nullable = false)
+    private Double x;
+    @Column(nullable = false)
+    private Double y;
+    @Column(nullable = false)
+    private Double z;
 
     @OneToMany(mappedBy = "region")
     private List<Area> areas;

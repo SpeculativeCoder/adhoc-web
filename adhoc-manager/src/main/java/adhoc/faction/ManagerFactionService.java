@@ -76,7 +76,7 @@ public class ManagerFactionService {
             Faction faction = factionObjectiveCount.getFaction();
             Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
-            factionRepository.updateScoreAddById(0.01f * objectiveCount, faction.getId());
+            factionRepository.updateScoreAddById(0.01 * objectiveCount, faction.getId());
         }
 
         LocalDateTime seenBefore = LocalDateTime.now().minusHours(48);
@@ -86,10 +86,10 @@ public class ManagerFactionService {
             Faction faction = factionObjectiveCount.getFaction();
             Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
-            userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(
-                    0.01f * objectiveCount, true, faction, seenBefore);
-            userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(
-                    0.001f * objectiveCount, false, faction, seenBefore);
+            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
+                    0.01 * objectiveCount, true, faction.getId(), seenBefore);
+            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(
+                    0.001 * objectiveCount, false, faction.getId(), seenBefore);
         }
     }
 
@@ -99,6 +99,6 @@ public class ManagerFactionService {
         log.trace("Decaying faction scores...");
 
         // TODO: multiplier property
-        factionRepository.updateScoreMultiply(0.999f);
+        factionRepository.updateScoreMultiply(0.999);
     }
 }

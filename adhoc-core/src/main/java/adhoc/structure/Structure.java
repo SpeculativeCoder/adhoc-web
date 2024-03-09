@@ -50,50 +50,50 @@ public class Structure {
     private Long id;
 
     @Version
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Long version;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private UUID uuid;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     @ToString.Include
     private String name;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     @ToString.Include
     private String type;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Region region;
 
-    @Basic(optional = false)
-    private Float x;
-    @Basic(optional = false)
-    private Float y;
-    @Basic(optional = false)
-    private Float z;
+    @Column(nullable = false)
+    private Double x;
+    @Column(nullable = false)
+    private Double y;
+    @Column(nullable = false)
+    private Double z;
 
-    @Basic(optional = false)
-    private Float pitch;
-    @Basic(optional = false)
-    private Float yaw;
-    @Basic(optional = false)
-    private Float roll;
+    @Column(nullable = false)
+    private Double pitch;
+    @Column(nullable = false)
+    private Double yaw;
+    @Column(nullable = false)
+    private Double roll;
 
-    @Basic(optional = false)
-    private Float scaleX;
-    @Basic(optional = false)
-    private Float scaleY;
-    @Basic(optional = false)
-    private Float scaleZ;
+    @Column(nullable = false)
+    private Double scaleX;
+    @Column(nullable = false)
+    private Double scaleY;
+    @Column(nullable = false)
+    private Double scaleZ;
 
-    @Basic(optional = false)
-    private Float sizeX;
-    @Basic(optional = false)
-    private Float sizeY;
-    @Basic(optional = false)
-    private Float sizeZ;
+    @Column(nullable = false)
+    private Double sizeX;
+    @Column(nullable = false)
+    private Double sizeY;
+    @Column(nullable = false)
+    private Double sizeZ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Faction faction;

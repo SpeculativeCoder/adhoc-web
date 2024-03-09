@@ -57,7 +57,7 @@ public class UserDto {
     private Long factionId;
 
     @NotNull
-    private Float score;
+    private Double score;
 
     private LocalDateTime seen;
 

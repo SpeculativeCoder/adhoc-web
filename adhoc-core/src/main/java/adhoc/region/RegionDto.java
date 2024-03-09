@@ -51,11 +51,11 @@ public class RegionDto {
     private String mapName;
 
     @NotNull
-    private Float x;
+    private Double x;
     @NotNull
-    private Float y;
+    private Double y;
     @NotNull
-    private Float z;
+    private Double z;
 
     @NotNull
     private List<Long> areaIds;

@@ -58,19 +58,19 @@ public class UserDetailDto {
     private Long factionId;
 
     @NotNull
-    private Float score;
+    private Double score;
 
     @NotNull
-    private Float x;
+    private Double x;
     @NotNull
-    private Float y;
+    private Double y;
     @NotNull
-    private Float z;
+    private Double z;
 
     @NotNull
-    private Float pitch;
+    private Double pitch;
     @NotNull
-    private Float yaw;
+    private Double yaw;
 
     @NotNull
     private LocalDateTime created;

@@ -52,10 +52,10 @@ public class Server {
     private Long id;
 
     @Version
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Long version;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     @ToString.Include
     private String name;
 
@@ -65,17 +65,17 @@ public class Server {
     @OneToMany(mappedBy = "server")
     private List<Area> areas;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private String mapName;
 
-    @Basic(optional = false)
-    private Float x;
-    @Basic(optional = false)
-    private Float y;
-    @Basic(optional = false)
-    private Float z;
+    @Column(nullable = false)
+    private Double x;
+    @Column(nullable = false)
+    private Double y;
+    @Column(nullable = false)
+    private Double z;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private ServerStatus status;
 
     private String managerHost;

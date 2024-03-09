@@ -62,11 +62,11 @@ public class PawnDto {
     private String description;
 
     @NotNull
-    private Float x;
+    private Double x;
     @NotNull
-    private Float y;
+    private Double y;
     @NotNull
-    private Float z;
+    private Double z;
 
     @Min(1)
     private Long userId;

@@ -270,7 +270,7 @@ public class UserService {
         user.setPassword(registerUserRequest.getPassword() == null ? null : passwordEncoder.encode(registerUserRequest.getPassword()));
         user.setHuman(registerUserRequest.getHuman());
         user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
-        user.setScore(0F);
+        user.setScore(0.0);
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());
         user.setServer(registerUserRequest.getServerId() == null ? null : serverRepository.getReferenceById(registerUserRequest.getServerId()));

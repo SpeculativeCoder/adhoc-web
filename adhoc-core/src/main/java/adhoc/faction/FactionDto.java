@@ -54,5 +54,5 @@ public class FactionDto {
 
     @NotNull
     @Min(0)
-    private Float score;
+    private Double score;
 }

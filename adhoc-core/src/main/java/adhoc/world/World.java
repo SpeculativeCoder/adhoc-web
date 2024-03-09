@@ -48,7 +48,7 @@ public class World {
     private Long id;
 
     @Version
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Long version;
 
     @ElementCollection(fetch = FetchType.EAGER)

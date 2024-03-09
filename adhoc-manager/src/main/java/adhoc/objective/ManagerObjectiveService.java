@@ -178,8 +178,8 @@ public class ManagerObjectiveService {
         faction.setScore(faction.getScore() + 1.0f);
 
         LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
-        userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(1.0f, true, faction, seenAfter);
-        userRepository.updateScoreAddByHumanAndFactionAndSeenAfter(0.1f, false, faction, seenAfter);
+        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(1.0, true, faction.getId(), seenAfter);
+        userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(0.1, false, faction.getId(), seenAfter);
 
         return new ObjectiveTakenEvent(objective.getId(), objective.getVersion(), faction.getId(), faction.getVersion());
     }

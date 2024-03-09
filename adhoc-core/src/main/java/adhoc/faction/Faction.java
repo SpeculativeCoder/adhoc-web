@@ -46,19 +46,19 @@ public class Faction {
     private Long id;
 
     @Version
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Long version;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Integer index;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     @ToString.Include
     private String name;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private String color;
 
-    @Basic(optional = false)
-    private Float score;
+    @Column(nullable = false)
+    private Double score;
 }

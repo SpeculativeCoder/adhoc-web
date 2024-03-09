@@ -54,14 +54,14 @@ public class UserNavigateRequest {
     private Long destinationAreaId;
 
     @NotNull
-    private Float x;
+    private Double x;
     @NotNull
-    private Float y;
+    private Double y;
     @NotNull
-    private Float z;
+    private Double z;
 
     @NotNull
-    private Float yaw;
+    private Double yaw;
     @NotNull
-    private Float pitch;
+    private Double pitch;
 }

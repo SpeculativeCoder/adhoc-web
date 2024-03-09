@@ -51,25 +51,25 @@ public class Objective {
     private Long id;
 
     @Version
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Region region;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Integer index;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     @ToString.Include
     private String name;
 
-    @Basic(optional = false)
-    private Float x;
-    @Basic(optional = false)
-    private Float y;
-    @Basic(optional = false)
-    private Float z;
+    @Column(nullable = false)
+    private Double x;
+    @Column(nullable = false)
+    private Double y;
+    @Column(nullable = false)
+    private Double z;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Faction initialFaction;

@@ -61,10 +61,10 @@ public class User {
     private Long id;
 
     @Version
-    @Basic(optional = false)
+    @Column(nullable = false)
     private Long version;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     @ToString.Include
     private String name;
 
@@ -73,30 +73,29 @@ public class User {
     @ToString.Exclude
     private String password;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
     @ToString.Include
     private Boolean human;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Faction faction;
 
-    @Basic(optional = false)
-    private Float score;
+    @Column(nullable = false)
+    private Double score;
 
-    private Float x;
-    private Float y;
-    private Float z;
+    private Double x;
+    private Double y;
+    private Double z;
 
-    private Float pitch;
-    private Float yaw;
+    private Double pitch;
+    private Double yaw;
 
     @CreationTimestamp
-    @Basic(optional = false)
-    @Column(updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime created;
 
     @UpdateTimestamp
-    @Basic(optional = false)
+    @Column(nullable = false)
     private LocalDateTime updated;
 
     private LocalDateTime lastLogin;

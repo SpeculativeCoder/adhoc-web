@@ -166,9 +166,9 @@ public class ManagerServerService {
         log.trace("Managing server for region {} area group {}", region.getId(), areaGroup);
         boolean changed = false;
 
-        Float areaGroupX = (float) areaGroup.stream().mapToDouble(Area::getX).average().orElseThrow();
-        Float areaGroupY = (float) areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
-        Float areaGroupZ = (float) areaGroup.stream().mapToDouble(Area::getZ).average().orElseThrow();
+        double areaGroupX = areaGroup.stream().mapToDouble(Area::getX).average().orElseThrow();
+        double areaGroupY = areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
+        double areaGroupZ = areaGroup.stream().mapToDouble(Area::getZ).average().orElseThrow();
 
         // TODO: prefer searching by area(s) that have human(s) in them
         Area firstArea = areaGroup.iterator().next();

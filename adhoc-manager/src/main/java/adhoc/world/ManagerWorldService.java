@@ -103,7 +103,7 @@ public class ManagerWorldService {
         team1.setIndex(0);
         team1.setName("Alpha");
         team1.setColor("#0088FF");
-        team1.setScore(0F);
+        team1.setScore(0.0);
         team1 = factionRepository.save(team1);
 
         Faction team2 = new Faction();
@@ -111,7 +111,7 @@ public class ManagerWorldService {
         team2.setIndex(1);
         team2.setName("Beta");
         team2.setColor("#FF2200");
-        team2.setScore(0F);
+        team2.setScore(0.0);
         team2 = factionRepository.save(team2);
 
         Faction team3 = new Faction();
@@ -119,7 +119,7 @@ public class ManagerWorldService {
         team3.setIndex(2);
         team3.setName("Gamma");
         team3.setColor("#FFFF00");
-        team3.setScore(0F);
+        team3.setScore(0.0);
         team3 = factionRepository.save(team3);
 
         Faction team4 = new Faction();
@@ -127,7 +127,7 @@ public class ManagerWorldService {
         team4.setIndex(3);
         team4.setName("Delta");
         team4.setColor("#8800FF");
-        team4.setScore(0F);
+        team4.setScore(0.0);
         team4 = factionRepository.save(team4);
 
         Region region1 = new Region();
@@ -135,33 +135,33 @@ public class ManagerWorldService {
         region1.setName("R1");
         // TODO: handle multiple regions
         region1.setMapName(coreProperties.getUnrealProjectRegionMaps().get(0));
-        region1.setX(1750F);
-        region1.setY(1000F);
-        region1.setZ(50F);
+        region1.setX(1750.0);
+        region1.setY(1000.0);
+        region1.setZ(50.0);
         region1.setAreas(Collections.emptyList());
         region1 = regionRepository.save(region1);
 
         Area area1 = new Area();
         area1.setIndex(0);
         area1.setName("A");
-        area1.setX(1250F);
-        area1.setY(1800F);
-        area1.setZ(0F);
-        area1.setSizeX(2000F);
-        area1.setSizeY(750F);
-        area1.setSizeZ(1000F);
+        area1.setX(1250.0);
+        area1.setY(1800.0);
+        area1.setZ(0.0);
+        area1.setSizeX(2000.0);
+        area1.setSizeY(750.0);
+        area1.setSizeZ(1000.0);
         area1.setRegion(region1);
         area1 = areaRepository.save(area1);
 
         Area area2 = new Area();
         area2.setIndex(1);
         area2.setName("B");
-        area2.setX(1500F);
-        area2.setY(750F);
-        area2.setZ(0F);
-        area2.setSizeX(1500F);
-        area2.setSizeY(1250F);
-        area2.setSizeZ(1000F);
+        area2.setX(1500.0);
+        area2.setY(750.0);
+        area2.setZ(0.0);
+        area2.setSizeX(1500.0);
+        area2.setSizeY(1250.0);
+        area2.setSizeZ(1000.0);
         area2.setRegion(region1);
         area2 = areaRepository.save(area2);
 
@@ -202,9 +202,9 @@ public class ManagerWorldService {
         objectiveA1.setRegion(region1);
         objectiveA1.setIndex(0);
         objectiveA1.setName("A1");
-        objectiveA1.setX(1500F);
-        objectiveA1.setY(1500F);
-        objectiveA1.setZ(0F);
+        objectiveA1.setX(1500.0);
+        objectiveA1.setY(1500.0);
+        objectiveA1.setZ(0.0);
         objectiveA1.setFaction(team1);
         objectiveA1.setInitialFaction(team1);
         objectiveA1.setArea(area1);
@@ -214,9 +214,9 @@ public class ManagerWorldService {
         objectiveA2.setRegion(region1);
         objectiveA2.setIndex(1);
         objectiveA2.setName("A2");
-        objectiveA2.setX(500F);
-        objectiveA2.setY(2000F);
-        objectiveA2.setZ(0F);
+        objectiveA2.setX(500.0);
+        objectiveA2.setY(2000.0);
+        objectiveA2.setZ(0.0);
         objectiveA2.setFaction(team3);
         objectiveA2.setInitialFaction(team3);
         objectiveA2.setArea(area1);
@@ -226,9 +226,9 @@ public class ManagerWorldService {
         objectiveA3.setRegion(region1);
         objectiveA3.setIndex(2);
         objectiveA3.setName("A3");
-        objectiveA3.setX(2000F);
-        objectiveA3.setY(1800F);
-        objectiveA3.setZ(0F);
+        objectiveA3.setX(2000.0);
+        objectiveA3.setY(1800.0);
+        objectiveA3.setZ(0.0);
         objectiveA3.setFaction(team4);
         objectiveA3.setInitialFaction(team4);
         objectiveA3.setArea(area1);
@@ -238,9 +238,9 @@ public class ManagerWorldService {
         objectiveB1.setRegion(region1);
         objectiveB1.setIndex(3);
         objectiveB1.setName("B1");
-        objectiveB1.setX(1200F);
-        objectiveB1.setY(1000F);
-        objectiveB1.setZ(0F);
+        objectiveB1.setX(1200.0);
+        objectiveB1.setY(1000.0);
+        objectiveB1.setZ(0.0);
         objectiveB1.setFaction(team2);
         objectiveB1.setInitialFaction(team2);
         objectiveB1.setArea(area2);
@@ -250,9 +250,9 @@ public class ManagerWorldService {
         objectiveB2.setRegion(region1);
         objectiveB2.setIndex(4);
         objectiveB2.setName("B2");
-        objectiveB2.setX(1800F);
-        objectiveB2.setY(500F);
-        objectiveB2.setZ(0F);
+        objectiveB2.setX(1800.0);
+        objectiveB2.setY(500.0);
+        objectiveB2.setZ(0.0);
         objectiveB2.setArea(area2);
         objectiveB2 = objectiveRepository.save(objectiveB2);
 
@@ -279,7 +279,7 @@ public class ManagerWorldService {
             adminUser.setEmail("admin@" + coreProperties.getAdhocDomain());
             adminUser.setFaction(team1);
             adminUser.setHuman(true);
-            adminUser.setScore(0F);
+            adminUser.setScore(0.0);
             adminUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultAdminPassword()));
             adminUser.setCreated(userCreated);
             adminUser.setUpdated(userCreated);
@@ -293,7 +293,7 @@ public class ManagerWorldService {
         alphaUser.setEmail("testalpha@" + coreProperties.getAdhocDomain());
         alphaUser.setFaction(team1);
         alphaUser.setHuman(true);
-        alphaUser.setScore(0F);
+        alphaUser.setScore(0.0);
         alphaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
         alphaUser.setCreated(userCreated);
         alphaUser.setUpdated(userCreated);
@@ -306,7 +306,7 @@ public class ManagerWorldService {
         betaUser.setEmail("testbeta@" + coreProperties.getAdhocDomain());
         betaUser.setFaction(team2);
         betaUser.setHuman(true);
-        betaUser.setScore(10F);
+        betaUser.setScore(10.0);
         betaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
         betaUser.setCreated(userCreated);
         betaUser.setUpdated(userCreated);
@@ -319,7 +319,7 @@ public class ManagerWorldService {
         deltaUser.setEmail("testdelta@" + coreProperties.getAdhocDomain());
         deltaUser.setFaction(team3);
         deltaUser.setHuman(true);
-        deltaUser.setScore(20F);
+        deltaUser.setScore(20.0);
         deltaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
         deltaUser.setCreated(userCreated);
         deltaUser.setUpdated(userCreated);
@@ -332,7 +332,7 @@ public class ManagerWorldService {
         gammaUser.setEmail("testgamma@" + coreProperties.getAdhocDomain());
         gammaUser.setFaction(team4);
         gammaUser.setHuman(true);
-        gammaUser.setScore(30F);
+        gammaUser.setScore(30.0);
         gammaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
         gammaUser.setCreated(userCreated);
         gammaUser.setUpdated(userCreated);
@@ -345,9 +345,9 @@ public class ManagerWorldService {
         //pawn1.setServer(server1);
         //pawn1.setIndex(0);
         //pawn1.setFaction(blueTeam);
-        //pawn1.setX(200F);
-        //pawn1.setY(200F);
-        //pawn1.setZ(0F);
+        //pawn1.setX(200.0);
+        //pawn1.setY(200.0);
+        //pawn1.setZ(0.0);
         //pawn1.setSeen(LocalDateTime.now());
         //pawn1.setUser(alphaUser);
         //pawn1 = pawnRepository.save(pawn1);

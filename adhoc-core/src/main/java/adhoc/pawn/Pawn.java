@@ -43,13 +43,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true)
+@ToString
 public class Pawn {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PawnIdSequence")
     @SequenceGenerator(name = "PawnIdSequence", initialValue = 1, allocationSize = 50)
-    @ToString.Include
     private Long id;
 
     @Version
@@ -60,13 +59,13 @@ public class Pawn {
     private UUID uuid;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Server server;
 
     @Column(nullable = false)
     private Integer index;
 
     @Column(nullable = false)
-    @ToString.Include
     private String name;
 
     @Column(nullable = false)
@@ -80,12 +79,14 @@ public class Pawn {
     private Double z;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private User user;
 
     @Column(nullable = false)
     private Boolean human;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Faction faction;
 
     @Column(nullable = false)

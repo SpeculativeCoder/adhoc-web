@@ -42,13 +42,12 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true)
+@ToString
 public class Region {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RegionIdSequence")
     @SequenceGenerator(name = "RegionIdSequence", initialValue = 1, allocationSize = 50)
-    @ToString.Include
     private Long id;
 
     @Version
@@ -56,12 +55,10 @@ public class Region {
     private Long version;
 
     @Column(nullable = false)
-    @ToString.Include
     private String name;
 
     /** Name of map/level in Unreal project. */
     @Column(nullable = false)
-    @ToString.Include
     private String mapName;
 
     @Column(nullable = false)
@@ -72,8 +69,10 @@ public class Region {
     private Double z;
 
     @OneToMany(mappedBy = "region")
+    @ToString.Exclude
     private List<Area> areas;
 
     @OneToMany(mappedBy = "region")
+    @ToString.Exclude
     private List<Server> servers;
 }

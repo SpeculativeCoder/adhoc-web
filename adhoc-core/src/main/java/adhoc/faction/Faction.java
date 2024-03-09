@@ -37,13 +37,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true)
+@ToString
 public class Faction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FactionIdSequence")
     @SequenceGenerator(name = "FactionIdSequence", initialValue = 1, allocationSize = 50)
-    @ToString.Include
     private Long id;
 
     @Version
@@ -54,7 +53,6 @@ public class Faction {
     private Integer index;
 
     @Column(nullable = false)
-    @ToString.Include
     private String name;
 
     @Column(nullable = false)

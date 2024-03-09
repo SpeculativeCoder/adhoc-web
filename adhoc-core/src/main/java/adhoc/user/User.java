@@ -52,13 +52,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true)
+@ToString
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UserIdSequence")
     @SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 50)
-    @ToString.Include
     private Long id;
 
     @Version
@@ -66,7 +65,6 @@ public class User {
     private Long version;
 
     @Column(nullable = false)
-    @ToString.Include
     private String name;
 
     private String email;
@@ -75,10 +73,10 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    @ToString.Include
     private Boolean human;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Faction faction;
 
     @Column(nullable = false)
@@ -111,9 +109,11 @@ public class User {
     private UUID token;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Server server;
 
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
     private List<Pawn> pawns;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

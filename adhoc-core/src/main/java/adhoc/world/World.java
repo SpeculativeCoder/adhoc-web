@@ -38,13 +38,12 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true)
+@ToString
 public class World {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "WorldIdSequence")
     @SequenceGenerator(name = "WorldIdSequence", initialValue = 1, allocationSize = 50)
-    @ToString.Include
     private Long id;
 
     @Version
@@ -57,16 +56,3 @@ public class World {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> kioskHosts;
 }
-
-//    @Embeddable
-//    @Getter
-//    @Setter
-//    @ToString(onlyExplicitlyIncluded = true)
-//    private static class WebServer {
-//        @ToString.Include
-//        private String privateIp;
-//        @ToString.Include
-//        private String privatePort;
-//        @ToString.Include
-//        private Long messageBrokerCorePort;
-//    }

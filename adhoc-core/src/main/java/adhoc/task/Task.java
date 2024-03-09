@@ -44,7 +44,6 @@ public abstract class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TaskIdSequence")
     @SequenceGenerator(name = "TaskIdSequence", initialValue = 1, allocationSize = 50)
-    @ToString.Include
     private Long id;
 
     @Version

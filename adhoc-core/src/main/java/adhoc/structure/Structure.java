@@ -40,13 +40,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true)
+@ToString
 public class Structure {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "StructureIdSequence")
     @SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 50)
-    @ToString.Include
     private Long id;
 
     @Version
@@ -57,14 +56,13 @@ public class Structure {
     private UUID uuid;
 
     @Column(nullable = false)
-    @ToString.Include
     private String name;
 
     @Column(nullable = false)
-    @ToString.Include
     private String type;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Region region;
 
     @Column(nullable = false)
@@ -96,8 +94,10 @@ public class Structure {
     private Double sizeZ;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Faction faction;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private User user;
 }

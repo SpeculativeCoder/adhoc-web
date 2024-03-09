@@ -41,13 +41,12 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true)
+@ToString
 public class Objective {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ObjectiveIdSequence")
     @SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 50)
-    @ToString.Include
     private Long id;
 
     @Version
@@ -55,13 +54,13 @@ public class Objective {
     private Long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Region region;
 
     @Column(nullable = false)
     private Integer index;
 
     @Column(nullable = false)
-    @ToString.Include
     private String name;
 
     @Column(nullable = false)
@@ -72,13 +71,18 @@ public class Objective {
     private Double z;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Faction initialFaction;
+
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Faction faction;
 
     @ManyToMany
+    @ToString.Exclude
     private Set<Objective> linkedObjectives;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Area area;
 }

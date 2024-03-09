@@ -117,12 +117,14 @@ public class DockerHostingService implements HostingService {
         // assume manager running on Docker host (unless we find an adhoc_manager container in Docker)
         ManagerTask defaultManagerTask = new ManagerTask();
         defaultManagerTask.setTaskIdentifier("local-manager-task");
+        defaultManagerTask.setName("local-manager-task");
         defaultManagerTask.setPrivateIp("host.docker.internal");
         defaultManagerTask.setPublicIp("127.0.0.1");
         managerTasks.add(defaultManagerTask);
         // assume kiosk running on Docker host (unless we find an adhoc_kiosk container in Docker)
         KioskTask defaultKioskTask = new KioskTask();
-        defaultKioskTask.setTaskIdentifier("local-manager-task");
+        defaultKioskTask.setTaskIdentifier("local-kiosk-task");
+        defaultKioskTask.setName("local-kiosk-task");
         defaultKioskTask.setPrivateIp("host.docker.internal");
         defaultKioskTask.setPublicIp("127.0.0.1");
         kioskTasks.add(defaultKioskTask);
@@ -151,6 +153,7 @@ public class DockerHostingService implements HostingService {
 
                 ManagerTask managerTask = new ManagerTask();
                 managerTask.setTaskIdentifier(inspectedContainer.getId());
+                managerTask.setName(inspectedContainer.getName());
                 managerTask.setPrivateIp(privateIp);
                 managerTask.setPublicIp("127.0.0.1");
                 managerTasks.add(managerTask);
@@ -161,6 +164,7 @@ public class DockerHostingService implements HostingService {
 
                 KioskTask kioskTask = new KioskTask();
                 kioskTask.setTaskIdentifier(inspectedContainer.getId());
+                kioskTask.setName(inspectedContainer.getName());
                 kioskTask.setPrivateIp(privateIp);
                 kioskTask.setPublicIp("127.0.0.1");
                 kioskTasks.add(kioskTask);
@@ -173,6 +177,7 @@ public class DockerHostingService implements HostingService {
 
                         ServerTask task = new ServerTask();
                         task.setTaskIdentifier(inspectedContainer.getId());
+                        task.setName(inspectedContainer.getName());
                         task.setPrivateIp(privateIp);
                         task.setPublicIp("127.0.0.1");
                         task.setPublicWebSocketPort(calculatePublicWebSocketPort(serverId));

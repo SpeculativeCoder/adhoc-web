@@ -249,6 +249,7 @@ public class ManagerServerService {
         for (ManagerTask task : hostingState.getManagerTasks()) {
             ManagerTask managerTask = managerTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(ManagerTask::new);
             managerTask.setTaskIdentifier(task.getTaskIdentifier());
+            managerTask.setName(task.getName());
             managerTask.setPrivateIp(task.getPrivateIp());
             managerTask.setPublicIp(task.getPublicIp());
             //managerTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
@@ -263,6 +264,7 @@ public class ManagerServerService {
         for (KioskTask task : hostingState.getKioskTasks()) {
             KioskTask kioskTask = kioskTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(KioskTask::new);
             kioskTask.setTaskIdentifier(task.getTaskIdentifier());
+            kioskTask.setName(task.getName());
             kioskTask.setPrivateIp(task.getPrivateIp());
             kioskTask.setPublicIp(task.getPublicIp());
             //kioskTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
@@ -277,6 +279,7 @@ public class ManagerServerService {
         for (ServerTask task : hostingState.getServerTasks()) {
             ServerTask serverTask = serverTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(ServerTask::new);
             serverTask.setTaskIdentifier(task.getTaskIdentifier());
+            serverTask.setName(task.getName());
             serverTask.setPrivateIp(task.getPrivateIp());
             serverTask.setPublicIp(task.getPublicIp());
             serverTask.setPublicWebSocketPort(task.getPublicWebSocketPort());

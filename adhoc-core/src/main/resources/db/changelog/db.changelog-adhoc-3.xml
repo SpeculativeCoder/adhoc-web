@@ -619,6 +619,10 @@
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="name"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="private_ip"
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -643,6 +647,10 @@
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="name"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="private_ip"
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -664,6 +672,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="task_identifier"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name"
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>

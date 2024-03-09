@@ -62,12 +62,14 @@ public class LocalHostingService implements HostingService {
 
         ManagerTask managerTask = new ManagerTask();
         managerTask.setTaskIdentifier("local-manager-task");
+        managerTask.setName("local-manager-task");
         managerTask.setPrivateIp("127.0.0.1");
         managerTask.setPublicIp("127.0.0.1");
         managerTasks.add(managerTask);
 
         KioskTask kioskTask = new KioskTask();
         kioskTask.setTaskIdentifier("local-kiosk-task");
+        kioskTask.setName("local-kiosk-task");
         kioskTask.setPrivateIp("127.0.0.1");
         kioskTask.setPublicIp("127.0.0.1");
         kioskTasks.add(kioskTask);
@@ -80,7 +82,7 @@ public class LocalHostingService implements HostingService {
                 ServerTask serverTask = new ServerTask();
 
                 serverTask.setTaskIdentifier("local-server-task-" + server.getId());
-                //task.setManagerHost("127.0.0.1");
+                serverTask.setName("local-server-task-" + server.getId());
                 serverTask.setPrivateIp("127.0.0.1");
                 serverTask.setPublicIp("127.0.0.1");
                 serverTask.setPublicWebSocketPort(8889);

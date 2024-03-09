@@ -31,7 +31,7 @@
       <tr>
         <th scope="col" sortable="id">ID</th>
         <th scope="col" sortable="type">Type</th>
-        <th scope="col" sortable="taskIdentifier">Task Identifier</th>
+        <th scope="col" sortable="name">Name</th>
         <th scope="col" sortable="privateIp">Private IP</th>
         <th scope="col" sortable="publicIp">Public IP</th>
         <th scope="col" sortable="publicWebSocketPort">Public Web Socket Port</th>
@@ -41,7 +41,7 @@
       <tr *ngFor="let task of tasks">
         <th scope="row"><a routerLink="/tasks/{{ task.id }}">{{ task.id }}</a></th>
         <td>{{ task.type }}</td>
-        <td>{{ task.taskIdentifier }}</td>
+        <td>{{ task.name }}</td>
         <td>{{ task.privateIp }}</td>
         <td>{{ task.publicIp }}</td>
         <td>{{ task.publicWebSocketPort }}</td>

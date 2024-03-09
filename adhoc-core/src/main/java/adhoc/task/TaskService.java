@@ -68,7 +68,7 @@ public class TaskService {
                 task.getId(),
                 task.getVersion(),
                 task.getTaskType().name(),
-                hasDebugRole ? task.getTaskIdentifier() : null,
+                hasDebugRole ? task.getName() : null,
                 hasDebugRole ? task.getPrivateIp() : null,
                 task.getPublicIp(),
                 task instanceof ServerTask serverTask ? serverTask.getPublicWebSocketPort() : null,

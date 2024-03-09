@@ -86,9 +86,9 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         log.debug("loadUserByUsername: user={} token={}", user, user.getToken());
 
         Collection<GrantedAuthority> authorities = new LinkedHashSet<>(user.getAuthorities());
-        if (coreProperties.getFeatureFlags().contains("development")) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + UserRole.DEBUG.name()));
-        }
+        //if (coreProperties.getFeatureFlags().contains("development")) {
+        //    authorities.add(new SimpleGrantedAuthority("ROLE_" + UserRole.DEBUG.name()));
+        //}
 
         AdhocUserDetails userDetails = new AdhocUserDetails(
                 user.getName(),

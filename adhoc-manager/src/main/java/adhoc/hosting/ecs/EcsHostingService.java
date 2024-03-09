@@ -44,6 +44,7 @@ import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.NetworkInterface;
 import software.amazon.awssdk.services.ec2.model.*;
 import software.amazon.awssdk.services.ecs.EcsClient;
+import software.amazon.awssdk.services.ecs.endpoints.internal.Arn;
 import software.amazon.awssdk.services.ecs.model.*;
 
 import java.util.*;
@@ -147,6 +148,7 @@ public class EcsHostingService implements HostingService {
 
                         ManagerTask managerTask = new ManagerTask();
                         managerTask.setTaskIdentifier(task.taskArn());
+                        managerTask.setName(Arn.parse(task.taskArn()).orElseThrow(IllegalStateException::new).resource().getLast());
                         managerTask.setPrivateIp(privateIp);
                         managerNetworkInterfaceIds.put(networkInterfaceId, managerTask);
 
@@ -155,6 +157,7 @@ public class EcsHostingService implements HostingService {
 
                         KioskTask kioskTask = new KioskTask();
                         kioskTask.setTaskIdentifier(task.taskArn());
+                        kioskTask.setName(Arn.parse(task.taskArn()).orElseThrow(IllegalStateException::new).resource().getLast());
                         kioskTask.setPrivateIp(privateIp);
                         kioskNetworkInterfaceIds.put(networkInterfaceId, kioskTask);
 
@@ -178,6 +181,7 @@ public class EcsHostingService implements HostingService {
 
                                     ServerTask serverTask = new ServerTask();
                                     serverTask.setTaskIdentifier(task.taskArn());
+                                    serverTask.setName(Arn.parse(task.taskArn()).orElseThrow(IllegalStateException::new).resource().getLast());
                                     serverTask.setPrivateIp(privateIp);
                                     serverTask.setServerId(serverId);
                                     serverNetworkInterfaceIds.put(networkInterfaceId, serverTask);

@@ -33,7 +33,7 @@ public record TaskDto(
         @Min(1) Long id,
         @Min(0) Long version,
         String type,
-        @NotNull String taskIdentifier,
+        @NotNull String name,
         String privateIp,
         String publicIp,
         Integer publicWebSocketPort,

@@ -66,17 +66,13 @@ public class ManagerTaskService {
     private final HostingService hostingService;
     private final DnsService dnsService;
 
-    /**
-     * Manage the server tasks in the hosting service, creating new ones and/or tearing down old ones as required
-     * by the current servers.
-     */
-    public List<? extends Event> manageServerTasks() {
-        log.trace("Managing server tasks...");
+    public List<? extends Event> refreshTasks() {
+        log.trace("Refreshing tasks...");
         List<Event> events = new ArrayList<>();
 
         // get state of running containers
         HostingState hostingState = hostingService.poll();
-        log.debug("manageServerTasks: hostingState={}", hostingState);
+        log.debug("refreshTasks: hostingState={}", hostingState);
         Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
 
         // TODO: WIP
@@ -132,6 +128,16 @@ public class ManagerTaskService {
 
         optionalWorldUpdatedEvent.ifPresent(events::add);
 
+        return events;
+    }
+
+    /**
+     * Manage the server tasks in the hosting service, creating new ones and/or tearing down old ones as required by the current servers.
+     */
+    public List<? extends Event> manageServerTasks() {
+        log.trace("Managing server tasks...");
+        List<Event> events = new ArrayList<>();
+
         try (Stream<Server> servers = serverRepository.streamBy()) {
             servers.forEach(server -> {
                 // TODO
@@ -148,11 +154,13 @@ public class ManagerTaskService {
         }
 
         // any tasks for servers which don't exist should be stopped (typically this is cleanup)
-        for (ServerTask serverTask : hostingState.getServerTasks()) {
-            if (!serverRepository.existsById(serverTask.getServerId())) {
-                log.debug("Server {} does not exist - need to stop task {}", serverTask.getServerId(), serverTask);
-                hostingService.stopServerTask(serverTask);
-            }
+        try (Stream<ServerTask> serverTasks = serverTaskRepository.streamBy()) {
+            serverTasks.forEach(serverTask -> {
+                if (!serverRepository.existsById(serverTask.getServerId())) {
+                    log.debug("Server {} does not exist - need to stop task {}", serverTask.getName(), serverTask.getName());
+                    hostingService.stopServerTask(serverTask);
+                }
+            });
         }
 
         return events;

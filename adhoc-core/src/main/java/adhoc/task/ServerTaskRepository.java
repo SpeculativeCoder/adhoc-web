@@ -28,11 +28,14 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 // TODO: common
 public interface ServerTaskRepository extends JpaRepository<ServerTask, Long> {
 
     Optional<ServerTask> findByTaskIdentifier(String taskIdentifier);
+
+    Stream<ServerTask> streamBy();
 
     @Modifying
     @Query("delete from ServerTask st where st.taskIdentifier not in ?1")

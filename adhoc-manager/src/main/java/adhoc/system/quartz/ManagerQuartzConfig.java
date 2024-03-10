@@ -41,6 +41,7 @@ import java.util.Date;
 public class ManagerQuartzConfig {
 
     public static final String MANAGE_SERVERS = "manageServers";
+    public static final String REFRESH_TASKS = "refreshTasks";
     public static final String MANAGE_SERVER_TASKS = "manageServerTasks";
     public static final String AWARD_FACTION_SCORES = "awardFactionScores";
     public static final String DECAY_FACTION_SCORES = "decayFactionScores";
@@ -55,6 +56,15 @@ public class ManagerQuartzConfig {
                 .forJob(MANAGE_SERVERS).withIdentity(MANAGE_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10))
+                .startAt(Date.from(Instant.now().plusSeconds(10))).build();
+    }
+
+    @Bean
+    public Trigger refreshTasksTrigger() {
+        return TriggerBuilder.newTrigger()
+                .forJob(REFRESH_TASKS).withIdentity(REFRESH_TASKS)
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                        .repeatForever().withIntervalInSeconds(30))
                 .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 
@@ -124,6 +134,11 @@ public class ManagerQuartzConfig {
     @Bean
     public JobDetail manageServersJobDetail() {
         return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_SERVERS).storeDurably().build();
+    }
+
+    @Bean
+    public JobDetail refreshTasksJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(REFRESH_TASKS).storeDurably().build();
     }
 
     @Bean

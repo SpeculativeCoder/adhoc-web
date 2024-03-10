@@ -39,29 +39,29 @@ public class UserDefeatedUserEvent implements Event {
 
     @NotNull
     @Min(1)
-    private Long userId;
+    Long userId;
 
     @NotNull
     @Min(0)
-    private Long userVersion;
+    Long userVersion;
 
     @NotEmpty
-    private String userName;
+    String userName;
 
     @NotNull
-    private Boolean userHuman;
+    Boolean userHuman;
 
     @NotNull
     @Min(1)
-    private Long defeatedUserId;
+    Long defeatedUserId;
 
     @NotNull
     @Min(0)
-    private Long defeatedUserVersion;
+    Long defeatedUserVersion;
 
     @NotEmpty
-    private String defeatedUserName;
+    String defeatedUserName;
 
     @NotNull
-    private Boolean defeatedUserHuman;
+    Boolean defeatedUserHuman;
 }

@@ -38,15 +38,15 @@ import java.util.List;
 public class WorldDto {
 
     @NotNull
-    private Long id;
+    Long id;
 
     @NotNull
     @Min(0)
-    private Long version;
+    Long version;
 
     @NotNull
-    private List<String> managerHosts;
+    List<String> managerHosts;
 
     @NotNull
-    private List<String> kioskHosts;
+    List<String> kioskHosts;
 }

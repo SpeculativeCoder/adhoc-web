@@ -38,9 +38,9 @@ public class ServerUserDefeatedUserEvent implements Event {
 
     @NotNull
     @Min(1)
-    private Long userId;
+    Long userId;
 
     @NotNull
     @Min(1)
-    private Long defeatedUserId;
+    Long defeatedUserId;
 }

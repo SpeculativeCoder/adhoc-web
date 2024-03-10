@@ -23,11 +23,13 @@
 package adhoc.user.request;
 
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.ToString;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-@Data
-@NoArgsConstructor
+@Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
@@ -37,21 +39,21 @@ public class RegisterUserRequest {
     //@NotEmpty
     //@Pattern(regexp = "Anon[0-9]{1,10}")
     @Null
-    private String name;
+    String name;
 
     @Email
-    private String email;
+    String email;
 
     @Size(min = 1)
     @ToString.Exclude
-    private String password;
+    String password;
 
     @Min(1)
-    private Long factionId;
+    Long factionId;
 
     @NotNull
-    private Boolean human;
+    Boolean human;
 
     @Min(1)
-    private Long serverId;
+    Long serverId;
 }

@@ -43,51 +43,51 @@ public class UserDetailDto {
 
     @NotNull
     @Min(1)
-    private Long id;
+    Long id;
 
     @Min(0)
-    private Long version;
+    Long version;
 
     @NotEmpty
-    private String name;
+    String name;
 
     @NotNull
-    private Boolean human;
+    Boolean human;
 
     @NotNull
     @Min(1)
-    private Long factionId;
+    Long factionId;
 
     @NotNull
-    private BigDecimal score;
+    BigDecimal score;
 
     @NotNull
-    private Double x;
+    Double x;
     @NotNull
-    private Double y;
+    Double y;
     @NotNull
-    private Double z;
+    Double z;
 
     @NotNull
-    private Double pitch;
+    Double pitch;
     @NotNull
-    private Double yaw;
+    Double yaw;
 
     @NotNull
-    private LocalDateTime created;
+    LocalDateTime created;
     @NotNull
-    private LocalDateTime updated;
-    private LocalDateTime lastLogin;
-    private LocalDateTime lastJoin;
-    private LocalDateTime seen;
+    LocalDateTime updated;
+    LocalDateTime lastLogin;
+    LocalDateTime lastJoin;
+    LocalDateTime seen;
 
     @NotNull
     @Size(min = 1)
-    private List<String> roles;
+    List<String> roles;
 
     @NotEmpty
-    private String token;
+    String token;
 
     @Min(1)
-    private Long serverId;
+    Long serverId;
 }

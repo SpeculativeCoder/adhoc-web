@@ -23,19 +23,20 @@
 package adhoc.server.request;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
 /** Server reports information about users currently logged onto the server etc. */
-@Data
-@NoArgsConstructor
+@Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
 public class ServerActiveUsersRequest {
 
-	@NotNull
-	private List<Long> userIds;
+    @NotNull
+    List<Long> userIds;
 }

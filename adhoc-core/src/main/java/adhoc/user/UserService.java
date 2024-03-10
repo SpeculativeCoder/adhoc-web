@@ -137,14 +137,18 @@ public class UserService {
             throw new IllegalArgumentException("User name or email already in use");
         }
 
+        RegisterUserRequest.RegisterUserRequestBuilder builder = registerUserRequest.toBuilder();
+
         if (registerUserRequest.getName() == null) {
             String prefix = registerUserRequest.getHuman() ? "Anon" : "Bot";
-            registerUserRequest.setName(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
+            builder.name(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
         }
 
         if (registerUserRequest.getFactionId() == null) {
-            registerUserRequest.setFactionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
+            builder.factionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
         }
+
+        registerUserRequest = builder.build();
 
         User user = userRepository.save(toEntity(registerUserRequest));
 

@@ -26,19 +26,17 @@ import adhoc.system.event.Event;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.Map;
 
-@Data
-@NoArgsConstructor
+@Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
 public class FactionScoringEvent implements Event {
 
     @NotNull
-    private Map<Long, Integer> factionAwardedScores;
+    Map<Long, Integer> factionAwardedScores;
 }

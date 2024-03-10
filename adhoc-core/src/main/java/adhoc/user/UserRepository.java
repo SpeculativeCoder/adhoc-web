@@ -55,6 +55,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updateServerAndSeenByIdIn(Server server, LocalDateTime seen, Collection<Long> idIn);
 
     @Modifying
+    //@Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score + ?1 where u.id = ?2")
+    @Query(nativeQuery = true, value = "update adhoc_user u set u.version = u.version + 1, u.score = u.score + ?1 where u.id = ?2")
+    void updateScoreAddById(BigDecimal scoreAdd, Long id);
+
+    @Modifying
     // TODO
     //@Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score + ?1 where u.human = ?2 and u.faction = ?3 and u.seen > ?4")
     @Query(nativeQuery = true, value = "update adhoc_user u set u.version = u.version + 1, u.score = u.score + ?1 where u.human = ?2 and u.faction_id = ?3 and u.seen > ?4")

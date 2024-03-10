@@ -182,10 +182,11 @@ public class ManagerUserService {
         User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
 
         BigDecimal scoreAdd = BigDecimal.valueOf(user.getHuman() ? 1.0f : 0.1f);
-        user.setScore(user.getScore().add(scoreAdd));
+        userRepository.updateScoreAddById(scoreAdd, user.getId());
 
+        // TODO
         return new UserDefeatedUserEvent(
-                user.getId(), user.getVersion(), user.getName(), user.getHuman(),
+                user.getId(), user.getVersion() + 1, user.getName(), user.getHuman(),
                 defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.getHuman());
     }
 

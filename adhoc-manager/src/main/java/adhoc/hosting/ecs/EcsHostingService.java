@@ -240,11 +240,8 @@ public class EcsHostingService implements HostingService {
                 new ArrayList<>(serverNetworkInterfaceIds.values()));
     }
 
-    public void startServerTask(Server server) { //, Set<String> managerHosts) {
-        //Preconditions.checkNotNull(managerHosts);
-        //Preconditions.checkArgument(!managerHosts.isEmpty());
-
-        log.debug("Starting task for {}", server); // with manager host(s) {}", managerHosts);
+    public void startServerTask(Server server) {
+        log.debug("Starting task for {}", server);
 
         try (EcsClient ecsClient = ecsClient();
              Ec2Client ec2Client = ec2Client()) {

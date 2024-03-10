@@ -45,15 +45,3 @@ public class WorldService {
                 new ArrayList<>(world.getKioskHosts()));
     }
 }
-
-//private final AdhocProperties adhocProperties;
-//
-//private final WorldRepository worldRepository;
-
-//public Optional<Set<String>> findManagerHosts() {
-//    return worldRepository.findById(WorldService.WORLD_ID).map(World::getManagerHosts);
-//}
-
-//        return StringUtils.isEmpty(adhocProperties.getOverrideManagerHost())
-//                ? worldRepository.findById(WorldService.WORLD_ID).map(World::getManagerHosts)
-//                : Optional.of(Collections.singleton(adhocProperties.getOverrideManagerHost()));

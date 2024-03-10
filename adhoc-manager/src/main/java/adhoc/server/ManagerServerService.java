@@ -24,23 +24,13 @@ package adhoc.server;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
-import adhoc.dns.DnsService;
-import adhoc.hosting.HostingService;
-import adhoc.properties.ManagerProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
-import adhoc.task.KioskTaskRepository;
-import adhoc.task.ManagerTaskRepository;
-import adhoc.task.ServerTaskRepository;
-import adhoc.world.ManagerWorldService;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,25 +45,13 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ManagerServerService {
 
-    private final ManagerProperties managerProperties;
-    private final ServerProperties serverProperties;
-
     private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
-    private final ManagerTaskRepository managerTaskRepository;
-    private final KioskTaskRepository kioskTaskRepository;
-    private final ServerTaskRepository serverTaskRepository;
 
-    private final ManagerWorldService managerWorldService;
-    private final HostingService hostingService;
-    private final DnsService dnsService;
     private final ServerService serverService;
 
     private final AreaGroupsFactory areaGroupsFactory;
-
-    private final SimpMessageSendingOperations stomp;
-    private final EntityManager entityManager;
 
     public ServerDto updateServer(ServerDto serverDto) {
         Server server = toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));

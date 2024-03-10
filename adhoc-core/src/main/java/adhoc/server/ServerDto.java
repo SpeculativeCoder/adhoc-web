@@ -40,45 +40,45 @@ import java.util.List;
 public class ServerDto {
 
     @Min(1)
-    private Long id;
+    Long id;
 
     @Min(0)
-    private Long version;
+    Long version;
 
     @NotEmpty
-    private String name;
+    String name;
 
     @NotNull
     @Min(1)
-    private Long regionId;
+    Long regionId;
 
     @NotNull
-    private List<Long> areaIds;
+    List<Long> areaIds;
     @NotNull
-    private List<Integer> areaIndexes;
+    List<Integer> areaIndexes;
 
     @NotEmpty
-    private String mapName;
+    String mapName;
 
     @NotNull
-    private Double x;
+    Double x;
     @NotNull
-    private Double y;
+    Double y;
     @NotNull
-    private Double z;
+    Double z;
 
     @NotEmpty
-    private String status;
+    String status;
 
-    private String managerHost;
+    String managerHost;
 
-    private String privateIp;
-    private String publicIp;
-    private Integer publicWebSocketPort;
+    String privateIp;
+    String publicIp;
+    Integer publicWebSocketPort;
 
-    private String webSocketUrl;
+    String webSocketUrl;
 
-    private LocalDateTime initiated;
+    LocalDateTime initiated;
 
-    private LocalDateTime seen;
+    LocalDateTime seen;
 }

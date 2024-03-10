@@ -42,26 +42,26 @@ public class UserDto {
 
     @NotNull
     @Min(1)
-    private Long id;
+    Long id;
 
     @Min(0)
-    private Long version;
+    Long version;
 
     @NotEmpty
-    private String name;
+    String name;
 
     @NotNull
-    private Boolean human;
+    Boolean human;
 
     @NotNull
     @Min(1)
-    private Long factionId;
+    Long factionId;
 
     @NotNull
-    private BigDecimal score;
+    BigDecimal score;
 
-    private LocalDateTime seen;
+    LocalDateTime seen;
 
     @Min(1)
-    private Long serverId;
+    Long serverId;
 }

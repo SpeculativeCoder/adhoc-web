@@ -39,36 +39,36 @@ import java.util.Optional;
 public class AreaDto {
 
     @Min(1)
-    private Long id;
+    Long id;
 
     @Min(0)
-    private Long version;
+    Long version;
 
     @NotNull
     @Min(1)
-    private Long regionId;
+    Long regionId;
 
     @NotNull
     @Min(0)
-    private Integer index;
+    Integer index;
 
     @NotEmpty
-    private String name;
+    String name;
 
     @NotNull
-    private Double x;
+    Double x;
     @NotNull
-    private Double y;
+    Double y;
     @NotNull
-    private Double z;
+    Double z;
 
     @NotNull
-    private Double sizeX;
+    Double sizeX;
     @NotNull
-    private Double sizeY;
+    Double sizeY;
     @NotNull
-    private Double sizeZ;
+    Double sizeZ;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private Optional<@Min(1) Long> serverId;
+    Optional<@Min(1) Long> serverId;
 }

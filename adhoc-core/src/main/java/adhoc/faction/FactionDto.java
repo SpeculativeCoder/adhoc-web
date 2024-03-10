@@ -39,22 +39,22 @@ import java.math.BigDecimal;
 public class FactionDto {
 
     @Min(1)
-    private Long id;
+    Long id;
 
     @Min(0)
-    private Long version;
+    Long version;
 
     @NotNull
     @Min(0)
-    private Integer index;
+    Integer index;
 
     @NotEmpty
-    private String name;
+    String name;
 
     @NotEmpty
-    private String color;
+    String color;
 
     @NotNull
     @Min(0)
-    private BigDecimal score;
+    BigDecimal score;
 }

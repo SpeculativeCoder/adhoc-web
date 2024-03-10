@@ -39,27 +39,27 @@ import java.util.List;
 public class RegionDto {
 
     @Min(1)
-    private Long id;
+    Long id;
 
     @Min(0)
-    private Long version;
+    Long version;
 
     @NotEmpty
-    private String name;
+    String name;
 
     @NotEmpty
-    private String mapName;
+    String mapName;
 
     @NotNull
-    private Double x;
+    Double x;
     @NotNull
-    private Double y;
+    Double y;
     @NotNull
-    private Double z;
+    Double z;
 
     @NotNull
-    private List<Long> areaIds;
+    List<Long> areaIds;
 
     @NotNull
-    private List<Long> serverIds;
+    List<Long> serverIds;
 }

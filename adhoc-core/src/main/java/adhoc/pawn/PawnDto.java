@@ -39,46 +39,46 @@ import java.util.UUID;
 public class PawnDto {
 
     @Min(1)
-    private Long id;
+    Long id;
 
     @Min(0)
-    private Long version;
+    Long version;
 
     @NotNull
-    private UUID uuid;
+    UUID uuid;
 
     @NotNull
     @Min(1)
-    private Long serverId;
+    Long serverId;
 
     @NotNull
     @Min(0)
-    private Integer index;
+    Integer index;
 
     @NotNull
-    private String name;
+    String name;
 
     @NotNull
-    private String description;
+    String description;
 
     @NotNull
-    private Double x;
+    Double x;
     @NotNull
-    private Double y;
+    Double y;
     @NotNull
-    private Double z;
-
-    @Min(1)
-    private Long userId;
-
-    @NotNull
-    private Boolean human;
+    Double z;
 
     @Min(1)
-    private Long factionId;
+    Long userId;
+
+    @NotNull
+    Boolean human;
+
+    @Min(1)
+    Long factionId;
 
     @Min(0)
-    private Integer factionIndex;
+    Integer factionIndex;
 
-    private LocalDateTime seen;
+    LocalDateTime seen;
 }

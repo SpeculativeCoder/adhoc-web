@@ -40,47 +40,47 @@ import java.util.Optional;
 public class ObjectiveDto {
 
     @Min(1)
-    private Long id;
+    Long id;
 
     @Min(0)
-    private Long version;
+    Long version;
 
     @NotNull
     @Min(1)
-    private Long regionId;
+    Long regionId;
 
     @NotNull
     @Min(0)
-    private Integer index;
+    Integer index;
 
     @NotEmpty
-    private String name;
+    String name;
 
     @NotNull
-    private Double x;
+    Double x;
     @NotNull
-    private Double y;
+    Double y;
     @NotNull
-    private Double z;
+    Double z;
 
     @Min(1)
-    private Long initialFactionId;
+    Long initialFactionId;
     @Min(0)
-    private Integer initialFactionIndex;
+    Integer initialFactionIndex;
 
     @Min(1)
-    private Long factionId;
+    Long factionId;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private Optional<@Min(0) Integer> factionIndex;
+    Optional<@Min(0) Integer> factionIndex;
 
-    private List<@NotNull Long> linkedObjectiveIds;
+    List<@NotNull Long> linkedObjectiveIds;
     @NotNull
-    private List<@NotNull Integer> linkedObjectiveIndexes;
+    List<@NotNull Integer> linkedObjectiveIndexes;
 
     @Min(1)
-    private Long areaId;
+    Long areaId;
 
     @Min(0)
-    private Integer areaIndex;
+    Integer areaIndex;
 }

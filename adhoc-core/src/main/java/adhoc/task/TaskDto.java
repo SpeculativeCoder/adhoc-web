@@ -24,18 +24,33 @@ package adhoc.task;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+@Value
+@AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public record TaskDto(
-        @Min(1) Long id,
-        @Min(0) Long version,
-        String type,
-        @NotNull String name,
-        String privateIp,
-        String publicIp,
-        Integer publicWebSocketPort,
-        Long serverId) {
+public class TaskDto {
+
+    @Min(1)
+    Long id;
+
+    @Min(0)
+    Long version;
+
+    String type;
+
+    @NotNull
+    String name;
+
+    String privateIp;
+
+    String publicIp;
+
+    Integer publicWebSocketPort;
+
+    Long serverId;
 }

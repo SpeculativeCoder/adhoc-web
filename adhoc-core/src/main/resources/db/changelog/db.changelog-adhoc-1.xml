@@ -60,7 +60,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="score"
-                    type="DECIMAL">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="x"

@@ -26,6 +26,7 @@ import adhoc.faction.ManagerFactionService;
 import adhoc.pawn.ManagerPawnService;
 import adhoc.server.ManagerServerService;
 import adhoc.system.event.Event;
+import adhoc.task.ManagerTaskService;
 import adhoc.user.ManagerUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,7 @@ import java.util.List;
 public class ManagerQuartzJob implements Job {
 
     private final ManagerServerService managerServerService;
+    private final ManagerTaskService managerTaskService;
     private final ManagerFactionService managerFactionService;
     private final ManagerUserService managerUserService;
     private final ManagerPawnService managerPawnService;
@@ -64,7 +66,7 @@ public class ManagerQuartzJob implements Job {
                 events = managerServerService.manageServers();
                 break;
             case ManagerQuartzConfig.MANAGE_SERVER_TASKS:
-                events = managerServerService.manageServerTasks();
+                events = managerTaskService.manageServerTasks();
                 break;
             case ManagerQuartzConfig.AWARD_FACTION_SCORES:
                 managerFactionService.awardFactionScores();

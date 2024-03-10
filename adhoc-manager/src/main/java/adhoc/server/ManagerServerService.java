@@ -26,17 +26,16 @@ import adhoc.area.Area;
 import adhoc.area.AreaRepository;
 import adhoc.dns.DnsService;
 import adhoc.hosting.HostingService;
-import adhoc.hosting.HostingState;
 import adhoc.properties.ManagerProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
-import adhoc.task.*;
+import adhoc.task.KioskTaskRepository;
+import adhoc.task.ManagerTaskRepository;
+import adhoc.task.ServerTaskRepository;
 import adhoc.world.ManagerWorldService;
-import adhoc.world.event.WorldUpdatedEvent;
-import com.google.common.base.Verify;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +54,7 @@ import java.util.stream.Stream;
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerServerService {
+
     private final ManagerProperties managerProperties;
     private final ServerProperties serverProperties;
 
@@ -114,7 +114,7 @@ public class ManagerServerService {
         return toServerUpdatedEvent(server);
     }
 
-    private static ServerUpdatedEvent toServerUpdatedEvent(Server server) {
+    public static ServerUpdatedEvent toServerUpdatedEvent(Server server) {
         ServerUpdatedEvent event = new ServerUpdatedEvent(
                 server.getId(),
                 server.getVersion(),
@@ -229,210 +229,5 @@ public class ManagerServerService {
         }
 
         return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
-    }
-
-    /**
-     * Manage the server tasks in the hosting service, creating new ones and/or tearing down old ones as required
-     * by the current servers.
-     */
-    public List<? extends Event> manageServerTasks() {
-        log.trace("Managing server tasks...");
-        List<Event> events = new ArrayList<>();
-
-        // get state of running containers
-        HostingState hostingState = hostingService.poll();
-        log.debug("manageServerTasks: hostingState={}", hostingState);
-        Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
-
-        // TODO: WIP
-        List<String> managerTaskIdentifiers = new ArrayList<>();
-        for (ManagerTask task : hostingState.getManagerTasks()) {
-            ManagerTask managerTask = managerTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(ManagerTask::new);
-            managerTask.setTaskIdentifier(task.getTaskIdentifier());
-            managerTask.setName(task.getName());
-            managerTask.setPrivateIp(task.getPrivateIp());
-            managerTask.setPublicIp(task.getPublicIp());
-            //managerTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
-            //managerTask.setManagerId(task.getManagerId());
-            managerTaskRepository.save(managerTask);
-            managerTaskIdentifiers.add(managerTask.getTaskIdentifier());
-        }
-        managerTaskRepository.deleteByTaskIdentifierNotIn(managerTaskIdentifiers);
-
-        // TODO: WIP
-        List<String> kioskTaskIdentifiers = new ArrayList<>();
-        for (KioskTask task : hostingState.getKioskTasks()) {
-            KioskTask kioskTask = kioskTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(KioskTask::new);
-            kioskTask.setTaskIdentifier(task.getTaskIdentifier());
-            kioskTask.setName(task.getName());
-            kioskTask.setPrivateIp(task.getPrivateIp());
-            kioskTask.setPublicIp(task.getPublicIp());
-            //kioskTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
-            //kioskTask.setKioskId(task.getKioskId());
-            kioskTaskRepository.save(kioskTask);
-            kioskTaskIdentifiers.add(kioskTask.getTaskIdentifier());
-        }
-        kioskTaskRepository.deleteByTaskIdentifierNotIn(kioskTaskIdentifiers);
-
-        // TODO: WIP
-        List<String> serverTaskIdentifiers = new ArrayList<>();
-        for (ServerTask task : hostingState.getServerTasks()) {
-            ServerTask serverTask = serverTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(ServerTask::new);
-            serverTask.setTaskIdentifier(task.getTaskIdentifier());
-            serverTask.setName(task.getName());
-            serverTask.setPrivateIp(task.getPrivateIp());
-            serverTask.setPublicIp(task.getPublicIp());
-            serverTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
-            serverTask.setServerId(task.getServerId());
-            serverTaskRepository.save(serverTask);
-            serverTaskIdentifiers.add(serverTask.getTaskIdentifier());
-        }
-        serverTaskRepository.deleteByTaskIdentifierNotIn(serverTaskIdentifiers);
-
-        // TODO
-        Optional<WorldUpdatedEvent> optionalWorldUpdatedEvent =
-                managerWorldService.updateManagerAndKioskHosts(
-                        hostingState.getManagerTasks().stream().map(ManagerTask::getPublicIp).collect(Collectors.toSet()),
-                        hostingState.getKioskTasks().stream().map(KioskTask::getPublicIp).collect(Collectors.toSet()));
-
-        optionalWorldUpdatedEvent.ifPresent(events::add);
-
-        try (Stream<Server> servers = serverRepository.streamBy()) {
-            servers.forEach(server -> {
-                // TODO
-                ServerTask existingTask = serverTaskRepository.findByServerId(server.getId())
-                        .orElse(null);
-
-                Optional<ServerUpdatedEvent> optionalServerUpdatedEvent =
-                        existingTask != null
-                                ? manageExistingServerTask(existingTask, server)
-                                : manageMissingServerTask(server);
-
-                optionalServerUpdatedEvent.ifPresent(events::add);
-            });
-        }
-
-        // any tasks for servers which don't exist should be stopped (typically this is cleanup)
-        for (ServerTask serverTask : hostingState.getServerTasks()) {
-            if (!serverRepository.existsById(serverTask.getServerId())) {
-                log.debug("Server {} does not exist - need to stop task {}", serverTask.getServerId(), serverTask);
-                hostingService.stopServerTask(serverTask);
-            }
-        }
-
-        return events;
-    }
-
-    private Optional<ServerUpdatedEvent> manageExistingServerTask(ServerTask task, Server server) {
-        log.trace("Managing existing server task {} for server {}", task, server);
-        boolean changed = false;
-
-        server.setSeen(LocalDateTime.now());
-
-        if (!Objects.equals(server.getPrivateIp(), task.getPrivateIp())) {
-            server.setPrivateIp(task.getPrivateIp());
-            changed = true;
-        }
-
-        if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
-            if (task.getPublicIp() != null) {
-                server.setStatus(ServerStatus.ACTIVE);
-
-                String serverHost = server.getId() + "-" + managerProperties.getServerDomain();
-
-                int webSocketPort = Verify.verifyNotNull(task.getPublicWebSocketPort(),
-                        "public web socket port not available from task when constructing url");
-                String webSocketUrl = (serverProperties.getSsl().isEnabled() ?
-                        "wss://" + serverHost : "ws://" + task.getPublicIp()) +
-                        ":" + webSocketPort;
-                server.setWebSocketUrl(webSocketUrl);
-
-                dnsService.createOrUpdateDnsRecord(serverHost, Collections.singleton(task.getPublicIp()));
-            }
-            server.setPublicIp(task.getPublicIp());
-            changed = true;
-        }
-
-        if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
-            server.setPublicWebSocketPort(task.getPublicWebSocketPort());
-            changed = true;
-        }
-
-        if (server.getAreas().isEmpty() && server.getStatus() == ServerStatus.ACTIVE) {
-            log.debug("Server {} has no assigned areas - need to stop task {}", server.getId(), task);
-            hostingService.stopServerTask(task);
-            server.setStatus(ServerStatus.STOPPING);
-            changed = true;
-        }
-
-        return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
-    }
-
-
-    private Optional<ServerUpdatedEvent> manageMissingServerTask(Server server) {
-        log.trace("Managing missing server task for server {}", server);
-        boolean changed = false;
-
-        if (server.getStatus() != ServerStatus.INACTIVE) {
-            if (server.getStatus() != ServerStatus.STOPPING) {
-                log.warn("Server {} task has stopped unexpectedly!", server.getId());
-            } else {
-                log.debug("Server {} task has stopped successfully", server.getId());
-            }
-            server.setStatus(ServerStatus.INACTIVE);
-        }
-
-        if (server.getPrivateIp() != null) {
-            server.setPrivateIp(null);
-            changed = true;
-        }
-
-        if (server.getPublicIp() != null) {
-            server.setPublicIp(null);
-            changed = true;
-        }
-
-        if (server.getPublicWebSocketPort() != null) {
-            server.setPublicWebSocketPort(null);
-            changed = true;
-        }
-
-        //if (server.getInitiated() != null) {
-        //    server.setInitiated(null);
-        //    changed = true;
-        //}
-
-        //if (server.getSeen() != null) {
-        //    server.setSeen(null);
-        //    changed = true;
-        //}
-
-        if (!server.getAreas().isEmpty()) {
-            log.debug("Server {} has assigned areas {} - need to start task", server.getId(),
-                    server.getAreas().stream().map(Area::getId).toList());
-            try {
-                hostingService.startServerTask(server);
-                server.setStatus(ServerStatus.STARTING);
-                server.setInitiated(LocalDateTime.now());
-                changed = true;
-            } catch (Exception e) {
-                log.warn("Failed to start server {}!", server.getId(), e);
-                server.setStatus(ServerStatus.ERROR);
-            }
-        }
-
-        return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
-    }
-
-    private void stopAllServerTasks() {
-        // get state of running containers
-        HostingState hostingState = hostingService.poll();
-        log.debug("stopAllServerTasks: hostingState={}", hostingState);
-        Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
-
-        for (ServerTask task : hostingState.getServerTasks()) {
-            log.debug("Stopping task {}", task);
-            hostingService.stopServerTask(task);
-        }
     }
 }

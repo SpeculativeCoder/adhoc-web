@@ -69,16 +69,10 @@ public class ManagerServerTaskService {
 
         try (Stream<Server> servers = serverRepository.streamBy()) {
             servers.forEach(server -> {
-                // TODO
-                ServerTask existingTask = serverTaskRepository.findByServerId(server.getId())
-                        .orElse(null);
-
-                Optional<ServerUpdatedEvent> optionalServerUpdatedEvent =
-                        existingTask != null
-                                ? manageExistingServerTask(existingTask, server)
-                                : manageMissingServerTask(server);
-
-                optionalServerUpdatedEvent.ifPresent(events::add);
+                serverTaskRepository.findByServerId(server.getId())
+                        .map(existingServerTask -> manageExistingServerTask(existingServerTask, server))
+                        .orElseGet(() -> manageMissingServerTask(server))
+                        .ifPresent(events::add);
             });
         }
 
@@ -86,8 +80,7 @@ public class ManagerServerTaskService {
         try (Stream<ServerTask> serverTasks = serverTaskRepository.streamBy()) {
             serverTasks.forEach(serverTask -> {
                 if (!serverRepository.existsById(serverTask.getServerId())) {
-                    log.debug("Server {} does not exist - need to stop task {}", serverTask.getName(), serverTask.getName());
-                    hostingService.stopServerTask(serverTask);
+                    manageSuperfluousTask(serverTask);
                 }
             });
         }
@@ -96,7 +89,7 @@ public class ManagerServerTaskService {
     }
 
     private Optional<ServerUpdatedEvent> manageExistingServerTask(ServerTask task, Server server) {
-        log.trace("Managing existing server task {} for server {}", task, server);
+        log.trace("Managing existing server task {} for server {}", task.getName(), server.getName());
         boolean changed = false;
 
         server.setSeen(LocalDateTime.now());
@@ -131,7 +124,7 @@ public class ManagerServerTaskService {
         }
 
         if (server.getAreas().isEmpty() && server.getStatus() == ServerStatus.ACTIVE) {
-            log.debug("Server {} has no assigned areas - need to stop task {}", server.getId(), task);
+            log.debug("Server {} has no assigned areas - need to stop task {}", server.getName(), task.getName());
             hostingService.stopServerTask(task);
             server.setStatus(ServerStatus.STOPPING);
             changed = true;
@@ -141,14 +134,14 @@ public class ManagerServerTaskService {
     }
 
     private Optional<ServerUpdatedEvent> manageMissingServerTask(Server server) {
-        log.trace("Managing missing server task for server {}", server);
+        log.trace("Managing missing server task for server {}", server.getName());
         boolean changed = false;
 
         if (server.getStatus() != ServerStatus.INACTIVE) {
             if (server.getStatus() != ServerStatus.STOPPING) {
-                log.warn("Server {} task has stopped unexpectedly!", server.getId());
+                log.warn("Server {} task has stopped unexpectedly!", server.getName());
             } else {
-                log.debug("Server {} task has stopped successfully", server.getId());
+                log.debug("Server {} task has stopped successfully", server.getName());
             }
             server.setStatus(ServerStatus.INACTIVE);
         }
@@ -179,15 +172,18 @@ public class ManagerServerTaskService {
         //}
 
         if (!server.getAreas().isEmpty()) {
-            log.debug("Server {} has assigned areas {} - need to start task", server.getId(),
-                    server.getAreas().stream().map(Area::getId).toList());
+            if (log.isDebugEnabled()) {
+                log.debug("Server {} has assigned areas {} - need to start task", server.getName(),
+                        server.getAreas().stream().map(Area::getName).toList());
+            }
+
             try {
                 hostingService.startServerTask(server);
                 server.setStatus(ServerStatus.STARTING);
                 server.setInitiated(LocalDateTime.now());
                 changed = true;
             } catch (Exception e) {
-                log.warn("Failed to start server {}!", server.getId(), e);
+                log.warn("Failed to start server {}!", server.getName(), e);
                 server.setStatus(ServerStatus.ERROR);
             }
         }
@@ -195,14 +191,19 @@ public class ManagerServerTaskService {
         return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
     }
 
+    private void manageSuperfluousTask(ServerTask serverTask) {
+        log.debug("Server {} does not exist - need to stop superfluous task {}", serverTask.getName(), serverTask.getName());
+        hostingService.stopServerTask(serverTask);
+    }
+
     private void stopAllServerTasks() {
         // get state of running containers
         HostingState hostingState = hostingService.poll();
-        log.debug("stopAllServerTasks: hostingState={}", hostingState);
+        log.debug("Stopping all server tasks: hostingState={}", hostingState);
         Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
 
         for (ServerTask task : hostingState.getServerTasks()) {
-            log.debug("Stopping task {}", task);
+            log.debug("Stopping task {}", task.getName());
             hostingService.stopServerTask(task);
         }
     }

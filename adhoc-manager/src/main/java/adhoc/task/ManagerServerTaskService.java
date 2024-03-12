@@ -20,17 +20,18 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.task;
 
 import adhoc.area.Area;
 import adhoc.dns.DnsService;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.properties.ManagerProperties;
+import adhoc.server.Server;
+import adhoc.server.ServerRepository;
+import adhoc.server.ServerStatus;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
-import adhoc.task.ServerTask;
-import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

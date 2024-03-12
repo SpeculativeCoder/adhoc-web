@@ -27,6 +27,8 @@ import adhoc.server.Server;
 import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -37,8 +39,8 @@ import java.util.UUID;
  * (intended for an "at a glance" location of bots/users in the world).
  */
 @Entity
-//@DynamicInsert
-//@DynamicUpdate
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

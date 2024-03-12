@@ -28,6 +28,8 @@ import adhoc.region.Region;
 import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,8 +38,8 @@ import java.util.List;
  * This represents a running Unreal server (usually in the cloud) representing one of more areas of a region.
  */
 @Entity
-//@DynamicInsert
-//@DynamicUpdate
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

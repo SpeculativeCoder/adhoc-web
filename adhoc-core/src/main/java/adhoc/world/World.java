@@ -24,6 +24,8 @@ package adhoc.world;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Set;
 
@@ -32,8 +34,8 @@ import java.util.Set;
  * Currently, we can only have one world per database.
  */
 @Entity
-//@DynamicInsert
-//@DynamicUpdate
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

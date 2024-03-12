@@ -82,6 +82,7 @@
         </filter>
 
         <!-- batch insert failures -->
+        <!--
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
@@ -92,6 +93,7 @@
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
+        -->
 
         <!-- web browser stomp disconnection failures -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">

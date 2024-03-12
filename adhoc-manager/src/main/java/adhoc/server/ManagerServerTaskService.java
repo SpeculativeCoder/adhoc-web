@@ -20,18 +20,17 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.server;
 
 import adhoc.area.Area;
 import adhoc.dns.DnsService;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.properties.ManagerProperties;
-import adhoc.server.Server;
-import adhoc.server.ServerRepository;
-import adhoc.server.ServerStatus;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
+import adhoc.task.ServerTask;
+import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +82,7 @@ public class ManagerServerTaskService {
         try (Stream<ServerTask> serverTasks = serverTaskRepository.streamBy()) {
             serverTasks.forEach(serverTask -> {
                 if (!serverRepository.existsById(serverTask.getServerId())) {
-                    manageSuperfluousTask(serverTask);
+                    manageSuperfluousServerTask(serverTask);
                 }
             });
         }
@@ -194,8 +193,8 @@ public class ManagerServerTaskService {
         return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
     }
 
-    private void manageSuperfluousTask(ServerTask serverTask) {
-        log.debug("Server {} does not exist - need to stop superfluous task {}", serverTask.getName(), serverTask.getName());
+    private void manageSuperfluousServerTask(ServerTask serverTask) {
+        log.debug("Server {} does not exist - need to stop superfluous server task {}", serverTask.getName(), serverTask.getName());
         hostingService.stopServerTask(serverTask);
     }
 

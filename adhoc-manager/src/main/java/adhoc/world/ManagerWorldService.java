@@ -361,14 +361,12 @@ public class ManagerWorldService {
 
         if (!world.getManagerHosts().equals(managerHosts)) {
             world.setManagerHosts(managerHosts);
-            // TODO: move to some dns service
-            dnsService.createOrUpdateDnsRecord(managerProperties.getManagerDomain(), managerHosts);
+            //dnsService.createOrUpdateDnsRecord(managerProperties.getManagerDomain(), managerHosts);
             emitEvent = true;
         }
         if (!world.getKioskHosts().equals(kioskHosts)) {
             world.setKioskHosts(kioskHosts);
-            // TODO: move to some dns service
-            dnsService.createOrUpdateDnsRecord(managerProperties.getKioskDomain(), kioskHosts);
+            //dnsService.createOrUpdateDnsRecord(managerProperties.getKioskDomain(), kioskHosts);
             emitEvent = true;
         }
 

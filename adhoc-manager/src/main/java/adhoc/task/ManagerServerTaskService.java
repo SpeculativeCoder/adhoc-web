@@ -40,7 +40,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static adhoc.server.ManagerServerService.toServerUpdatedEvent;
@@ -112,7 +115,7 @@ public class ManagerServerTaskService {
                         ":" + webSocketPort;
                 server.setWebSocketUrl(webSocketUrl);
 
-                dnsService.createOrUpdateDnsRecord(serverHost, Collections.singleton(task.getPublicIp()));
+                //dnsService.createOrUpdateDnsRecord(serverHost, Collections.singleton(task.getPublicIp()));
             }
             server.setPublicIp(task.getPublicIp());
             changed = true;

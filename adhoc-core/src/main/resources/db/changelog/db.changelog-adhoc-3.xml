@@ -631,6 +631,8 @@
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="domain"
+                    type="VARCHAR(255)"/>
         </createTable>
 
         <createTable tableName="kiosk_task">
@@ -659,6 +661,8 @@
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="domain"
+                    type="VARCHAR(255)"/>
         </createTable>
 
         <createTable tableName="server_task">
@@ -687,6 +691,8 @@
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="domain"
+                    type="VARCHAR(255)"/>
             <column name="public_web_socket_port"
                     type="INT">
                 <constraints nullable="false"/>

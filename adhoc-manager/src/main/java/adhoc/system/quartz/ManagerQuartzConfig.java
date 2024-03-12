@@ -43,6 +43,7 @@ public class ManagerQuartzConfig {
     public static final String MANAGE_SERVERS = "manageServers";
     public static final String REFRESH_TASKS = "refreshTasks";
     public static final String MANAGE_SERVER_TASKS = "manageServerTasks";
+    public static final String MANAGE_TASK_DOMAINS = "manageTaskDomains";
     public static final String AWARD_FACTION_SCORES = "awardFactionScores";
     public static final String DECAY_FACTION_SCORES = "decayFactionScores";
     public static final String DECAY_USER_SCORES = "decayUserScores";
@@ -75,6 +76,15 @@ public class ManagerQuartzConfig {
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(30))
                 .startAt(Date.from(Instant.now().plusSeconds(15))).build();
+    }
+
+    @Bean
+    public Trigger manageTaskDomainsTrigger() {
+        return TriggerBuilder.newTrigger()
+                .forJob(MANAGE_TASK_DOMAINS).withIdentity(MANAGE_TASK_DOMAINS)
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                        .repeatForever().withIntervalInSeconds(5))
+                .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 
     @Bean
@@ -144,6 +154,11 @@ public class ManagerQuartzConfig {
     @Bean
     public JobDetail manageServerTasksJobDetail() {
         return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_SERVER_TASKS).storeDurably().build();
+    }
+
+    @Bean
+    public JobDetail manageTaskDomainsJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_TASK_DOMAINS).storeDurably().build();
     }
 
     @Bean

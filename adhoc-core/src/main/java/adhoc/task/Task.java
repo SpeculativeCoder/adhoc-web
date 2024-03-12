@@ -67,5 +67,8 @@ public abstract class Task {
     @Column(nullable = false)
     private String publicIp;
 
+    /** DNS domain name that is mapped to the public IP. */
+    private String domain;
+
     public abstract TaskType getTaskType();
 }

@@ -148,6 +148,7 @@ public class ManagerServerTaskService {
                 log.debug("Server {} task has stopped successfully", server.getName());
             }
             server.setStatus(ServerStatus.INACTIVE);
+            changed = true;
         }
 
         if (server.getPublicIp() != null) {
@@ -160,17 +161,17 @@ public class ManagerServerTaskService {
             changed = true;
         }
 
-        //if (server.getInitiated() != null) {
-        //    server.setInitiated(null);
-        //    changed = true;
-        //}
+        if (server.getDomain() != null) {
+            server.setDomain(null);
+            changed = true;
+        }
 
-        //if (server.getSeen() != null) {
-        //    server.setSeen(null);
-        //    changed = true;
-        //}
+        if (server.getWebSocketUrl() != null) {
+            server.setWebSocketUrl(null);
+            changed = true;
+        }
 
-        if (!server.getAreas().isEmpty()) {
+        if (!server.getAreas().isEmpty() && server.getStatus() == ServerStatus.INACTIVE) {
             if (log.isDebugEnabled()) {
                 log.debug("Server {} has assigned areas {} - need to start task", server.getName(),
                         server.getAreas().stream().map(Area::getName).toList());
@@ -181,6 +182,7 @@ public class ManagerServerTaskService {
                 server.setStatus(ServerStatus.STARTING);
                 server.setInitiated(LocalDateTime.now());
                 changed = true;
+
             } catch (Exception e) {
                 log.warn("Failed to start server {}!", server.getName(), e);
                 server.setStatus(ServerStatus.ERROR);

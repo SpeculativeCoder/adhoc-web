@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.area.groups;
 
 import adhoc.area.Area;
 import adhoc.region.Region;

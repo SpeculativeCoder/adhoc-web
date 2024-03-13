@@ -24,6 +24,7 @@ package adhoc.server;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
+import adhoc.area.groups.AreaGroupsFactory;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;

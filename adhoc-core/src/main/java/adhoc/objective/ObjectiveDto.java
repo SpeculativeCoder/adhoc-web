@@ -70,7 +70,6 @@ public class ObjectiveDto {
 
     @Min(1)
     Long factionId;
-
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     Optional<@Min(0) Integer> factionIndex;
 

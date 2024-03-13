@@ -76,7 +76,6 @@ public class PawnDto {
 
     @Min(1)
     Long factionId;
-
     @Min(0)
     Integer factionIndex;
 

@@ -80,10 +80,8 @@ public class Server {
     @Column(nullable = false)
     private ServerStatus status;
 
-    private String managerHost;
-
-    private String privateIp;
     private String publicIp;
+
     private Integer publicWebSocketPort;
 
     private String webSocketUrl;

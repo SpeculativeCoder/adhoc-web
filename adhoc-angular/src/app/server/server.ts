@@ -30,10 +30,7 @@ export class Server {
   x?: number;
   y?: number;
   z?: number;
-  // hostingType?: string;
   status?: string;
-  //managerHost?: string;
-  privateIp?: string;
   publicIp?: string;
   publicWebSocketPort?: number;
   webSocketUrl?: string;

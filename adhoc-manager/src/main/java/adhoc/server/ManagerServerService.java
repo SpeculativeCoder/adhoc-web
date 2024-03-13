@@ -73,8 +73,6 @@ public class ManagerServerService {
 
         server.setStatus(ServerStatus.INACTIVE);
 
-        server.setManagerHost(server.getManagerHost());
-        server.setPrivateIp(server.getPrivateIp());
         server.setPublicIp(server.getPublicIp());
 
         server.setWebSocketUrl(server.getWebSocketUrl());
@@ -101,8 +99,6 @@ public class ManagerServerService {
                 server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
                 server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
                 server.getStatus().name(),
-                server.getManagerHost(),
-                server.getPrivateIp(),
                 server.getPublicIp(),
                 server.getPublicWebSocketPort(),
                 server.getWebSocketUrl());

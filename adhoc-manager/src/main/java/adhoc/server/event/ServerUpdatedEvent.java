@@ -62,11 +62,8 @@ public class ServerUpdatedEvent implements Event {
     @NotEmpty
     private String status;
 
-    @NotEmpty
-    private String managerHost;
-
-    private String privateIp;
     private String publicIp;
+
     private Integer publicWebSocketPort;
 
     private String webSocketUrl;

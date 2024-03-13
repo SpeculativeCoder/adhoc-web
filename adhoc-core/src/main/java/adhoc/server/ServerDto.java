@@ -70,10 +70,8 @@ public class ServerDto {
     @NotEmpty
     String status;
 
-    String managerHost;
-
-    String privateIp;
     String publicIp;
+
     Integer publicWebSocketPort;
 
     String webSocketUrl;

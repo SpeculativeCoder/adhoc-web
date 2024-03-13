@@ -97,11 +97,6 @@ public class ManagerServerTaskService {
 
         server.setSeen(LocalDateTime.now());
 
-        if (!Objects.equals(server.getPrivateIp(), task.getPrivateIp())) {
-            server.setPrivateIp(task.getPrivateIp());
-            changed = true;
-        }
-
         if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
             if (task.getPublicIp() != null) {
                 server.setStatus(ServerStatus.ACTIVE);
@@ -147,11 +142,6 @@ public class ManagerServerTaskService {
                 log.debug("Server {} task has stopped successfully", server.getName());
             }
             server.setStatus(ServerStatus.INACTIVE);
-        }
-
-        if (server.getPrivateIp() != null) {
-            server.setPrivateIp(null);
-            changed = true;
         }
 
         if (server.getPublicIp() != null) {

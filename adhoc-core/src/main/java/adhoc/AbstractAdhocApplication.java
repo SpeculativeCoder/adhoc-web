@@ -39,7 +39,7 @@ import java.security.Security;
 @Slf4j
 public abstract class AbstractAdhocApplication {
 
-    AbstractAdhocApplication() {
+    static {
         Security.setProperty("networkaddress.cache.ttl", "60");
     }
 }

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.request;
+package adhoc.user.request_response;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

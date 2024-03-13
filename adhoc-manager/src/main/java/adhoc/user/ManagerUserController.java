@@ -24,9 +24,9 @@ package adhoc.user;
 
 import adhoc.user.event.ServerUserDefeatedUserEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
-import adhoc.user.request.UserJoinRequest;
-import adhoc.user.request.UserNavigateRequest;
-import adhoc.user.response.UserNavigateResponse;
+import adhoc.user.request_response.UserJoinRequest;
+import adhoc.user.request_response.UserNavigateRequest;
+import adhoc.user.request_response.UserNavigateResponse;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

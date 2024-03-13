@@ -121,9 +121,8 @@ public class ManagerServerTaskService {
                 && server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
 
             server.setWebSocketUrl(
-                    serverProperties.getSsl().isEnabled() ?
-                            "wss://" + server.getDomain()
-                            : "ws://" + task.getPublicIp() + ":" + server.getPublicWebSocketPort());
+                    (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + task.getPublicIp()) +
+                            ":" + server.getPublicWebSocketPort());
 
             server.setStatus(ServerStatus.ACTIVE);
             changed = true;

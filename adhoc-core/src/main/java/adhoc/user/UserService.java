@@ -26,7 +26,7 @@ import adhoc.faction.FactionRepository;
 import adhoc.properties.CoreProperties;
 import adhoc.server.ServerRepository;
 import adhoc.system.authentication.AdhocAuthenticationSuccessHandler;
-import adhoc.user.request.RegisterUserRequest;
+import adhoc.user.request_response.RegisterUserRequest;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;

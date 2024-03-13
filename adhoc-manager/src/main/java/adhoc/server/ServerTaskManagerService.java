@@ -20,16 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.server;
 
 import adhoc.area.Area;
 import adhoc.dns.DnsService;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.properties.ManagerProperties;
-import adhoc.server.Server;
-import adhoc.server.ServerRepository;
-import adhoc.server.ServerStatus;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
 import adhoc.task.server.ServerTask;
@@ -66,8 +63,8 @@ public class ServerTaskManagerService {
     private final DnsService dnsService;
 
     /**
-     * Manage the tasks in the hosting service for each server,
-     * creating new tasks and/or tearing down old tasks as required by the current servers.
+     * For each server, manage a server task in the hosting service,
+     * creating new server tasks and/or tearing down old server tasks as required by the current servers.
      */
     public List<? extends Event> manageServerTasks() {
         log.trace("Managing server tasks...");

@@ -84,6 +84,8 @@ public class Server {
 
     private Integer publicWebSocketPort;
 
+    private String domain;
+
     private String webSocketUrl;
 
     private LocalDateTime initiated;

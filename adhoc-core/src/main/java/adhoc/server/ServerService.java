@@ -65,6 +65,7 @@ public class ServerService {
                 server.getStatus().name(),
                 server.getPublicIp(),
                 server.getPublicWebSocketPort(),
+                server.getDomain(),
                 server.getWebSocketUrl(),
                 server.getInitiated(),
                 server.getSeen());

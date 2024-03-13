@@ -33,6 +33,7 @@ export class Server {
   status?: string;
   publicIp?: string;
   publicWebSocketPort?: number;
+  domain?: string;
   webSocketUrl?: string;
   initiated?: string;
   seen?: string;

@@ -230,6 +230,8 @@
                     type="VARCHAR(255)"/>
             <column name="public_web_socket_port"
                     type="INTEGER"/>
+            <column name="domain"
+                    type="VARCHAR(255)"/>
             <column name="web_socket_url"
                     type="VARCHAR(255)"/>
             <column name="initiated"

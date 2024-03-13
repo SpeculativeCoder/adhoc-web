@@ -64,7 +64,8 @@ public class ManagerServerTaskService {
     private final DnsService dnsService;
 
     /**
-     * Manage the server tasks in the hosting service, creating new ones and/or tearing down old ones as required by the current servers.
+     * Manage the tasks in the hosting service for each server,
+     * creating new tasks and/or tearing down old tasks as required by the current servers.
      */
     public List<? extends Event> manageServerTasks() {
         log.trace("Managing server tasks...");
@@ -79,11 +80,12 @@ public class ManagerServerTaskService {
             });
         }
 
-        // any tasks for servers which don't exist should be stopped (typically this is cleanup)
+        // any tasks for servers which don't exist should be stopped (typically this is cleanup from a previous run)
         try (Stream<ServerTask> serverTasks = serverTaskRepository.streamBy()) {
             serverTasks.forEach(serverTask -> {
                 if (!serverRepository.existsById(serverTask.getServerId())) {
-                    manageSuperfluousServerTask(serverTask);
+                    log.info("Server {} does not exist - need to stop server task {}", serverTask.getServerId(), serverTask.getName());
+                    hostingService.stopServerTask(serverTask);
                 }
             });
         }
@@ -98,26 +100,30 @@ public class ManagerServerTaskService {
         server.setSeen(LocalDateTime.now());
 
         if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
-            if (task.getPublicIp() != null) {
-                server.setStatus(ServerStatus.ACTIVE);
-
-                String serverHost = server.getId() + "-" + managerProperties.getServerDomain();
-
-                int webSocketPort = Verify.verifyNotNull(task.getPublicWebSocketPort(),
-                        "public web socket port not available from task when constructing url");
-                String webSocketUrl = (serverProperties.getSsl().isEnabled() ?
-                        "wss://" + serverHost : "ws://" + task.getPublicIp()) +
-                        ":" + webSocketPort;
-                server.setWebSocketUrl(webSocketUrl);
-
-                //dnsService.createOrUpdateDnsRecord(serverHost, Collections.singleton(task.getPublicIp()));
-            }
             server.setPublicIp(task.getPublicIp());
             changed = true;
         }
 
         if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
             server.setPublicWebSocketPort(task.getPublicWebSocketPort());
+            changed = true;
+        }
+
+        if (!Objects.equals(server.getDomain(), task.getDomain())) {
+            server.setDomain(task.getDomain());
+            server.setWebSocketUrl(null); // need to calculate the web socket URL (see below)
+            changed = true;
+        }
+
+        if (server.getWebSocketUrl() == null
+                && server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
+
+            server.setWebSocketUrl(
+                    serverProperties.getSsl().isEnabled() ?
+                            "wss://" + server.getDomain()
+                            : "ws://" + task.getPublicIp() + ":" + server.getPublicWebSocketPort());
+
+            server.setStatus(ServerStatus.ACTIVE);
             changed = true;
         }
 
@@ -182,11 +188,6 @@ public class ManagerServerTaskService {
         }
 
         return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
-    }
-
-    private void manageSuperfluousServerTask(ServerTask serverTask) {
-        log.debug("Server {} does not exist - need to stop superfluous server task {}", serverTask.getName(), serverTask.getName());
-        hostingService.stopServerTask(serverTask);
     }
 
     private void stopAllServerTasks() {

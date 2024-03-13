@@ -74,6 +74,8 @@ public class ServerDto {
 
     Integer publicWebSocketPort;
 
+    String domain;
+
     String webSocketUrl;
 
     LocalDateTime initiated;

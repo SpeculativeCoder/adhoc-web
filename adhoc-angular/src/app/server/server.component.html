@@ -78,6 +78,11 @@
              [(ngModel)]="server.publicWebSocketPort"/>
     </div>
     <div class="mb-3">
+      <label class="form-label" for="domainInput">Domain</label>
+      <input class="form-control" id="domainInput" name="domain" type="text" readonly
+             [(ngModel)]="server.domain"/>
+    </div>
+    <div class="mb-3">
       <label class="form-label" for="webSocketUrlInput">Web Socket URL</label>
       <input class="form-control" id="webSocketUrlInput" name="webSocketUrl" type="text" readonly
              [(ngModel)]="server.webSocketUrl"/>

@@ -240,7 +240,7 @@ public class EcsHostingService implements HostingService {
                 new ArrayList<>(serverNetworkInterfaceIds.values()));
     }
 
-    public void startServerTask(Server server) {
+    public ServerTask startServerTask(Server server) {
         log.debug("Starting task for {}", server);
 
         try (EcsClient ecsClient = ecsClient();
@@ -345,6 +345,14 @@ public class EcsHostingService implements HostingService {
                 // TODO: hosting exception
                 throw new RuntimeException("Run task failure");
             }
+
+            String taskArn = runTaskResponse.tasks().getFirst().taskArn();
+
+            ServerTask serverTask = new ServerTask();
+            serverTask.setTaskIdentifier(taskArn);
+            serverTask.setName(Arn.parse(taskArn).orElseThrow(IllegalStateException::new).resource().getLast());
+
+            return serverTask;
         }
     }
 

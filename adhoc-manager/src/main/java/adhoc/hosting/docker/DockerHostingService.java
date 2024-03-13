@@ -194,11 +194,13 @@ public class DockerHostingService implements HostingService {
     }
 
     @Override
-    public void startServerTask(Server server) {
+    public ServerTask startServerTask(Server server) {
         log.debug("Starting Docker container for {}", server); // linked to managers {}", managerHosts);
         int publicWebSocketPort = calculatePublicWebSocketPort(server.getId());
 
-        CreateContainerResponse createdContainer = dockerClient()
+        DockerClient dockerClient = dockerClient();
+
+        CreateContainerResponse createdContainer = dockerClient
                 .createContainerCmd(managerProperties.getServerImage() + ":latest")
                 .withEnv(Arrays.asList(
                         String.format("MAP_NAME=%s", server.getMapName()),
@@ -235,7 +237,15 @@ public class DockerHostingService implements HostingService {
                 .exec();
         log.trace("createdContainer: {}", createdContainer);
 
-        dockerClient().startContainerCmd(createdContainer.getId()).exec();
+        dockerClient.startContainerCmd(createdContainer.getId()).exec();
+
+        InspectContainerResponse inspectedContainer = dockerClient.inspectContainerCmd(createdContainer.getId()).exec();
+
+        ServerTask serverTask = new ServerTask();
+        serverTask.setTaskIdentifier(inspectedContainer.getId());
+        serverTask.setName(inspectedContainer.getName());
+
+        return serverTask;
     }
 
     @Override

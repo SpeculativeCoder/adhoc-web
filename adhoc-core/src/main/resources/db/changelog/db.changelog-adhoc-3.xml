@@ -594,13 +594,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="private_ip"
-                    type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
+                    type="VARCHAR(255)"/>
             <column name="public_ip"
-                    type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
+                    type="VARCHAR(255)"/>
             <column name="public_web_socket_port"
                     type="INT"/>
             <column name="domain"
@@ -626,13 +622,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="private_ip"
-                    type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
+                    type="VARCHAR(255)"/>
             <column name="public_ip"
-                    type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
+                    type="VARCHAR(255)"/>
             <column name="public_web_socket_port"
                     type="INT"/>
             <column name="domain"
@@ -658,13 +650,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="private_ip"
-                    type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
+                    type="VARCHAR(255)"/>
             <column name="public_ip"
-                    type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
+                    type="VARCHAR(255)"/>
             <column name="public_web_socket_port"
                     type="INT"/>
             <column name="domain"

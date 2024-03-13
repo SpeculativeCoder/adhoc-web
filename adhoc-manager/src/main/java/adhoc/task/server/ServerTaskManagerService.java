@@ -20,17 +20,18 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.task.server;
 
 import adhoc.area.Area;
 import adhoc.dns.DnsService;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.HostingState;
 import adhoc.properties.ManagerProperties;
+import adhoc.server.Server;
+import adhoc.server.ServerRepository;
+import adhoc.server.ServerStatus;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
-import adhoc.task.server.ServerTask;
-import adhoc.task.server.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,8 +84,7 @@ public class ServerTaskManagerService {
         try (Stream<ServerTask> serverTasks = serverTaskRepository.streamBy()) {
             serverTasks.forEach(serverTask -> {
                 if (!serverRepository.existsById(serverTask.getServerId())) {
-                    log.info("Server {} does not exist - need to stop server task {}", serverTask.getServerId(), serverTask.getName());
-                    hostingService.stopServerTask(serverTask);
+                    manageOrphanedServerTask(serverTask);
                 }
             });
         }
@@ -94,24 +94,29 @@ public class ServerTaskManagerService {
 
     private Optional<ServerUpdatedEvent> manageExistingServerTask(ServerTask task, Server server) {
         log.trace("Managing existing server task {} for server {}", task.getName(), server.getName());
-        boolean changed = false;
+
+        if (server.getStatus() == ServerStatus.ERROR) {
+            return Optional.empty();
+        }
+
+        boolean emitEvent = false;
 
         server.setSeen(LocalDateTime.now());
 
         if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
             server.setPublicIp(task.getPublicIp());
-            changed = true;
+            emitEvent = true;
         }
 
         if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
             server.setPublicWebSocketPort(task.getPublicWebSocketPort());
-            changed = true;
+            emitEvent = true;
         }
 
         if (!Objects.equals(server.getDomain(), task.getDomain())) {
             server.setDomain(task.getDomain());
             server.setWebSocketUrl(null); // need to calculate the web socket URL (see below)
-            changed = true;
+            emitEvent = true;
         }
 
         if (server.getWebSocketUrl() == null
@@ -121,23 +126,27 @@ public class ServerTaskManagerService {
                     (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + task.getPublicIp()) +
                             ":" + server.getPublicWebSocketPort());
 
-            server.setStatus(ServerStatus.ACTIVE);
-            changed = true;
+            emitEvent = true;
         }
 
-        if (server.getAreas().isEmpty() && server.getStatus() == ServerStatus.ACTIVE) {
+        if (server.getStatus() == ServerStatus.ACTIVE && server.getAreas().isEmpty()) {
             log.debug("Server {} has no assigned areas - need to stop task {}", server.getName(), task.getName());
             hostingService.stopServerTask(task);
             server.setStatus(ServerStatus.STOPPING);
-            changed = true;
+            emitEvent = true;
         }
 
-        return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+        return emitEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
     }
 
     private Optional<ServerUpdatedEvent> manageMissingServerTask(Server server) {
         log.trace("Managing missing server task for server {}", server.getName());
-        boolean changed = false;
+
+        if (server.getStatus() == ServerStatus.ERROR) {
+            return Optional.empty();
+        }
+
+        boolean emitEvent = false;
 
         if (server.getStatus() != ServerStatus.INACTIVE) {
             if (server.getStatus() != ServerStatus.STOPPING) {
@@ -146,48 +155,60 @@ public class ServerTaskManagerService {
                 log.debug("Server {} task has stopped successfully", server.getName());
             }
             server.setStatus(ServerStatus.INACTIVE);
-            changed = true;
+            emitEvent = true;
         }
 
         if (server.getPublicIp() != null) {
             server.setPublicIp(null);
-            changed = true;
+            emitEvent = true;
         }
 
         if (server.getPublicWebSocketPort() != null) {
             server.setPublicWebSocketPort(null);
-            changed = true;
+            emitEvent = true;
         }
 
         if (server.getDomain() != null) {
             server.setDomain(null);
-            changed = true;
+            emitEvent = true;
         }
 
         if (server.getWebSocketUrl() != null) {
             server.setWebSocketUrl(null);
-            changed = true;
+            emitEvent = true;
         }
 
-        if (!server.getAreas().isEmpty() && server.getStatus() == ServerStatus.INACTIVE) {
+        if (server.getStatus() == ServerStatus.INACTIVE && !server.getAreas().isEmpty()) {
             if (log.isDebugEnabled()) {
                 log.debug("Server {} has assigned areas {} - need to start task", server.getName(),
                         server.getAreas().stream().map(Area::getName).toList());
             }
 
             try {
-                hostingService.startServerTask(server);
+                ServerTask hostedServerTask = hostingService.startServerTask(server);
                 server.setStatus(ServerStatus.STARTING);
                 server.setInitiated(LocalDateTime.now());
-                changed = true;
+
+                ServerTask serverTask = new ServerTask();
+                serverTask.setTaskIdentifier(hostedServerTask.getTaskIdentifier());
+                serverTask.setName(hostedServerTask.getName());
+                serverTask.setServerId(server.getId());
+                serverTaskRepository.save(serverTask);
 
             } catch (Exception e) {
                 log.warn("Failed to start server {}!", server.getName(), e);
                 server.setStatus(ServerStatus.ERROR);
             }
+
+            emitEvent = true;
         }
 
-        return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+        return emitEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+    }
+
+    private void manageOrphanedServerTask(ServerTask serverTask) {
+        log.info("Server {} does not exist - need to stop server task {}", serverTask.getServerId(), serverTask.getName());
+        hostingService.stopServerTask(serverTask);
     }
 
     private void stopAllServerTasks() {

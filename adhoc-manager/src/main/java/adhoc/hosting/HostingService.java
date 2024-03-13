@@ -32,7 +32,7 @@ public interface HostingService {
 
     HostingState poll();
 
-    void startServerTask(Server server);
+    ServerTask startServerTask(Server server);
 
     void stopServerTask(ServerTask task);
 }

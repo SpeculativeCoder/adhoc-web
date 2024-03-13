@@ -60,15 +60,12 @@ public abstract class Task {
     private String name;
 
     /** IP that is reachable within the hosting service but not externally. */
-    @Column(nullable = false)
     private String privateIp;
 
     /** Public IP visible to users. */
-    @Column(nullable = false)
     private String publicIp;
 
     /** Web socket port visible to users (for server tasks this is typically 8898) */
-    @Column(nullable = false)
     private Integer publicWebSocketPort;
 
     /** DNS domain name that is mapped to the public IP. */

@@ -96,9 +96,15 @@ public class LocalHostingService implements HostingService {
     }
 
     @Override
-    public void startServerTask(Server server) {
+    public ServerTask startServerTask(Server server) {
         log.debug("Assuming local task for server {}", server);
         serverIds.add(server.getId());
+
+        ServerTask serverTask = new ServerTask();
+        serverTask.setTaskIdentifier("local-server-task-" + server.getId());
+        serverTask.setName("local-server-task-" + server.getId());
+
+        return serverTask;
     }
 
     @Override

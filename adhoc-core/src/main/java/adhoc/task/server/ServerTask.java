@@ -20,8 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.task.server;
 
+import adhoc.task.Task;
+import adhoc.task.TaskType;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,10 +35,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ManagerTask extends Task {
+public class ServerTask extends Task {
+
+    private Long serverId;
 
     @Override
     public TaskType getTaskType() {
-        return TaskType.MANAGER;
+        return TaskType.SERVER;
     }
 }

@@ -633,6 +633,8 @@
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="public_web_socket_port"
+                    type="INT"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
         </createTable>
@@ -663,6 +665,8 @@
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="public_web_socket_port"
+                    type="INT"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
         </createTable>
@@ -693,12 +697,10 @@
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="public_web_socket_port"
+                    type="INT"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
-            <column name="public_web_socket_port"
-                    type="INT">
-                <constraints nullable="false"/>
-            </column>
             <column name="server_id"
                     type="BIGINT"/>
         </createTable>

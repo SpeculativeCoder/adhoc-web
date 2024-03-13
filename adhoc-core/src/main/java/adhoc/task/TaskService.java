@@ -22,6 +22,7 @@
 
 package adhoc.task;
 
+import adhoc.task.server.ServerTask;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -71,7 +72,8 @@ public class TaskService {
                 hasDebugRole ? task.getName() : null,
                 hasDebugRole ? task.getPrivateIp() : null,
                 task.getPublicIp(),
-                task instanceof ServerTask serverTask ? serverTask.getPublicWebSocketPort() : null,
+                task.getPublicWebSocketPort(),
+                task.getDomain(),
                 task instanceof ServerTask serverTask ? serverTask.getServerId() : null);
     }
 }

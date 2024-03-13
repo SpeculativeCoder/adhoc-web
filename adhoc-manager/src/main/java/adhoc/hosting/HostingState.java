@@ -22,9 +22,9 @@
 
 package adhoc.hosting;
 
-import adhoc.task.KioskTask;
-import adhoc.task.ManagerTask;
-import adhoc.task.ServerTask;
+import adhoc.task.kiosk.KioskTask;
+import adhoc.task.manager.ManagerTask;
+import adhoc.task.server.ServerTask;
 import lombok.Builder;
 import lombok.Data;
 

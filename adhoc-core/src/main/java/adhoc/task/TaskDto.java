@@ -52,5 +52,7 @@ public class TaskDto {
 
     Integer publicWebSocketPort;
 
+    String domain;
+
     Long serverId;
 }

@@ -72,7 +72,7 @@
         <td>
           <button type="button" class="btn btn-primary"
                   style="--bs-btn-padding-y: 0; --bs-btn-font-size: 0.75rem"
-                  *ngIf="server.publicIp" (click)="joinServer(server)">
+                  *ngIf="server.webSocketUrl" (click)="joinServer(server)">
             Join
           </button>
         </td>

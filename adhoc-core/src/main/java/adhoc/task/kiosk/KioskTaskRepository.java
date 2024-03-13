@@ -20,23 +20,21 @@
  * SOFTWARE.
  */
 
-package adhoc.server.request;
+package adhoc.task.kiosk;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Optional;
 
-/** Server reports information about users currently logged onto the server etc. */
-@Value
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class ServerActiveUsersRequest {
+// TODO: common
+public interface KioskTaskRepository extends JpaRepository<KioskTask, Long> {
 
-    @NotNull
-    List<Long> userIds;
+    Optional<KioskTask> findByTaskIdentifier(String taskIdentifier);
+
+    @Modifying
+    @Query("delete from KioskTask st where st.taskIdentifier not in ?1")
+    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
 }

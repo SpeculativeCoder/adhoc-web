@@ -32,6 +32,8 @@ import adhoc.server.ServerRepository;
 import adhoc.server.ServerStatus;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
+import adhoc.task.server.ServerTask;
+import adhoc.task.server.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

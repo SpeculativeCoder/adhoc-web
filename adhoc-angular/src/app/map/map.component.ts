@@ -344,7 +344,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     }
 
     for (const server of this.servers) {
-      if (server.publicIp) {
+      if (server.webSocketUrl) {
         let label = `Server ${server.name}\n(double click to join)`;
         let serverText = new fabric.IText(label, {
           originX: 'center',

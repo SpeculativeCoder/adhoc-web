@@ -20,9 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.task.kiosk;
 
-import jakarta.persistence.Column;
+import adhoc.task.Task;
+import adhoc.task.TaskType;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,16 +35,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ServerTask extends Task {
-
-    /** Web socket port visible to users (for server tasks this is typically 8898) */
-    @Column(nullable = false)
-    private Integer publicWebSocketPort;
-
-    private Long serverId;
+public class KioskTask extends Task {
 
     @Override
     public TaskType getTaskType() {
-        return TaskType.SERVER;
+        return TaskType.KIOSK;
     }
 }

@@ -67,6 +67,10 @@ public abstract class Task {
     @Column(nullable = false)
     private String publicIp;
 
+    /** Web socket port visible to users (for server tasks this is typically 8898) */
+    @Column(nullable = false)
+    private Integer publicWebSocketPort;
+
     /** DNS domain name that is mapped to the public IP. */
     private String domain;
 

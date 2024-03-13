@@ -40,7 +40,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerTaskDomainService {
+public class TaskDomainManagerService {
 
     private final ManagerProperties managerProperties;
 

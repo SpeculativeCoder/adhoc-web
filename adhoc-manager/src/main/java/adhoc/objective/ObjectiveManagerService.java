@@ -52,7 +52,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerObjectiveService {
+public class ObjectiveManagerService {
 
     private final ObjectiveRepository objectiveRepository;
     private final ServerRepository serverRepository;

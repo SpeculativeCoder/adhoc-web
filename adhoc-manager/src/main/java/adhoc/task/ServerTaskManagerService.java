@@ -48,13 +48,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static adhoc.server.ManagerServerService.toServerUpdatedEvent;
+import static adhoc.server.ServerManagerService.toServerUpdatedEvent;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerServerTaskService {
+public class ServerTaskManagerService {
 
     private final ManagerProperties managerProperties;
     private final ServerProperties serverProperties;

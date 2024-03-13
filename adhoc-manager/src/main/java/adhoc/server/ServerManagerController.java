@@ -20,40 +20,45 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.server;
 
-import adhoc.pawn.event.ServerPawnsEvent;
+import adhoc.server.event.ServerStartedEvent;
+import adhoc.server.event.ServerUpdatedEvent;
+import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerPawnController {
+public class ServerManagerController {
 
-    private final ManagerPawnService managerPawnService;
+    private final ServerManagerService serverManagerService;
 
-    @MessageMapping("ServerPawns")
-    @SendTo("/topic/events")
+    @PutMapping("/servers/{serverId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ServerDto putServer(
+            @PathVariable("serverId") Long serverId,
+            @Valid @RequestBody ServerDto serverDto) {
+        Preconditions.checkArgument(Objects.equals(serverId, serverDto.getId()),
+                "Server ID mismatch: %s != %s", serverId, serverDto.getId());
+
+        return serverManagerService.updateServer(serverDto);
+    }
+
+    @MessageMapping("ServerStarted")
     @PreAuthorize("hasRole('SERVER')")
-    public ServerPawnsEvent handleServerPawns(
-            @Valid @RequestBody ServerPawnsEvent event) {
-        log.debug("Handling: {}", event);
+    public ServerUpdatedEvent handleServerStarted(
+            @Valid @RequestBody ServerStartedEvent serverStartedEvent) {
+        log.debug("Handling: {}", serverStartedEvent);
 
-        List<PawnDto> pawnDtos = managerPawnService.handleServerPawns(event);
-
-        ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
-        log.debug("Sending: {}", serverPawnsEvent);
-        return serverPawnsEvent;
+        return serverManagerService.handleServerStarted(serverStartedEvent);
     }
 }

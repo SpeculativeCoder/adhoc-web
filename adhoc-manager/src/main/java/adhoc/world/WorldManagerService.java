@@ -63,7 +63,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerWorldService {
+public class WorldManagerService {
 
     private final CoreProperties coreProperties;
     private final ManagerProperties managerProperties;

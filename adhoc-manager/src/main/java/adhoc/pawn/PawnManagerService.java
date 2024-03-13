@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerPawnService {
+public class PawnManagerService {
 
     private final PawnRepository pawnRepository;
     private final UserRepository userRepository;

@@ -31,7 +31,7 @@ import adhoc.task.manager.ManagerTask;
 import adhoc.task.manager.ManagerTaskRepository;
 import adhoc.task.server.ServerTask;
 import adhoc.task.server.ServerTaskRepository;
-import adhoc.world.ManagerWorldService;
+import adhoc.world.WorldManagerService;
 import adhoc.world.event.WorldUpdatedEvent;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -48,13 +48,13 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerTaskService {
+public class TaskManagerService {
 
     private final ManagerTaskRepository managerTaskRepository;
     private final KioskTaskRepository kioskTaskRepository;
     private final ServerTaskRepository serverTaskRepository;
 
-    private final ManagerWorldService managerWorldService;
+    private final WorldManagerService worldManagerService;
     private final HostingService hostingService;
 
     public List<? extends Event> refreshTasks() {
@@ -113,7 +113,7 @@ public class ManagerTaskService {
 
         // TODO
         Optional<WorldUpdatedEvent> optionalWorldUpdatedEvent =
-                managerWorldService.updateManagerAndKioskHosts(
+                worldManagerService.updateManagerAndKioskHosts(
                         hostingState.getManagerTasks().stream().map(ManagerTask::getPublicIp).collect(Collectors.toSet()),
                         hostingState.getKioskTasks().stream().map(KioskTask::getPublicIp).collect(Collectors.toSet()));
 

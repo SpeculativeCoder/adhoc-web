@@ -56,7 +56,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerUserService {
+public class UserManagerService {
 
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;

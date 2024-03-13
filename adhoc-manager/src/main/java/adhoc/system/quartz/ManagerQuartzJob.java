@@ -22,14 +22,14 @@
 
 package adhoc.system.quartz;
 
-import adhoc.faction.ManagerFactionService;
-import adhoc.pawn.ManagerPawnService;
-import adhoc.server.ManagerServerService;
+import adhoc.faction.FactionManagerService;
+import adhoc.pawn.PawnManagerService;
+import adhoc.server.ServerManagerService;
 import adhoc.system.event.Event;
-import adhoc.task.ManagerServerTaskService;
-import adhoc.task.ManagerTaskDomainService;
-import adhoc.task.ManagerTaskService;
-import adhoc.user.ManagerUserService;
+import adhoc.task.ServerTaskManagerService;
+import adhoc.task.TaskDomainManagerService;
+import adhoc.task.TaskManagerService;
+import adhoc.user.UserManagerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
@@ -47,13 +47,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagerQuartzJob implements Job {
 
-    private final ManagerServerService managerServerService;
-    private final ManagerTaskService managerTaskService;
-    private final ManagerServerTaskService managerServerTaskService;
-    private final ManagerTaskDomainService managerTaskDomainService;
-    private final ManagerFactionService managerFactionService;
-    private final ManagerUserService managerUserService;
-    private final ManagerPawnService managerPawnService;
+    private final ServerManagerService serverManagerService;
+    private final TaskManagerService taskManagerService;
+    private final ServerTaskManagerService serverTaskManagerService;
+    private final TaskDomainManagerService taskDomainManagerService;
+    private final FactionManagerService factionManagerService;
+    private final UserManagerService userManagerService;
+    private final PawnManagerService pawnManagerService;
 
     private final SimpMessageSendingOperations stomp;
 
@@ -67,34 +67,34 @@ public class ManagerQuartzJob implements Job {
             //log.info("jobName={}", jobName);
             switch (jobName) {
             case ManagerQuartzConfig.MANAGE_SERVERS:
-                events = managerServerService.manageServers();
+                events = serverManagerService.manageServers();
                 break;
             case ManagerQuartzConfig.REFRESH_TASKS:
-                events = managerTaskService.refreshTasks();
+                events = taskManagerService.refreshTasks();
                 break;
             case ManagerQuartzConfig.MANAGE_SERVER_TASKS:
-                events = managerServerTaskService.manageServerTasks();
+                events = serverTaskManagerService.manageServerTasks();
                 break;
             case ManagerQuartzConfig.MANAGE_TASK_DOMAINS:
-                events = managerTaskDomainService.manageTaskDomains();
+                events = taskDomainManagerService.manageTaskDomains();
                 break;
             case ManagerQuartzConfig.AWARD_FACTION_SCORES:
-                managerFactionService.awardFactionScores();
+                factionManagerService.awardFactionScores();
                 break;
             case ManagerQuartzConfig.DECAY_FACTION_SCORES:
-                managerFactionService.decayFactionScores();
+                factionManagerService.decayFactionScores();
                 break;
             case ManagerQuartzConfig.DECAY_USER_SCORES:
-                managerUserService.decayUserScores();
+                userManagerService.decayUserScores();
                 break;
             case ManagerQuartzConfig.LEAVE_UNSEEN_USERS:
-                managerUserService.leaveUnseenUsers();
+                userManagerService.leaveUnseenUsers();
                 break;
             case ManagerQuartzConfig.PURGE_OLD_USERS:
-                managerUserService.purgeOldUsers();
+                userManagerService.purgeOldUsers();
                 break;
             case ManagerQuartzConfig.PURGE_OLD_PAWNS:
-                managerPawnService.purgeOldPawns();
+                pawnManagerService.purgeOldPawns();
                 break;
             default:
                 log.warn("Skipping unknown manager quartz job! jobName={}", jobName);

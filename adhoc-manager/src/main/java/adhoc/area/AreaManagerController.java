@@ -20,33 +20,30 @@
  * SOFTWARE.
  */
 
-package adhoc.faction;
+package adhoc.area;
 
-import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerFactionController {
+public class AreaManagerController {
 
-    private final ManagerFactionService managerFactionService;
+    private final AreaManagerService areaManagerService;
 
-    @PutMapping("/factions/{factionId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public FactionDto putFaction(
-            @PathVariable("factionId") Long factionId,
-            @Valid @RequestBody FactionDto factionDto) {
-        Preconditions.checkArgument(Objects.equals(factionId, factionDto.getId()),
-                "Faction ID mismatch: %s != %s", factionId, factionDto.getId());
+    @PostMapping("/servers/{serverId}/areas")
+    @PreAuthorize("hasRole('SERVER')")
+    public List<AreaDto> postServerAreas(
+            @PathVariable Long serverId,
+            @Valid @RequestBody List<AreaDto> areaDtos) {
 
-        return managerFactionService.updateFaction(factionDto);
+        return areaManagerService.processServerAreas(serverId, areaDtos);
     }
 }

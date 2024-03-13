@@ -43,9 +43,9 @@ import java.util.Objects;
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerUserController {
+public class UserManagerController {
 
-    private final ManagerUserService managerUserService;
+    private final UserManagerService userManagerService;
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -55,7 +55,7 @@ public class ManagerUserController {
         Preconditions.checkArgument(Objects.equals(userId, userDto.getId()),
                 "User ID mismatch: %s != %s", userId, userDto.getId());
 
-        return managerUserService.updateUser(userDto);
+        return userManagerService.updateUser(userDto);
     }
 
     @PostMapping("/servers/{serverId}/userNavigate")
@@ -66,7 +66,7 @@ public class ManagerUserController {
         Preconditions.checkArgument(Objects.equals(serverId, userNavigateRequest.getSourceServerId()),
                 "Server ID mismatch: %s != %s", serverId, userNavigateRequest.getSourceServerId());
 
-        return managerUserService.serverUserNavigate(userNavigateRequest);
+        return userManagerService.serverUserNavigate(userNavigateRequest);
     }
 
     @PostMapping("/servers/{serverId}/userJoin")
@@ -77,7 +77,7 @@ public class ManagerUserController {
         Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()),
                 "Server ID mismatch: %s != %s", serverId, userJoinRequest.getServerId());
 
-        return ResponseEntity.ok(managerUserService.serverUserJoin(userJoinRequest));
+        return ResponseEntity.ok(userManagerService.serverUserJoin(userJoinRequest));
     }
 
     @MessageMapping("UserDefeatedUser")
@@ -87,7 +87,7 @@ public class ManagerUserController {
             @Valid @RequestBody ServerUserDefeatedUserEvent event) {
         log.debug("Handling: {}", event);
 
-        UserDefeatedUserEvent userDefeatedUserEvent = managerUserService.handleUserDefeatedUser(event);
+        UserDefeatedUserEvent userDefeatedUserEvent = userManagerService.handleUserDefeatedUser(event);
 
         log.debug("Sending: {}", userDefeatedUserEvent);
         return userDefeatedUserEvent;

@@ -20,30 +20,58 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.objective;
 
+import adhoc.objective.event.ObjectiveTakenEvent;
+import adhoc.objective.event.ServerObjectiveTakenEvent;
+import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerAreaController {
+public class ObjectiveManagerController {
 
-    private final ManagerAreaService managerAreaService;
+    private final ObjectiveManagerService objectiveManagerService;
 
-    @PostMapping("/servers/{serverId}/areas")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> postServerAreas(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<AreaDto> areaDtos) {
+    @PutMapping("/objectives/{objectiveId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ObjectiveDto putObjective(
+            @PathVariable("objectiveId") Long objectiveId,
+            @Valid @RequestBody ObjectiveDto objectiveDto) {
+        Preconditions.checkArgument(Objects.equals(objectiveId, objectiveDto.getId()),
+                "Objective ID mismatch: %s != %s", objectiveId, objectiveDto.getId());
 
-        return managerAreaService.processServerAreas(serverId, areaDtos);
+        return objectiveManagerService.updateObjective(objectiveDto);
     }
+
+    @PostMapping("/servers/{serverId}/objectives")
+    @PreAuthorize("hasRole('SERVER')")
+    public List<ObjectiveDto> postServerObjectives(
+            @PathVariable Long serverId,
+            @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
+
+        return objectiveManagerService.processServerObjectives(serverId, objectiveDtos);
+    }
+
+    @MessageMapping("ObjectiveTaken")
+    @SendTo("/topic/events")
+    @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
+    public ObjectiveTakenEvent handleObjectiveTaken(
+            @Valid @RequestBody ServerObjectiveTakenEvent event) {
+        log.debug("Handling: {}", event);
+
+        return objectiveManagerService.handleObjectiveTaken(event);
+    }
+
 }

@@ -55,8 +55,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -352,25 +350,6 @@ public class WorldManagerService {
         //pawn1.setSeen(LocalDateTime.now());
         //pawn1.setUser(alphaUser);
         //pawn1 = pawnRepository.save(pawn1);
-    }
-
-    public Optional<WorldUpdatedEvent> updateManagerAndKioskHosts(Set<String> managerHosts, Set<String> kioskHosts) {
-        World world = worldRepository.getReferenceById(WorldService.WORLD_ID);
-
-        boolean emitEvent = false;
-
-        if (!world.getManagerHosts().equals(managerHosts)) {
-            world.setManagerHosts(managerHosts);
-            //dnsService.createOrUpdateDnsRecord(managerProperties.getManagerDomain(), managerHosts);
-            emitEvent = true;
-        }
-        if (!world.getKioskHosts().equals(kioskHosts)) {
-            world.setKioskHosts(kioskHosts);
-            //dnsService.createOrUpdateDnsRecord(managerProperties.getKioskDomain(), kioskHosts);
-            emitEvent = true;
-        }
-
-        return emitEvent ? Optional.of(toWorldUpdatedEvent(world)) : Optional.empty();
     }
 
     private WorldUpdatedEvent toWorldUpdatedEvent(World world) {

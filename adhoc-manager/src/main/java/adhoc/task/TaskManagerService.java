@@ -32,7 +32,6 @@ import adhoc.task.manager.ManagerTaskRepository;
 import adhoc.task.server.ServerTask;
 import adhoc.task.server.ServerTaskRepository;
 import adhoc.world.WorldManagerService;
-import adhoc.world.event.WorldUpdatedEvent;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -63,62 +60,61 @@ public class TaskManagerService {
 
         // get state of running containers
         HostingState hostingState = hostingService.poll();
-        log.debug("refreshTasks: hostingState={}", hostingState);
-        Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
+        log.debug("hostingState={}", hostingState);
+        Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service!");
 
-        // TODO: WIP
         List<String> managerTaskIdentifiers = new ArrayList<>();
-        for (ManagerTask task : hostingState.getManagerTasks()) {
-            ManagerTask managerTask = managerTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(ManagerTask::new);
-            managerTask.setTaskIdentifier(task.getTaskIdentifier());
-            managerTask.setName(task.getName());
-            managerTask.setPrivateIp(task.getPrivateIp());
-            managerTask.setPublicIp(task.getPublicIp());
-            //managerTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
-            //managerTask.setManagerId(task.getManagerId());
+        for (ManagerTask hostingManagerTask : hostingState.getManagerTasks()) {
+            ManagerTask managerTask = managerTaskRepository.findByTaskIdentifier(hostingManagerTask.getTaskIdentifier()).orElseGet(ManagerTask::new);
+
+            assignCommonFields(managerTask, hostingManagerTask);
+
             managerTaskRepository.save(managerTask);
+
             managerTaskIdentifiers.add(managerTask.getTaskIdentifier());
         }
+
         managerTaskRepository.deleteByTaskIdentifierNotIn(managerTaskIdentifiers);
 
-        // TODO: WIP
         List<String> kioskTaskIdentifiers = new ArrayList<>();
-        for (KioskTask task : hostingState.getKioskTasks()) {
-            KioskTask kioskTask = kioskTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(KioskTask::new);
-            kioskTask.setTaskIdentifier(task.getTaskIdentifier());
-            kioskTask.setName(task.getName());
-            kioskTask.setPrivateIp(task.getPrivateIp());
-            kioskTask.setPublicIp(task.getPublicIp());
-            //kioskTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
-            //kioskTask.setKioskId(task.getKioskId());
+        for (KioskTask hostingKioskTask : hostingState.getKioskTasks()) {
+            KioskTask kioskTask = kioskTaskRepository.findByTaskIdentifier(hostingKioskTask.getTaskIdentifier()).orElseGet(KioskTask::new);
+
+            assignCommonFields(kioskTask, hostingKioskTask);
+
             kioskTaskRepository.save(kioskTask);
+
             kioskTaskIdentifiers.add(kioskTask.getTaskIdentifier());
         }
+
         kioskTaskRepository.deleteByTaskIdentifierNotIn(kioskTaskIdentifiers);
 
-        // TODO: WIP
         List<String> serverTaskIdentifiers = new ArrayList<>();
-        for (ServerTask task : hostingState.getServerTasks()) {
-            ServerTask serverTask = serverTaskRepository.findByTaskIdentifier(task.getTaskIdentifier()).orElseGet(ServerTask::new);
-            serverTask.setTaskIdentifier(task.getTaskIdentifier());
-            serverTask.setName(task.getName());
-            serverTask.setPrivateIp(task.getPrivateIp());
-            serverTask.setPublicIp(task.getPublicIp());
-            serverTask.setPublicWebSocketPort(task.getPublicWebSocketPort());
-            serverTask.setServerId(task.getServerId());
+        for (ServerTask serverHostingTask : hostingState.getServerTasks()) {
+            ServerTask serverTask = serverTaskRepository.findByTaskIdentifier(serverHostingTask.getTaskIdentifier()).orElseGet(ServerTask::new);
+
+            assignCommonFields(serverTask, serverHostingTask);
+            assignServerSpecificFields(serverTask, serverHostingTask);
+
             serverTaskRepository.save(serverTask);
+
             serverTaskIdentifiers.add(serverTask.getTaskIdentifier());
         }
+
         serverTaskRepository.deleteByTaskIdentifierNotIn(serverTaskIdentifiers);
 
-        // TODO
-        Optional<WorldUpdatedEvent> optionalWorldUpdatedEvent =
-                worldManagerService.updateManagerAndKioskHosts(
-                        hostingState.getManagerTasks().stream().map(ManagerTask::getPublicIp).collect(Collectors.toSet()),
-                        hostingState.getKioskTasks().stream().map(KioskTask::getPublicIp).collect(Collectors.toSet()));
-
-        optionalWorldUpdatedEvent.ifPresent(events::add);
-
         return events;
+    }
+
+    private static void assignCommonFields(Task task, Task hostingTask) {
+        task.setTaskIdentifier(hostingTask.getTaskIdentifier());
+        task.setName(hostingTask.getName());
+        task.setPrivateIp(hostingTask.getPrivateIp());
+        task.setPublicIp(hostingTask.getPublicIp());
+    }
+
+    private static void assignServerSpecificFields(ServerTask serverTask, ServerTask serverHostingTask) {
+        serverTask.setPublicWebSocketPort(serverHostingTask.getPublicWebSocketPort());
+        serverTask.setServerId(serverHostingTask.getServerId());
     }
 }

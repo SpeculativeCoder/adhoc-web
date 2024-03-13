@@ -29,8 +29,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.List;
-
 @Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -43,10 +41,4 @@ public class WorldDto {
     @NotNull
     @Min(0)
     Long version;
-
-    @NotNull
-    List<String> managerHosts;
-
-    @NotNull
-    List<String> kioskHosts;
 }

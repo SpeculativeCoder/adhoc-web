@@ -45,8 +45,6 @@
         </sql>
 
         <sql dbms="postgresql">
-            drop table if exists world_manager_hosts;
-            drop table if exists world_kiosk_hosts;
             drop table if exists world;
             drop table if exists objective_linked_objectives;
             drop table if exists objective;
@@ -76,36 +74,6 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-
-        <createTable tableName="world_manager_hosts">
-            <column name="world_id"
-                    type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="manager_hosts"
-                    type="VARCHAR(255)"/>
-        </createTable>
-
-        <createTable tableName="world_kiosk_hosts">
-            <column name="world_id"
-                    type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="kiosk_hosts"
-                    type="VARCHAR(255)"/>
-        </createTable>
-
-        <addForeignKeyConstraint baseColumnNames="world_id"
-                                 baseTableName="world_manager_hosts"
-                                 constraintName="fk_worldmanagerhosts_on_world"
-                                 referencedColumnNames="id"
-                                 referencedTableName="world"/>
-
-        <addForeignKeyConstraint baseColumnNames="world_id"
-                                 baseTableName="world_kiosk_hosts"
-                                 constraintName="fk_worldkioskhosts_on_world"
-                                 referencedColumnNames="id"
-                                 referencedTableName="world"/>
 
         <createSequence sequenceName="faction_id_sequence"
                         startValue="1"

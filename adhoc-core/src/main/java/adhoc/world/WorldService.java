@@ -27,8 +27,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-
 @Transactional
 @Service
 @Slf4j
@@ -40,8 +38,6 @@ public class WorldService {
     public WorldDto toDto(World world) {
         return new WorldDto(
                 world.getId(),
-                world.getVersion(),
-                new ArrayList<>(world.getManagerHosts()),
-                new ArrayList<>(world.getKioskHosts()));
+                world.getVersion());
     }
 }

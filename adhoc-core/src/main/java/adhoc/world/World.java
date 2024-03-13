@@ -27,8 +27,6 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.util.Set;
-
 /**
  * Any details about the world e.g. settings can go here.
  * Currently, we can only have one world per database.
@@ -51,10 +49,4 @@ public class World {
     @Version
     @Column(nullable = false)
     private Long version;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> managerHosts;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> kioskHosts;
 }

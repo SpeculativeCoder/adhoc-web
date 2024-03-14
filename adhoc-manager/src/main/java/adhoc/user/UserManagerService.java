@@ -80,7 +80,7 @@ public class UserManagerService {
     }
 
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
     public UserDetailDto serverUserJoin(UserJoinRequest userJoinRequest) {
         log.debug("userJoin: userId={} human={} factionId={} serverId={}",
                 userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
@@ -144,7 +144,7 @@ public class UserManagerService {
     }
 
     @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
     public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
         User user = userRepository.getReferenceById(userNavigateRequest.getUserId());
         Server sourceServer = serverRepository.getReferenceById(userNavigateRequest.getSourceServerId());

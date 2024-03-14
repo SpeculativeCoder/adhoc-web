@@ -32,6 +32,10 @@ import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.PessimisticLockingFailureException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,7 +76,7 @@ public class ServerManagerService {
         server.setY(server.getY());
         server.setZ(server.getZ());
 
-        server.setStatus(ServerStatus.INACTIVE);
+        server.setStatus(ServerStatus.INACTIVE); // TODO
 
         server.setPublicIp(server.getPublicIp());
 
@@ -84,7 +88,8 @@ public class ServerManagerService {
     public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
         Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
-        server.setStatus(ServerStatus.ACTIVE);
+        // TODO: internal server status
+        //server.setStatus(ServerStatus.ACTIVE);
         //server.setPrivateIp(serverStartedEvent.getPrivateIp());
         //server.setManagerHost(server.getManagerHost());
 
@@ -110,6 +115,8 @@ public class ServerManagerService {
      * Manage the required servers to represent the areas within each region.
      * This will typically be based on number of players in each area.
      */
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public List<? extends Event> manageServers() {
         log.trace("Managing servers...");
         List<Event> events = new ArrayList<>();

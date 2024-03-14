@@ -56,7 +56,7 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(MANAGE_SERVERS).withIdentity(MANAGE_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10))
+                        .repeatForever().withIntervalInSeconds(5))
                 .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 
@@ -74,7 +74,7 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(MANAGE_SERVER_TASKS).withIdentity(MANAGE_SERVER_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(30))
+                        .repeatForever().withIntervalInSeconds(10))
                 .startAt(Date.from(Instant.now().plusSeconds(15))).build();
     }
 
@@ -83,7 +83,7 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(MANAGE_TASK_DOMAINS).withIdentity(MANAGE_TASK_DOMAINS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(5))
+                        .repeatForever().withIntervalInSeconds(10))
                 .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 

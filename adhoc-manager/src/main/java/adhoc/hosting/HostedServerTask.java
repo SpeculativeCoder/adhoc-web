@@ -22,36 +22,20 @@
 
 package adhoc.hosting;
 
-import adhoc.task.kiosk.KioskTask;
-import adhoc.task.manager.ManagerTask;
-import adhoc.task.server.ServerTask;
-import lombok.Builder;
 import lombok.Data;
 
-import java.util.Collections;
-import java.util.List;
-
-/**
- * State of a hosting service e.g. details about all the tasks running in our AWS ECS cluster.
- */
 @Data
-@Builder(toBuilder = true)
-public class HostingState {
+public class HostedServerTask implements HostedTask {
 
-    private final List<ManagerTask> managerTasks;
-    private final List<KioskTask> kioskTasks;
-    private final List<ServerTask> serverTasks;
+    String taskIdentifier;
 
-    public HostingState() {
-        this.managerTasks = Collections.emptyList();
-        this.kioskTasks = Collections.emptyList();
-        this.serverTasks = Collections.emptyList();
-    }
+    String name;
 
-    public HostingState(List<ManagerTask> managerTasks, List<KioskTask> kioskTasks, List<ServerTask> serverTasks) {
-        this.managerTasks = Collections.unmodifiableList(managerTasks);
-        this.kioskTasks = Collections.unmodifiableList(kioskTasks);
-        this.serverTasks = Collections.unmodifiableList(serverTasks);
-    }
+    String privateIp;
 
+    String publicIp;
+
+    Integer publicWebSocketPort;
+
+    Long serverId;
 }

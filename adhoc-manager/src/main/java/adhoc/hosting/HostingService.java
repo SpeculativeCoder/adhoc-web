@@ -23,16 +23,17 @@
 package adhoc.hosting;
 
 import adhoc.server.Server;
-import adhoc.task.server.ServerTask;
+
+import java.util.List;
 
 /**
  * A hosting service that can spin up Unreal servers on demand e.g. an ECS cluster that can spin up Unreal servers.
  */
 public interface HostingService {
 
-    HostingState poll();
+    List<HostedTask> poll();
 
-    ServerTask startServerTask(Server server);
+    HostedServerTask startServerTask(Server server);
 
-    void stopServerTask(ServerTask task);
+    void stopServerTask(String taskIdentifier);
 }

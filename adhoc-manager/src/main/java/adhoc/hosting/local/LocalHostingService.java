@@ -22,13 +22,9 @@
 
 package adhoc.hosting.local;
 
-import adhoc.hosting.HostingService;
-import adhoc.hosting.HostingState;
+import adhoc.hosting.*;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import adhoc.task.kiosk.KioskTask;
-import adhoc.task.manager.ManagerTask;
-import adhoc.task.server.ServerTask;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.artemis.utils.collections.ConcurrentHashSet;
@@ -54,66 +50,68 @@ public class LocalHostingService implements HostingService {
     private final Set<Long> serverIds = new ConcurrentHashSet<>();
 
     @Override
-    public HostingState poll() {
+    public List<HostedTask> poll() {
 
-        List<ManagerTask> managerTasks = new ArrayList<>();
-        List<KioskTask> kioskTasks = new ArrayList<>();
-        List<ServerTask> serverTasks = new ArrayList<>();
+        List<HostedTask> tasks = new ArrayList<>();
 
-        ManagerTask managerTask = new ManagerTask();
+        HostedManagerTask managerTask = new HostedManagerTask();
         managerTask.setTaskIdentifier("local-manager-task");
-        managerTask.setName("local-manager-task");
+        managerTask.setName("Local Manager Task");
         managerTask.setPrivateIp("127.0.0.1");
         managerTask.setPublicIp("127.0.0.1");
-        managerTasks.add(managerTask);
+        tasks.add(managerTask);
 
-        KioskTask kioskTask = new KioskTask();
+        HostedKioskTask kioskTask = new HostedKioskTask();
         kioskTask.setTaskIdentifier("local-kiosk-task");
-        kioskTask.setName("local-kiosk-task");
+        kioskTask.setName("Local Kiosk Task");
         kioskTask.setPrivateIp("127.0.0.1");
         kioskTask.setPublicIp("127.0.0.1");
-        kioskTasks.add(kioskTask);
+        tasks.add(kioskTask);
 
         List<Server> servers = serverRepository.findAll();
 
         for (Server server : servers) {
             if (serverIds.contains(server.getId())) {
 
-                ServerTask serverTask = new ServerTask();
-
-                serverTask.setTaskIdentifier("local-server-task-" + server.getId());
-                serverTask.setName("local-server-task-" + server.getId());
+                HostedServerTask serverTask = new HostedServerTask();
+                serverTask.setTaskIdentifier(server.getId().toString());
+                serverTask.setName("Local Server Task " + server.getId());
                 serverTask.setPrivateIp("127.0.0.1");
                 serverTask.setPublicIp("127.0.0.1");
                 serverTask.setPublicWebSocketPort(8889);
                 serverTask.setServerId(server.getId());
 
-                serverTasks.add(serverTask);
+                tasks.add(serverTask);
             }
         }
 
-        return new HostingState(managerTasks, kioskTasks, serverTasks);
+        return tasks;
     }
 
     @Override
-    public ServerTask startServerTask(Server server) {
+    public HostedServerTask startServerTask(Server server) {
         log.debug("Assuming local task for server {}", server);
         serverIds.add(server.getId());
 
-        ServerTask serverTask = new ServerTask();
-        serverTask.setTaskIdentifier("local-server-task-" + server.getId());
-        serverTask.setName("local-server-task-" + server.getId());
+        HostedServerTask serverTask = new HostedServerTask();
+        serverTask.setTaskIdentifier(server.getId().toString());
+        serverTask.setName("Local Server Task " + server.getId());
+        serverTask.setPublicWebSocketPort(8889);
+        serverTask.setServerId(server.getId());
 
         return serverTask;
     }
 
     @Override
-    public void stopServerTask(ServerTask task) {
-        if (!serverIds.contains(task.getServerId())) {
-            log.warn("Tried to stop non existing assumed local server task {}", task);
+    public void stopServerTask(String taskIdentifier) {
+        Long serverId = Long.valueOf(taskIdentifier);
+
+        if (!serverIds.contains(serverId)) {
+            log.warn("Tried to stop non existing assumed local server task {}", taskIdentifier);
             return;
         }
-        log.debug("No longer assuming local server task {}", task);
-        serverIds.remove(task.getServerId());
+
+        log.debug("No longer assuming local server task {}", taskIdentifier);
+        serverIds.remove(serverId);
     }
 }

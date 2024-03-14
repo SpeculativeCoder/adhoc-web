@@ -24,8 +24,9 @@ package adhoc.task.server;
 
 import adhoc.area.Area;
 import adhoc.dns.DnsService;
+import adhoc.hosting.HostedServerTask;
+import adhoc.hosting.HostedTask;
 import adhoc.hosting.HostingService;
-import adhoc.hosting.HostingState;
 import adhoc.properties.ManagerProperties;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
@@ -131,7 +132,7 @@ public class ServerTaskManagerService {
 
         if (server.getStatus() == ServerStatus.ACTIVE && server.getAreas().isEmpty()) {
             log.debug("Server {} has no assigned areas - need to stop task {}", server.getName(), task.getName());
-            hostingService.stopServerTask(task);
+            hostingService.stopServerTask(task.getTaskIdentifier());
             server.setStatus(ServerStatus.STOPPING);
             emitEvent = true;
         }
@@ -185,15 +186,15 @@ public class ServerTaskManagerService {
             }
 
             try {
-                ServerTask hostedServerTask = hostingService.startServerTask(server);
+                HostedServerTask hostedServerTask = hostingService.startServerTask(server);
                 server.setStatus(ServerStatus.STARTING);
                 server.setInitiated(LocalDateTime.now());
 
-                ServerTask serverTask = new ServerTask();
-                serverTask.setTaskIdentifier(hostedServerTask.getTaskIdentifier());
-                serverTask.setName(hostedServerTask.getName());
-                serverTask.setServerId(server.getId());
-                serverTaskRepository.save(serverTask);
+                //ServerTask serverTask = new ServerTask();
+                //serverTask.setTaskIdentifier(hostedServerTask.getTaskIdentifier());
+                //serverTask.setName(hostedServerTask.getName());
+                //serverTask.setServerId(server.getId());
+                //serverTaskRepository.save(serverTask);
 
             } catch (Exception e) {
                 log.warn("Failed to start server {}!", server.getName(), e);
@@ -208,18 +209,20 @@ public class ServerTaskManagerService {
 
     private void manageOrphanedServerTask(ServerTask serverTask) {
         log.info("Server {} does not exist - need to stop server task {}", serverTask.getServerId(), serverTask.getName());
-        hostingService.stopServerTask(serverTask);
+        hostingService.stopServerTask(serverTask.getTaskIdentifier());
     }
 
     private void stopAllServerTasks() {
         // get state of running containers
-        HostingState hostingState = hostingService.poll();
-        log.debug("Stopping all server tasks: hostingState={}", hostingState);
-        Verify.verifyNotNull(hostingState, "hostingState is null after polling hosting service");
+        List<HostedTask> hostedTasks = hostingService.poll();
+        log.debug("Stopping all server tasks: hostedTasks={}", hostedTasks);
+        Verify.verifyNotNull(hostedTasks, "hostedTasks is null after polling hosting service");
 
-        for (ServerTask task : hostingState.getServerTasks()) {
-            log.debug("Stopping task {}", task.getName());
-            hostingService.stopServerTask(task);
-        }
+        hostedTasks.stream()
+                .filter(task -> task instanceof HostedServerTask)
+                .forEach(hostedServerTask -> {
+                    log.debug("Stopping task {}", hostedServerTask.getName());
+                    hostingService.stopServerTask(hostedServerTask.getTaskIdentifier());
+                });
     }
 }

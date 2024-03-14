@@ -20,24 +20,15 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.hosting;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+public interface HostedTask {
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Stream;
+    String getTaskIdentifier();
 
-// TODO
-public interface TaskRepository extends JpaRepository<Task, Long> {
+    String getName();
 
-    Optional<Task> findByTaskIdentifier(String taskIdentifier);
+    String getPrivateIp();
 
-    Stream<Task> streamBy();
-
-    @Modifying
-    @Query("delete from Task t where t.taskIdentifier not in ?1")
-    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
+    String getPublicIp();
 }

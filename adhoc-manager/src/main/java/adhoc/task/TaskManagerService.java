@@ -22,7 +22,9 @@
 
 package adhoc.task;
 
+import adhoc.dns.DnsService;
 import adhoc.hosting.*;
+import adhoc.properties.ManagerProperties;
 import adhoc.system.event.Event;
 import adhoc.task.kiosk.KioskTask;
 import adhoc.task.manager.ManagerTask;
@@ -30,11 +32,15 @@ import adhoc.task.server.ServerTask;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.PessimisticLockingFailureException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -42,10 +48,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskManagerService {
 
+    private final ManagerProperties managerProperties;
+
     private final TaskRepository taskRepository;
 
     private final HostingService hostingService;
+    private final DnsService dnsService;
 
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 1000, maxDelay = 3000))
     public List<? extends Event> refreshTasks() {
         log.trace("Refreshing tasks...");
         List<Event> events = new ArrayList<>();
@@ -94,5 +105,48 @@ public class TaskManagerService {
             serverTask.setServerId(hostedServerTask.getServerId());
         }
         return task;
+    }
+
+    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 1000, maxDelay = 3000))
+    public List<? extends Event> manageTaskDomains() {
+        log.trace("Managing task domains...");
+        List<Event> events = new ArrayList<>();
+
+        Map<String, Set<String>> domainsIps = new LinkedHashMap<>();
+
+        try (Stream<Task> tasks = taskRepository.streamBy()) {
+            tasks.forEach(task -> {
+                if (task.getDomain() == null && task.getPublicIp() != null) {
+
+                    if (task instanceof ManagerTask managerTask) {
+                        task.setDomain(managerProperties.getManagerDomain());
+
+                    } else if (task instanceof KioskTask kioskTask) {
+                        task.setDomain(managerProperties.getKioskDomain());
+
+                    } else if (task instanceof ServerTask serverTask) {
+                        task.setDomain(serverTask.getServerId() + "-" + managerProperties.getServerDomain());
+
+                    } else {
+                        throw new IllegalStateException("Unknown task type: " + task.getClass());
+                    }
+
+                    domainsIps.merge(task.getDomain(),
+                            new LinkedHashSet<>(Collections.singleton(task.getPublicIp())),
+                            (ips1, ips2) -> {
+                                ips1.addAll(ips2);
+                                return ips1;
+                            });
+                }
+            });
+        }
+
+        for (Map.Entry<String, Set<String>> domainIps : domainsIps.entrySet()) {
+            //log.info("{} -> {}", domainIps.getKey(), domainIps.getValue());
+            dnsService.createOrUpdateDnsRecord(domainIps.getKey(), domainIps.getValue());
+        }
+
+        return events;
     }
 }

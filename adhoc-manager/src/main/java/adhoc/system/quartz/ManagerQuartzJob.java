@@ -26,7 +26,6 @@ import adhoc.faction.FactionManagerService;
 import adhoc.pawn.PawnManagerService;
 import adhoc.server.ServerManagerService;
 import adhoc.system.event.Event;
-import adhoc.task.TaskDomainManagerService;
 import adhoc.task.TaskManagerService;
 import adhoc.task.server.ServerTaskManagerService;
 import adhoc.user.UserManagerService;
@@ -50,7 +49,6 @@ public class ManagerQuartzJob implements Job {
     private final ServerManagerService serverManagerService;
     private final TaskManagerService taskManagerService;
     private final ServerTaskManagerService serverTaskManagerService;
-    private final TaskDomainManagerService taskDomainManagerService;
     private final FactionManagerService factionManagerService;
     private final UserManagerService userManagerService;
     private final PawnManagerService pawnManagerService;
@@ -72,11 +70,11 @@ public class ManagerQuartzJob implements Job {
             case ManagerQuartzConfig.REFRESH_TASKS:
                 events = taskManagerService.refreshTasks();
                 break;
+            case ManagerQuartzConfig.MANAGE_TASK_DOMAINS:
+                events = taskManagerService.manageTaskDomains();
+                break;
             case ManagerQuartzConfig.MANAGE_SERVER_TASKS:
                 events = serverTaskManagerService.manageServerTasks();
-                break;
-            case ManagerQuartzConfig.MANAGE_TASK_DOMAINS:
-                events = taskDomainManagerService.manageTaskDomains();
                 break;
             case ManagerQuartzConfig.AWARD_FACTION_SCORES:
                 factionManagerService.awardFactionScores();

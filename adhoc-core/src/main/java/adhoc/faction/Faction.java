@@ -24,8 +24,6 @@ package adhoc.faction;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.math.BigDecimal;
 
@@ -33,8 +31,8 @@ import java.math.BigDecimal;
  * Each user is associated with a faction.
  */
 @Entity
-@DynamicInsert
-@DynamicUpdate
+//@DynamicInsert
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -344,8 +344,9 @@ public class EcsHostingService implements HostingService {
                 throw new RuntimeException("Run task failure");
             }
 
-            log.info("tasks={}", runTaskResponse.tasks());
+            //log.info("tasks={}", runTaskResponse.tasks());
             String taskArn = runTaskResponse.tasks().getFirst().taskArn();
+            log.info("taskArn={}", taskArn);
 
             HostedServerTask serverTask = new HostedServerTask();
             serverTask.setTaskIdentifier(taskArn);

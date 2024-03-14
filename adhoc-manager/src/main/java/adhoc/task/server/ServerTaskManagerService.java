@@ -72,12 +72,13 @@ public class ServerTaskManagerService {
         List<Event> events = new ArrayList<>();
 
         try (Stream<Server> servers = serverRepository.streamBy()) {
-            servers.forEach(server -> {
-                serverTaskRepository.findByServerId(server.getId())
-                        .map(existingServerTask -> manageExistingServerTask(existingServerTask, server))
-                        .orElseGet(() -> manageMissingServerTask(server))
-                        .ifPresent(events::add);
-            });
+            servers.forEach(server ->
+                    serverTaskRepository.findByServerId(server.getId())
+                            .map(existingServerTask ->
+                                    manageExistingServerTask(existingServerTask, server))
+                            .orElseGet(() ->
+                                    manageMissingServerTask(server))
+                            .ifPresent(events::add));
         }
 
         // any tasks for servers which don't exist should be stopped (typically this is cleanup from a previous run)

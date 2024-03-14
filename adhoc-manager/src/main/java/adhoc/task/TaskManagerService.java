@@ -70,21 +70,9 @@ public class TaskManagerService {
 
         for (HostedTask hostedTask : hostedTasks) {
             Task task = taskRepository.findByTaskIdentifier(hostedTask.getTaskIdentifier())
-                    .orElseGet(() -> {
-                        if (hostedTask instanceof HostedManagerTask) {
-                            return new ManagerTask();
-                        } else if (hostedTask instanceof HostedKioskTask) {
-                            return new KioskTask();
-                        } else if (hostedTask instanceof HostedServerTask) {
-                            return new ServerTask();
-                        } else {
-                            throw new IllegalStateException("Unknown hosted task type: " + hostedTask.getClass());
-                        }
-                    });
+                    .orElseGet(() -> newTask(hostedTask));
 
-            task = toEntity(task, hostedTask);
-
-            taskRepository.save(task);
+            task = taskRepository.save(toEntity(hostedTask, task));
 
             taskIdentifiers.add(task.getTaskIdentifier());
         }
@@ -94,7 +82,19 @@ public class TaskManagerService {
         return events;
     }
 
-    private Task toEntity(Task task, HostedTask hostedTask) {
+    private static Task newTask(HostedTask hostedTask) {
+        if (hostedTask instanceof HostedManagerTask) {
+            return new ManagerTask();
+        } else if (hostedTask instanceof HostedKioskTask) {
+            return new KioskTask();
+        } else if (hostedTask instanceof HostedServerTask) {
+            return new ServerTask();
+        } else {
+            throw new IllegalStateException("Unknown hosted task type: " + hostedTask.getClass());
+        }
+    }
+
+    private Task toEntity(HostedTask hostedTask, Task task) {
         task.setTaskIdentifier(hostedTask.getTaskIdentifier());
         task.setName(hostedTask.getName());
         task.setPrivateIp(hostedTask.getPrivateIp());

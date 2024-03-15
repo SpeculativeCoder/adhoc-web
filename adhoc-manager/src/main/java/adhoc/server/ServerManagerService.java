@@ -242,6 +242,8 @@ public class ServerManagerService {
             emitEvent = true;
         }
 
+        server.setSeen(LocalDateTime.now());
+
         return emitEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
     }
 }

@@ -101,8 +101,6 @@ public class ServerTaskManagerService {
 
         boolean emitEvent = false;
 
-        server.setSeen(LocalDateTime.now());
-
         // state transition(s)
 
         if (server.getStatus() == ServerStatus.STARTING) {

@@ -83,8 +83,8 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(MANAGE_SERVER_TASKS).withIdentity(MANAGE_SERVER_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(30))
-                .startAt(Date.from(Instant.now().plusSeconds(15))).build();
+                        .repeatForever().withIntervalInSeconds(10))
+                .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 
     @Bean

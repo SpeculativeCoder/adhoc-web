@@ -24,6 +24,7 @@ package adhoc.world;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 /**
  * Any details about the world e.g. settings can go here.
@@ -31,7 +32,7 @@ import lombok.*;
  */
 @Entity
 //@DynamicInsert
-//@DynamicUpdate
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

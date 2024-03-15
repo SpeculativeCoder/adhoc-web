@@ -120,8 +120,7 @@ public class ServerManagerService {
      * Manage the required servers to represent the areas within each region.
      * This will typically be based on number of players in each area.
      */
-    @Retryable(retryFor = {TransientDataAccessException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<? extends Event> manageServers() {
         log.trace("Managing servers...");
         List<Event> events = new ArrayList<>();

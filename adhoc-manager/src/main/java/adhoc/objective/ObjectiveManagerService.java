@@ -115,8 +115,7 @@ public class ObjectiveManagerService {
         return objective;
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
@@ -166,8 +165,7 @@ public class ObjectiveManagerService {
         }).toList();
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
         Objective objective = objectiveRepository.getReferenceById(event.getObjectiveId());
         Faction faction = factionRepository.getReferenceById(event.getFactionId());

@@ -51,8 +51,7 @@ public class TaskManagerService {
     private final HostingService hostingService;
     private final DnsService dnsService;
 
-    @Retryable(retryFor = {TransientDataAccessException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 1000, maxDelay = 3000))
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<? extends Event> refreshTasks() {
         log.trace("Refreshing tasks...");
         List<Event> events = new ArrayList<>();
@@ -103,8 +102,7 @@ public class TaskManagerService {
         return task;
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 1000, maxDelay = 3000))
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<? extends Event> manageTaskDomains() {
         log.trace("Managing task domains...");
         List<Event> events = new ArrayList<>();

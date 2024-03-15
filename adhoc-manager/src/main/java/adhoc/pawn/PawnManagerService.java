@@ -70,8 +70,7 @@ public class PawnManagerService {
         return pawn;
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<PawnDto> handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
         LocalDateTime seen = LocalDateTime.now();
 
@@ -102,8 +101,7 @@ public class PawnManagerService {
         }).toList();
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");
 

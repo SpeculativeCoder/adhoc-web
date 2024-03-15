@@ -72,8 +72,7 @@ public class AreaManagerService {
         return area;
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<AreaDto> processServerAreas(Long serverId, List<AreaDto> areaDtos) {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();

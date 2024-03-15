@@ -29,6 +29,7 @@ import adhoc.hosting.HostingService;
 import adhoc.properties.ManagerProperties;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
+import adhoc.server.ServerStateManagerService;
 import adhoc.server.ServerStatus;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
@@ -45,8 +46,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static adhoc.server.ServerManagerService.toServerUpdatedEvent;
-
 @Transactional
 @Service
 @Slf4j
@@ -59,6 +58,7 @@ public class ServerTaskManagerService {
     private final ServerRepository serverRepository;
     private final ServerTaskRepository serverTaskRepository;
 
+    private final ServerStateManagerService serverStateManagerService;
     private final HostingService hostingService;
     private final DnsService dnsService;
 
@@ -99,26 +99,29 @@ public class ServerTaskManagerService {
             return Optional.empty();
         }
 
-        boolean emitEvent = false;
+        Optional<ServerUpdatedEvent> optionalEvent = Optional.empty();
 
         // state transition(s)
 
         if (server.getStatus() == ServerStatus.STARTING) {
             log.info("Server {} task has started successfully", server.getName());
-            server.setStatus(ServerStatus.ACTIVE);
-            emitEvent = true;
+            optionalEvent = serverStateManagerService.updateServerState(server.getId(), ServerStatus.ACTIVE);
 
 
         } else if (server.getStatus() == ServerStatus.ACTIVE) {
             if (server.getAreas().isEmpty()) {
                 log.info("Server {} has no assigned areas - need to stop task {}", server.getName(), task.getName());
-                hostingService.stopServerTask(task.getTaskIdentifier());
-                server.setStatus(ServerStatus.STOPPING);
-                emitEvent = true;
+                optionalEvent = serverStateManagerService.updateServerState(server.getId(), ServerStatus.STOPPING);
+                try {
+                    hostingService.stopServerTask(task.getTaskIdentifier());
+                } catch (Exception e) {
+                    log.warn("Failed to stop server {}!", server.getName(), e);
+                    optionalEvent = serverStateManagerService.updateServerState(server.getId(), ServerStatus.ERROR);
+                }
             }
         }
 
-        return emitEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+        return optionalEvent;
     }
 
     private Optional<ServerUpdatedEvent> manageMissingServerTask(Server server) {
@@ -128,44 +131,38 @@ public class ServerTaskManagerService {
             return Optional.empty();
         }
 
-        boolean emitEvent = false;
+        Optional<ServerUpdatedEvent> optionalEvent = Optional.empty();
 
         // state transition(s)
 
         if (server.getStatus() == ServerStatus.INACTIVE) {
             if (!server.getAreas().isEmpty()) {
                 log.info("Server {} has assigned areas - need to start task", server.getName());
+                optionalEvent = serverStateManagerService.updateServerState(server.getId(), ServerStatus.STARTING);
                 try {
-                    HostedServerTask hostedServerTask = hostingService.startServerTask(server);
-                    server.setStatus(ServerStatus.STARTING);
-                    server.setInitiated(LocalDateTime.now());
-
+                    hostingService.startServerTask(server);
                 } catch (Exception e) {
                     log.warn("Failed to start server {}!", server.getName(), e);
-                    server.setStatus(ServerStatus.ERROR);
+                    optionalEvent = serverStateManagerService.updateServerState(server.getId(), ServerStatus.ERROR);
                 }
-                emitEvent = true;
             }
 
         } else if (server.getStatus() == ServerStatus.STARTING) {
             if (server.getInitiated().plusMinutes(5).isBefore(LocalDateTime.now())) {
                 log.warn("Server task for {} failed or took too long to start!", server.getName());
-                server.setStatus(ServerStatus.INACTIVE);
-                emitEvent = true;
+                optionalEvent = serverStateManagerService.updateServerState(server.getId(), ServerStatus.INACTIVE);
             }
 
         } else if (server.getStatus() == ServerStatus.STOPPING) {
             log.info("Server {} task has stopped successfully", server.getName());
-            server.setStatus(ServerStatus.INACTIVE);
-            emitEvent = true;
+            optionalEvent = serverStateManagerService.updateServerState(server.getId(), ServerStatus.INACTIVE);
 
         } else if (server.getStatus() == ServerStatus.ACTIVE) {
             log.info("Server {} task has stopped unexpectedly!", server.getName());
-            server.setStatus(ServerStatus.INACTIVE);
-            emitEvent = true;
+            optionalEvent = serverStateManagerService.updateServerState(server.getId(), ServerStatus.INACTIVE);
         }
 
-        return emitEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+        return optionalEvent;
     }
 
     private void manageOrphanedServerTask(ServerTask serverTask) {

@@ -27,6 +27,7 @@ import adhoc.region.Region;
 import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.UUID;
 
@@ -35,7 +36,7 @@ import java.util.UUID;
  */
 @Entity
 //@DynamicInsert
-//@DynamicUpdate
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -24,6 +24,7 @@ package adhoc.faction;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.math.BigDecimal;
 
@@ -32,7 +33,7 @@ import java.math.BigDecimal;
  */
 @Entity
 //@DynamicInsert
-//@DynamicUpdate
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

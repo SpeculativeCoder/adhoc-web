@@ -64,8 +64,7 @@ public class FactionManagerService {
         return faction;
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void awardFactionScores() {
         log.trace("Awarding faction scores...");
 
@@ -96,8 +95,7 @@ public class FactionManagerService {
         }
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void decayFactionScores() {
         log.trace("Decaying faction scores...");
 

@@ -26,6 +26,7 @@ import adhoc.area.Area;
 import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ import java.util.List;
  */
 @Entity
 //@DynamicInsert
-//@DynamicUpdate
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

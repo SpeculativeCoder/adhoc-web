@@ -30,8 +30,11 @@ import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
+import adhoc.task.server.ServerTask;
+import adhoc.task.server.ServerTaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
@@ -50,9 +53,12 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ServerManagerService {
 
+    private final ServerProperties serverProperties;
+
     private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
+    private final ServerTaskRepository serverTaskRepository;
 
     private final ServerService serverService;
 
@@ -146,7 +152,7 @@ public class ServerManagerService {
 
     private Optional<ServerUpdatedEvent> manageServer(Region region, Set<Area> areaGroup) {
         log.trace("Managing server for region {} area group {}", region.getId(), areaGroup);
-        boolean changed = false;
+        boolean emitEvent = false;
 
         double areaGroupX = areaGroup.stream().mapToDouble(Area::getX).average().orElseThrow();
         double areaGroupY = areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
@@ -158,11 +164,11 @@ public class ServerManagerService {
 
         if (server.getRegion() != region) {
             server.setRegion(region);
-            changed = true;
+            emitEvent = true;
         }
         if (!Objects.equals(server.getMapName(), region.getMapName())) {
             server.setMapName(region.getMapName());
-            changed = true;
+            emitEvent = true;
         }
 
         if (!Objects.equals(server.getX(), areaGroupX)
@@ -171,12 +177,12 @@ public class ServerManagerService {
             server.setX(areaGroupX);
             server.setY(areaGroupY);
             server.setZ(areaGroupZ);
-            changed = true;
+            emitEvent = true;
         }
 
         if (server.getAreas() == null) {
             server.setAreas(new ArrayList<>());
-            changed = true;
+            emitEvent = true;
         }
         // remove areas no longer represented by this server
         for (Iterator<Area> iter = server.getAreas().iterator(); iter.hasNext(); ) {
@@ -185,7 +191,7 @@ public class ServerManagerService {
                 log.debug("Server {} no longer contains area {}", server, existingArea);
                 iter.remove();
                 existingArea.setServer(null);
-                changed = true;
+                emitEvent = true;
             }
         }
         // link new areas represented by this server
@@ -194,7 +200,7 @@ public class ServerManagerService {
                 log.debug("Server {} now contains area {}", server, area);
                 server.getAreas().add(area);
                 area.setServer(server);
-                changed = true;
+                emitEvent = true;
             }
         }
 
@@ -207,9 +213,36 @@ public class ServerManagerService {
             server.setName("S" + server.getId().toString());
 
             log.debug("New server {} assigned to region {} areas {}", server, server.getRegion(), server.getAreas());
-            changed = true;
+            emitEvent = true;
         }
 
-        return changed ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+        // check if a server task exists and copy appropriate information (or just copy from an empty object if task doesn't exist yet)
+        ServerTask task = serverTaskRepository.findByServerId(server.getId()).orElse(new ServerTask());
+
+        if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
+            server.setPublicIp(task.getPublicIp());
+            emitEvent = true;
+        }
+
+        if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
+            server.setPublicWebSocketPort(task.getPublicWebSocketPort());
+            emitEvent = true;
+        }
+
+        if (!Objects.equals(server.getDomain(), task.getDomain())) {
+            server.setDomain(task.getDomain());
+            server.setWebSocketUrl(null); // need to calculate the web socket URL (see below)
+            emitEvent = true;
+        }
+
+        if (server.getWebSocketUrl() == null
+                && server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
+            server.setWebSocketUrl(
+                    (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + task.getPublicIp()) +
+                            ":" + server.getPublicWebSocketPort());
+            emitEvent = true;
+        }
+
+        return emitEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
     }
 }

@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -104,32 +103,6 @@ public class ServerTaskManagerService {
 
         server.setSeen(LocalDateTime.now());
 
-        if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
-            server.setPublicIp(task.getPublicIp());
-            emitEvent = true;
-        }
-
-        if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
-            server.setPublicWebSocketPort(task.getPublicWebSocketPort());
-            emitEvent = true;
-        }
-
-        if (!Objects.equals(server.getDomain(), task.getDomain())) {
-            server.setDomain(task.getDomain());
-            server.setWebSocketUrl(null); // need to calculate the web socket URL (see below)
-            emitEvent = true;
-        }
-
-        if (server.getWebSocketUrl() == null
-                && server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
-
-            server.setWebSocketUrl(
-                    (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + task.getPublicIp()) +
-                            ":" + server.getPublicWebSocketPort());
-
-            emitEvent = true;
-        }
-
         // state transition(s)
 
         if (server.getStatus() == ServerStatus.STARTING) {
@@ -158,26 +131,6 @@ public class ServerTaskManagerService {
         }
 
         boolean emitEvent = false;
-
-        if (server.getPublicIp() != null) {
-            server.setPublicIp(null);
-            emitEvent = true;
-        }
-
-        if (server.getPublicWebSocketPort() != null) {
-            server.setPublicWebSocketPort(null);
-            emitEvent = true;
-        }
-
-        if (server.getDomain() != null) {
-            server.setDomain(null);
-            emitEvent = true;
-        }
-
-        if (server.getWebSocketUrl() != null) {
-            server.setWebSocketUrl(null);
-            emitEvent = true;
-        }
 
         // state transition(s)
 

@@ -35,8 +35,7 @@ import adhoc.task.server.ServerTaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.dao.PessimisticLockingFailureException;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -121,7 +120,7 @@ public class ServerManagerService {
      * Manage the required servers to represent the areas within each region.
      * This will typically be based on number of players in each area.
      */
-    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+    @Retryable(retryFor = {TransientDataAccessException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public List<? extends Event> manageServers() {
         log.trace("Managing servers...");

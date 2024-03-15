@@ -26,8 +26,7 @@ import adhoc.objective.ObjectiveRepository;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.PessimisticLockingFailureException;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -65,7 +64,7 @@ public class FactionManagerService {
         return faction;
     }
 
-    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+    @Retryable(retryFor = {TransientDataAccessException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void awardFactionScores() {
         log.trace("Awarding faction scores...");
@@ -97,7 +96,7 @@ public class FactionManagerService {
         }
     }
 
-    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+    @Retryable(retryFor = {TransientDataAccessException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void decayFactionScores() {
         log.trace("Decaying faction scores...");

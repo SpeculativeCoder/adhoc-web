@@ -32,8 +32,7 @@ import adhoc.task.server.ServerTask;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.PessimisticLockingFailureException;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -55,7 +54,7 @@ public class TaskManagerService {
     private final HostingService hostingService;
     private final DnsService dnsService;
 
-    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+    @Retryable(retryFor = {TransientDataAccessException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 1000, maxDelay = 3000))
     public List<? extends Event> refreshTasks() {
         log.trace("Refreshing tasks...");
@@ -107,7 +106,7 @@ public class TaskManagerService {
         return task;
     }
 
-    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+    @Retryable(retryFor = {TransientDataAccessException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 1000, maxDelay = 3000))
     public List<? extends Event> manageTaskDomains() {
         log.trace("Managing task domains...");

@@ -30,8 +30,7 @@ import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.PessimisticLockingFailureException;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -71,7 +70,7 @@ public class PawnManagerService {
         return pawn;
     }
 
-    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+    @Retryable(retryFor = {TransientDataAccessException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 500))
     public List<PawnDto> handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
         LocalDateTime seen = LocalDateTime.now();
@@ -103,7 +102,7 @@ public class PawnManagerService {
         }).toList();
     }
 
-    @Retryable(retryFor = {ObjectOptimisticLockingFailureException.class, PessimisticLockingFailureException.class},
+    @Retryable(retryFor = {TransientDataAccessException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 500, maxDelay = 2000))
     public void purgeOldPawns() {
         log.trace("Purging old pawns...");

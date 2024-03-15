@@ -20,25 +20,21 @@
  * SOFTWARE.
  */
 
-package adhoc.task.kiosk;
+package adhoc.task;
 
-import adhoc.task.Task;
-import adhoc.task.TaskType;
-import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
-@Entity
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-public class KioskTask extends Task {
+import java.util.Collection;
+import java.util.Optional;
 
-    @Override
-    public TaskType getTaskType() {
-        return TaskType.KIOSK;
-    }
+// TODO: common
+public interface KioskTaskRepository extends JpaRepository<KioskTask, Long> {
+
+    Optional<KioskTask> findByTaskIdentifier(String taskIdentifier);
+
+    @Modifying
+    @Query("delete from KioskTask st where st.taskIdentifier not in ?1")
+    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
 }

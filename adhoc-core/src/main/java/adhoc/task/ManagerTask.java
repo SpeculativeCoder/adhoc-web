@@ -20,12 +20,23 @@
  * SOFTWARE.
  */
 
-package adhoc.task.server;
+package adhoc.task;
 
-import org.springframework.stereotype.Component;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-// TODO
-@Component
-public class ServerTaskManagerJob {
+@Entity
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+public class ManagerTask extends Task {
 
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.MANAGER;
+    }
 }

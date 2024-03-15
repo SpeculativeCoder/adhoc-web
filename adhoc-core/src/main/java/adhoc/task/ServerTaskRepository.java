@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.task.kiosk;
+package adhoc.task;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -28,13 +28,18 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 // TODO: common
-public interface KioskTaskRepository extends JpaRepository<KioskTask, Long> {
+public interface ServerTaskRepository extends JpaRepository<ServerTask, Long> {
 
-    Optional<KioskTask> findByTaskIdentifier(String taskIdentifier);
+    Optional<ServerTask> findByTaskIdentifier(String taskIdentifier);
+
+    Stream<ServerTask> streamBy();
 
     @Modifying
-    @Query("delete from KioskTask st where st.taskIdentifier not in ?1")
+    @Query("delete from ServerTask st where st.taskIdentifier not in ?1")
     void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
+
+    Optional<ServerTask> findByServerId(Long serverId);
 }

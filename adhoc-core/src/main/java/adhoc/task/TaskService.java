@@ -22,7 +22,6 @@
 
 package adhoc.task;
 
-import adhoc.task.server.ServerTask;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;

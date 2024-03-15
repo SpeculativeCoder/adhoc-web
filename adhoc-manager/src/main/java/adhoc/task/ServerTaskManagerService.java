@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.task.server;
+package adhoc.task;
 
 import adhoc.dns.DnsService;
 import adhoc.hosting.HostedServerTask;

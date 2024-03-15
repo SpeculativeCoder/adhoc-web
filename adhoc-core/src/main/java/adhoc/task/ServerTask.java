@@ -20,26 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.task.server;
+package adhoc.task;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Stream;
+@Entity
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+public class ServerTask extends Task {
 
-// TODO: common
-public interface ServerTaskRepository extends JpaRepository<ServerTask, Long> {
+    private Long serverId;
 
-    Optional<ServerTask> findByTaskIdentifier(String taskIdentifier);
-
-    Stream<ServerTask> streamBy();
-
-    @Modifying
-    @Query("delete from ServerTask st where st.taskIdentifier not in ?1")
-    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
-
-    Optional<ServerTask> findByServerId(Long serverId);
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.SERVER;
+    }
 }

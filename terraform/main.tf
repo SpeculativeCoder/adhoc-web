@@ -831,6 +831,17 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
       },
       systemControls = [
       ]
+      // TODO
+      healthCheck = {
+        command = [
+          "CMD-SHELL",
+          "curl -f http://localhost/actuator/health || exit 1"
+        ]
+        startPeriod = 300
+        interval    = 10
+        timeout     = 5
+        retries     = 3
+      }
     }
   ])
   network_mode             = "awsvpc"
@@ -933,6 +944,17 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
       },
       systemControls = [
       ]
+      // TODO
+      healthCheck = {
+        command = [
+          "CMD-SHELL",
+          "curl -f http://localhost/actuator/health || exit 1"
+        ]
+        startPeriod = 300
+        interval    = 10
+        timeout     = 5
+        retries     = 3
+      }
     }
   ])
   network_mode             = "awsvpc"
@@ -992,6 +1014,17 @@ resource "aws_ecs_task_definition" "adhoc_server" {
           awslogs-region        = data.aws_region.region.name
           awslogs-stream-prefix = "ecs"
         }
+      }
+      // TODO
+      healthCheck = {
+        command = [
+          "CMD-SHELL",
+          "pgrep Server || exit 1"
+        ]
+        startPeriod = 300
+        interval    = 10
+        timeout     = 5
+        retries     = 3
       }
     }
   ])

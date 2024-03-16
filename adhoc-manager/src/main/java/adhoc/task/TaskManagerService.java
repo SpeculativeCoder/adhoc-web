@@ -113,18 +113,22 @@ public class TaskManagerService {
             tasks.forEach(task -> {
                 if (task.getDomain() == null && task.getPublicIp() != null) {
 
+                    String domain;
+
                     if (task instanceof ManagerTask managerTask) {
-                        task.setDomain(managerProperties.getManagerDomain());
+                        domain = managerProperties.getManagerDomain();
 
                     } else if (task instanceof KioskTask kioskTask) {
-                        task.setDomain(managerProperties.getKioskDomain());
+                        domain = managerProperties.getKioskDomain();
 
                     } else if (task instanceof ServerTask serverTask) {
-                        task.setDomain(serverTask.getServerId() + "-" + managerProperties.getServerDomain());
+                        domain = serverTask.getServerId() + "-" + managerProperties.getServerDomain();
 
                     } else {
                         throw new IllegalStateException("Unknown task type: " + task.getClass());
                     }
+
+                    task.setDomain(domain);
 
                     domainsIps.merge(task.getDomain(),
                             new LinkedHashSet<>(Collections.singleton(task.getPublicIp())),

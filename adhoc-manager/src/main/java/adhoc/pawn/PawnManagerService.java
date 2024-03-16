@@ -37,8 +37,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Transactional
 @Service
@@ -76,29 +78,33 @@ public class PawnManagerService {
 
         Server server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
 
-        // update users seen
-        Set<Long> userIds = serverPawnsEvent.getPawns().stream()
-                .map(PawnDto::getUserId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toCollection(TreeSet::new));
-        userRepository.updateServerAndSeenByIdIn(server, seen, userIds);
+        List<UUID> pawnUuids = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+
+        List<PawnDto> pawnDtos = serverPawnsEvent.getPawns().stream()
+                .map(pawnDto -> {
+                    Preconditions.checkArgument(Objects.equals(server.getId(), pawnDto.getServerId()));
+
+                    Pawn pawn = toEntity(pawnDto,
+                            pawnRepository.findByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new));
+
+                    pawn.setSeen(seen);
+
+                    pawnUuids.add(pawn.getUuid());
+                    if (pawn.getUser() != null) {
+                        userIds.add(pawn.getUser().getId());
+                    }
+
+                    return pawnService.toDto(pawnRepository.save(pawn));
+                }).toList();
 
         // clean up any pawns that are no longer on this server
-        List<UUID> uuids = serverPawnsEvent.getPawns().stream()
-                .map(PawnDto::getUuid)
-                .toList();
-        pawnRepository.deleteByServerAndUuidNotIn(server, uuids);
+        pawnRepository.deleteByServerAndUuidNotIn(server, pawnUuids);
 
-        return serverPawnsEvent.getPawns().stream().map(pawnDto -> {
-            Preconditions.checkArgument(Objects.equals(server.getId(), pawnDto.getServerId()));
+        // update users seen
+        userRepository.updateServerAndSeenByIdIn(server, seen, userIds);
 
-            Pawn pawn = toEntity(pawnDto,
-                    pawnRepository.findByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new));
-
-            pawn.setSeen(seen); // TODO
-
-            return pawnService.toDto(pawnRepository.save(pawn));
-        }).toList();
+        return pawnDtos;
     }
 
     @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))

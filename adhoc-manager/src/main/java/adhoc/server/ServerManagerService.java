@@ -39,6 +39,7 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -244,5 +245,19 @@ public class ServerManagerService {
         server.setSeen(LocalDateTime.now());
 
         return emitEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public Optional<ServerUpdatedEvent> updateServerStateInNewTransaction(Long serverId, ServerStatus serverStatus) {
+        Server server = serverRepository.getReferenceById(serverId);
+
+        server.setStatus(serverStatus);
+
+        if (serverStatus == ServerStatus.STARTING) {
+            server.setInitiated(LocalDateTime.now());
+        }
+
+        return Optional.of(toServerUpdatedEvent(server));
     }
 }

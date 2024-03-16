@@ -34,8 +34,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -104,6 +107,7 @@ public class UserService {
         return toDetailDto(userRepository.getReferenceById(userId));
     }
 
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public UserDetailDto registerUser(RegisterUserRequest registerUserRequest) {
         String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();
@@ -222,6 +226,7 @@ public class UserService {
      * Sets a new "token" every time a user logs in.
      * The "token" is used when logging into an Unreal server to make sure the user is who they say they are.
      */
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void onAuthenticationSuccess(Long userId) {
         User user = userRepository.getReferenceById(userId);
 

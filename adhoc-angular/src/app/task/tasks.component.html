@@ -32,10 +32,11 @@
         <th scope="col" sortable="id">ID</th>
         <th scope="col" sortable="type">Type</th>
         <th scope="col" sortable="name">Name</th>
-        <th scope="col" sortable="privateIp">Private IP</th>
+        <!--<th scope="col" sortable="privateIp">Private IP</th>-->
         <th scope="col" sortable="publicIp">Public IP</th>
-        <th scope="col" sortable="publicWebSocketPort">Public Web Socket Port</th>
+        <th scope="col" sortable="publicWebSocketPort">Port</th>
         <th scope="col" sortable="domain">Domain</th>
+        <th scope="col" sortable="serverId">Server ID</th>
       </tr>
       </thead>
       <tbody>
@@ -43,10 +44,11 @@
         <th scope="row"><a routerLink="/tasks/{{ task.id }}">{{ task.id }}</a></th>
         <td>{{ task.type }}</td>
         <td>{{ task.name }}</td>
-        <td>{{ task.privateIp }}</td>
+        <!--<td>{{ task.privateIp }}</td>-->
         <td>{{ task.publicIp }}</td>
         <td>{{ task.publicWebSocketPort }}</td>
         <td>{{ task.domain }}</td>
+        <td>{{ task.serverId }}</td>
       </tr>
       </tbody>
     </table>

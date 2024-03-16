@@ -179,7 +179,7 @@ public class ServerTaskManagerService {
         hostedTasks.stream()
                 .filter(task -> task instanceof HostedServerTask)
                 .forEach(hostedServerTask -> {
-                    log.info("Stopping task {}", hostedServerTask.getName());
+                    log.info("Stopping task {}", hostedServerTask.getTaskIdentifier());
                     hostingService.stopServerTask(hostedServerTask.getTaskIdentifier());
                 });
     }

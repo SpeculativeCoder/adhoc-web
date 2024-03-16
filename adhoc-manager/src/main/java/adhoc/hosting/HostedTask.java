@@ -26,8 +26,6 @@ public interface HostedTask {
 
     String getTaskIdentifier();
 
-    String getName();
-
     String getPrivateIp();
 
     String getPublicIp();

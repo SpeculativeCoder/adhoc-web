@@ -55,15 +55,13 @@ public class LocalHostingService implements HostingService {
         List<HostedTask> tasks = new ArrayList<>();
 
         HostedManagerTask managerTask = new HostedManagerTask();
-        managerTask.setTaskIdentifier("local-manager-task");
-        managerTask.setName("Local Manager Task");
+        managerTask.setTaskIdentifier("local manager task");
         managerTask.setPrivateIp("127.0.0.1");
         managerTask.setPublicIp("127.0.0.1");
         tasks.add(managerTask);
 
         HostedKioskTask kioskTask = new HostedKioskTask();
-        kioskTask.setTaskIdentifier("local-kiosk-task");
-        kioskTask.setName("Local Kiosk Task");
+        kioskTask.setTaskIdentifier("local kiosk task");
         kioskTask.setPrivateIp("127.0.0.1");
         kioskTask.setPublicIp("127.0.0.1");
         tasks.add(kioskTask);
@@ -75,7 +73,6 @@ public class LocalHostingService implements HostingService {
 
                 HostedServerTask serverTask = new HostedServerTask();
                 serverTask.setTaskIdentifier(server.getId().toString());
-                serverTask.setName("Local Server Task " + server.getId());
                 serverTask.setPrivateIp("127.0.0.1");
                 serverTask.setPublicIp("127.0.0.1");
                 serverTask.setPublicWebSocketPort(8889);
@@ -95,7 +92,6 @@ public class LocalHostingService implements HostingService {
 
         HostedServerTask serverTask = new HostedServerTask();
         serverTask.setTaskIdentifier(server.getId().toString());
-        serverTask.setName("Local Server Task " + server.getId());
         serverTask.setPublicWebSocketPort(8889);
         serverTask.setServerId(server.getId());
 

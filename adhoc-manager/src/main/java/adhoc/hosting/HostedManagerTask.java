@@ -29,8 +29,6 @@ public class HostedManagerTask implements HostedTask {
 
     String taskIdentifier;
 
-    String name;
-
     String privateIp;
 
     String publicIp;

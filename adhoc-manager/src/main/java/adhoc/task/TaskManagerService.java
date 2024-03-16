@@ -33,10 +33,12 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -67,7 +69,28 @@ public class TaskManagerService {
             Task task = taskRepository.findByTaskIdentifier(hostedTask.getTaskIdentifier())
                     .orElseGet(() -> newTask(hostedTask));
 
-            task = taskRepository.save(toEntity(hostedTask, task));
+            if (task.getName() == null) {
+                task.setName(""); // name will be set after save
+            }
+            task.setTaskIdentifier(hostedTask.getTaskIdentifier());
+            task.setPrivateIp(hostedTask.getPrivateIp());
+            task.setPublicIp(hostedTask.getPublicIp());
+            if (hostedTask instanceof HostedServerTask hostedServerTask) {
+                ServerTask serverTask = (ServerTask) task;
+                serverTask.setPublicWebSocketPort(hostedServerTask.getPublicWebSocketPort());
+                serverTask.setServerId(hostedServerTask.getServerId());
+            }
+
+            task = taskRepository.save(task);
+
+            String taskNameSuffix = switch (hostedTask) {
+                case HostedManagerTask hostedManagerTask -> " (Manager)";
+                case HostedKioskTask hostedKioskTask -> " (Kiosk)";
+                case HostedServerTask hostedServerTask -> " (Server " + hostedServerTask.getServerId() + ")";
+                default -> throw new IllegalStateException("Unknown hosted task type: " + hostedTask.getClass());
+            };
+
+            task.setName("Task " + task.getId() + taskNameSuffix);
 
             taskIdentifiers.add(task.getTaskIdentifier());
         }
@@ -89,62 +112,49 @@ public class TaskManagerService {
         }
     }
 
-    private Task toEntity(HostedTask hostedTask, Task task) {
-        task.setTaskIdentifier(hostedTask.getTaskIdentifier());
-        task.setName(hostedTask.getName());
-        task.setPrivateIp(hostedTask.getPrivateIp());
-        task.setPublicIp(hostedTask.getPublicIp());
-        if (hostedTask instanceof HostedServerTask hostedServerTask) {
-            ServerTask serverTask = (ServerTask) task;
-            serverTask.setPublicWebSocketPort(hostedServerTask.getPublicWebSocketPort());
-            serverTask.setServerId(hostedServerTask.getServerId());
-        }
-        return task;
-    }
-
     @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<? extends Event> manageTaskDomains() {
         log.trace("Managing task domains...");
         List<Event> events = new ArrayList<>();
 
-        Map<String, Set<String>> domainsIps = new LinkedHashMap<>();
+        Map<Task, String> tasksDomains = new LinkedHashMap<>();
+        MultiValueMap<Task, String> tasksPublicIps = new LinkedMultiValueMap<>();
 
-        try (Stream<Task> tasks = taskRepository.streamBy()) {
-            tasks.forEach(task -> {
-                if (task.getDomain() == null && task.getPublicIp() != null) {
+        for (Task task : taskRepository.findAll()) {
+            if (task.getDomain() == null && task.getPublicIp() != null) {
 
-                    String domain;
+                String domain = switch (task) {
+                    case ManagerTask managerTask -> managerProperties.getManagerDomain();
+                    case KioskTask kioskTask -> managerProperties.getKioskDomain();
+                    case ServerTask serverTask -> serverTask.getServerId() + "-" + managerProperties.getServerDomain();
+                    default -> throw new IllegalStateException("Unknown task type: " + task.getClass());
+                };
 
-                    if (task instanceof ManagerTask managerTask) {
-                        domain = managerProperties.getManagerDomain();
-
-                    } else if (task instanceof KioskTask kioskTask) {
-                        domain = managerProperties.getKioskDomain();
-
-                    } else if (task instanceof ServerTask serverTask) {
-                        domain = serverTask.getServerId() + "-" + managerProperties.getServerDomain();
-
-                    } else {
-                        throw new IllegalStateException("Unknown task type: " + task.getClass());
-                    }
-
-                    task.setDomain(domain);
-
-                    domainsIps.merge(task.getDomain(),
-                            new LinkedHashSet<>(Collections.singleton(task.getPublicIp())),
-                            (ips1, ips2) -> {
-                                ips1.addAll(ips2);
-                                return ips1;
-                            });
-                }
-            });
+                tasksDomains.put(task, domain);
+                tasksPublicIps.add(task, task.getPublicIp());
+            }
         }
 
-        for (Map.Entry<String, Set<String>> domainIps : domainsIps.entrySet()) {
-            //log.info("{} -> {}", domainIps.getKey(), domainIps.getValue());
-            dnsService.createOrUpdateDnsRecord(domainIps.getKey(), domainIps.getValue());
+        for (Map.Entry<Task, String> taskDomain : tasksDomains.entrySet()) {
+            Task task = taskDomain.getKey();
+            String domain = taskDomain.getValue();
+            List<String> publicIps = Verify.verifyNotNull(tasksPublicIps.get(task));
+
+            //log.info("{} -> {}", domain, publicIps);
+            dnsService.createOrUpdateDnsRecord(domain, new LinkedHashSet<>(publicIps));
+
+            updateTaskDomainInNewTransaction(task.getId(), domain);
+            task.setDomain(domain);
         }
 
         return events;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public void updateTaskDomainInNewTransaction(Long taskId, String domain) {
+        Task task = taskRepository.getReferenceById(taskId);
+
+        task.setDomain(domain);
     }
 }

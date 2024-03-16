@@ -110,15 +110,13 @@ public class DockerHostingService implements HostingService {
 
         // assume manager running on Docker host (unless we find an adhoc_manager container in Docker)
         HostedManagerTask defaultManagerTask = new HostedManagerTask();
-        defaultManagerTask.setTaskIdentifier("manager");
-        defaultManagerTask.setName("Host Manager Task");
+        defaultManagerTask.setTaskIdentifier("host manager task");
         defaultManagerTask.setPrivateIp("host.docker.internal");
         defaultManagerTask.setPublicIp("127.0.0.1");
         tasks.add(defaultManagerTask);
         // assume kiosk running on Docker host (unless we find an adhoc_kiosk container in Docker)
         HostedKioskTask defaultKioskTask = new HostedKioskTask();
-        defaultKioskTask.setTaskIdentifier("kiosk");
-        defaultKioskTask.setName("Host Kiosk Task");
+        defaultKioskTask.setTaskIdentifier("host kiosk task");
         defaultKioskTask.setPrivateIp("host.docker.internal");
         defaultKioskTask.setPublicIp("127.0.0.1");
         tasks.add(defaultKioskTask);
@@ -147,7 +145,6 @@ public class DockerHostingService implements HostingService {
 
                 HostedManagerTask managerTask = new HostedManagerTask();
                 managerTask.setTaskIdentifier(inspectedContainer.getId());
-                managerTask.setName(inspectedContainer.getName());
                 managerTask.setPrivateIp(privateIp);
                 managerTask.setPublicIp("127.0.0.1");
                 tasks.add(managerTask);
@@ -158,7 +155,6 @@ public class DockerHostingService implements HostingService {
 
                 HostedKioskTask kioskTask = new HostedKioskTask();
                 kioskTask.setTaskIdentifier(inspectedContainer.getId());
-                kioskTask.setName(inspectedContainer.getName());
                 kioskTask.setPrivateIp(privateIp);
                 kioskTask.setPublicIp("127.0.0.1");
                 tasks.add(kioskTask);
@@ -171,7 +167,6 @@ public class DockerHostingService implements HostingService {
 
                         HostedServerTask task = new HostedServerTask();
                         task.setTaskIdentifier(inspectedContainer.getId());
-                        task.setName(inspectedContainer.getName());
                         task.setPrivateIp(privateIp);
                         task.setPublicIp("127.0.0.1");
                         task.setPublicWebSocketPort(calculatePublicWebSocketPort(serverId));
@@ -233,11 +228,10 @@ public class DockerHostingService implements HostingService {
 
         dockerClient.startContainerCmd(createdContainer.getId()).exec();
 
-        InspectContainerResponse inspectedContainer = dockerClient.inspectContainerCmd(createdContainer.getId()).exec();
+        //InspectContainerResponse inspectedContainer = dockerClient.inspectContainerCmd(createdContainer.getId()).exec();
 
         HostedServerTask serverTask = new HostedServerTask();
-        serverTask.setTaskIdentifier(inspectedContainer.getId());
-        serverTask.setName(inspectedContainer.getName());
+        serverTask.setTaskIdentifier(createdContainer.getId());
         serverTask.setPublicWebSocketPort(publicWebSocketPort);
         serverTask.setServerId(server.getId());
 

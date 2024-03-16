@@ -40,7 +40,6 @@ import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.NetworkInterface;
 import software.amazon.awssdk.services.ec2.model.*;
 import software.amazon.awssdk.services.ecs.EcsClient;
-import software.amazon.awssdk.services.ecs.endpoints.internal.Arn;
 import software.amazon.awssdk.services.ecs.model.*;
 
 import java.util.*;
@@ -145,7 +144,6 @@ public class EcsHostingService implements HostingService {
 
                         HostedManagerTask managerTask = new HostedManagerTask();
                         managerTask.setTaskIdentifier(task.taskArn());
-                        managerTask.setName(Arn.parse(task.taskArn()).orElseThrow(IllegalStateException::new).resource().getLast());
                         managerTask.setPrivateIp(privateIp);
                         managerNetworkInterfaceIds.put(networkInterfaceId, managerTask);
 
@@ -154,7 +152,6 @@ public class EcsHostingService implements HostingService {
 
                         HostedKioskTask kioskTask = new HostedKioskTask();
                         kioskTask.setTaskIdentifier(task.taskArn());
-                        kioskTask.setName(Arn.parse(task.taskArn()).orElseThrow(IllegalStateException::new).resource().getLast());
                         kioskTask.setPrivateIp(privateIp);
                         kioskNetworkInterfaceIds.put(networkInterfaceId, kioskTask);
 
@@ -178,7 +175,6 @@ public class EcsHostingService implements HostingService {
 
                                     HostedServerTask serverTask = new HostedServerTask();
                                     serverTask.setTaskIdentifier(task.taskArn());
-                                    serverTask.setName(Arn.parse(task.taskArn()).orElseThrow(IllegalStateException::new).resource().getLast());
                                     serverTask.setPrivateIp(privateIp);
                                     serverTask.setServerId(serverId);
                                     serverNetworkInterfaceIds.put(networkInterfaceId, serverTask);
@@ -350,7 +346,6 @@ public class EcsHostingService implements HostingService {
 
             HostedServerTask serverTask = new HostedServerTask();
             serverTask.setTaskIdentifier(taskArn);
-            serverTask.setName(Arn.parse(taskArn).orElseThrow(IllegalStateException::new).resource().getLast());
             serverTask.setPublicWebSocketPort(8889);
             serverTask.setServerId(server.getId());
 

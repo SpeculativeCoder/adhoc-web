@@ -35,11 +35,11 @@
       <input class="form-control" id="nameInput" name="name" type="text" readonly
              [(ngModel)]="task.name"/>
     </div>
-    <div class="mb-3">
+    <!--<div class="mb-3">
       <label class="form-label" for="privateIpInput">Private IP</label>
       <input class="form-control" id="privateIpInput" name="privateIp" type="text" readonly
              [(ngModel)]="task.privateIp"/>
-    </div>
+    </div>-->
     <div class="mb-3">
       <label class="form-label" for="publicIpInput">Public IP</label>
       <input class="form-control" id="publicIpInput" name="publicIp" type="text" readonly
@@ -54,6 +54,11 @@
       <label class="form-label" for="domainInput">Domain</label>
       <input class="form-control" id="domainInput" name="domain" type="text" readonly
              [(ngModel)]="task.domain"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="serverIdInput">Server ID</label>
+      <input class="form-control" id="serverIdInput" name="serverId" type="number" readonly
+             [(ngModel)]="task.serverId"/>
     </div>
     <div class="row">
       <!--<div class="col-auto mt-3 mb-3">

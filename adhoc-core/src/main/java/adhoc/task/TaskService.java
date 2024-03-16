@@ -26,8 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
@@ -58,18 +56,11 @@ public class TaskService {
     }
 
     TaskDto toDto(Task task) {
-        // TODO
-        Authentication authentication = securityContextHolderStrategy.getContext().getAuthentication();
-        boolean hasDebugRole = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch("ROLE_DEBUG"::equals);
-
         return new TaskDto(
                 task.getId(),
                 task.getVersion(),
                 task.getTaskType().name(),
-                hasDebugRole ? task.getName() : null,
-                hasDebugRole ? task.getPrivateIp() : null,
+                task.getName(),
                 task.getPublicIp(),
                 task.getPublicWebSocketPort(),
                 task.getDomain(),

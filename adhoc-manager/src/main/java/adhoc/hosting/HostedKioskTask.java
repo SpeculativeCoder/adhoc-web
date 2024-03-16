@@ -29,8 +29,6 @@ public class HostedKioskTask implements HostedTask {
 
     String taskIdentifier;
 
-    String name;
-
     String privateIp;
 
     String publicIp;

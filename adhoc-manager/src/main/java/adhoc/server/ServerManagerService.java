@@ -258,6 +258,12 @@ public class ServerManagerService {
             server.setInitiated(LocalDateTime.now());
         }
 
+        // TODO
+        if (serverStatus == ServerStatus.STOPPING || serverStatus == ServerStatus.INACTIVE) {
+            server.setWebSocketUrl(null);
+            server.setDomain(null);
+        }
+
         return Optional.of(toServerUpdatedEvent(server));
     }
 }

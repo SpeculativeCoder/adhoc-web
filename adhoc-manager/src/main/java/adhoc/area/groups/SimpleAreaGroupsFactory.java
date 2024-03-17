@@ -24,6 +24,7 @@ package adhoc.area.groups;
 
 import adhoc.area.Area;
 import adhoc.region.Region;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +36,11 @@ import java.util.Set;
 @Component
 @Slf4j
 public class SimpleAreaGroupsFactory implements AreaGroupsFactory {
+
+    @PostConstruct
+    public void postConstruct() {
+        log.info("Simple Area Groups Factory is available");
+    }
 
     @Override
     public List<Set<Area>> determineAreaGroups(Region region) {

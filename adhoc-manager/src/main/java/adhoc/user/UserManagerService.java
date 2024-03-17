@@ -198,7 +198,7 @@ public class UserManagerService {
     public void leaveUnseenUsers() {
         log.trace("Leaving unseen users...");
 
-        try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(LocalDateTime.now().minusMinutes(5))) {
+        try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(LocalDateTime.now().minusMinutes(1))) {
             users.forEach(unseenUser -> {
                 // TODO: common path?
                 unseenUser.setServer(null);

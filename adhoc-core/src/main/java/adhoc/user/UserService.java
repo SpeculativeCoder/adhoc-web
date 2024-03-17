@@ -283,7 +283,6 @@ public class UserService {
         user.setScore(BigDecimal.valueOf(0.0));
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());
-        user.setServer(registerUserRequest.getServerId() == null ? null : serverRepository.getReferenceById(registerUserRequest.getServerId()));
 
         return user;
     }

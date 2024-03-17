@@ -47,7 +47,7 @@ public class ManagerQuartzConfig {
     public static final String AWARD_FACTION_SCORES = "awardFactionScores";
     public static final String DECAY_FACTION_SCORES = "decayFactionScores";
     public static final String DECAY_USER_SCORES = "decayUserScores";
-    public static final String LEAVE_UNSEEN_USERS = "unlinkUnseenUsers";
+    public static final String LEAVE_UNSEEN_USERS = "leaveUnseenUsers";
     public static final String PURGE_OLD_USERS = "purgeOldUsers";
     public static final String PURGE_OLD_PAWNS = "purgeOldPawns";
 
@@ -65,7 +65,7 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(REFRESH_TASKS).withIdentity(REFRESH_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(30))
+                        .repeatForever().withIntervalInSeconds(10))
                 .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 

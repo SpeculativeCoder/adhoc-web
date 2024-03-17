@@ -65,7 +65,7 @@ public class ManagerQuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(REFRESH_TASKS).withIdentity(REFRESH_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10))
+                        .repeatForever().withIntervalInSeconds(20))
                 .startAt(Date.from(Instant.now().plusSeconds(10))).build();
     }
 

@@ -603,6 +603,10 @@
                     type="VARCHAR(255)"/>
         </createTable>
 
+        <addUniqueConstraint columnNames="task_identifier"
+                             constraintName="uc_managertask_task_identifier"
+                             tableName="manager_task"/>
+
         <createTable tableName="kiosk_task">
             <column name="id"
                     type="BIGINT">
@@ -630,6 +634,10 @@
             <column name="domain"
                     type="VARCHAR(255)"/>
         </createTable>
+
+        <addUniqueConstraint columnNames="task_identifier"
+                             constraintName="uc_kiosktask_task_identifier"
+                             tableName="kiosk_task"/>
 
         <createTable tableName="server_task">
             <column name="id"
@@ -660,6 +668,10 @@
             <column name="server_id"
                     type="BIGINT"/>
         </createTable>
+
+        <addUniqueConstraint columnNames="task_identifier"
+                             constraintName="uc_servertask_task_identifier"
+                             tableName="server_task"/>
 
     </changeSet>
 

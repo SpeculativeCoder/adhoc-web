@@ -52,7 +52,7 @@ public abstract class Task {
     private Long version;
 
     /** Identifier of the task within the hosting service (e.g. task ARN of AWS ECS task). */
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String taskIdentifier;
 
     /** Name of the task within the hosting service (to easily find it when investigating). */

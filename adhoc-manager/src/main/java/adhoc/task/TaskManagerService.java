@@ -144,7 +144,6 @@ public class TaskManagerService {
             dnsService.createOrUpdateDnsRecord(domain, new LinkedHashSet<>(publicIps));
 
             updateTaskDomainInNewTransaction(task.getId(), domain);
-            task.setDomain(domain);
         }
 
         return events;

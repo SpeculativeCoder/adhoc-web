@@ -24,7 +24,6 @@ export class Task {
   id?: number;
   version?: number;
   type?: string;
-  name?: string;
   privateIp?: string;
   publicIp?: string;
   publicWebSocketPort?: number;

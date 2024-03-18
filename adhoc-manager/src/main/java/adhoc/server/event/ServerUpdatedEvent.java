@@ -49,9 +49,6 @@ public class ServerUpdatedEvent implements Event {
     @Min(0)
     private Long version;
 
-    @NotEmpty
-    private String name;
-
     @NotNull
     private Long regionId;
     @NotNull

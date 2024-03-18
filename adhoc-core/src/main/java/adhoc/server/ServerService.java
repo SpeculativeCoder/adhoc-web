@@ -56,7 +56,6 @@ public class ServerService {
         return new ServerDto(
                 server.getId(),
                 server.getVersion(),
-                server.getName(),
                 server.getRegion().getId(),
                 server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
                 server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),

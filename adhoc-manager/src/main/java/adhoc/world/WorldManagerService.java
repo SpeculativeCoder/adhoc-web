@@ -167,7 +167,6 @@ public class WorldManagerService {
         region1.setAreas(Arrays.asList(area1, area2));
 
         Server server1 = new Server();
-        server1.setName("S1");
         server1.setMapName(region1.getMapName());
         server1.setX(region1.getX());
         server1.setY(region1.getY());
@@ -180,7 +179,6 @@ public class WorldManagerService {
         area1.setServer(server1);
 
         //Server server2 = new Server();
-        //server2.setName("2");
         //server2.setX(area2.getX());
         //server2.setY(area2.getY());
         //server2.setZ(area2.getZ());

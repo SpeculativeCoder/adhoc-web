@@ -45,9 +45,6 @@ public class ServerDto {
     @Min(0)
     Long version;
 
-    @NotEmpty
-    String name;
-
     @NotNull
     @Min(1)
     Long regionId;

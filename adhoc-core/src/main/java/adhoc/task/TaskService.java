@@ -60,7 +60,6 @@ public class TaskService {
                 task.getId(),
                 task.getVersion(),
                 task.getTaskType().name(),
-                task.getName(),
                 task.getPublicIp(),
                 task.getPublicWebSocketPort(),
                 task.getDomain(),

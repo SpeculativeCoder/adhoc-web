@@ -55,10 +55,6 @@ public abstract class Task {
     @Column(nullable = false, unique = true)
     private String taskIdentifier;
 
-    /** Name of the task within the hosting service (to easily find it when investigating). */
-    @Column(nullable = false)
-    private String name;
-
     /** IP that is reachable within the hosting service but not externally. */
     private String privateIp;
 

@@ -30,7 +30,6 @@
       <thead>
       <tr>
         <th scope="col" sortable="id">ID</th>
-        <th scope="col" sortable="name">Name</th>
         <th scope="col" sortable="region">Region</th>
         <th scope="col" sortable="areas">Areas</th>
         <th scope="col" sortable="map">Map</th>
@@ -50,7 +49,6 @@
       <tbody>
       <tr *ngFor="let server of servers">
         <th scope="row"><a routerLink="/servers/{{ server.id }}">{{ server.id }}</a></th>
-        <td>{{ server.name }}</td>
         <td>{{ server.regionId }}</td>
         <td>
           <ng-container *ngFor="let areaId of server.areaIds; last as isLast">

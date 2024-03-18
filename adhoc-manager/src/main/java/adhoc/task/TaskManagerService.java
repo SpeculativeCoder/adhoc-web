@@ -28,7 +28,10 @@ import adhoc.properties.ManagerProperties;
 import adhoc.system.event.Event;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -53,6 +56,9 @@ public class TaskManagerService {
     private final HostingService hostingService;
     private final DnsService dnsService;
 
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private TaskManagerService self;
+
     @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<? extends Event> refreshTasks() {
         log.trace("Refreshing tasks...");
@@ -69,9 +75,6 @@ public class TaskManagerService {
             Task task = taskRepository.findByTaskIdentifier(hostedTask.getTaskIdentifier())
                     .orElseGet(() -> newTask(hostedTask));
 
-            if (task.getName() == null) {
-                task.setName(""); // name will be set after save
-            }
             task.setTaskIdentifier(hostedTask.getTaskIdentifier());
             task.setPrivateIp(hostedTask.getPrivateIp());
             task.setPublicIp(hostedTask.getPublicIp());
@@ -82,15 +85,6 @@ public class TaskManagerService {
             }
 
             task = taskRepository.save(task);
-
-            String taskNameSuffix = switch (hostedTask) {
-                case HostedManagerTask hostedManagerTask -> " (Manager)";
-                case HostedKioskTask hostedKioskTask -> " (Kiosk)";
-                case HostedServerTask hostedServerTask -> " (Server " + hostedServerTask.getServerId() + ")";
-                default -> throw new IllegalStateException("Unknown hosted task type: " + hostedTask.getClass());
-            };
-
-            task.setName("Task " + task.getId() + taskNameSuffix);
 
             taskIdentifiers.add(task.getTaskIdentifier());
         }
@@ -143,7 +137,7 @@ public class TaskManagerService {
             //log.info("{} -> {}", domain, publicIps);
             dnsService.createOrUpdateDnsRecord(domain, new LinkedHashSet<>(publicIps));
 
-            updateTaskDomainInNewTransaction(task.getId(), domain);
+            self.updateTaskDomainInNewTransaction(task.getId(), domain);
         }
 
         return events;

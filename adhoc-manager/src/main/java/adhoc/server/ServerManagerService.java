@@ -71,8 +71,6 @@ public class ServerManagerService {
     }
 
     Server toEntity(ServerDto serverDto, Server server) {
-        server.setName(serverDto.getName());
-
         server.setRegion(regionRepository.getReferenceById(serverDto.getRegionId()));
         server.setAreas(serverDto.getAreaIds().stream().map(areaRepository::getReferenceById).collect(Collectors.toList())); // TODO
 
@@ -106,7 +104,6 @@ public class ServerManagerService {
         ServerUpdatedEvent event = new ServerUpdatedEvent(
                 server.getId(),
                 server.getVersion(),
-                server.getName(),
                 server.getRegion().getId(),
                 server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
                 server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
@@ -204,12 +201,9 @@ public class ServerManagerService {
         }
 
         if (server.getId() == null) {
-            server.setName(""); // the id will be added after insert (see below)
             server.setStatus(ServerStatus.INACTIVE);
 
             server = serverRepository.save(server);
-
-            server.setName("S" + server.getId().toString());
 
             log.debug("New server {} assigned to region {} areas {}", server, server.getRegion(), server.getAreas());
             emitEvent = true;

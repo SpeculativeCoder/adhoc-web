@@ -55,9 +55,6 @@ public class Server {
     @Column(nullable = false)
     private Long version;
 
-    @Column(nullable = false)
-    private String name;
-
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @ToString.Exclude
     private Region region;

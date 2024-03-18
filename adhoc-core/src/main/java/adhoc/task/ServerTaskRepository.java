@@ -35,7 +35,7 @@ public interface ServerTaskRepository extends JpaRepository<ServerTask, Long> {
 
     Optional<ServerTask> findByTaskIdentifier(String taskIdentifier);
 
-    Stream<ServerTask> streamBy();
+    Stream<ServerTask> streamByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
 
     @Modifying
     @Query("delete from ServerTask st where st.taskIdentifier not in ?1")

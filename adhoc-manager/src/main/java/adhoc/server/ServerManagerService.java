@@ -135,7 +135,7 @@ public class ServerManagerService {
             });
         }
 
-        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(1);
         try (Stream<Server> unusedServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
             unusedServers.forEach(unusedServer -> {
                 log.debug("Deleting unused server {}", unusedServer);

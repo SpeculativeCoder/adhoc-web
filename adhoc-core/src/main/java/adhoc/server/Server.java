@@ -28,7 +28,6 @@ import adhoc.region.Region;
 import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,7 +37,7 @@ import java.util.List;
  */
 @Entity
 //@DynamicInsert
-@DynamicUpdate
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

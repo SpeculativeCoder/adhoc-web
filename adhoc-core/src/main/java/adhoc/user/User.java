@@ -28,7 +28,6 @@ import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -48,7 +47,7 @@ import java.util.stream.Collectors;
 @Entity(name = "AdhocUser")
 // TODO: unique constraint(s)
 //@DynamicInsert
-@DynamicUpdate
+//@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -105,6 +104,7 @@ public class User {
     private LocalDateTime seen;
 
     @ElementCollection(fetch = FetchType.EAGER) // TODO: can we make the login success handler transactional?
+    @Enumerated(EnumType.STRING)
     private Set<UserRole> roles;
 
     private UUID token;

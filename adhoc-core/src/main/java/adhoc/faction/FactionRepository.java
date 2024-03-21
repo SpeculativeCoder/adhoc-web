@@ -36,7 +36,7 @@ public interface FactionRepository extends JpaRepository<Faction, Long> {
     // TODO
     //@Query("update Faction f set f.version = f.version + 1, f.score = f.score + ?1 where f.id = ?2")
     @Query(nativeQuery = true, value = "update faction f set f.version = f.version + 1, f.score = f.score + ?1 where f.id = ?2")
-    void updateScoreAddById(BigDecimal scoreAdd, Long factionId);
+    void updateScoreAddById(BigDecimal scoreAdd, Long id);
 
     @Modifying
     // TODO

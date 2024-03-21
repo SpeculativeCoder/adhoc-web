@@ -121,9 +121,9 @@ public class UserService {
                 userAgent);
 
         if (!coreProperties.getFeatureFlags().contains("development")) {
-            Preconditions.checkArgument(registerUserRequest.getEmail() == null, "register email not supported yet");
-            Preconditions.checkArgument(registerUserRequest.getPassword() == null, "register password not supported yet");
-            Preconditions.checkArgument(registerUserRequest.getName() == null, "register name not supported yet");
+            Preconditions.checkArgument(registerUserRequest.getEmail() == null, "Registering with email not allowed yet");
+            Preconditions.checkArgument(registerUserRequest.getPassword() == null, "Registering with password not allowed yet");
+            Preconditions.checkArgument(registerUserRequest.getName() == null, "Registering with name not allowed yet");
         }
 
         boolean authenticatedAsServer = isAuthenticatedAsServer();

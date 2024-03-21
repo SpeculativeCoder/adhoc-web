@@ -590,7 +590,7 @@
             <column name="public_ip"
                     type="VARCHAR(255)"/>
             <column name="public_web_socket_port"
-                    type="INT"/>
+                    type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
         </createTable>
@@ -618,7 +618,7 @@
             <column name="public_ip"
                     type="VARCHAR(255)"/>
             <column name="public_web_socket_port"
-                    type="INT"/>
+                    type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
         </createTable>
@@ -646,7 +646,7 @@
             <column name="public_ip"
                     type="VARCHAR(255)"/>
             <column name="public_web_socket_port"
-                    type="INT"/>
+                    type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
             <column name="server_id"

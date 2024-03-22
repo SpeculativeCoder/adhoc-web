@@ -26,6 +26,9 @@ import adhoc.dns.DnsService;
 import adhoc.hosting.*;
 import adhoc.properties.ManagerProperties;
 import adhoc.system.event.Event;
+import adhoc.task.kiosk.KioskTask;
+import adhoc.task.manager.ManagerTask;
+import adhoc.task.server.ServerTask;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -73,18 +76,9 @@ public class TaskManagerService {
 
         for (HostedTask hostedTask : hostedTasks) {
             Task task = taskRepository.findByTaskIdentifier(hostedTask.getTaskIdentifier())
-                    .orElseGet(() -> newTask(hostedTask));
+                    .orElseGet(() -> newTask(hostedTask.getClass()));
 
-            task.setTaskIdentifier(hostedTask.getTaskIdentifier());
-            task.setPrivateIp(hostedTask.getPrivateIp());
-            task.setPublicIp(hostedTask.getPublicIp());
-            if (hostedTask instanceof HostedServerTask hostedServerTask) {
-                ServerTask serverTask = (ServerTask) task;
-                serverTask.setPublicWebSocketPort(hostedServerTask.getPublicWebSocketPort());
-                serverTask.setServerId(hostedServerTask.getServerId());
-            }
-
-            task = taskRepository.save(task);
+            task = taskRepository.save(toEntity(hostedTask, task));
 
             taskIdentifiers.add(task.getTaskIdentifier());
         }
@@ -94,16 +88,28 @@ public class TaskManagerService {
         return events;
     }
 
-    private static Task newTask(HostedTask hostedTask) {
-        if (hostedTask instanceof HostedManagerTask) {
+    private static Task newTask(Class<? extends HostedTask> hostedTaskClass) {
+        if (HostedManagerTask.class.isAssignableFrom(hostedTaskClass)) {
             return new ManagerTask();
-        } else if (hostedTask instanceof HostedKioskTask) {
+        } else if (HostedKioskTask.class.isAssignableFrom(hostedTaskClass)) {
             return new KioskTask();
-        } else if (hostedTask instanceof HostedServerTask) {
+        } else if (HostedServerTask.class.isAssignableFrom(hostedTaskClass)) {
             return new ServerTask();
         } else {
-            throw new IllegalStateException("Unknown hosted task type: " + hostedTask.getClass());
+            throw new IllegalStateException("Unknown hosted task type: " + hostedTaskClass);
         }
+    }
+
+    private static Task toEntity(HostedTask hostedTask, Task task) {
+        task.setTaskIdentifier(hostedTask.getTaskIdentifier());
+        task.setPrivateIp(hostedTask.getPrivateIp());
+        task.setPublicIp(hostedTask.getPublicIp());
+        if (hostedTask instanceof HostedServerTask hostedServerTask) {
+            ServerTask serverTask = (ServerTask) task;
+            serverTask.setPublicWebSocketPort(hostedServerTask.getPublicWebSocketPort());
+            serverTask.setServerId(hostedServerTask.getServerId());
+        }
+        return task;
     }
 
     @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))

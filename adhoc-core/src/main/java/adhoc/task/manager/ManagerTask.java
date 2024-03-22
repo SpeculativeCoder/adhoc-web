@@ -20,21 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.task.manager;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import adhoc.task.Task;
+import adhoc.task.TaskType;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.util.Collection;
-import java.util.Optional;
+@Entity
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString(callSuper = true)
+public class ManagerTask extends Task {
 
-// TODO: common
-public interface KioskTaskRepository extends JpaRepository<KioskTask, Long> {
-
-    Optional<KioskTask> findByTaskIdentifier(String taskIdentifier);
-
-    @Modifying
-    @Query("delete from KioskTask st where st.taskIdentifier not in ?1")
-    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.MANAGER;
+    }
 }

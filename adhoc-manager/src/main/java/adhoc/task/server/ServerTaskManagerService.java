@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.task.server;
 
 import adhoc.hosting.HostedServerTask;
 import adhoc.hosting.HostedTask;
@@ -31,6 +31,7 @@ import adhoc.server.ServerRepository;
 import adhoc.server.ServerStatus;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
+import adhoc.task.Task;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

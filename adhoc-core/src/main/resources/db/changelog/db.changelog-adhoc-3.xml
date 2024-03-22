@@ -593,6 +593,10 @@
                     type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
+            <column name="initiated"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="seen"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
         </createTable>
 
         <addUniqueConstraint columnNames="task_identifier"
@@ -621,6 +625,10 @@
                     type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
+            <column name="initiated"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="seen"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
         </createTable>
 
         <addUniqueConstraint columnNames="task_identifier"
@@ -649,6 +657,10 @@
                     type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
+            <column name="initiated"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="seen"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="server_id"
                     type="BIGINT"/>
         </createTable>

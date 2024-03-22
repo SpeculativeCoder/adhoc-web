@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Transactional
@@ -72,18 +73,24 @@ public class TaskManagerService {
         log.debug("hostedTasks={}", hostedTasks);
         Verify.verifyNotNull(hostedTasks, "hostedTasks is null after polling hosting service!");
 
+        LocalDateTime now = LocalDateTime.now();
+
         List<String> taskIdentifiers = new ArrayList<>();
 
         for (HostedTask hostedTask : hostedTasks) {
             Task task = taskRepository.findByTaskIdentifier(hostedTask.getTaskIdentifier())
                     .orElseGet(() -> newTask(hostedTask.getClass()));
 
-            task = taskRepository.save(toEntity(hostedTask, task));
+            task = toEntity(hostedTask, task);
+            task.setSeen(now);
+
+            task = taskRepository.save(task);
 
             taskIdentifiers.add(task.getTaskIdentifier());
         }
 
-        taskRepository.deleteByTaskIdentifierNotIn(taskIdentifiers);
+        LocalDateTime seenBefore = now.minusMinutes(1);
+        taskRepository.deleteByTaskIdentifierNotInAndSeenBefore(taskIdentifiers, seenBefore);
 
         return events;
     }

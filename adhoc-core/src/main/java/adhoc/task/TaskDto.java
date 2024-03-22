@@ -28,6 +28,8 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.time.LocalDateTime;
+
 @Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -47,6 +49,10 @@ public class TaskDto {
     Integer publicWebSocketPort;
 
     String domain;
+
+    LocalDateTime initiated;
+
+    LocalDateTime seen;
 
     Long serverId;
 }

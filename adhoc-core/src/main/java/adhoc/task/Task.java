@@ -28,6 +28,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 /**
  * TODO: WIP
  * Information about a task in the hosting service e.g. a task in an AWS ECS cluster.
@@ -66,6 +68,10 @@ public abstract class Task {
 
     /** DNS domain name that is mapped to the public IP. */
     private String domain;
+
+    private LocalDateTime initiated;
+
+    private LocalDateTime seen;
 
     public abstract TaskType getTaskType();
 }

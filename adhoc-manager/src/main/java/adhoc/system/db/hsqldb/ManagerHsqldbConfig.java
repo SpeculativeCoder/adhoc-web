@@ -55,7 +55,7 @@ public class ManagerHsqldbConfig {
         server.setDatabasePath(0, "file:" + Files.createTempFile("adhoc_hsqldb_", ".dat").toString() +
                 ";user=" + dataSourceProperties.getUsername() + ";password=" + dataSourceProperties.getPassword() +
                 // TODO: back to mvcc when hsqldb issue fixed
-                ";hsqldb.tx=locks" + // locks/mvlocks/mvcc
+                ";hsqldb.tx=mvcc" + // locks/mvlocks/mvcc
                 ";check_props=true" +
                 ";sql.restrict_exec=true" +
                 ";sql.enforce_names=true" +

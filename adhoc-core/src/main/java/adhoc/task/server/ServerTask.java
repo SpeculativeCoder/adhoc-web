@@ -24,6 +24,7 @@ package adhoc.task.server;
 
 import adhoc.task.Task;
 import adhoc.task.TaskType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class ServerTask extends Task {
 
+    @Column(nullable = false)
     private Long serverId;
 
     @Override

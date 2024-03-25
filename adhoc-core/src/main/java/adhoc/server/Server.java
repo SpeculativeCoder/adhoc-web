@@ -65,15 +65,16 @@ public class Server {
     @Column(nullable = false)
     private String mapName;
 
-    @Column(nullable = false)
+    @Column
     private Double x;
-    @Column(nullable = false)
+    @Column
     private Double y;
-    @Column(nullable = false)
+    @Column
     private Double z;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ServerStatus status;
+    private ServerState state;
 
     private String publicIp;
 

@@ -57,7 +57,7 @@ public class ServerUpdatedEvent implements Event {
     private List<Integer> areaIndexes;
 
     @NotEmpty
-    private String status;
+    private String state;
 
     private String publicIp;
 

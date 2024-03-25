@@ -80,7 +80,7 @@ public class ServerManagerService {
         server.setY(server.getY());
         server.setZ(server.getZ());
 
-        server.setStatus(ServerStatus.INACTIVE); // TODO
+        server.setState(ServerState.INACTIVE); // TODO
 
         server.setPublicIp(server.getPublicIp());
 
@@ -107,7 +107,7 @@ public class ServerManagerService {
                 server.getRegion().getId(),
                 server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
                 server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
-                server.getStatus().name(),
+                server.getState().name(),
                 server.getPublicIp(),
                 server.getPublicWebSocketPort(),
                 server.getWebSocketUrl());
@@ -130,40 +130,53 @@ public class ServerManagerService {
                 List<Set<Area>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
                 log.trace("Region {} area groups: {}", region.getId(), areaGroups);
 
-                areaGroups.forEach(areaGroup ->
-                        manageServer(region, areaGroup).ifPresent(events::add));
+                List<Long> usedRegionServerIds = new ArrayList<>();
+
+                for (Set<Area> areaGroup : areaGroups) {
+                    // TODO: prefer searching by area(s) that have human(s) in them
+                    Area firstArea = areaGroup.iterator().next();
+                    Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
+
+                    manageServer(server, region, areaGroup).ifPresent(events::add);
+
+                    usedRegionServerIds.add(server.getId());
+                }
+
+                try (Stream<Server> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedRegionServerIds)) {
+                    unusedServers.forEach(unusedServer ->
+                            manageServer(unusedServer, region, Collections.emptySet()).ifPresent(events::add));
+                }
             });
         }
 
-        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(1);
-        try (Stream<Server> unusedServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
-            unusedServers.forEach(unusedServer -> {
-                log.debug("Deleting unused server {}", unusedServer);
-                serverRepository.delete(unusedServer);
+
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
+        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
+            oldServers.forEach(oldServer -> {
+                log.debug("Deleting old server {}", oldServer);
+                serverRepository.delete(oldServer);
             });
         }
 
         return events;
     }
 
-    private Optional<ServerUpdatedEvent> manageServer(Region region, Set<Area> areaGroup) {
-        log.trace("Managing server for region {} area group {}", region.getId(), areaGroup);
+    private Optional<ServerUpdatedEvent> manageServer(Server server, Region region, Set<Area> areaGroup) {
+        log.trace("Managing server {} for region {} area group {}", server, region, areaGroup);
         boolean emitEvent = false;
 
-        double areaGroupX = areaGroup.stream().mapToDouble(Area::getX).average().orElseThrow();
-        double areaGroupY = areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
-        double areaGroupZ = areaGroup.stream().mapToDouble(Area::getZ).average().orElseThrow();
-
-        // TODO: prefer searching by area(s) that have human(s) in them
-        Area firstArea = areaGroup.iterator().next();
-        Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
+        Double areaGroupX = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getX).average().orElseThrow();
+        Double areaGroupY = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
+        Double areaGroupZ = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getZ).average().orElseThrow();
 
         if (server.getRegion() != region) {
             server.setRegion(region);
             emitEvent = true;
         }
-        if (!Objects.equals(server.getMapName(), region.getMapName())) {
-            server.setMapName(region.getMapName());
+
+        String regionMapName = region == null ? null : region.getMapName();
+        if (!Objects.equals(server.getMapName(), regionMapName)) {
+            server.setMapName(regionMapName);
             emitEvent = true;
         }
 
@@ -201,7 +214,7 @@ public class ServerManagerService {
         }
 
         if (server.getId() == null) {
-            server.setStatus(ServerStatus.INACTIVE);
+            server.setState(ServerState.INACTIVE);
 
             server = serverRepository.save(server);
 
@@ -236,27 +249,30 @@ public class ServerManagerService {
             emitEvent = true;
         }
 
-        server.setSeen(LocalDateTime.now());
+        // TODO
+        if (task.getId() != null) {
+            server.setSeen(LocalDateTime.now());
+        }
 
         return emitEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public Optional<ServerUpdatedEvent> updateServerStateInNewTransaction(Long serverId, ServerStatus serverStatus) {
+    public Optional<ServerUpdatedEvent> updateServerStateInNewTransaction(Long serverId, ServerState serverState) {
         Server server = serverRepository.getReferenceById(serverId);
 
-        server.setStatus(serverStatus);
+        server.setState(serverState);
 
-        if (serverStatus == ServerStatus.STARTING) {
+        if (serverState == ServerState.STARTING) {
             server.setInitiated(LocalDateTime.now());
         }
 
         // TODO
-        if (serverStatus == ServerStatus.STOPPING || serverStatus == ServerStatus.INACTIVE) {
-            server.setWebSocketUrl(null);
-            server.setDomain(null);
-        }
+        //if (serverState == ServerState.STOPPING || serverState == ServerState.INACTIVE) {
+        //    server.setWebSocketUrl(null);
+        //    server.setDomain(null);
+        //}
 
         return Optional.of(toServerUpdatedEvent(server));
     }

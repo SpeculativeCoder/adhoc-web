@@ -171,19 +171,13 @@
                 <constraints nullable="false"/>
             </column>
             <column name="x"
-                    type="DOUBLE">
-                <constraints nullable="false"/>
-            </column>
+                    type="DOUBLE"/>
             <column name="y"
-                    type="DOUBLE">
-                <constraints nullable="false"/>
-            </column>
+                    type="DOUBLE"/>
             <column name="z"
-                    type="DOUBLE">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status"
-                    type="TINYINT">
+                    type="DOUBLE"/>
+            <column name="state"
+                    type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="manager_host"
@@ -662,7 +656,9 @@
             <column name="seen"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="server_id"
-                    type="BIGINT"/>
+                    type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <addUniqueConstraint columnNames="task_identifier"

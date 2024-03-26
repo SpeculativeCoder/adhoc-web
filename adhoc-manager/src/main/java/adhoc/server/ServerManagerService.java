@@ -137,14 +137,25 @@ public class ServerManagerService {
                     Area firstArea = areaGroup.iterator().next();
                     Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
 
-                    manageServer(server, region, areaGroup).ifPresent(events::add);
+                    boolean emitEvent = manageServer(server, region, areaGroup);
+
+                    server = serverRepository.save(server);
+
+                    if (emitEvent) {
+                        events.add(toServerUpdatedEvent(server));
+                    }
 
                     usedRegionServerIds.add(server.getId());
                 }
 
                 try (Stream<Server> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedRegionServerIds)) {
-                    unusedServers.forEach(unusedServer ->
-                            manageServer(unusedServer, region, Collections.emptySet()).ifPresent(events::add));
+                    unusedServers.forEach(unusedServer -> {
+                        boolean emitEvent = manageServer(unusedServer, region, Collections.emptySet());
+
+                        if (emitEvent) {
+                            events.add(toServerUpdatedEvent(unusedServer));
+                        }
+                    });
                 }
             });
         }
@@ -161,7 +172,7 @@ public class ServerManagerService {
         return events;
     }
 
-    private Optional<ServerUpdatedEvent> manageServer(Server server, Region region, Set<Area> areaGroup) {
+    private boolean manageServer(Server server, Region region, Set<Area> areaGroup) {
         log.trace("Managing server {} for region {} area group {}", server, region, areaGroup);
         boolean emitEvent = false;
 
@@ -215,15 +226,14 @@ public class ServerManagerService {
 
         if (server.getId() == null) {
             server.setState(ServerState.INACTIVE);
-
-            server = serverRepository.save(server);
-
             log.debug("New server {} assigned to region {} areas {}", server, server.getRegion(), server.getAreas());
             emitEvent = true;
         }
 
         // check if a server task exists and copy appropriate information (or just copy from an empty object if task doesn't exist yet)
-        ServerTask task = serverTaskRepository.findByServerId(server.getId()).orElse(new ServerTask());
+        ServerTask task = Optional.ofNullable(server.getId())
+                .flatMap(serverTaskRepository::findByServerId)
+                .orElse(new ServerTask());
 
         if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
             server.setPublicIp(task.getPublicIp());
@@ -254,7 +264,7 @@ public class ServerManagerService {
             server.setSeen(LocalDateTime.now());
         }
 
-        return emitEvent ? Optional.of(toServerUpdatedEvent(server)) : Optional.empty();
+        return emitEvent;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

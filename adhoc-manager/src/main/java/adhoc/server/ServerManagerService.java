@@ -130,27 +130,29 @@ public class ServerManagerService {
                 List<Set<Area>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
                 log.trace("Region {} area groups: {}", region.getId(), areaGroups);
 
-                List<Long> usedRegionServerIds = new ArrayList<>();
+                List<Long> usedServerIds = new ArrayList<>();
 
                 for (Set<Area> areaGroup : areaGroups) {
                     // TODO: prefer searching by area(s) that have human(s) in them
                     Area firstArea = areaGroup.iterator().next();
                     Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
 
-                    boolean emitEvent = manageServer(server, region, areaGroup);
+                    boolean changed = manageServerForRegionAndAreaGroup(server, region, areaGroup);
 
-                    server = serverRepository.save(server);
+                    if (server.getId() == null) {
+                        server = serverRepository.save(server);
+                    }
 
-                    if (emitEvent) {
+                    if (changed) {
                         events.add(toServerUpdatedEvent(server));
                     }
 
-                    usedRegionServerIds.add(server.getId());
+                    usedServerIds.add(server.getId());
                 }
 
-                try (Stream<Server> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedRegionServerIds)) {
+                try (Stream<Server> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedServerIds)) {
                     unusedServers.forEach(unusedServer -> {
-                        boolean emitEvent = manageServer(unusedServer, region, Collections.emptySet());
+                        boolean emitEvent = manageServerForRegionAndAreaGroup(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
                             events.add(toServerUpdatedEvent(unusedServer));
@@ -172,7 +174,7 @@ public class ServerManagerService {
         return events;
     }
 
-    private boolean manageServer(Server server, Region region, Set<Area> areaGroup) {
+    private boolean manageServerForRegionAndAreaGroup(Server server, Region region, Set<Area> areaGroup) {
         log.trace("Managing server {} for region {} area group {}", server, region, areaGroup);
         boolean emitEvent = false;
 

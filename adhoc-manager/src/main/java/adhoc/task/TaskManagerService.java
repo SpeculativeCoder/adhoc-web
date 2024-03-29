@@ -33,6 +33,7 @@ import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.TransientDataAccessException;
@@ -63,7 +64,8 @@ public class TaskManagerService {
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
     private TaskManagerService self;
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<? extends Event> refreshTasks() {
         log.trace("Refreshing tasks...");
         List<Event> events = new ArrayList<>();
@@ -119,7 +121,8 @@ public class TaskManagerService {
         return task;
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<? extends Event> manageTaskDomains() {
         log.trace("Managing task domains...");
         List<Event> events = new ArrayList<>();
@@ -157,7 +160,8 @@ public class TaskManagerService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void updateTaskDomainInNewTransaction(Long taskId, String domain) {
         Task task = taskRepository.getReferenceById(taskId);
 

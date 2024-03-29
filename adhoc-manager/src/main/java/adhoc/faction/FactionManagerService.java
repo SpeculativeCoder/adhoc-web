@@ -26,6 +26,7 @@ import adhoc.objective.ObjectiveRepository;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -64,7 +65,8 @@ public class FactionManagerService {
         return faction;
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void awardFactionScores() {
         log.trace("Awarding faction scores...");
 
@@ -95,7 +97,8 @@ public class FactionManagerService {
         }
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void decayFactionScores() {
         log.trace("Decaying faction scores...");
 

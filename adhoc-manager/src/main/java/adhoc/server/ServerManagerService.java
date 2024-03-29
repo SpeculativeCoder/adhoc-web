@@ -34,6 +34,7 @@ import adhoc.task.server.ServerTask;
 import adhoc.task.server.ServerTaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
@@ -118,7 +119,8 @@ public class ServerManagerService {
      * Manage the required servers to represent the areas within each region.
      * This will typically be based on number of players in each area.
      */
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<? extends Event> manageServers() {
         log.trace("Managing servers...");
         List<Event> events = new ArrayList<>();
@@ -139,9 +141,9 @@ public class ServerManagerService {
 
                     boolean changed = manageServerForRegionAndAreaGroup(server, region, areaGroup);
 
-                    if (server.getId() == null) {
-                        server = serverRepository.save(server);
-                    }
+                    //if (server.getId() == null) {
+                    server = serverRepository.save(server);
+                    //}
 
                     if (changed) {
                         events.add(toServerUpdatedEvent(server));
@@ -270,7 +272,8 @@ public class ServerManagerService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public Optional<ServerUpdatedEvent> updateServerStateInNewTransaction(Long serverId, ServerState serverState) {
         Server server = serverRepository.getReferenceById(serverId);
 

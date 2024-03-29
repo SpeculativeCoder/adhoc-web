@@ -36,6 +36,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.event.Level;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -78,7 +79,8 @@ public class UserManagerService {
         return user;
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public UserDetailDto serverUserJoin(UserJoinRequest userJoinRequest) {
         log.debug("userJoin: userId={} human={} factionId={} serverId={}",
                 userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
@@ -141,7 +143,8 @@ public class UserManagerService {
         return user;
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
         User user = userRepository.getReferenceById(userNavigateRequest.getUserId());
         Server sourceServer = serverRepository.getReferenceById(userNavigateRequest.getSourceServerId());
@@ -172,7 +175,8 @@ public class UserManagerService {
                 destinationServer.getWebSocketUrl()));
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public UserDefeatedUserEvent handleUserDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
         User user = userRepository.getReferenceById(serverUserDefeatedUserEvent.getUserId());
         User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
@@ -186,7 +190,8 @@ public class UserManagerService {
                 defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.getHuman());
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void decayUserScores() {
         log.trace("Decaying user scores...");
 
@@ -194,7 +199,8 @@ public class UserManagerService {
         userRepository.updateScoreMultiply(BigDecimal.valueOf(0.999));
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void leaveUnseenUsers() {
         log.trace("Leaving unseen users...");
 
@@ -213,7 +219,8 @@ public class UserManagerService {
         }
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void purgeOldUsers() {
         log.trace("Purging old users...");
 

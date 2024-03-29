@@ -35,6 +35,7 @@ import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -115,7 +116,8 @@ public class ObjectiveManagerService {
         return objective;
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
@@ -165,7 +167,8 @@ public class ObjectiveManagerService {
         }).toList();
     }
 
-    @Retryable(retryFor = {TransientDataAccessException.class}, maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
         Objective objective = objectiveRepository.getReferenceById(event.getObjectiveId());
         Faction faction = factionRepository.getReferenceById(event.getFactionId());

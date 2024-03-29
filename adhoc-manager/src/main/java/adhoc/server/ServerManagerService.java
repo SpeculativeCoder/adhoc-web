@@ -32,6 +32,7 @@ import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
 import adhoc.task.server.ServerTask;
 import adhoc.task.server.ServerTaskRepository;
+import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -128,48 +129,54 @@ public class ServerManagerService {
         try (Stream<Region> regions = regionRepository.streamBy()) {
             regions.forEach(region -> {
                 log.trace("Managing servers for region {}", region);
+                List<Long> usedServerIds = new ArrayList<>();
 
                 List<Set<Area>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
                 log.trace("Region {} area groups: {}", region.getId(), areaGroups);
 
-                List<Long> usedServerIds = new ArrayList<>();
-
                 for (Set<Area> areaGroup : areaGroups) {
                     // TODO: prefer searching by area(s) that have human(s) in them
                     Area firstArea = areaGroup.iterator().next();
-                    Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
+                    Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(() -> {
+                        Server newServer = new Server();
+                        newServer.setState(ServerState.INACTIVE);
+                        return newServer;
+                    });
 
-                    boolean changed = manageServerForRegionAndAreaGroup(server, region, areaGroup);
+                    // adjust server for the required region and area group
+                    boolean emitEvent = manageServerForRegionAndAreaGroup(server, region, areaGroup);
 
-                    //if (server.getId() == null) {
-                    server = serverRepository.save(server);
-                    //}
-
-                    if (changed) {
-                        events.add(toServerUpdatedEvent(server));
+                    if (server.getId() == null) {
+                        server = serverRepository.save(server);
+                        emitEvent = true;
                     }
 
                     usedServerIds.add(server.getId());
+
+                    // TODO
+                    Optional<ServerTask> optionalServerTask = serverTaskRepository.findByServerId(server.getId());
+
+                    emitEvent = manageServerForServerTask(server, optionalServerTask) || emitEvent;
+
+                    if (emitEvent) {
+                        events.add(toServerUpdatedEvent(server));
+                    }
                 }
 
                 try (Stream<Server> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedServerIds)) {
                     unusedServers.forEach(unusedServer -> {
                         boolean emitEvent = manageServerForRegionAndAreaGroup(unusedServer, region, Collections.emptySet());
 
+                        // TODO
+                        Optional<ServerTask> optionalServerTask = serverTaskRepository.findByServerId(unusedServer.getId());
+
+                        emitEvent = manageServerForServerTask(unusedServer, optionalServerTask) || emitEvent;
+
                         if (emitEvent) {
                             events.add(toServerUpdatedEvent(unusedServer));
                         }
                     });
                 }
-            });
-        }
-
-
-        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
-        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
-            oldServers.forEach(oldServer -> {
-                log.debug("Deleting old server {}", oldServer);
-                serverRepository.delete(oldServer);
             });
         }
 
@@ -189,7 +196,8 @@ public class ServerManagerService {
             emitEvent = true;
         }
 
-        String regionMapName = region == null ? null : region.getMapName();
+        Verify.verifyNotNull(region, "region must be not null");
+        String regionMapName = region.getMapName();
         if (!Objects.equals(server.getMapName(), regionMapName)) {
             server.setMapName(regionMapName);
             emitEvent = true;
@@ -228,29 +236,34 @@ public class ServerManagerService {
             }
         }
 
-        if (server.getId() == null) {
-            server.setState(ServerState.INACTIVE);
-            log.debug("New server {} assigned to region {} areas {}", server, server.getRegion(), server.getAreas());
+        return emitEvent;
+    }
+
+    private boolean manageServerForServerTask(Server server, Optional<ServerTask> optionalServerTask) {
+        log.trace("Managing server {} for server task {}", server, optionalServerTask);
+        boolean emitEvent = false;
+
+        String serverTaskPublicIp = optionalServerTask
+                .map(ServerTask::getPublicIp)
+                .orElse(null);
+        if (!Objects.equals(server.getPublicIp(), serverTaskPublicIp)) {
+            server.setPublicIp(serverTaskPublicIp);
             emitEvent = true;
         }
 
-        // check if a server task exists and copy appropriate information (or just copy from an empty object if task doesn't exist yet)
-        ServerTask task = Optional.ofNullable(server.getId())
-                .flatMap(serverTaskRepository::findByServerId)
-                .orElse(new ServerTask());
-
-        if (!Objects.equals(server.getPublicIp(), task.getPublicIp())) {
-            server.setPublicIp(task.getPublicIp());
+        Integer serverTaskPublicWebSocketPort = optionalServerTask
+                .map(ServerTask::getPublicWebSocketPort)
+                .orElse(null);
+        if (!Objects.equals(server.getPublicWebSocketPort(), serverTaskPublicWebSocketPort)) {
+            server.setPublicWebSocketPort(serverTaskPublicWebSocketPort);
             emitEvent = true;
         }
 
-        if (!Objects.equals(server.getPublicWebSocketPort(), task.getPublicWebSocketPort())) {
-            server.setPublicWebSocketPort(task.getPublicWebSocketPort());
-            emitEvent = true;
-        }
-
-        if (!Objects.equals(server.getDomain(), task.getDomain())) {
-            server.setDomain(task.getDomain());
+        String serverTaskDomain = optionalServerTask
+                .map(ServerTask::getDomain)
+                .orElse(null);
+        if (!Objects.equals(server.getDomain(), serverTaskDomain)) {
+            server.setDomain(serverTaskDomain);
             server.setWebSocketUrl(null); // need to calculate the web socket URL (see below)
             emitEvent = true;
         }
@@ -258,13 +271,12 @@ public class ServerManagerService {
         if (server.getWebSocketUrl() == null
                 && server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
             server.setWebSocketUrl(
-                    (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + task.getPublicIp()) +
+                    (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + server.getPublicIp()) +
                             ":" + server.getPublicWebSocketPort());
             emitEvent = true;
         }
 
-        // TODO
-        if (task.getId() != null) {
+        if (optionalServerTask.isPresent()) {
             server.setSeen(LocalDateTime.now());
         }
 
@@ -283,12 +295,16 @@ public class ServerManagerService {
             server.setInitiated(LocalDateTime.now());
         }
 
-        // TODO
-        //if (serverState == ServerState.STOPPING || serverState == ServerState.INACTIVE) {
-        //    server.setWebSocketUrl(null);
-        //    server.setDomain(null);
-        //}
-
         return Optional.of(toServerUpdatedEvent(server));
+    }
+
+    public void purgeOldServers() {
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
+        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
+            oldServers.forEach(oldServer -> {
+                log.info("Deleting old server {}", oldServer.getId());
+                serverRepository.delete(oldServer);
+            });
+        }
     }
 }

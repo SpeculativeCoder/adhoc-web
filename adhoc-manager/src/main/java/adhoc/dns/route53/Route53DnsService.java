@@ -59,7 +59,7 @@ public class Route53DnsService implements DnsService {
 
     @Override
     public void createOrUpdateDnsRecord(String domain, Set<String> ips) {
-        log.info("Updating Route 53 DNS entry: domain={} ips={} zone={}", domain, ips, route53DnsProperties.getRoute53Zone());
+        log.info("Updating Route 53 DNS entry: domain={} ips={}", domain, ips);
 
         //  TODO
         if (domain.contains("localhost") || ips.isEmpty()) {

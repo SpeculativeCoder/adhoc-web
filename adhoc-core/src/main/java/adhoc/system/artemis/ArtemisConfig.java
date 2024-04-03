@@ -128,6 +128,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         addressSettings.setAutoCreateQueues(false);
         addressSettings.setAutoDeleteAddresses(false);
         addressSettings.setAutoDeleteQueues(false);
+        addressSettings.setAutoDeleteCreatedQueues(false);
         //addressSettings.setAutoDeleteAddressesDelay(5000);
         return addressSettings;
     }
@@ -138,6 +139,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         addressSettings.setAutoCreateQueues(true);
         addressSettings.setAutoDeleteAddresses(false);
         addressSettings.setAutoDeleteQueues(false);
+        addressSettings.setAutoDeleteCreatedQueues(false);
         //addressSettings.setAutoDeleteAddressesDelay(5000);
         return addressSettings;
     }

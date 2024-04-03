@@ -80,7 +80,7 @@ public class ServerTaskManagerService {
         try (Stream<ServerTask> orphanedServerTasks = serverTaskRepository.streamByTaskIdentifierNotIn(taskIdentifiers)) {
             orphanedServerTasks.forEach(orphanedServerTask -> {
                 try {
-                    log.info("Stopping orphaned server task {}", orphanedServerTask.getTaskIdentifier());
+                    log.debug("Stopping orphaned server task {}", orphanedServerTask.getTaskIdentifier());
                     hostingService.stopServerTask(orphanedServerTask.getTaskIdentifier());
                 } catch (Exception e) {
                     log.warn("Failed to stop server task {}!", orphanedServerTask.getTaskIdentifier(), e);
@@ -99,7 +99,7 @@ public class ServerTaskManagerService {
 
         case INACTIVE:
             if (optionalServerTask.isEmpty() && !server.getAreas().isEmpty()) {
-                log.info("Server {} has assigned areas - need to start server task", server.getId());
+                log.debug("Server {} has assigned areas - need to start server task", server.getId());
                 optionalEvent = serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerState.STARTING);
                 try {
                     hostingService.startServerTask(server);
@@ -112,7 +112,7 @@ public class ServerTaskManagerService {
 
         case ServerState.STARTING:
             if (optionalServerTask.isPresent()) {
-                log.info("Server task {} for server {} has started successfully", optionalServerTask.get().getTaskIdentifier(), server.getId());
+                log.debug("Server task {} for server {} has started successfully", optionalServerTask.get().getTaskIdentifier(), server.getId());
                 optionalEvent = serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerState.ACTIVE);
 
             } else if (server.getInitiated().plusMinutes(5).isBefore(LocalDateTime.now())) {
@@ -123,14 +123,14 @@ public class ServerTaskManagerService {
 
         case ServerState.STOPPING:
             if (optionalServerTask.isEmpty()) {
-                log.info("Server task server {} has stopped successfully", server.getId());
+                log.debug("Server task server {} has stopped successfully", server.getId());
                 optionalEvent = serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerState.INACTIVE);
             }
             break;
 
         case ServerState.ACTIVE:
             if (optionalServerTask.isPresent() && server.getAreas().isEmpty()) {
-                log.info("Server {} has no assigned areas - need to stop server task {}", server.getId(), optionalServerTask.get().getTaskIdentifier());
+                log.debug("Server {} has no assigned areas - need to stop server task {}", server.getId(), optionalServerTask.get().getTaskIdentifier());
                 optionalEvent = serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerState.STOPPING);
                 try {
                     hostingService.stopServerTask(optionalServerTask.get().getTaskIdentifier());
@@ -140,7 +140,7 @@ public class ServerTaskManagerService {
                 }
 
             } else if (optionalServerTask.isEmpty()) {
-                log.info("Server task for server {} has stopped unexpectedly!", server.getId());
+                log.warn("Server task for server {} has stopped unexpectedly!", server.getId());
                 optionalEvent = serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerState.INACTIVE);
             }
             break;
@@ -158,7 +158,7 @@ public class ServerTaskManagerService {
         hostedTasks.stream()
                 .filter(task -> task instanceof HostedServerTask)
                 .forEach(hostedServerTask -> {
-                    log.info("Stopping server task {}", hostedServerTask.getTaskIdentifier());
+                    log.debug("Stopping server task {}", hostedServerTask.getTaskIdentifier());
                     hostingService.stopServerTask(hostedServerTask.getTaskIdentifier());
                 });
     }

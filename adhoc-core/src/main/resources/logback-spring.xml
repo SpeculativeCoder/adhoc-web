@@ -30,7 +30,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
         <!-- quick/handy way to only show mutating SQL if chasing something down when org.hibernate.SQL logging set to debug -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     ("org.hibernate.SQL".equals(logger) &amp;&amp;
@@ -41,7 +41,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <!-- !message.endsWith("for update") -->
 
@@ -57,8 +57,8 @@
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
 
-        <!-- suppress no data warnings from hsqldb UPDATEs etc. which don't update any columns -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!-- suppress no data warnings from hsqldb UPDATEs etc. which don't update any columns (HSQLDB) -->
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
@@ -67,10 +67,10 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
-        <!-- pessimistic locking failure messages -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!-- pessimistic locking failure messages (HSQLDB) -->
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
@@ -79,14 +79,15 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
-        <!-- batch insert failures -->
+        <!-- batch insert failures due to concurrency -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     ("org.hibernate.orm.jdbc.batch".equals(logger)
-                    &amp;&amp; (message.equals("HHH100503: On release of batch it still contained JDBC statements") || message.startsWith("HHH100501: Exception executing batch")))
+                    &amp;&amp; (message.equals("HHH100503: On release of batch it still contained JDBC statements")
+                    || message.startsWith("HHH100501: Exception executing batch [org.hibernate.StaleStateException: ")))
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
@@ -94,7 +95,7 @@
         </filter>
 
         <!-- web browser stomp disconnection failures -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(logger)
@@ -103,7 +104,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->

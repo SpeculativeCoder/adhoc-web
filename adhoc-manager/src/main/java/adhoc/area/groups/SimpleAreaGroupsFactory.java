@@ -39,7 +39,7 @@ public class SimpleAreaGroupsFactory implements AreaGroupsFactory {
 
     @PostConstruct
     public void postConstruct() {
-        log.info("Simple Area Groups Factory is available");
+        log.debug("Simple Area Groups Factory is available");
     }
 
     @Override

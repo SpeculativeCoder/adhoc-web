@@ -302,7 +302,7 @@ public class ServerManagerService {
         LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
         try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
             oldServers.forEach(oldServer -> {
-                log.info("Deleting old server {}", oldServer.getId());
+                log.debug("Deleting old server {}", oldServer.getId());
                 serverRepository.delete(oldServer);
             });
         }

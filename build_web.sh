@@ -35,6 +35,7 @@ export CLIENT_UNREAL_CONFIGURATION=${CLIENT_UNREAL_CONFIGURATION:-Development}
 export FEATURE_FLAGS=${FEATURE_FLAGS:-development}
 
 export POSTGRES_HOST=${POSTGRES_HOST:-${ADHOC_NAME}-dev-manager.${ADHOC_NAME}-dev}
+export H2_HOST=${H2_HOST:-${ADHOC_NAME}-dev-manager.${ADHOC_NAME}-dev}
 export HSQLDB_HOST=${HSQLDB_HOST:-${ADHOC_NAME}-dev-manager.${ADHOC_NAME}-dev}
 export MANAGER_HOST=${MANAGER_HOST:-${ADHOC_NAME}-dev-manager.${ADHOC_NAME}-dev}
 export KIOSK_HOST=${KIOSK_HOST:-${ADHOC_NAME}-dev-kiosk.${ADHOC_NAME}-dev}
@@ -57,8 +58,8 @@ export MANAGER_IMAGE=${MANAGER_IMAGE:-${ADHOC_NAME}_dev_manager}
 export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_dev_kiosk}
 export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_dev_server}
 
-export MANAGER_SPRING_PROFILES_ACTIVE=${MANAGER_SPRING_PROFILES_ACTIVE:-db-hsqldb,hosting-ecs,dns-route53}
-export KIOSK_SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE:-db-hsqldb}
+export MANAGER_SPRING_PROFILES_ACTIVE=${MANAGER_SPRING_PROFILES_ACTIVE:-db-h2,hosting-ecs,dns-route53}
+export KIOSK_SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE:-db-h2}
 
 mvn clean package -DskipTests -Dangular.configuration=${ANGULAR_CONFIGURATION} -Dunreal.configuration=${CLIENT_UNREAL_CONFIGURATION}
 
@@ -67,6 +68,7 @@ docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
   --build-arg SSL_ENABLED=${SSL_ENABLED} \
   --build-arg FEATURE_FLAGS=${FEATURE_FLAGS} \
   --build-arg POSTGRES_HOST=${POSTGRES_HOST} \
+  --build-arg H2_HOST=${H2_HOST} \
   --build-arg HSQLDB_HOST=${HSQLDB_HOST} \
   --build-arg MANAGER_HOST=${MANAGER_HOST} \
   --build-arg KIOSK_HOST=${KIOSK_HOST} \
@@ -92,6 +94,7 @@ docker build --tag ${KIOSK_IMAGE} -f docker/adhoc_kiosk.Dockerfile \
   --build-arg SSL_ENABLED=${SSL_ENABLED} \
   --build-arg FEATURE_FLAGS=${FEATURE_FLAGS} \
   --build-arg POSTGRES_HOST=${POSTGRES_HOST} \
+  --build-arg H2_HOST=${H2_HOST} \
   --build-arg HSQLDB_HOST=${HSQLDB_HOST} \
   --build-arg MANAGER_HOST=${MANAGER_HOST} \
   --build-arg KIOSK_HOST=${KIOSK_HOST} \

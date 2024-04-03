@@ -528,6 +528,10 @@ resource "random_password" "adhoc_default_user_password" {
   special = false
 }
 
+resource "random_password" "adhoc_h2_password" {
+  length = 50
+}
+
 resource "random_password" "adhoc_hsqldb_password" {
   length = 50
 }
@@ -631,6 +635,20 @@ resource "aws_ssm_parameter" "adhoc_default_user_password" {
     ]
   }
 }
+
+resource "aws_ssm_parameter" "adhoc_h2_password" {
+  name  = "${local.adhoc_name}_${terraform.workspace}_h2_password"
+  type  = "SecureString"
+  tier  = "Standard"
+  value = random_password.adhoc_h2_password.result
+  // TODO
+  lifecycle {
+    ignore_changes = [
+      value
+    ]
+  }
+}
+
 
 resource "aws_ssm_parameter" "adhoc_hsqldb_password" {
   name  = "${local.adhoc_name}_${terraform.workspace}_hsqldb_password"
@@ -802,6 +820,10 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
           valueFrom = "${local.adhoc_name}_${terraform.workspace}_default_user_password"
         },
         {
+          name      = "H2_PASSWORD"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_h2_password"
+        },
+        {
           name      = "HSQLDB_PASSWORD"
           valueFrom = "${local.adhoc_name}_${terraform.workspace}_hsqldb_password"
         },
@@ -913,6 +935,10 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
         {
           name      = "ARTEMIS_EMBEDDED_CLUSTER_PASSWORD"
           valueFrom = "${local.adhoc_name}_${terraform.workspace}_artemis_embedded_cluster_password"
+        },
+        {
+          name      = "H2_PASSWORD"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_h2_password"
         },
         {
           name      = "HSQLDB_PASSWORD"

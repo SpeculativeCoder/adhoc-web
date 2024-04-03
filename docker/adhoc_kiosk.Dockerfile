@@ -33,6 +33,7 @@ ARG SSL_ENABLED=false
 ARG FEATURE_FLAGS=development
 
 ARG POSTGRES_HOST=host.docker.internal
+ARG H2_HOST=host.docker.internal
 ARG HSQLDB_HOST=host.docker.internal
 ARG MANAGER_HOST=host.docker.internal
 ARG KIOSK_HOST=host.docker.internal
@@ -55,8 +56,7 @@ ARG MANAGER_IMAGE=adhoc_dev_manager
 ARG KIOSK_IMAGE=adhoc_dev_kiosk
 ARG SERVER_IMAGE=adhoc_dev_server
 
-#ARG SPRING_PROFILES_ACTIVE=db-postgres
-ARG SPRING_PROFILES_ACTIVE=db-hsqldb
+ARG SPRING_PROFILES_ACTIVE=db-h2
 
 ENV ADHOC_NAME=${ADHOC_NAME}
 

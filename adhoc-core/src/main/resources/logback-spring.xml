@@ -30,7 +30,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
         <!-- quick/handy way to only show mutating SQL if chasing something down when org.hibernate.SQL logging set to debug -->
-        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     ("org.hibernate.SQL".equals(logger) &amp;&amp;
@@ -41,7 +41,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>-->
+        </filter>
 
         <!-- !message.endsWith("for update") -->
 

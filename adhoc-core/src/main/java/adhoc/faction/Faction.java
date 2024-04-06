@@ -58,6 +58,6 @@ public class Faction {
     @Column(nullable = false)
     private String color;
 
-    @Column(nullable = false)
+    @Column(precision = 128, scale = 32, nullable = false)
     private BigDecimal score;
 }

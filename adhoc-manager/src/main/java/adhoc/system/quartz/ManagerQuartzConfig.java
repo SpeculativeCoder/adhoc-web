@@ -52,13 +52,15 @@ public class ManagerQuartzConfig {
     public static final String PURGE_OLD_USERS = "purgeOldUsers";
     public static final String PURGE_OLD_PAWNS = "purgeOldPawns";
 
+    public static final Instant startInstant = Instant.now();
+
     @Bean
     public Trigger manageServersTrigger() {
         return TriggerBuilder.newTrigger()
                 .forJob(MANAGE_SERVERS).withIdentity(MANAGE_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(20))).build();
     }
 
     @Bean
@@ -67,7 +69,7 @@ public class ManagerQuartzConfig {
                 .forJob(PURGE_OLD_SERVERS).withIdentity(PURGE_OLD_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(20))).build();
     }
 
     @Bean
@@ -76,7 +78,7 @@ public class ManagerQuartzConfig {
                 .forJob(REFRESH_TASKS).withIdentity(REFRESH_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(20))).build();
     }
 
     @Bean
@@ -85,7 +87,7 @@ public class ManagerQuartzConfig {
                 .forJob(MANAGE_TASK_DOMAINS).withIdentity(MANAGE_TASK_DOMAINS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(20))).build();
     }
 
     @Bean
@@ -94,7 +96,7 @@ public class ManagerQuartzConfig {
                 .forJob(MANAGE_SERVER_TASKS).withIdentity(MANAGE_SERVER_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(20))).build();
     }
 
     @Bean
@@ -103,7 +105,7 @@ public class ManagerQuartzConfig {
                 .forJob(AWARD_FACTION_SCORES).withIdentity(AWARD_FACTION_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(5))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(20))).build();
     }
 
     @Bean
@@ -112,7 +114,7 @@ public class ManagerQuartzConfig {
                 .forJob(DECAY_FACTION_SCORES).withIdentity(DECAY_FACTION_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(5))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(21))).build();
     }
 
     @Bean
@@ -121,7 +123,7 @@ public class ManagerQuartzConfig {
                 .forJob(DECAY_USER_SCORES).withIdentity(DECAY_USER_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(5))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(21))).build();
     }
 
     @Bean
@@ -130,7 +132,7 @@ public class ManagerQuartzConfig {
                 .forJob(LEAVE_UNSEEN_USERS).withIdentity(LEAVE_UNSEEN_USERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(20))).build();
     }
 
     @Bean
@@ -139,7 +141,7 @@ public class ManagerQuartzConfig {
                 .forJob(PURGE_OLD_USERS).withIdentity(PURGE_OLD_USERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(20))).build();
     }
 
     @Bean
@@ -148,7 +150,7 @@ public class ManagerQuartzConfig {
                 .forJob(PURGE_OLD_PAWNS).withIdentity(PURGE_OLD_PAWNS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10))
-                .startAt(Date.from(Instant.now().plusSeconds(20))).build();
+                .startAt(Date.from(startInstant.plusSeconds(20))).build();
     }
 
     @Bean

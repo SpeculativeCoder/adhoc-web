@@ -48,7 +48,8 @@ public class H2Config {
             @Override
             public String getJdbcUrl() {
                 return !dataSourceProperties.getUrl().isEmpty()
-                        ? dataSourceProperties.getUrl() : "jdbc:h2:tcp://" + coreProperties.getManagerHost() + ":9092/adhoc";
+                        // TODO
+                        ? dataSourceProperties.getUrl() : "jdbc:h2:tcp://" + coreProperties.getManagerHost() + ":9092/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=5000";
             }
 
             @Override

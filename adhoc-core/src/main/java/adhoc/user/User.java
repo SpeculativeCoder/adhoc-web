@@ -79,7 +79,7 @@ public class User {
     @ToString.Exclude
     private Faction faction;
 
-    @Column(nullable = false, precision = 128, scale = 64)
+    @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal score;
 
     private Double x;

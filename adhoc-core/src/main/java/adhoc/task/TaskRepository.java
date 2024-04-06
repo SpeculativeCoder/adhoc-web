@@ -23,22 +23,15 @@
 package adhoc.task;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 // TODO
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     Optional<Task> findByTaskIdentifier(String taskIdentifier);
 
-    Stream<Task> streamBy();
-
-    @Modifying
-    @Query("delete from Task t where t.taskIdentifier not in ?1")
     void deleteByTaskIdentifierNotInAndSeenBefore(Collection<String> taskIdentifiers, LocalDateTime seenBefore);
 }

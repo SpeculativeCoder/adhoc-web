@@ -203,18 +203,21 @@ public class UserManagerService {
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void leaveUnseenUsers() {
         log.trace("Leaving unseen users...");
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(1);
 
-        try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(LocalDateTime.now().minusMinutes(1))) {
+        try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(seenBefore)) {
             users.forEach(unseenUser -> {
-                // TODO: common path?
-                unseenUser.setServer(null);
                 log.atLevel(Boolean.TRUE == unseenUser.getHuman() ? Level.INFO : Level.DEBUG)
-                        .log("User left: id={} name={} password?={} human={} factionIndex={}",
+                        .log("Leaving unseen user: id={} name={} password?={} human={} factionIndex={} serverId={}",
                                 unseenUser.getId(),
                                 unseenUser.getName(),
                                 unseenUser.getPassword() != null,
                                 unseenUser.getHuman(),
-                                unseenUser.getFaction().getIndex());
+                                unseenUser.getFaction().getIndex(),
+                                unseenUser.getServer().getId());
+
+                // TODO: common path?
+                unseenUser.setServer(null);
             });
         }
     }

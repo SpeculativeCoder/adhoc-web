@@ -342,7 +342,7 @@ public class EcsHostingService implements HostingService {
 
             //log.info("tasks={}", runTaskResponse.tasks());
             String taskArn = runTaskResponse.tasks().getFirst().taskArn();
-            log.info("taskArn={}", taskArn);
+            log.debug("taskArn={}", taskArn);
 
             HostedServerTask serverTask = new HostedServerTask();
             serverTask.setTaskIdentifier(taskArn);

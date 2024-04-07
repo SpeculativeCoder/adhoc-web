@@ -95,7 +95,7 @@
         </filter>
 
         <!-- web browser stomp disconnection failures -->
-        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(logger)
@@ -104,7 +104,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>-->
+        </filter>
 
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->

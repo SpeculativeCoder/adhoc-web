@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.task.server;
+package adhoc.task;
 
 import adhoc.hosting.HostedServerTask;
 import adhoc.hosting.HostedTask;
@@ -31,7 +31,6 @@ import adhoc.server.ServerRepository;
 import adhoc.server.ServerState;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
-import adhoc.task.Task;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,8 +75,9 @@ public class ServerTaskManagerService {
             });
         }
 
+        LocalDateTime initiatedBefore = LocalDateTime.now().minusMinutes(1);
         // any tasks for servers which don't exist should be stopped (typically this is cleanup from a previous run)
-        try (Stream<ServerTask> orphanedServerTasks = serverTaskRepository.streamByTaskIdentifierNotIn(taskIdentifiers)) {
+        try (Stream<ServerTask> orphanedServerTasks = serverTaskRepository.streamByTaskIdentifierNotInAndInitiatedBefore(taskIdentifiers, initiatedBefore)) {
             orphanedServerTasks.forEach(orphanedServerTask -> {
                 try {
                     log.debug("Stopping orphaned server task {}", orphanedServerTask.getTaskIdentifier());

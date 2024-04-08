@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.task.kiosk;
+package adhoc.task;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

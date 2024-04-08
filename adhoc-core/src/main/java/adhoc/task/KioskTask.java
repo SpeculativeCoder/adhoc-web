@@ -20,10 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.task.kiosk;
+package adhoc.task;
 
-import adhoc.task.Task;
-import adhoc.task.TaskType;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

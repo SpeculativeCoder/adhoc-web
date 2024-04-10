@@ -69,7 +69,7 @@ public class ServerTaskManagerService {
             servers.forEach(server -> {
                 Optional<ServerTask> optionalServerTask = serverTaskRepository.findByServerId(server.getId());
 
-                manageServerTask(server, optionalServerTask).ifPresent(events::add);
+                manageServerTask(optionalServerTask, server).ifPresent(events::add);
 
                 optionalServerTask.map(Task::getTaskIdentifier).ifPresent(taskIdentifiers::add);
             });
@@ -91,7 +91,7 @@ public class ServerTaskManagerService {
         return events;
     }
 
-    private Optional<ServerUpdatedEvent> manageServerTask(Server server, Optional<ServerTask> optionalServerTask) {
+    private Optional<ServerUpdatedEvent> manageServerTask(Optional<ServerTask> optionalServerTask, Server server) {
         Optional<ServerUpdatedEvent> optionalEvent = Optional.empty();
 
         // state transitions

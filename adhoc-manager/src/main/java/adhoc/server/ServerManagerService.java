@@ -137,14 +137,10 @@ public class ServerManagerService {
                 for (Set<Area> areaGroup : areaGroups) {
                     // TODO: prefer searching by area(s) that have human(s) in them
                     Area firstArea = areaGroup.iterator().next();
-                    Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(() -> {
-                        Server newServer = new Server();
-                        newServer.setState(ServerState.INACTIVE);
-                        return newServer;
-                    });
+                    Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
 
                     // adjust server for the required region and area group
-                    boolean emitEvent = manageServerForRegionAndAreaGroup(server, region, areaGroup);
+                    boolean emitEvent = manageServer(server, region, areaGroup);
 
                     if (server.getId() == null) {
                         server = serverRepository.save(server);
@@ -153,24 +149,15 @@ public class ServerManagerService {
 
                     usedServerIds.add(server.getId());
 
-                    // TODO
-                    Optional<ServerTask> optionalServerTask = serverTaskRepository.findByServerId(server.getId());
-
-                    emitEvent = manageServerForServerTask(server, optionalServerTask) || emitEvent;
-
                     if (emitEvent) {
                         events.add(toServerUpdatedEvent(server));
                     }
                 }
 
+                // any servers in this region that are no longer used...
                 try (Stream<Server> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedServerIds)) {
                     unusedServers.forEach(unusedServer -> {
-                        boolean emitEvent = manageServerForRegionAndAreaGroup(unusedServer, region, Collections.emptySet());
-
-                        // TODO
-                        Optional<ServerTask> optionalServerTask = serverTaskRepository.findByServerId(unusedServer.getId());
-
-                        emitEvent = manageServerForServerTask(unusedServer, optionalServerTask) || emitEvent;
+                        boolean emitEvent = manageServer(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
                             events.add(toServerUpdatedEvent(unusedServer));
@@ -183,13 +170,18 @@ public class ServerManagerService {
         return events;
     }
 
-    private boolean manageServerForRegionAndAreaGroup(Server server, Region region, Set<Area> areaGroup) {
+    private boolean manageServer(Server server, Region region, Set<Area> areaGroup) {
         log.trace("Managing server {} for region {} area group {}", server, region, areaGroup);
         boolean emitEvent = false;
 
         Double areaGroupX = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getX).average().orElseThrow();
         Double areaGroupY = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
         Double areaGroupZ = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getZ).average().orElseThrow();
+
+        if (server.getState() == null) {
+            server.setState(ServerState.INACTIVE);
+            emitEvent = true;
+        }
 
         if (server.getRegion() != region) {
             server.setRegion(region);
@@ -239,13 +231,39 @@ public class ServerManagerService {
         return emitEvent;
     }
 
-    private boolean manageServerForServerTask(Server server, Optional<ServerTask> optionalServerTask) {
+    /**
+     * Update server information for a server task that exists (or does not exist)
+     */
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public List<? extends Event> updateServersForServerTasks() {
+        log.trace("Updating servers for server tasks...");
+        List<Event> events = new ArrayList<>();
+
+        try (Stream<Server> servers = serverRepository.streamBy()) {
+            servers.forEach(server -> {
+                Optional<ServerTask> optionalServerTask = serverTaskRepository.findByServerId(server.getId());
+
+                log.trace("Updating server {} for server task {}", server, optionalServerTask);
+                boolean emitEvent = updateServerForServerTask(server, optionalServerTask);
+
+                if (emitEvent) {
+                    events.add(toServerUpdatedEvent(server));
+                }
+            });
+        }
+
+        return events;
+    }
+
+    private boolean updateServerForServerTask(Server server, Optional<ServerTask> optionalServerTask) {
         log.trace("Managing server {} for server task {}", server, optionalServerTask);
         boolean emitEvent = false;
 
         String serverTaskPublicIp = optionalServerTask
                 .map(ServerTask::getPublicIp)
                 .orElse(null);
+
         if (!Objects.equals(server.getPublicIp(), serverTaskPublicIp)) {
             server.setPublicIp(serverTaskPublicIp);
             emitEvent = true;
@@ -254,6 +272,7 @@ public class ServerManagerService {
         Integer serverTaskPublicWebSocketPort = optionalServerTask
                 .map(ServerTask::getPublicWebSocketPort)
                 .orElse(null);
+
         if (!Objects.equals(server.getPublicWebSocketPort(), serverTaskPublicWebSocketPort)) {
             server.setPublicWebSocketPort(serverTaskPublicWebSocketPort);
             emitEvent = true;
@@ -262,6 +281,7 @@ public class ServerManagerService {
         String serverTaskDomain = optionalServerTask
                 .map(ServerTask::getDomain)
                 .orElse(null);
+
         if (!Objects.equals(server.getDomain(), serverTaskDomain)) {
             server.setDomain(serverTaskDomain);
             server.setWebSocketUrl(null); // need to calculate the web socket URL (see below)

@@ -228,6 +228,15 @@ public class ServerManagerService {
             }
         }
 
+        // a server should be enabled if it has one or more areas assigned to it
+        // (this will trigger the starting of a server task via the hosting service)
+        Boolean enabled = !server.getAreas().isEmpty();
+
+        if (!Objects.equals(server.getEnabled(), enabled)) {
+            server.setEnabled(enabled);
+            emitEvent = true;
+        }
+
         return emitEvent;
     }
 
@@ -288,11 +297,15 @@ public class ServerManagerService {
             emitEvent = true;
         }
 
-        if (server.getWebSocketUrl() == null
+        String webSocketUrl = null;
+        if (server.getState() == ServerState.ACTIVE
                 && server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
-            server.setWebSocketUrl(
-                    (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + server.getPublicIp()) +
-                            ":" + server.getPublicWebSocketPort());
+            webSocketUrl = (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + server.getPublicIp()) +
+                    ":" + server.getPublicWebSocketPort();
+        }
+
+        if (!Objects.equals(server.getWebSocketUrl(), webSocketUrl)) {
+            server.setWebSocketUrl(webSocketUrl);
             emitEvent = true;
         }
 

@@ -167,12 +167,13 @@ public class WorldManagerService {
         region1.setAreas(Arrays.asList(area1, area2));
 
         Server server1 = new Server();
+        server1.setRegion(region1);
+        server1.setAreas(Arrays.asList(area1));
         server1.setMapName(region1.getMapName());
         server1.setX(region1.getX());
         server1.setY(region1.getY());
         server1.setZ(region1.getZ());
-        server1.setRegion(region1);
-        server1.setAreas(Arrays.asList(area1));
+        server1.setEnabled(true);
         server1.setState(ServerState.INACTIVE);
         server1 = serverRepository.save(server1);
 

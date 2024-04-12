@@ -72,6 +72,9 @@ public class Server {
     @Column
     private Double z;
 
+    @Column(nullable = false)
+    private Boolean enabled;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ServerState state;

@@ -22,8 +22,6 @@
 
 package adhoc.task;
 
-import adhoc.hosting.HostedServerTask;
-import adhoc.hosting.HostedTask;
 import adhoc.hosting.HostingService;
 import adhoc.server.Server;
 import adhoc.server.ServerManagerService;
@@ -31,7 +29,6 @@ import adhoc.server.ServerRepository;
 import adhoc.server.ServerState;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
-import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -98,8 +95,8 @@ public class ServerTaskManagerService {
         switch (server.getState()) {
 
         case INACTIVE:
-            if (optionalServerTask.isEmpty() && !server.getAreas().isEmpty()) {
-                log.debug("Server {} has assigned areas - need to start server task", server.getId());
+            if (optionalServerTask.isEmpty() && Boolean.TRUE == server.getEnabled()) {
+                log.info("Server {} is enabled - need to start server task", server.getId());
                 optionalEvent = serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerState.STARTING);
                 try {
                     hostingService.startServerTask(server);
@@ -112,7 +109,7 @@ public class ServerTaskManagerService {
 
         case ServerState.STARTING:
             if (optionalServerTask.isPresent()) {
-                log.debug("Server task {} for server {} has started successfully", optionalServerTask.get().getTaskIdentifier(), server.getId());
+                log.info("Server task {} for server {} has started successfully", optionalServerTask.get().getTaskIdentifier(), server.getId());
                 optionalEvent = serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerState.ACTIVE);
 
             } else if (server.getInitiated().plusMinutes(5).isBefore(LocalDateTime.now())) {
@@ -123,14 +120,14 @@ public class ServerTaskManagerService {
 
         case ServerState.STOPPING:
             if (optionalServerTask.isEmpty()) {
-                log.debug("Server task server {} has stopped successfully", server.getId());
+                log.info("Server task server {} has stopped successfully", server.getId());
                 optionalEvent = serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerState.INACTIVE);
             }
             break;
 
         case ServerState.ACTIVE:
-            if (optionalServerTask.isPresent() && server.getAreas().isEmpty()) {
-                log.debug("Server {} has no assigned areas - need to stop server task {}", server.getId(), optionalServerTask.get().getTaskIdentifier());
+            if (optionalServerTask.isPresent() && Boolean.FALSE == server.getEnabled()) {
+                log.info("Server {} is not enabled - need to stop server task {}", server.getId(), optionalServerTask.get().getTaskIdentifier());
                 optionalEvent = serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerState.STOPPING);
                 try {
                     hostingService.stopServerTask(optionalServerTask.get().getTaskIdentifier());
@@ -149,17 +146,17 @@ public class ServerTaskManagerService {
         return optionalEvent;
     }
 
-    private void stopAllServerTasks() {
-        // get state of running containers
-        List<HostedTask> hostedTasks = hostingService.poll();
-        log.debug("Stopping all server tasks: hostedTasks={}", hostedTasks);
-        Verify.verifyNotNull(hostedTasks, "hostedTasks is null after polling hosting service");
-
-        hostedTasks.stream()
-                .filter(task -> task instanceof HostedServerTask)
-                .forEach(hostedServerTask -> {
-                    log.debug("Stopping server task {}", hostedServerTask.getTaskIdentifier());
-                    hostingService.stopServerTask(hostedServerTask.getTaskIdentifier());
-                });
-    }
+    //private void stopAllServerTasks() {
+    //    // get state of running containers
+    //    List<HostedTask> hostedTasks = hostingService.poll();
+    //    log.debug("Stopping all server tasks: hostedTasks={}", hostedTasks);
+    //    Verify.verifyNotNull(hostedTasks, "hostedTasks is null after polling hosting service");
+    //
+    //    hostedTasks.stream()
+    //            .filter(task -> task instanceof HostedServerTask)
+    //            .forEach(hostedServerTask -> {
+    //                log.debug("Stopping server task {}", hostedServerTask.getTaskIdentifier());
+    //                hostingService.stopServerTask(hostedServerTask.getTaskIdentifier());
+    //            });
+    //}
 }

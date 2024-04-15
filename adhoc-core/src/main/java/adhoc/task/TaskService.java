@@ -63,7 +63,6 @@ public class TaskService {
                 task.getPublicIp(),
                 task.getPublicWebSocketPort(),
                 task.getDomain(),
-                task.getInitiated(),
                 task.getSeen(),
                 task instanceof ServerTask serverTask ? serverTask.getServerId() : null);
     }

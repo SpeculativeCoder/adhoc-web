@@ -50,8 +50,6 @@ public class TaskDto {
 
     String domain;
 
-    LocalDateTime initiated;
-
     LocalDateTime seen;
 
     Long serverId;

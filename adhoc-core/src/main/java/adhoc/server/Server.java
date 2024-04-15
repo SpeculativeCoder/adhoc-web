@@ -77,7 +77,7 @@ public class Server {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ServerState state;
+    private ServerStatus status;
 
     private String publicIp;
 
@@ -88,6 +88,10 @@ public class Server {
     private String webSocketUrl;
 
     private LocalDateTime initiated;
+
+    private LocalDateTime started;
+
+    private LocalDateTime stopped;
 
     private LocalDateTime seen;
 

@@ -105,8 +105,7 @@ public class TaskManagerService {
             taskIdentifiers.add(task.getTaskIdentifier());
         }
 
-        LocalDateTime seenBefore = now.minusMinutes(1);
-        taskRepository.deleteByTaskIdentifierNotInAndSeenBefore(taskIdentifiers, seenBefore);
+        taskRepository.deleteByTaskIdentifierNotIn(taskIdentifiers);
 
         return events;
     }

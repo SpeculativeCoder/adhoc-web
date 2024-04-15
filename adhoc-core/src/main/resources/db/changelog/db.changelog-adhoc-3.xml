@@ -180,7 +180,7 @@
                     type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="state"
+            <column name="status"
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -197,6 +197,10 @@
             <column name="web_socket_url"
                     type="VARCHAR(255)"/>
             <column name="initiated"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="started"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="stopped"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="seen"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
@@ -591,8 +595,6 @@
                     type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
-            <column name="initiated"
-                    type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="seen"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
         </createTable>
@@ -623,8 +625,6 @@
                     type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
-            <column name="initiated"
-                    type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="seen"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
         </createTable>
@@ -655,8 +655,6 @@
                     type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
-            <column name="initiated"
-                    type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="seen"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="server_id"
@@ -668,6 +666,10 @@
         <addUniqueConstraint columnNames="task_identifier"
                              constraintName="uc_servertask_task_identifier"
                              tableName="server_task"/>
+
+        <!--<addUniqueConstraint columnNames="server_id"
+                             constraintName="uc_servertask_server_id"
+                             tableName="server_task"/>-->
 
     </changeSet>
 

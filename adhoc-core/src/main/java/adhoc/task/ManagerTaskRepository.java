@@ -32,6 +32,8 @@ import java.util.Optional;
 // TODO: common
 public interface ManagerTaskRepository extends JpaRepository<ManagerTask, Long> {
 
+    boolean existsBy();
+
     Optional<ManagerTask> findByTaskIdentifier(String taskIdentifier);
 
     @Modifying

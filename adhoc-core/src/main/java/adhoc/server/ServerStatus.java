@@ -22,10 +22,8 @@
 
 package adhoc.server;
 
-public enum ServerState {
-    ERROR,
+public enum ServerStatus {
     INACTIVE,
-    STOPPING,
     STARTING,
     ACTIVE,
 }

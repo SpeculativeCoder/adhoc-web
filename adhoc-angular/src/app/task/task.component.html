@@ -51,11 +51,6 @@
              [(ngModel)]="task.domain"/>
     </div>
     <div class="mb-3">
-      <label class="form-label" for="initiatedInput">Initiated</label>
-      <input class="form-control" id="initiatedInput" name="initiated" type="text" readonly
-             [ngModel]="task.initiated | simpleDate"/>
-    </div>
-    <div class="mb-3">
       <label class="form-label" for="seenInput">Last Seen</label>
       <input class="form-control" id="seenInput" name="seen" type="text" readonly
              [ngModel]="task.seen | simpleDate"/>

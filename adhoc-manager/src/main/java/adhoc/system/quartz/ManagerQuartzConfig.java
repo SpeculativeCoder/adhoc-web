@@ -124,7 +124,7 @@ public class ManagerQuartzConfig {
                 .forJob(DECAY_FACTION_SCORES).withIdentity(DECAY_FACTION_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(5))
-                .startAt(Date.from(startInstant.plusSeconds(21))).build();
+                .startAt(Date.from(startInstant.plusSeconds(20))).build();
     }
 
     @Bean
@@ -133,6 +133,7 @@ public class ManagerQuartzConfig {
                 .forJob(DECAY_USER_SCORES).withIdentity(DECAY_USER_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(5))
+                // TODO
                 .startAt(Date.from(startInstant.plusSeconds(21))).build();
     }
 

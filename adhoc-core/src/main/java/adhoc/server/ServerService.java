@@ -61,7 +61,7 @@ public class ServerService {
                 server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
                 server.getMapName(),
                 server.getX(), server.getY(), server.getZ(),
-                server.getState().name(),
+                server.getStatus().name(),
                 server.getPublicIp(),
                 server.getPublicWebSocketPort(),
                 server.getDomain(),

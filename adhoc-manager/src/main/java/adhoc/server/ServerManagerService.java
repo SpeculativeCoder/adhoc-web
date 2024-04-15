@@ -30,13 +30,18 @@ import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
+import adhoc.task.ManagerTaskRepository;
 import adhoc.task.ServerTask;
+import adhoc.task.ServerTaskManagerService;
 import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -61,10 +66,15 @@ public class ServerManagerService {
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
     private final ServerTaskRepository serverTaskRepository;
+    private final ManagerTaskRepository managerTaskRepository;
 
     private final ServerService serverService;
+    private final ServerTaskManagerService serverTaskManagerService;
 
     private final AreaGroupsFactory areaGroupsFactory;
+
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private ServerManagerService self;
 
     public ServerDto updateServer(ServerDto serverDto) {
         Server server = toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));
@@ -82,7 +92,7 @@ public class ServerManagerService {
         server.setY(server.getY());
         server.setZ(server.getZ());
 
-        server.setState(ServerState.INACTIVE); // TODO
+        //server.setStatus(ServerStatus.INACTIVE); // TODO
 
         server.setPublicIp(server.getPublicIp());
 
@@ -91,13 +101,13 @@ public class ServerManagerService {
         return server;
     }
 
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
         Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
         // TODO: internal server status
-        //server.setStatus(ServerStatus.ACTIVE);
-        //server.setPrivateIp(serverStartedEvent.getPrivateIp());
-        //server.setManagerHost(server.getManagerHost());
+        server.setStatus(ServerStatus.ACTIVE);
 
         return toServerUpdatedEvent(server);
     }
@@ -109,7 +119,7 @@ public class ServerManagerService {
                 server.getRegion().getId(),
                 server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
                 server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
-                server.getState().name(),
+                server.getStatus().name(),
                 server.getPublicIp(),
                 server.getPublicWebSocketPort(),
                 server.getWebSocketUrl());
@@ -178,8 +188,8 @@ public class ServerManagerService {
         Double areaGroupY = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
         Double areaGroupZ = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getZ).average().orElseThrow();
 
-        if (server.getState() == null) {
-            server.setState(ServerState.INACTIVE);
+        if (server.getStatus() == null) {
+            server.setStatus(ServerStatus.INACTIVE);
             emitEvent = true;
         }
 
@@ -251,7 +261,7 @@ public class ServerManagerService {
 
         try (Stream<Server> servers = serverRepository.streamBy()) {
             servers.forEach(server -> {
-                Optional<ServerTask> optionalServerTask = serverTaskRepository.findByServerId(server.getId());
+                Optional<ServerTask> optionalServerTask = serverTaskRepository.findFirstByServerId(server.getId());
 
                 log.trace("Updating server {} for server task {}", server, optionalServerTask);
                 boolean emitEvent = updateServerForServerTask(server, optionalServerTask);
@@ -298,8 +308,8 @@ public class ServerManagerService {
         }
 
         String webSocketUrl = null;
-        if (server.getState() == ServerState.ACTIVE
-                && server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
+        if (server.getStatus() == ServerStatus.ACTIVE &&
+                server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
             webSocketUrl = (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + server.getPublicIp()) +
                     ":" + server.getPublicWebSocketPort();
         }
@@ -316,16 +326,73 @@ public class ServerManagerService {
         return emitEvent;
     }
 
+
+    /**
+     * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.
+     */
+    public List<? extends Event> manageServerTasks() {
+        log.trace("Managing server tasks...");
+        List<Event> events = new ArrayList<>();
+
+        List<String> usedTaskIdentifiers = new ArrayList<>();
+
+        // manager task must be seen before any servers tasks are started
+        if (!managerTaskRepository.existsBy()) {
+            return Collections.emptyList();
+        }
+
+        try (Stream<Server> servers = serverRepository.streamByEnabledTrue()) {
+            servers.forEach(server -> {
+                Optional<ServerTask> optionalServerTask = serverTaskRepository.findFirstByServerId(server.getId());
+
+                if (optionalServerTask.isPresent()) {
+                    optionalServerTask
+                            .map(ServerTask::getTaskIdentifier)
+                            .ifPresent(usedTaskIdentifiers::add);
+
+                    // TODO: timestamp check
+                } else if (server.getStatus() == ServerStatus.INACTIVE) {
+
+                    serverTaskManagerService.startServerTask(server);
+
+                    self.updateServerStateInNewTransaction(server.getId(), ServerStatus.STARTING)
+                            .ifPresent(events::add);
+                }
+            });
+        }
+
+        // any other server tasks which are not in use should be stopped
+        try (Stream<ServerTask> unusedServerTasks = serverTaskRepository.streamByTaskIdentifierNotIn(usedTaskIdentifiers)) {
+            unusedServerTasks.forEach(unusedServerTask -> {
+
+                Optional<Server> optionalServer = serverRepository.findById(unusedServerTask.getServerId());
+
+                // TODO: timestamp check
+                if (optionalServer.isEmpty() || optionalServer.get().getStatus() != ServerStatus.INACTIVE) {
+                    serverTaskManagerService.stopServerTask(unusedServerTask);
+
+                    optionalServer.flatMap(server ->
+                                    self.updateServerStateInNewTransaction(server.getId(), ServerStatus.INACTIVE))
+                            .ifPresent(events::add);
+                }
+            });
+        }
+
+        return events;
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public Optional<ServerUpdatedEvent> updateServerStateInNewTransaction(Long serverId, ServerState serverState) {
+    public Optional<ServerUpdatedEvent> updateServerStateInNewTransaction(Long serverId, ServerStatus serverStatus) {
         Server server = serverRepository.getReferenceById(serverId);
 
-        server.setState(serverState);
+        server.setStatus(serverStatus);
 
-        if (serverState == ServerState.STARTING) {
+        if (serverStatus == ServerStatus.STARTING) {
             server.setInitiated(LocalDateTime.now());
+        } else if (serverStatus == ServerStatus.INACTIVE) {
+            server.setStopped(LocalDateTime.now());
         }
 
         return Optional.of(toServerUpdatedEvent(server));

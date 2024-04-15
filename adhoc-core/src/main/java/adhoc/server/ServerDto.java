@@ -65,7 +65,7 @@ public class ServerDto {
     Double z;
 
     @NotEmpty
-    String state;
+    String status;
 
     String publicIp;
 

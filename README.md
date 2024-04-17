@@ -43,5 +43,6 @@ Copyright (c) 2022-2024 SpeculativeCoder (https://github.com/SpeculativeCoder)
 [LICENSE](LICENSE) (**MIT License**) applies to the files in this repository unless otherwise indicated.
 
 There are currently some files under a different license (indicated in the file and with license provided in adjacent *-LICENSE file):
-- [src/main/resources/db/changelog/db.changelog-2.xml](src/main/resources/db/changelog/db.changelog-2.xml) uses SQL from Quartz Scheduler to set up the Quartz database tables - subject to **[Apache License, Version 2.0](src/main/resources/db/changelog/db.changelog-2.xml-LICENSE)**
-- [src/main/java/adhoc/web/logging/AdhocColorConverter.java](src/main/java/adhoc/web/logging/AdhocColorConverter.java) is a modified version of the Spring Boot ColorConverter - subject to **[Apache License, Version 2.0](src/main/java/adhoc/web/logging/AdhocColorConverter.java-LICENSE)**
+
+- [adhoc-core/src/main/resources/db/changelog/db.changelog-adhoc-2.xml](adhoc-core/src/main/resources/db/changelog/db.changelog-adhoc-2.xml) uses SQL from Quartz Scheduler to set up the Quartz database tables - subject to **[Apache License, Version 2.0](adhoc-core/src/main/resources/db/changelog/db.changelog-adhoc-2.xml-LICENSE)**
+- [adhoc-core/src/main/java/adhoc/system/logging/logback/AdhocColorConverter.java](adhoc-core/src/main/java/adhoc/system/logging/logback/AdhocColorConverter.java) is a modified version of the Spring Boot ColorConverter - subject to **[Apache License, Version 2.0](adhoc-core/src/main/java/adhoc/system/logging/logback/AdhocColorConverter.java-LICENSE)**

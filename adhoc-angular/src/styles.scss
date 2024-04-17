@@ -20,15 +20,15 @@
  * SOFTWARE.
  */
 
-@import "../node_modules/bootstrap/scss/functions";
+@import "bootstrap/scss/functions";
 
 $enable-dark-mode: true;
 $color-mode-type: data;
 
 //$primary: #0FF;
 
-@import "../node_modules/bootstrap/scss/variables";
-@import "../node_modules/bootstrap/scss/variables-dark";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
 
 //$body-color: $gray-900;
 $body-color: $gray-700;
@@ -59,9 +59,9 @@ $link-hover-color-dark: $white;
 //
 //@import "../node_modules/bootstrap/scss/utilities/api";
 
-@import "../node_modules/bootstrap/scss/bootstrap";
+@import "bootstrap/scss/bootstrap";
 
-@import "../node_modules/open-iconic/font/css/open-iconic-bootstrap.css";
+@import "open-iconic/font/css/open-iconic-bootstrap.css";
 
 .map-container {
   margin: 0 auto;

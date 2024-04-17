@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.db.hsqldb;
+package adhoc.db.h2postgres;
 
 import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +32,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("db-hsqldb")
+@Profile("db-h2postgres")
 @Slf4j
 @RequiredArgsConstructor
-public class HsqldbConfig {
+public class H2PostgresConfig {
 
     private final CoreProperties coreProperties;
 
@@ -48,7 +48,8 @@ public class HsqldbConfig {
             @Override
             public String getJdbcUrl() {
                 return !dataSourceProperties.getUrl().isEmpty()
-                        ? dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://" + coreProperties.getManagerHost() + ":9001/adhoc";
+                        // TODO
+                        ? dataSourceProperties.getUrl() : "jdbc:h2:tcp://" + coreProperties.getManagerHost() + ":9092/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=5000";
             }
 
             @Override

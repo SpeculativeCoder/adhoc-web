@@ -20,16 +20,21 @@
  * SOFTWARE.
  */
 
-package adhoc.system.db.h2;
+package adhoc.db.h2;
 
-import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.tools.Server;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.SQLException;
 
 @Configuration
 @Profile("db-h2")
@@ -37,19 +42,31 @@ import org.springframework.context.annotation.Profile;
 @RequiredArgsConstructor
 public class H2Config {
 
-    private final CoreProperties coreProperties;
-
     private final DataSourceProperties dataSourceProperties;
+    private Path h2Dir;
+
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    Server h2Server() throws SQLException, IOException {
+        h2Dir = Files.createTempDirectory("adhoc_h2_");
+        log.info("h2Dir={}", h2Dir);
+
+        Server server = Server.createTcpServer(
+                "-baseDir", h2Dir.toString(),
+                //"-ifNotExists",
+                "-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
+
+        return server;
+    }
 
     @Bean
-    public JdbcConnectionDetails dataSourceProperties() {
+    public JdbcConnectionDetails dataSourceProperties(Server h2Server) {
         return new JdbcConnectionDetails() {
 
             @Override
             public String getJdbcUrl() {
-                return !dataSourceProperties.getUrl().isEmpty()
+                return !dataSourceProperties.getUrl().isEmpty() ?
                         // TODO
-                        ? dataSourceProperties.getUrl() : "jdbc:h2:tcp://" + coreProperties.getManagerHost() + ":9092/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=5000";
+                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2Dir.toString() + "/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=5000";
             }
 
             @Override

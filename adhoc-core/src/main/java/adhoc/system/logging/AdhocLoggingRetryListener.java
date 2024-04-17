@@ -22,14 +22,18 @@
 
 package adhoc.system.logging;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.pattern.CompositeConverter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.interceptor.MethodInvocationRetryCallback;
+import org.springframework.retry.listener.MethodInvocationRetryListenerSupport;
+import org.springframework.stereotype.Component;
 
-public class AdhocNewlinesConverter extends CompositeConverter<ILoggingEvent> {
+@Component
+@Slf4j
+public class AdhocLoggingRetryListener extends MethodInvocationRetryListenerSupport {
 
     @Override
-    protected String transform(ILoggingEvent event, String in) {
-        // TODO
-        return in.replace("\r", "\\r").replace("\n", "\\n");
+    protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
+        log.debug("doOnError: label={} context={}", callback.getLabel(), context);
     }
 }

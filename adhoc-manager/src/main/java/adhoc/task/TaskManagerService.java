@@ -63,9 +63,8 @@ public class TaskManagerService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public List<? extends Event> refreshTasks() {
+    public void refreshTasks() {
         log.trace("Refreshing tasks...");
-        List<Event> events = new ArrayList<>();
 
         // get state of running containers
         List<HostedTask> hostedTasks = hostingService.poll();
@@ -106,8 +105,6 @@ public class TaskManagerService {
         }
 
         taskRepository.deleteByTaskIdentifierNotIn(taskIdentifiers);
-
-        return events;
     }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},

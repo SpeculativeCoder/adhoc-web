@@ -71,14 +71,12 @@ public class ManagerQuartzJob implements Job {
             case ManagerQuartzConfig.PURGE_OLD_SERVERS:
                 serverManagerService.purgeOldServers();
                 break;
-            case ManagerQuartzConfig.REFRESH_TASKS:
-                events = taskManagerService.refreshTasks();
+            case ManagerQuartzConfig.MANAGE_TASKS:
+                taskManagerService.refreshTasks();
+                events = serverManagerService.manageServerTasks();
                 break;
             case ManagerQuartzConfig.MANAGE_TASK_DOMAINS:
                 events = taskManagerService.manageTaskDomains();
-                break;
-            case ManagerQuartzConfig.MANAGE_SERVER_TASKS:
-                events = serverManagerService.manageServerTasks();
                 break;
             case ManagerQuartzConfig.AWARD_FACTION_SCORES:
                 factionManagerService.awardFactionScores();

@@ -30,9 +30,7 @@ import adhoc.region.RegionRepository;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
-import adhoc.task.ManagerTaskRepository;
 import adhoc.task.ServerTask;
-import adhoc.task.ServerTaskManagerService;
 import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -66,10 +64,8 @@ public class ServerManagerService {
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
     private final ServerTaskRepository serverTaskRepository;
-    private final ManagerTaskRepository managerTaskRepository;
 
     private final ServerService serverService;
-    private final ServerTaskManagerService serverTaskManagerService;
 
     private final AreaGroupsFactory areaGroupsFactory;
 
@@ -326,60 +322,6 @@ public class ServerManagerService {
         return emitEvent;
     }
 
-
-    /**
-     * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.
-     */
-    public List<? extends Event> manageServerTasks() {
-        log.trace("Managing server tasks...");
-        List<Event> events = new ArrayList<>();
-
-        List<String> usedTaskIdentifiers = new ArrayList<>();
-
-        // manager task must be seen before any servers tasks are started
-        if (!managerTaskRepository.existsBy()) {
-            return Collections.emptyList();
-        }
-
-        try (Stream<Server> servers = serverRepository.streamByEnabledTrue()) {
-            servers.forEach(server -> {
-                Optional<ServerTask> optionalServerTask = serverTaskRepository.findFirstByServerId(server.getId());
-
-                if (optionalServerTask.isPresent()) {
-                    optionalServerTask
-                            .map(ServerTask::getTaskIdentifier)
-                            .ifPresent(usedTaskIdentifiers::add);
-
-                    // TODO: timestamp check
-                } else if (server.getStatus() == ServerStatus.INACTIVE) {
-
-                    serverTaskManagerService.startServerTask(server);
-
-                    self.updateServerStateInNewTransaction(server.getId(), ServerStatus.STARTING)
-                            .ifPresent(events::add);
-                }
-            });
-        }
-
-        // any other server tasks which are not in use should be stopped
-        try (Stream<ServerTask> unusedServerTasks = serverTaskRepository.streamByTaskIdentifierNotIn(usedTaskIdentifiers)) {
-            unusedServerTasks.forEach(unusedServerTask -> {
-
-                Optional<Server> optionalServer = serverRepository.findById(unusedServerTask.getServerId());
-
-                // TODO: timestamp check
-                if (optionalServer.isEmpty() || optionalServer.get().getStatus() != ServerStatus.INACTIVE) {
-                    serverTaskManagerService.stopServerTask(unusedServerTask);
-
-                    optionalServer.flatMap(server ->
-                                    self.updateServerStateInNewTransaction(server.getId(), ServerStatus.INACTIVE))
-                            .ifPresent(events::add);
-                }
-            });
-        }
-
-        return events;
-    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},

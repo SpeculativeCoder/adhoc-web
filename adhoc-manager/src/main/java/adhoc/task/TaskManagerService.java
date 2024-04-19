@@ -71,7 +71,7 @@ public class TaskManagerService {
         log.debug("hostedTasks={}", hostedTasks);
         Verify.verifyNotNull(hostedTasks, "hostedTasks is null after polling hosting service!");
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime seen = LocalDateTime.now();
 
         List<String> taskIdentifiers = new ArrayList<>();
 
@@ -97,14 +97,14 @@ public class TaskManagerService {
                 serverTask.setServerId(hostedServerTask.getServerId());
             }
 
-            task.setSeen(now);
+            task.setSeen(seen);
 
             task = taskRepository.save(task);
 
             taskIdentifiers.add(task.getTaskIdentifier());
         }
 
-        taskRepository.deleteByTaskIdentifierNotIn(taskIdentifiers);
+        taskRepository.deleteByTaskIdentifierNotInAndSeenBefore(taskIdentifiers, LocalDateTime.now().minusMinutes(1));
     }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},

@@ -28,6 +28,7 @@ export class Task {
   publicIp?: string;
   publicWebSocketPort?: number;
   domain?: string;
+  initiated?: string;
   seen?: string;
   serverId?: number;
 }

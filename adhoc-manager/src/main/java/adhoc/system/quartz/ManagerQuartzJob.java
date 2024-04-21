@@ -80,7 +80,7 @@ public class ManagerQuartzJob implements Job {
                 events = taskManagerService.manageTaskDomains();
                 break;
             case ManagerQuartzConfig.MANAGE_SERVER_TASKS:
-                events = serverTaskManagerService.manageServerTasks();
+                serverTaskManagerService.manageServerTasks();
                 break;
             case ManagerQuartzConfig.AWARD_FACTION_SCORES:
                 factionManagerService.awardFactionScores();

@@ -595,6 +595,8 @@
                     type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
+            <column name="initiated"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="seen"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
         </createTable>
@@ -625,6 +627,8 @@
                     type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
+            <column name="initiated"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="seen"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
         </createTable>
@@ -655,6 +659,8 @@
                     type="INTEGER"/>
             <column name="domain"
                     type="VARCHAR(255)"/>
+            <column name="initiated"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="seen"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="server_id"

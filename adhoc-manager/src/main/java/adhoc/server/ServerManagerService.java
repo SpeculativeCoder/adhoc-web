@@ -44,7 +44,6 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -304,8 +303,7 @@ public class ServerManagerService {
         }
 
         String webSocketUrl = null;
-        if (server.getStatus() == ServerStatus.ACTIVE &&
-                server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
+        if (server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
             webSocketUrl = (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + server.getPublicIp()) +
                     ":" + server.getPublicWebSocketPort();
         }
@@ -315,29 +313,19 @@ public class ServerManagerService {
             emitEvent = true;
         }
 
+        // TODO
+        ServerStatus serverStatus = optionalServerTask.isPresent() ? ServerStatus.ACTIVE : ServerStatus.INACTIVE;
+        if (server.getStatus() != serverStatus) {
+            server.setStatus(serverStatus);
+            emitEvent = true;
+        }
+
         if (optionalServerTask.isPresent()) {
             server.setSeen(LocalDateTime.now());
+            // this is updated every time so don't emit an event
         }
 
         return emitEvent;
-    }
-
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public Optional<ServerUpdatedEvent> updateServerStateInNewTransaction(Long serverId, ServerStatus serverStatus) {
-        Server server = serverRepository.getReferenceById(serverId);
-
-        server.setStatus(serverStatus);
-
-        if (serverStatus == ServerStatus.STARTING) {
-            server.setInitiated(LocalDateTime.now());
-        } else if (serverStatus == ServerStatus.INACTIVE) {
-            server.setStopped(LocalDateTime.now());
-        }
-
-        return Optional.of(toServerUpdatedEvent(server));
     }
 
     public void purgeOldServers() {

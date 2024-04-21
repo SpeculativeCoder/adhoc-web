@@ -27,16 +27,21 @@ import adhoc.hosting.HostingService;
 import adhoc.server.Server;
 import adhoc.server.ServerManagerService;
 import adhoc.server.ServerRepository;
-import adhoc.server.ServerStatus;
-import adhoc.system.event.Event;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -55,76 +60,83 @@ public class ServerTaskManagerService {
 
     private final HostingService hostingService;
 
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private ServerTaskManagerService self;
+
     /**
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.
      */
-    public List<? extends Event> manageServerTasks() {
+    public void manageServerTasks() {
         log.trace("Managing server tasks...");
-        List<Event> events = new ArrayList<>();
-
-        List<String> usedTaskIdentifiers = new ArrayList<>();
-
-        // manager task must be seen before any servers tasks are started
-        if (!managerTaskRepository.existsBy()) {
-            return Collections.emptyList();
-        }
+        List<String> taskIdentifiers = new ArrayList<>();
 
         try (Stream<Server> servers = serverRepository.streamByEnabledTrue()) {
             servers.forEach(server -> {
                 Optional<ServerTask> optionalServerTask = serverTaskRepository.findFirstByServerId(server.getId());
 
                 if (optionalServerTask.isPresent()) {
-                    optionalServerTask
-                            .map(ServerTask::getTaskIdentifier)
-                            .ifPresent(usedTaskIdentifiers::add);
+                    taskIdentifiers.add(optionalServerTask.get().getTaskIdentifier());
 
-                } else if (server.getInitiated() == null || server.getInitiated().isBefore(LocalDateTime.now().minusMinutes(1))) {
+                } else {
+                    HostedServerTask hostedServerTask = startHostedServerTask(server);
+                    taskIdentifiers.add(hostedServerTask.getTaskIdentifier());
 
-                    startServerTask(server);
-
-                    serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerStatus.STARTING)
-                            .ifPresent(events::add);
+                    self.createServerTaskInNewTransaction(server, hostedServerTask);
                 }
             });
         }
 
-        // any other server tasks which are not in use should be stopped
-        try (Stream<ServerTask> unusedServerTasks = serverTaskRepository.streamByTaskIdentifierNotIn(usedTaskIdentifiers)) {
+        // any other server tasks that are no longer in use should be stopped and their entry deleted
+        try (Stream<ServerTask> unusedServerTasks = serverTaskRepository.streamByTaskIdentifierNotInAndInitiatedBefore(taskIdentifiers, LocalDateTime.now().minusMinutes(1))) {
             unusedServerTasks.forEach(unusedServerTask -> {
-
-                Optional<Server> optionalServer = serverRepository.findById(unusedServerTask.getServerId());
-
-                // TODO: timestamp check
-                if (optionalServer.isEmpty() || optionalServer.get().getStatus() != ServerStatus.INACTIVE) {
-                    stopServerTask(unusedServerTask);
-
-                    optionalServer.flatMap(server ->
-                                    serverManagerService.updateServerStateInNewTransaction(server.getId(), ServerStatus.INACTIVE))
-                            .ifPresent(events::add);
+                if (unusedServerTask.getSeen() != null) {
+                    stopHostedServerTask(unusedServerTask);
                 }
+
+                self.deleteServerTaskInNewTransaction(unusedServerTask.getId());
             });
         }
-
-        return events;
     }
 
-    private void startServerTask(Server server) {
+    private HostedServerTask startHostedServerTask(Server server) {
         try {
             log.info("Starting server task for server {}", server.getId());
-            HostedServerTask hostedServerTask = hostingService.startServerTask(server);
+            return hostingService.startServerTask(server);
 
         } catch (Exception e) {
             log.warn("Failed to start server task for server {}!", server.getId(), e);
+            throw e;
         }
     }
 
-    private void stopServerTask(ServerTask serverTask) {
+    private void stopHostedServerTask(ServerTask serverTask) {
         try {
             log.info("Stopping server task for server task {}", serverTask.getServerId());
             hostingService.stopServerTask(serverTask.getTaskIdentifier());
 
         } catch (Exception e) {
             log.warn("Failed to stop server task for server task {}!", serverTask.getServerId(), e);
+            throw e;
         }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    void createServerTaskInNewTransaction(Server server, HostedServerTask hostedServerTask) {
+        ServerTask serverTask = new ServerTask();
+
+        serverTask.setTaskIdentifier(hostedServerTask.getTaskIdentifier());
+        serverTask.setInitiated(LocalDateTime.now()); // TODO
+        serverTask.setServerId(server.getId());
+
+        serverTaskRepository.save(serverTask);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    void deleteServerTaskInNewTransaction(Long serverTaskId) {
+        serverTaskRepository.deleteById(serverTaskId);
     }
 }

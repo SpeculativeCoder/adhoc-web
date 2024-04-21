@@ -22,6 +22,7 @@
 
 package adhoc.task;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -52,7 +53,9 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public TaskDto getTask(Long taskId) {
-        return toDto(taskRepository.getReferenceById(taskId));
+        // used findById rather than getReferenceById to ensure correct entity subclass
+        return toDto(taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Failed to find task " + taskId)));
     }
 
     TaskDto toDto(Task task) {
@@ -63,6 +66,7 @@ public class TaskService {
                 task.getPublicIp(),
                 task.getPublicWebSocketPort(),
                 task.getDomain(),
+                task.getInitiated(),
                 task.getSeen(),
                 task instanceof ServerTask serverTask ? serverTask.getServerId() : null);
     }

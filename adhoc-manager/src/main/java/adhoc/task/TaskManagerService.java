@@ -85,26 +85,39 @@ public class TaskManagerService {
                         default -> throw new IllegalStateException("Unknown hosted task type: " + hostedTask.getClass());
                     });
 
-            task.setTaskIdentifier(hostedTask.getTaskIdentifier());
-
-            task.setPrivateIp(hostedTask.getPrivateIp());
-            task.setPublicIp(hostedTask.getPublicIp());
+            if (!Objects.equals(task.getTaskIdentifier(), hostedTask.getTaskIdentifier())) {
+                task.setTaskIdentifier(hostedTask.getTaskIdentifier());
+            }
+            if (!Objects.equals(task.getPrivateIp(), hostedTask.getPrivateIp())) {
+                task.setPrivateIp(hostedTask.getPrivateIp());
+            }
+            if (!Objects.equals(task.getPublicIp(), hostedTask.getPublicIp())) {
+                task.setPublicIp(hostedTask.getPublicIp());
+            }
 
             // TODO
             if (hostedTask instanceof HostedServerTask hostedServerTask) {
                 ServerTask serverTask = (ServerTask) task;
-                serverTask.setPublicWebSocketPort(hostedServerTask.getPublicWebSocketPort());
-                serverTask.setServerId(hostedServerTask.getServerId());
+
+                if (!Objects.equals(serverTask.getPublicWebSocketPort(), hostedServerTask.getPublicWebSocketPort())) {
+                    serverTask.setPublicWebSocketPort(hostedServerTask.getPublicWebSocketPort());
+                }
+                if (!Objects.equals(serverTask.getServerId(), hostedServerTask.getServerId())) {
+                    serverTask.setServerId(hostedServerTask.getServerId());
+                }
             }
 
             task.setSeen(seen);
 
-            task = taskRepository.save(task);
+            if (task.getId() == null) {
+                task = taskRepository.save(task);
+            }
 
             taskIdentifiers.add(task.getTaskIdentifier());
         }
 
-        taskRepository.deleteByTaskIdentifierNotInAndSeenBefore(taskIdentifiers, LocalDateTime.now().minusMinutes(1));
+        // any tasks we have seen in a previous refresh but are no longer running - delete their entry
+        taskRepository.deleteByTaskIdentifierNotInAndSeenNotNull(taskIdentifiers);
     }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
@@ -153,6 +166,8 @@ public class TaskManagerService {
     public void updateTaskDomainInNewTransaction(Long taskId, String domain) {
         Task task = taskRepository.getReferenceById(taskId);
 
-        task.setDomain(domain);
+        if (!Objects.equals(task.getDomain(), domain)) {
+            task.setDomain(domain);
+        }
     }
 }

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.quartz;
+package adhoc.quartz;
 
 import adhoc.faction.FactionManagerService;
 import adhoc.pawn.PawnManagerService;
@@ -31,6 +31,7 @@ import adhoc.task.TaskManagerService;
 import adhoc.user.UserManagerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -42,6 +43,8 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
+//@PersistJobDataAfterExecution
+@DisallowConcurrentExecution
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerQuartzJob implements Job {

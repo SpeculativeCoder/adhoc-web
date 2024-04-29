@@ -100,7 +100,7 @@ public class ServerTaskManagerService {
 
     private HostedServerTask startHostedServerTask(Server server) {
         try {
-            log.info("Starting server task for server {}", server.getId());
+            log.debug("Starting server task for server {}", server.getId());
             return hostingService.startServerTask(server);
 
         } catch (Exception e) {
@@ -111,7 +111,7 @@ public class ServerTaskManagerService {
 
     private void stopHostedServerTask(ServerTask serverTask) {
         try {
-            log.info("Stopping server task for server task {}", serverTask.getServerId());
+            log.debug("Stopping server task for server task {}", serverTask.getServerId());
             hostingService.stopServerTask(serverTask.getTaskIdentifier());
 
         } catch (Exception e) {

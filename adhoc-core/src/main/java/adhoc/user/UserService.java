@@ -135,9 +135,15 @@ public class UserService {
         Preconditions.checkArgument(registerUserRequest.getHuman() || authenticatedAsServer);
 
         // TODO: think about existing name/email check before allowing name/email input
-        Optional<User> existingUser = registerUserRequest.getEmail() == null
-                ? userRepository.findByName(registerUserRequest.getName())
-                : userRepository.findByNameOrEmail(registerUserRequest.getName(), registerUserRequest.getEmail());
+        Optional<User> existingUser;
+        if (registerUserRequest.getName() != null && registerUserRequest.getEmail() != null) {
+            existingUser = userRepository.findByNameOrEmail(registerUserRequest.getName(), registerUserRequest.getEmail());
+        } else if (registerUserRequest.getName() != null) {
+            existingUser = userRepository.findByName(registerUserRequest.getName());
+        } else {
+            existingUser = Optional.empty();
+        }
+
         if (existingUser.isPresent()) {
             log.warn("User name or email already in use: name={} email={}", registerUserRequest.getName(), registerUserRequest.getEmail());
             throw new IllegalArgumentException("User name or email already in use");

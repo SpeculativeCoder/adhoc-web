@@ -80,7 +80,7 @@
                 <argument>build</argument>
                 <argument>--</argument>
                 <!-- TODO: remove jsdom_fix when no longer needed -->
-                <argument>--configuration=jsdom_fix,${angular.configuration}${angular-app-customization}</argument>
+                <argument>--configuration=jsdom_fix,${angular.configuration}${angular-app-customization},en-US</argument>
               </arguments>
               <environmentVariables>
                 <!-- TODO: figure out a way to have analytics on -->
@@ -104,7 +104,7 @@
             <configuration>
               <resources>
                 <resource>
-                  <directory>dist/adhoc-angular/browser</directory>
+                  <directory>dist/adhoc-angular/browser/en-US</directory>
                   <includes>
                     <include>index.html</include>
                   </includes>
@@ -112,7 +112,7 @@
                   <filtering>false</filtering>
                 </resource>
                 <resource>
-                  <directory>dist/adhoc-angular/browser</directory>
+                  <directory>dist/adhoc-angular/browser/en-US</directory>
                   <excludes>
                     <exclude>index.html</exclude>
                   </excludes>

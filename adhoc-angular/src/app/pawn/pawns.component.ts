@@ -27,14 +27,19 @@ import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
 import {SortEvent} from '../shared/table-sort/header-sort.component';
+import {Page} from "../core/page";
+import {Pageable} from "../core/pageable";
+import {Sort} from "../core/sort";
 
 @Component({
   selector: 'app-pawns',
   templateUrl: './pawns.component.html'
 })
 export class PawnsComponent implements OnInit {
-  pawns: Pawn[] = [];
-  factions: Faction[] = [];
+  pawnsPage: Page<Pawn> = new Page();
+  private factions: Faction[] = [];
+  // TODO: page size
+  private pageable: Pageable = new Pageable();
 
   constructor(private pawnService: PawnService, private factionService: FactionService) {
   }
@@ -44,17 +49,27 @@ export class PawnsComponent implements OnInit {
   }
 
   ngOnInit() {
-    forkJoin([this.factionService.getFactions(), this.pawnService.getPawns()]).subscribe(data => {
-      [this.factions, this.pawns] = data;
+    this.refreshPawns();
+  }
+
+  refreshPawns() {
+    forkJoin([
+      this.factionService.getFactions(),
+      this.pawnService.getPawns(this.pageable)
+    ]).subscribe(data => {
+      [this.factions, this.pawnsPage] = data;
     });
   }
 
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.pawns.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
+  onPageChange(pageIndex: number) {
+    this.pageable.page = pageIndex;
+    this.refreshPawns();
+  }
+
+  onSort(sort: SortEvent) {
+    //console.log('sortBy');
+    //console.log(sort);
+    this.pageable.sort = [new Sort(sort.column, sort.direction)];
+    this.refreshPawns();
   }
 }

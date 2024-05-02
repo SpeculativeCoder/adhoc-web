@@ -43,6 +43,8 @@ import {DOCUMENT} from "@angular/common";
 import {CsrfService} from "../core/csrf.service";
 import {MapComponentExtraInterface} from "./map-component-extra-interface";
 import {appExtra} from "../app-extra";
+import {Page} from "../core/page";
+import {Pageable} from "../core/pageable";
 
 @Component({
   selector: 'app-map',
@@ -164,11 +166,12 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       this.objectiveService.refreshObjectives(),
       this.serverService.getServers(),
       this.factionService.refreshFactions(),
-      this.pawnService.getPawns(),
+      // TODO
+      this.pawnService.getPawns(new Pageable(0, Number.MAX_SAFE_INTEGER)),
     ]).subscribe(data => {
-      let pawns: Pawn[];
-      [this.regions, this.areas, this.objectives, this.servers, this.factions, pawns] = data;
-      for (let pawn of pawns) {
+      let pawnsPage: Page<Pawn>;
+      [this.regions, this.areas, this.objectives, this.servers, this.factions, pawnsPage] = data;
+      for (let pawn of pawnsPage.content) {
         (this.serversPawns[pawn.serverId] ||= []).push(pawn);
       }
       this.refreshMap();

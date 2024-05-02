@@ -24,13 +24,10 @@ package adhoc.pawn;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -41,9 +38,8 @@ public class PawnService {
     private final PawnRepository pawnRepository;
 
     @Transactional(readOnly = true)
-    public List<PawnDto> getPawns() {
-        return pawnRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "serverId", "index"))
-                .stream().map(this::toDto).collect(Collectors.toList());
+    public Page<PawnDto> getPawns(Pageable pageable) {
+        return pawnRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)

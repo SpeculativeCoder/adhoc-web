@@ -20,36 +20,12 @@
  * SOFTWARE.
  */
 
-import {Inject, Injectable} from '@angular/core';
-import {Pawn} from "./pawn";
-import {HttpClient} from "@angular/common/http";
-import {StompService} from "../core/stomp.service";
-import {MessageService} from "../message/message.service";
-import {Observable} from "rxjs";
-import {User} from "../user/user";
-import {Page} from "../core/page";
-import {Pageable} from "../core/pageable";
+import {SortDirection} from "../shared/table-sort/header-sort.component";
 
-@Injectable({
-  providedIn: 'root'
-})
-export class PawnService {
+export class Sort {
 
-  private readonly pawnsUrl: string;
-
-  constructor(@Inject('BASE_URL') baseUrl: string, private http: HttpClient, private stomp: StompService, private messages: MessageService) {
-    this.pawnsUrl = `${baseUrl}/api/pawns`;
-  }
-
-  getPawns(pageable: Pageable = new Pageable()): Observable<Page<Pawn>> {
-    return this.http.get<Page<Pawn>>(this.pawnsUrl, {params: pageable.toParams()});
-  }
-
-  getPawn(id: number): Observable<User> {
-    return this.http.get<User>(`${this.pawnsUrl}/${id}`);
-  }
-
-  updatePawn(pawn: Pawn): Observable<Pawn> {
-    return this.http.put<Pawn>(`${this.pawnsUrl}/${pawn.id}`, pawn);
+  constructor(
+    public sort: string,
+    public direction?: SortDirection) {
   }
 }

@@ -13,6 +13,17 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": "en",
+        "locales": {
+          "en-US": {
+            "translation": [
+              "src/locale/messages.en-US.xlf"
+            ],
+            "baseHref": ""
+          }
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
@@ -36,7 +47,9 @@
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
               "node_modules/fabric/dist/fabric.js"
-            ]
+            ],
+            "i18nMissingTranslation": "error",
+            "i18nDuplicateTranslation": "error"
           },
           "configurations": {
             "jsdom_fix": {
@@ -71,6 +84,11 @@
                   "with": "src/customization/app-constants.ts"
                 }
               ]
+            },
+            "en-US": {
+              "localize": [
+                "en-US"
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -78,6 +96,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
+            "buildTarget": "adhoc-angular:build",
             "proxyConfig": "src/proxy.conf.js"
           },
           "configurations": {
@@ -89,6 +108,9 @@
             },
             "customization": {
               "buildTarget": "adhoc-angular:build:customization"
+            },
+            "en-US": {
+              "buildTarget": "adhoc-angular:build:en-US"
             }
           },
           "defaultConfiguration": "development"
@@ -96,8 +118,16 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "adhoc-angular:build"
-          }
+            "buildTarget": "adhoc-angular:build",
+            "format": "xlf2",
+            "outputPath": "src/locale"
+          },
+          "configurations": {
+            "jsdom_fix": {
+              "buildTarget": "adhoc-angular:build:jsdom_fix"
+            }
+          },
+          "defaultConfiguration": "jsdom_fix"
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",

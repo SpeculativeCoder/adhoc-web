@@ -20,7 +20,8 @@
  * SOFTWARE.
  */
 
-import {Component, EventEmitter, HostBinding, HostListener, Input, Output,} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, Output,} from '@angular/core';
+import {CommonModule} from "@angular/common";
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -31,6 +32,10 @@ export interface SortEvent {
 
 @Component({
   selector: 'th[sortable]',
+  standalone: true,
+  imports: [
+    CommonModule
+  ],
   template:
     '<ng-content></ng-content><span class="position-fixed" *ngIf="direction">&nbsp;<span class="small oi {{openIconicIconClass}}"></span></span>'
 })

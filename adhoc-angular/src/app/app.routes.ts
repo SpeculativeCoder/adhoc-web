@@ -20,32 +20,31 @@
  * SOFTWARE.
  */
 
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
-import {ServersComponent} from './server/servers.component';
-import {FactionsComponent} from './faction/factions.component';
-import {FactionComponent} from './faction/faction.component';
-import {ObjectivesComponent} from './objective/objectives.component';
-import {ObjectiveComponent} from './objective/objective.component';
-import {UsersComponent} from './user/users.component';
-import {UserComponent} from './user/user.component';
-import {MapComponent} from './map/map.component';
-import {ServerComponent} from './server/server.component';
-import {LoginOrRegisterComponent} from './user/login-or-register.component';
+import {Routes} from '@angular/router';
+import {MapComponent} from "./map/map.component";
+import {ServersComponent} from "./server/servers.component";
+import {ServerComponent} from "./server/server.component";
+import {TasksComponent} from "./task/tasks.component";
+import {TaskComponent} from "./task/task.component";
 import {RegionsComponent} from "./region/regions.component";
 import {RegionComponent} from "./region/region.component";
 import {AreasComponent} from "./area/areas.component";
 import {AreaComponent} from "./area/area.component";
+import {ObjectivesComponent} from "./objective/objectives.component";
+import {ObjectiveComponent} from "./objective/objective.component";
 import {StructuresComponent} from "./structure/structures.component";
 import {StructureComponent} from "./structure/structure.component";
 import {PawnsComponent} from "./pawn/pawns.component";
 import {PawnComponent} from "./pawn/pawn.component";
+import {FactionsComponent} from "./faction/factions.component";
+import {FactionComponent} from "./faction/faction.component";
+import {UsersComponent} from "./user/users.component";
+import {UserComponent} from "./user/user.component";
+import {LoginOrRegisterComponent} from "./user/login-or-register.component";
 import {InfoPageComponent} from "./info-page/info-page.component";
 import {ClientComponent} from "./client/client.component";
-import {TasksComponent} from "./task/tasks.component";
-import {TaskComponent} from "./task/task.component";
 
-const routes: Routes = [
+export const routes: Routes = [
   {path: '', component: MapComponent},
   {path: 'map', title: 'Map', component: MapComponent},
   {path: 'servers', title: 'Servers', component: ServersComponent},
@@ -70,10 +69,3 @@ const routes: Routes = [
   {path: 'pages/:page', component: InfoPageComponent},
   {path: 'client/area/:areaId', title: 'Client', component: ClientComponent},
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule {
-}

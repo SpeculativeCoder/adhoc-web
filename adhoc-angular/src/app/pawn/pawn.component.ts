@@ -27,9 +27,18 @@ import {PawnService} from './pawn.service';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
+import {CommonModule} from "@angular/common";
+import {FormsModule} from "@angular/forms";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 
 @Component({
-  selector: 'app-pawns',
+  selector: 'app-pawn',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    SimpleDatePipe
+  ],
   templateUrl: './pawn.component.html'
 })
 export class PawnComponent implements OnInit {

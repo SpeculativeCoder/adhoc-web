@@ -24,7 +24,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {formatDate} from '@angular/common';
 
 @Pipe({
-  name: 'simpleDate'
+  name: 'simpleDate',
+  standalone: true
 })
 export class SimpleDatePipe implements PipeTransform {
 

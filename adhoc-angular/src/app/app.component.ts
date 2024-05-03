@@ -22,7 +22,7 @@
 
 import {StompService} from './core/stomp.service';
 import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink, RouterOutlet} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {UserService} from './user/user.service';
 import {User} from './user/user';
@@ -34,13 +34,17 @@ import {Faction} from "./faction/faction";
 import {appConstants} from "./app-constants";
 import {appExtra} from "./app-extra";
 import {Meta} from "@angular/platform-browser";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-root',
-  // TODO
-  //standalone: true,
-  // TODO
-  //imports: [CommonModule, RouterOutlet],
+  standalone: true,
+  imports: [
+    //environment.inMemoryDb ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, {dataEncapsulation: false}) : [],
+    CommonModule,
+    RouterOutlet,
+    RouterLink
+  ],
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, OnDestroy {

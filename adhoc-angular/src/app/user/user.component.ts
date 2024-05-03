@@ -27,9 +27,18 @@ import {UserService} from './user.service';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
+import {CommonModule} from "@angular/common";
+import {FormsModule} from "@angular/forms";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 
 @Component({
-  selector: 'app-users',
+  selector: 'app-user',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    SimpleDatePipe
+  ],
   templateUrl: './user.component.html'
 })
 export class UserComponent implements OnInit {

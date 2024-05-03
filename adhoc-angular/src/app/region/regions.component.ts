@@ -25,9 +25,20 @@ import {Region} from "./region";
 import {forkJoin} from "rxjs";
 import {RegionService} from "./region.service";
 import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {CommonModule} from "@angular/common";
+import {RouterLink} from "@angular/router";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 
 @Component({
   selector: 'app-regions',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    SimpleDatePipe,
+    TableSortDirective
+  ],
   templateUrl: './regions.component.html'
 })
 export class RegionsComponent implements OnInit {

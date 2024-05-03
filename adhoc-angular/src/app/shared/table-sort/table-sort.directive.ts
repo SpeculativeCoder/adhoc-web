@@ -24,7 +24,8 @@ import {AfterContentInit, ContentChildren, Directive, EventEmitter, Output, Quer
 import {HeaderSortComponent, SortEvent} from './header-sort.component';
 
 @Directive({
-  selector: 'table[sort]'
+  selector: 'table[sort]',
+  standalone: true
 })
 export class TableSortDirective implements AfterContentInit {
   @ContentChildren(HeaderSortComponent, {descendants: true}) headers: QueryList<HeaderSortComponent>;

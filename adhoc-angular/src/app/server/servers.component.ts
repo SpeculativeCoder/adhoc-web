@@ -27,10 +27,20 @@ import {Server} from './server';
 import {ServerService} from './server.service';
 import {PropertiesService} from "../properties/properties.service";
 import {SortEvent} from "../shared/table-sort/header-sort.component";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
+import {CommonModule} from "@angular/common";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 
 @Component({
   selector: 'app-servers',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    SimpleDatePipe,
+    TableSortDirective
+  ],
   templateUrl: './servers.component.html'
 })
 export class ServersComponent implements OnInit {

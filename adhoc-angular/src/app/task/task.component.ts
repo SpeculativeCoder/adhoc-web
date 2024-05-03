@@ -25,9 +25,18 @@ import {Task} from './task';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TaskService} from './task.service';
 import {forkJoin} from 'rxjs';
+import {CommonModule} from "@angular/common";
+import {FormsModule} from "@angular/forms";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 
 @Component({
-  selector: 'app-tasks',
+  selector: 'app-task',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    SimpleDatePipe
+  ],
   templateUrl: './task.component.html'
 })
 export class TaskComponent implements OnInit {

@@ -24,13 +24,23 @@ import {Component, OnInit} from '@angular/core';
 import {Faction} from './faction';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FactionService} from './faction.service';
+import {CommonModule} from "@angular/common";
+import {FormsModule} from "@angular/forms";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 
 @Component({
-  selector: 'app-factions',
+  selector: 'app-faction',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    SimpleDatePipe
+  ],
   templateUrl: './faction.component.html'
 })
 export class FactionComponent implements OnInit {
   faction: Faction = {};
+
   //colors: string[] = ['blue', 'red', 'green', 'yellow', 'black', 'white', 'gray']; // TODO
 
   constructor(private route: ActivatedRoute, private factionService: FactionService, private router: Router) {

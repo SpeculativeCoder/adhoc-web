@@ -25,9 +25,20 @@ import {forkJoin} from 'rxjs';
 import {Task} from './task';
 import {TaskService} from './task.service';
 import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {CommonModule} from "@angular/common";
+import {RouterLink} from "@angular/router";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 
 @Component({
   selector: 'app-tasks',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    SimpleDatePipe,
+    TableSortDirective
+  ],
   templateUrl: './tasks.component.html'
 })
 export class TasksComponent implements OnInit {

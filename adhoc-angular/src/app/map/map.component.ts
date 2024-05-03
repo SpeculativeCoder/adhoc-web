@@ -39,7 +39,7 @@ import {PawnService} from "../pawn/pawn.service";
 import {PropertiesService} from "../properties/properties.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StompService} from "../core/stomp.service";
-import {DOCUMENT} from "@angular/common";
+import {CommonModule, DOCUMENT} from "@angular/common";
 import {CsrfService} from "../core/csrf.service";
 import {MapComponentExtraInterface} from "./map-component-extra-interface";
 import {appExtra} from "../app-extra";
@@ -48,6 +48,10 @@ import {Paging} from "../core/paging";
 
 @Component({
   selector: 'app-map',
+  standalone: true,
+  imports: [
+    CommonModule
+  ],
   templateUrl: './map.component.html'
 })
 export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {

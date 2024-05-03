@@ -25,9 +25,18 @@ import {Server} from './server';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ServerService} from './server.service';
 import {forkJoin} from 'rxjs';
+import {CommonModule} from "@angular/common";
+import {FormsModule} from "@angular/forms";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 
 @Component({
-  selector: 'app-servers',
+  selector: 'app-server',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    SimpleDatePipe
+  ],
   templateUrl: './server.component.html'
 })
 export class ServerComponent implements OnInit {

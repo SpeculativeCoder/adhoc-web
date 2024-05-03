@@ -22,9 +22,18 @@
 
 import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
+import {CommonModule} from "@angular/common";
+import {AboutComponent} from "./about/about.component";
+import {EulaComponent} from "./eula/eula.component";
 
 @Component({
   selector: 'info-page',
+  standalone: true,
+  imports: [
+    CommonModule,
+    AboutComponent,
+    EulaComponent
+  ],
   templateUrl: './info-page.component.html'
 })
 export class InfoPageComponent {

@@ -23,9 +23,14 @@
 import {Component, SecurityContext} from '@angular/core';
 import {appConstants} from "../../app-constants";
 import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-about',
+  standalone: true,
+  imports: [
+    CommonModule
+  ],
   templateUrl: './about.component.html'
 })
 export class AboutComponent {

@@ -20,20 +20,21 @@
  * SOFTWARE.
  */
 
-import {Component} from '@angular/core';
-import {appConstants} from '../../app-constants';
-import {CommonModule} from "@angular/common";
+import {ApplicationConfig} from '@angular/core';
+import {provideRouter, TitleStrategy} from '@angular/router';
 
-@Component({
-  selector: 'app-eula',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
-  templateUrl: './eula.component.html'
-})
-export class EulaComponent {
+import {routes} from './app.routes';
+import {httpInterceptorProviders} from "./core/http-interceptor";
+import {environment} from "../environments/environment";
+import {AppTitleStrategy} from "./app-title-strategy";
+import {provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
 
-  appTitle = appConstants.appTitle;
-  appDeveloper = appConstants.appDeveloper;
-}
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    provideHttpClient(withInterceptorsFromDi()), // TODO
+    httpInterceptorProviders,
+    {provide: 'BASE_URL', useValue: environment.baseUrl},
+    {provide: TitleStrategy, useClass: AppTitleStrategy}
+  ]
+};

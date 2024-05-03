@@ -25,9 +25,20 @@ import {forkJoin} from "rxjs";
 import {Area} from "./area";
 import {AreaService} from "./area.service";
 import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {CommonModule} from "@angular/common";
+import {RouterLink} from "@angular/router";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 
 @Component({
   selector: 'app-areas',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    SimpleDatePipe,
+    TableSortDirective
+  ],
   templateUrl: './areas.component.html'
 })
 export class AreasComponent implements OnInit {

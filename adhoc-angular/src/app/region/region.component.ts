@@ -25,9 +25,18 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {forkJoin} from "rxjs";
 import {Region} from "./region";
 import {RegionService} from "./region.service";
+import {CommonModule} from "@angular/common";
+import {FormsModule} from "@angular/forms";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 
 @Component({
   selector: 'app-region',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    SimpleDatePipe
+  ],
   templateUrl: './region.component.html'
 })
 export class RegionComponent implements OnInit {

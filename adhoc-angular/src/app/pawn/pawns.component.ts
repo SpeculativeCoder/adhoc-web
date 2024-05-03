@@ -30,9 +30,22 @@ import {SortEvent} from '../shared/table-sort/header-sort.component';
 import {Page} from "../core/page";
 import {Paging} from "../core/paging";
 import {Sort} from "../core/sort";
+import {CommonModule} from "@angular/common";
+import {RouterLink} from "@angular/router";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-pawns',
+  standalone: true,
+  imports: [
+    CommonModule,
+    NgbPagination,
+    RouterLink,
+    SimpleDatePipe,
+    TableSortDirective
+  ],
   templateUrl: './pawns.component.html'
 })
 export class PawnsComponent implements OnInit {

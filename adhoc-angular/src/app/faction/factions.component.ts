@@ -24,9 +24,20 @@ import {Component, OnInit} from '@angular/core';
 import {Faction} from './faction';
 import {FactionService} from './faction.service';
 import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {CommonModule} from "@angular/common";
+import {RouterLink} from "@angular/router";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 
 @Component({
   selector: 'app-factions',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    SimpleDatePipe,
+    TableSortDirective
+  ],
   templateUrl: './factions.component.html'
 })
 export class FactionsComponent implements OnInit {

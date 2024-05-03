@@ -27,9 +27,20 @@ import {FactionService} from '../faction/faction.service';
 import {Faction} from '../faction/faction';
 import {forkJoin} from 'rxjs';
 import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {CommonModule} from "@angular/common";
+import {RouterLink} from "@angular/router";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 
 @Component({
   selector: 'app-objectives',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    SimpleDatePipe,
+    TableSortDirective
+  ],
   templateUrl: './objectives.component.html'
 })
 export class ObjectivesComponent implements OnInit {

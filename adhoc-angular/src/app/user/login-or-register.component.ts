@@ -27,9 +27,18 @@ import {Faction} from '../faction/faction';
 import {User} from './user';
 import {FactionService} from '../faction/faction.service';
 import {UserRegisterRequest} from "./user-register-request";
+import {CommonModule} from "@angular/common";
+import {FormsModule} from "@angular/forms";
+import {NgbDropdownModule} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-login',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    NgbDropdownModule
+  ],
   templateUrl: './login-or-register.component.html'
 })
 export class LoginOrRegisterComponent implements OnInit, AfterViewInit {

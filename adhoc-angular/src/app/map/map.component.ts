@@ -44,7 +44,7 @@ import {CsrfService} from "../core/csrf.service";
 import {MapComponentExtraInterface} from "./map-component-extra-interface";
 import {appExtra} from "../app-extra";
 import {Page} from "../core/page";
-import {Pageable} from "../core/pageable";
+import {Paging} from "../core/paging";
 
 @Component({
   selector: 'app-map',
@@ -167,7 +167,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       this.serverService.getServers(),
       this.factionService.refreshFactions(),
       // TODO
-      this.pawnService.getPawns(new Pageable(0, Number.MAX_SAFE_INTEGER)),
+      this.pawnService.getPawns(new Paging(0, Number.MAX_SAFE_INTEGER)),
     ]).subscribe(data => {
       let pawnsPage: Page<Pawn>;
       [this.regions, this.areas, this.objectives, this.servers, this.factions, pawnsPage] = data;

@@ -28,7 +28,7 @@ import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
 import {SortEvent} from '../shared/table-sort/header-sort.component';
 import {Page} from "../core/page";
-import {Pageable} from "../core/pageable";
+import {Paging} from "../core/paging";
 import {Sort} from "../core/sort";
 
 @Component({
@@ -39,7 +39,7 @@ export class PawnsComponent implements OnInit {
   pawnsPage: Page<Pawn> = new Page();
   private factions: Faction[] = [];
   // TODO: page size
-  private pageable: Pageable = new Pageable();
+  private paging: Paging = new Paging();
 
   constructor(private pawnService: PawnService, private factionService: FactionService) {
   }
@@ -55,21 +55,21 @@ export class PawnsComponent implements OnInit {
   refreshPawns() {
     forkJoin([
       this.factionService.getFactions(),
-      this.pawnService.getPawns(this.pageable)
+      this.pawnService.getPawns(this.paging)
     ]).subscribe(data => {
       [this.factions, this.pawnsPage] = data;
     });
   }
 
   onPageChange(pageIndex: number) {
-    this.pageable.page = pageIndex;
+    this.paging.page = pageIndex;
     this.refreshPawns();
   }
 
   onSort(sort: SortEvent) {
     //console.log('sortBy');
     //console.log(sort);
-    this.pageable.sort = [new Sort(sort.column, sort.direction)];
+    this.paging.sort = [new Sort(sort.column, sort.direction)];
     this.refreshPawns();
   }
 }

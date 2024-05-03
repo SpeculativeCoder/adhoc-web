@@ -28,7 +28,7 @@ import {MessageService} from "../message/message.service";
 import {Observable} from "rxjs";
 import {User} from "../user/user";
 import {Page} from "../core/page";
-import {Pageable} from "../core/pageable";
+import {Paging} from "../core/paging";
 
 @Injectable({
   providedIn: 'root'
@@ -41,8 +41,8 @@ export class PawnService {
     this.pawnsUrl = `${baseUrl}/api/pawns`;
   }
 
-  getPawns(pageable: Pageable = new Pageable()): Observable<Page<Pawn>> {
-    return this.http.get<Page<Pawn>>(this.pawnsUrl, {params: pageable.toParams()});
+  getPawns(paging: Paging = new Paging()): Observable<Page<Pawn>> {
+    return this.http.get<Page<Pawn>>(this.pawnsUrl, {params: paging.toParams()});
   }
 
   getPawn(id: number): Observable<User> {

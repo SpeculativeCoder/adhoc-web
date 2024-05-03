@@ -22,7 +22,7 @@
 
 import {Sort} from "./sort";
 
-export class Pageable {
+export class Paging {
 
   constructor(public page?: number,
               public size?: number,

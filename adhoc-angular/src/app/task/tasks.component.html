@@ -25,7 +25,7 @@
     Tasks
   </h2>
   <div class="table-responsive">
-    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="sortBy($event)">
+    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="onSort($event)">
       <!--    <caption>{{tasks.length}} tasks</caption>-->
       <thead>
       <tr>
@@ -41,7 +41,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let task of tasks">
+      <tr *ngFor="let task of tasks.content">
         <th scope="row"><a routerLink="/tasks/{{ task.id }}">{{ task.id }}</a></th>
         <td>{{ task.type }}</td>
         <!--<td>{{ task.privateIp }}</td>-->
@@ -54,5 +54,13 @@
       </tr>
       </tbody>
     </table>
+  </div>
+  <div class="d-flex justify-content-end" *ngIf="tasks.numberOfElements">
+    <div class="mt-2 me-4">{{ (tasks.number * tasks.size) + 1 }} - {{ (tasks.number * tasks.size) + tasks.numberOfElements }} of {{ tasks.totalElements }}</div>
+    <ngb-pagination [page]="tasks.number+1"
+                    [pageSize]="tasks.size"
+                    [collectionSize]="tasks.totalElements"
+                    [boundaryLinks]="true"
+                    (pageChange)="onPageChange($event - 1)"/>
   </div>
 </div>

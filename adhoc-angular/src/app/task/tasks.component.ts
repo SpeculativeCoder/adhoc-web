@@ -22,13 +22,17 @@
 
 import {Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
-import {Task} from './task';
 import {TaskService} from './task.service';
-import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {HeaderSortComponent, SortEvent} from "../shared/table-sort/header-sort.component";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {Page} from "../core/page";
+import {Paging} from "../core/paging";
+import {Sort} from "../core/sort";
+import {Task} from './task';
+import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-tasks',
@@ -37,32 +41,39 @@ import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
     CommonModule,
     RouterLink,
     SimpleDatePipe,
-    TableSortDirective
+    HeaderSortComponent,
+    TableSortDirective,
+    NgbPagination
   ],
   templateUrl: './tasks.component.html'
 })
 export class TasksComponent implements OnInit {
-  tasks: Task[] = [];
+
+  tasks: Page<Task> = new Page();
+  private paging: Paging = new Paging();
 
   constructor(private taskService: TaskService) {
   }
 
   ngOnInit() {
-    forkJoin([this.taskService.getTasks()]).subscribe(data => {
+    this.refreshTasks();
+  }
+
+  private refreshTasks() {
+    forkJoin([
+      this.taskService.getTasks(this.paging)
+    ]).subscribe(data => {
       [this.tasks] = data;
     });
   }
 
-  getTask(id: number): Task {
-    return this.tasks.find(task => task.id === id);
+  onPageChange(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshTasks();
   }
 
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.tasks.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
+  onSort(sort: SortEvent) {
+    this.paging.sort = [new Sort(sort.column, sort.direction)];
+    this.refreshTasks();
   }
 }

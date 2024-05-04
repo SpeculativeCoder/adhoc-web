@@ -21,14 +21,18 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {Region} from "./region";
 import {forkJoin} from "rxjs";
 import {RegionService} from "./region.service";
-import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {HeaderSortComponent, SortEvent} from "../shared/table-sort/header-sort.component";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {Page} from "../core/page";
+import {Paging} from "../core/paging";
+import {Sort} from "../core/sort";
+import {Region} from "./region";
+import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-regions',
@@ -37,28 +41,39 @@ import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
     CommonModule,
     RouterLink,
     SimpleDatePipe,
-    TableSortDirective
+    TableSortDirective,
+    HeaderSortComponent,
+    NgbPagination
   ],
   templateUrl: './regions.component.html'
 })
 export class RegionsComponent implements OnInit {
-  regions: Region[] = [];
+
+  regions: Page<Region> = new Page();
+  private paging: Paging = new Paging();
 
   constructor(private regionService: RegionService) {
   }
 
   ngOnInit() {
-    forkJoin([this.regionService.getRegions()]).subscribe(data => {
+    this.refreshRegions();
+  }
+
+  private refreshRegions() {
+    forkJoin([
+      this.regionService.getRegions(this.paging)
+    ]).subscribe(data => {
       [this.regions] = data;
     });
   }
 
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.regions.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
+  onPageChange(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshRegions();
+  }
+
+  onSort(sort: SortEvent) {
+    this.paging.sort = [new Sort(sort.column, sort.direction)];
+    this.refreshRegions();
   }
 }

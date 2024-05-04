@@ -80,7 +80,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.currentUser = currentUser;
 
       if (this.currentUser) {
-        this.factionService.getFaction(currentUser.factionId).subscribe(faction => {
+        this.factionService.getCachedFaction(currentUser.factionId).subscribe(faction => {
           this.currentUserFaction = faction
         });
       }

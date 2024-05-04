@@ -55,7 +55,7 @@ export class UserComponent implements OnInit {
 
   ngOnInit() {
     const userId = +this.route.snapshot.paramMap.get('id');
-    forkJoin(this.userService.getUser(userId), this.factionService.getFactions()).subscribe(data => {
+    forkJoin(this.userService.getUser(userId), this.factionService.getCachedFactions()).subscribe(data => {
       [this.user, this.factions] = data;
     });
   }

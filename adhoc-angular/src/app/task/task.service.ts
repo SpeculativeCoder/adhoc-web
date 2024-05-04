@@ -25,7 +25,8 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Task} from './task';
 import {StompService} from '../core/stomp.service';
-import {map} from 'rxjs/operators';
+import {Paging} from "../core/paging";
+import {Page} from "../core/page";
 
 @Injectable({
   providedIn: 'root'
@@ -33,8 +34,6 @@ import {map} from 'rxjs/operators';
 export class TaskService {
 
   private readonly tasksUrl: string;
-
-  private tasks: Task[] = [];
 
   constructor(
     @Inject('BASE_URL') baseUrl: string,
@@ -44,13 +43,8 @@ export class TaskService {
     this.tasksUrl = `${baseUrl}/api/tasks`;
   }
 
-  getTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(this.tasksUrl).pipe(
-      map(tasks => {
-        this.tasks ? this.tasks.length = 0 : this.tasks = [];
-        this.tasks.push(...tasks);
-        return this.tasks;
-      }));
+  getTasks(paging: Paging = new Paging()): Observable<Page<Task>> {
+    return this.http.get<Page<Task>>(this.tasksUrl, {params: paging.toParams()});
   }
 
   getTask(id: number): Observable<Task> {

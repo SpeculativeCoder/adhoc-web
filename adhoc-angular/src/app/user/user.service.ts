@@ -26,10 +26,11 @@ import {HttpClient} from '@angular/common/http';
 import {MessageService} from '../message/message.service';
 import {BehaviorSubject, mergeMap, Observable, of, take} from 'rxjs';
 import {StompService} from '../core/stomp.service';
-import {map} from 'rxjs/operators';
 import {PropertiesService} from "../properties/properties.service";
 import {Router} from "@angular/router";
 import {UserRegisterRequest} from "./user-register-request";
+import {Paging} from "../core/paging";
+import {Page} from "../core/page";
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +40,6 @@ export class UserService {
   private readonly usersUrl: string;
   private readonly loginUrl: string;
 
-  private users: User[];
   private currentUser$: BehaviorSubject<User> = new BehaviorSubject(null);
 
   constructor(@Inject('BASE_URL') baseUrl: string,
@@ -58,20 +58,8 @@ export class UserService {
       .subscribe((body: any) => this.handleFactionScoring(body['factionAwardedScores']));
   }
 
-  getUsers(): Observable<User[]> {
-    if (this.users) {
-      return of(this.users);
-    }
-    return this.refreshUsers();
-  }
-
-  refreshUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.usersUrl).pipe(
-      map(users => {
-        this.users ? this.users.length = 0 : this.users = [];
-        this.users.push(...users);
-        return this.users;
-      }));
+  getUsers(paging: Paging = new Paging()): Observable<Page<User>> {
+    return this.http.get<Page<User>>(this.usersUrl, {params: paging.toParams()});
   }
 
   getUser(id: number): Observable<User> {

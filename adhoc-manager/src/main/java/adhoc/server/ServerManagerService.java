@@ -71,6 +71,10 @@ public class ServerManagerService {
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
     private ServerManagerService self;
 
+    public List<ServerDto> getServerServers(Long serverId) {
+        return serverRepository.findAll().stream().map(serverService::toDto).toList();
+    }
+
     public ServerDto updateServer(ServerDto serverDto) {
         Server server = toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));
 

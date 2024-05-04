@@ -21,13 +21,17 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {Faction} from './faction';
 import {FactionService} from './faction.service';
-import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {HeaderSortComponent, SortEvent} from "../shared/table-sort/header-sort.component";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {Page} from "../core/page";
+import {Paging} from "../core/paging";
+import {Sort} from "../core/sort";
+import {Faction} from "./faction";
+import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-factions',
@@ -36,26 +40,36 @@ import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
     CommonModule,
     RouterLink,
     SimpleDatePipe,
-    TableSortDirective
+    TableSortDirective,
+    HeaderSortComponent,
+    NgbPagination
   ],
   templateUrl: './factions.component.html'
 })
 export class FactionsComponent implements OnInit {
-  factions: Faction[] = [];
+
+  factions: Page<Faction> = new Page();
+  private paging: Paging = new Paging();
 
   constructor(private factionService: FactionService) {
   }
 
   ngOnInit() {
-    this.factionService.getFactions().subscribe(factions => this.factions = factions);
+    this.refreshFactions();
   }
 
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.factions.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
+  private refreshFactions() {
+    this.factionService.getFactions(this.paging)
+      .subscribe(factionsPage => this.factions = factionsPage);
+  }
+
+  onPageChange(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshFactions();
+  }
+
+  onSort(sort: SortEvent) {
+    this.paging.sort = [new Sort(sort.column, sort.direction)];
+    this.refreshFactions();
   }
 }

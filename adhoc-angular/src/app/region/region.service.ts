@@ -26,7 +26,8 @@ import {StompService} from "../core/stomp.service";
 import {MessageService} from "../message/message.service";
 import {Region} from "./region";
 import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
+import {Paging} from "../core/paging";
+import {Page} from "../core/page";
 
 @Injectable({
   providedIn: 'root'
@@ -35,19 +36,12 @@ export class RegionService {
 
   private readonly regionsUrl: string;
 
-  private regions: Region[] = [];
-
   constructor(@Inject('BASE_URL') baseUrl: string, private http: HttpClient, private stomp: StompService, private messages: MessageService) {
     this.regionsUrl = `${baseUrl}/api/regions`;
   }
 
-  getRegions(): Observable<Region[]> {
-    return this.http.get<Region[]>(this.regionsUrl).pipe(
-      map(regions => {
-        this.regions ? this.regions.length = 0 : this.regions = [];
-        this.regions.push(...regions);
-        return this.regions;
-      }));
+  getRegions(paging: Paging = new Paging()): Observable<Page<Region>> {
+    return this.http.get<Page<Region>>(this.regionsUrl, {params: paging.toParams()});
   }
 
   getRegion(id: number): Observable<Region> {

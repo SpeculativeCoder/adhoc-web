@@ -164,20 +164,29 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
 
   private loadData() {
     forkJoin([
-      // TODO: all should be refresh
-      this.regionService.getRegions(),
-      this.areaService.refreshAreas(),
-      this.objectiveService.refreshObjectives(),
-      this.serverService.getServers(),
-      this.factionService.refreshFactions(),
-      // TODO
+      this.regionService.getRegions(new Paging(0, Number.MAX_SAFE_INTEGER)),
+      this.areaService.getAreas(new Paging(0, Number.MAX_SAFE_INTEGER)),
+      this.objectiveService.refreshCachedObjectives(),
+      this.serverService.getServers(new Paging(0, Number.MAX_SAFE_INTEGER)),
+      this.factionService.refreshCachedFactions(),
       this.pawnService.getPawns(new Paging(0, Number.MAX_SAFE_INTEGER)),
     ]).subscribe(data => {
+      // TODO
+      let regionsPage: Page<Region>;
+      let areasPage: Page<Area>;
+      let serversPage: Page<Server>;
       let pawnsPage: Page<Pawn>;
-      [this.regions, this.areas, this.objectives, this.servers, this.factions, pawnsPage] = data;
+
+      [regionsPage, areasPage, this.objectives, serversPage, this.factions, pawnsPage] = data;
+
+      this.regions = regionsPage.content;
+      this.areas = areasPage.content;
+      this.servers = serversPage.content;
+
       for (let pawn of pawnsPage.content) {
         (this.serversPawns[pawn.serverId] ||= []).push(pawn);
       }
+
       this.refreshMap();
     });
   }

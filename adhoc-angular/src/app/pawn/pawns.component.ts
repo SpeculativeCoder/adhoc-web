@@ -26,7 +26,7 @@ import {Pawn} from './pawn';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
-import {SortEvent} from '../shared/table-sort/header-sort.component';
+import {HeaderSortComponent, SortEvent} from '../shared/table-sort/header-sort.component';
 import {Page} from "../core/page";
 import {Paging} from "../core/paging";
 import {Sort} from "../core/sort";
@@ -41,18 +41,20 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
   standalone: true,
   imports: [
     CommonModule,
-    NgbPagination,
     RouterLink,
     SimpleDatePipe,
-    TableSortDirective
+    TableSortDirective,
+    HeaderSortComponent,
+    NgbPagination
   ],
   templateUrl: './pawns.component.html'
 })
 export class PawnsComponent implements OnInit {
-  pawnsPage: Page<Pawn> = new Page();
-  private factions: Faction[] = [];
-  // TODO: page size
+
+  pawns: Page<Pawn> = new Page();
   private paging: Paging = new Paging();
+
+  private factions: Faction[] = [];
 
   constructor(private pawnService: PawnService, private factionService: FactionService) {
   }
@@ -65,12 +67,12 @@ export class PawnsComponent implements OnInit {
     this.refreshPawns();
   }
 
-  refreshPawns() {
+  private refreshPawns() {
     forkJoin([
-      this.factionService.getFactions(),
-      this.pawnService.getPawns(this.paging)
+      this.pawnService.getPawns(this.paging),
+      this.factionService.getCachedFactions(),
     ]).subscribe(data => {
-      [this.factions, this.pawnsPage] = data;
+      [this.pawns, this.factions] = data;
     });
   }
 
@@ -80,8 +82,6 @@ export class PawnsComponent implements OnInit {
   }
 
   onSort(sort: SortEvent) {
-    //console.log('sortBy');
-    //console.log(sort);
     this.paging.sort = [new Sort(sort.column, sort.direction)];
     this.refreshPawns();
   }

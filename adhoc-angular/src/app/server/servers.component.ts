@@ -26,11 +26,15 @@ import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
 import {PropertiesService} from "../properties/properties.service";
-import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {HeaderSortComponent, SortEvent} from "../shared/table-sort/header-sort.component";
 import {Router, RouterLink} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {Page} from "../core/page";
+import {Paging} from "../core/paging";
+import {Sort} from "../core/sort";
+import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-servers',
@@ -39,12 +43,16 @@ import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
     CommonModule,
     RouterLink,
     SimpleDatePipe,
-    TableSortDirective
+    TableSortDirective,
+    HeaderSortComponent,
+    NgbPagination
   ],
   templateUrl: './servers.component.html'
 })
 export class ServersComponent implements OnInit {
-  servers: Server[] = [];
+
+  servers: Page<Server> = new Page();
+  private paging: Paging = new Paging();
 
   constructor(private serverService: ServerService,
               private userService: UserService,
@@ -53,13 +61,15 @@ export class ServersComponent implements OnInit {
   }
 
   ngOnInit() {
-    forkJoin([this.serverService.getServers()]).subscribe(data => {
-      [this.servers] = data;
-    });
+    this.refreshServers();
   }
 
-  getServer(id: number): Server {
-    return this.servers.find(server => server.id === id);
+  private refreshServers() {
+    forkJoin([
+      this.serverService.getServers(this.paging)
+    ]).subscribe(data => {
+      [this.servers] = data;
+    });
   }
 
   joinServer(server: Server) {
@@ -77,12 +87,13 @@ export class ServersComponent implements OnInit {
     });
   }
 
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.servers.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
+  onPageChange(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshServers();
+  }
+
+  onSort(sort: SortEvent) {
+    this.paging.sort = [new Sort(sort.column, sort.direction)];
+    this.refreshServers();
   }
 }

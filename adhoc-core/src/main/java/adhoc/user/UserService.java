@@ -36,8 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.event.Level;
 import org.springframework.dao.TransientDataAccessException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -57,7 +57,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -88,9 +87,8 @@ public class UserService {
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
     @Transactional(readOnly = true)
-    public List<UserDto> getUsers() {
-        return userRepository.findAll(PageRequest.of(0, 100, Sort.Direction.DESC, "score"))
-                .stream().map(this::toDto).collect(Collectors.toList());
+    public Page<UserDto> getUsers(Pageable pageable) {
+        return userRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)

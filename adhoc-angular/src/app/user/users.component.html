@@ -26,7 +26,7 @@
   </h2>
   <p>NOTE: Scores decay over time. Also, during this stage of development, users are temporary and are purged after a period of inactivity and on web server restart.</p>
   <div class="table-responsive">
-    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="sortBy($event)">
+    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="onSort($event)">
       <!--    <caption>{{users.length}} users</caption>-->
       <thead>
       <tr>
@@ -45,7 +45,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let user of users">
+      <tr *ngFor="let user of users.content">
         <!--<td style="width: 2em"><input type="checkbox" class="p-relative"
             #userCheckbox [checked]="isUserSelected(users)"
             (change)="userCheckboxChanged(users, userCheckbox.checked)" value="" />
@@ -64,6 +64,14 @@
       </tr>
       </tbody>
     </table>
+  </div>
+  <div class="d-flex justify-content-end" *ngIf="users.numberOfElements">
+    <div class="mt-2 me-4">{{ (users.number * users.size) + 1 }} - {{ (users.number * users.size) + users.numberOfElements }} of {{ users.totalElements }}</div>
+    <ngb-pagination [page]="users.number+1"
+                    [pageSize]="users.size"
+                    [collectionSize]="users.totalElements"
+                    [boundaryLinks]="true"
+                    (pageChange)="onPageChange($event - 1)"/>
   </div>
   <div class="container">
     <div class="row">

@@ -55,7 +55,7 @@ export class ObjectiveComponent implements OnInit {
 
   ngOnInit() {
     const objectiveId = +this.route.snapshot.paramMap.get('id');
-    forkJoin([this.objectiveService.getObjective(objectiveId), this.factionService.getFactions()]).subscribe(data => {
+    forkJoin([this.objectiveService.getObjective(objectiveId), this.factionService.getCachedFactions()]).subscribe(data => {
       [this.objective, this.factions] = data;
     });
   }

@@ -25,15 +25,13 @@ package adhoc.task;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -46,9 +44,8 @@ public class TaskService {
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
     @Transactional(readOnly = true)
-    public List<TaskDto> getTasks() {
-        return taskRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "id"))
-                .stream().map(this::toDto).collect(Collectors.toList());
+    public Page<TaskDto> getTasks(@SortDefault("id") Pageable pageable) {
+        return taskRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)

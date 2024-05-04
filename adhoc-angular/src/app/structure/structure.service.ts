@@ -26,7 +26,8 @@ import {HttpClient} from "@angular/common/http";
 import {MessageService} from "../message/message.service";
 import {StompService} from "../core/stomp.service";
 import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
+import {Paging} from "../core/paging";
+import {Page} from "../core/page";
 
 @Injectable({
   providedIn: 'root'
@@ -46,13 +47,8 @@ export class StructureService {
     this.structuresUrl = `${baseUrl}/api/structures`;
   }
 
-  getStructures(): Observable<Structure[]> {
-    return this.http.get<Structure[]>(this.structuresUrl).pipe(
-      map(structures => {
-        this.structures ? this.structures.length = 0 : this.structures = [];
-        this.structures.push(...structures);
-        return this.structures;
-      }));
+  getStructures(paging: Paging = new Paging()): Observable<Page<Structure>> {
+    return this.http.get<Page<Structure>>(this.structuresUrl, {params: paging.toParams()});
   }
 
   getStructure(id: number): Observable<Structure> {

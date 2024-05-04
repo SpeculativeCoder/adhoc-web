@@ -67,7 +67,7 @@ export class LoginOrRegisterComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.factionService.getFactions().subscribe(factions => {
+    this.factionService.getCachedFactions().subscribe(factions => {
       this.factions = factions;
       this.userRegisterRequest.factionId = 1 + Math.floor(Math.random() * this.factions.length);
     });

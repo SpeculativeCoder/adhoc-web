@@ -26,7 +26,8 @@ import {MessageService} from '../message/message.service';
 import {Observable} from 'rxjs';
 import {Server} from './server';
 import {StompService} from '../core/stomp.service';
-import {map} from 'rxjs/operators';
+import {Paging} from "../core/paging";
+import {Page} from "../core/page";
 
 @Injectable({
   providedIn: 'root'
@@ -34,8 +35,6 @@ import {map} from 'rxjs/operators';
 export class ServerService {
 
   private readonly serversUrl: string;
-
-  private servers: Server[] = [];
 
   constructor(
     @Inject('BASE_URL') baseUrl: string,
@@ -46,13 +45,8 @@ export class ServerService {
     this.serversUrl = `${baseUrl}/api/servers`;
   }
 
-  getServers(): Observable<Server[]> {
-    return this.http.get<Server[]>(this.serversUrl).pipe(
-      map(servers => {
-        this.servers ? this.servers.length = 0 : this.servers = [];
-        this.servers.push(...servers);
-        return this.servers;
-      }));
+  getServers(paging: Paging = new Paging()): Observable<Page<Server>> {
+    return this.http.get<Page<Server>>(this.serversUrl, {params: paging.toParams()});
   }
 
   getServer(id: number): Observable<Server> {

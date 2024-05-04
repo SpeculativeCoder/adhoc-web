@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -38,6 +39,14 @@ import java.util.Objects;
 public class FactionManagerController {
 
     private final FactionManagerService factionManagerService;
+
+    @GetMapping("/servers/{serverId}/factions")
+    @PreAuthorize("hasRole('SERVER')")
+    public List<FactionDto> getServerFactions(
+            @PathVariable Long serverId) {
+
+        return factionManagerService.getServerFactions(serverId);
+    }
 
     @PutMapping("/factions/{factionId}")
     @PreAuthorize("hasRole('ADMIN')")

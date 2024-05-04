@@ -29,11 +29,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -44,10 +46,9 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/users")
-    public List<UserDto> getUsers() {
+    public Page<UserDto> getUsers(@SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        // TODO: sorting
-        return userService.getUsers();
+        return userService.getUsers(pageable);
     }
 
     @GetMapping("/users/{userId}")

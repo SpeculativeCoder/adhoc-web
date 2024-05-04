@@ -22,13 +22,17 @@
 
 import {Component, OnInit} from '@angular/core';
 import {forkJoin} from "rxjs";
-import {Area} from "./area";
 import {AreaService} from "./area.service";
-import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {HeaderSortComponent, SortEvent} from "../shared/table-sort/header-sort.component";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {Page} from "../core/page";
+import {Paging} from "../core/paging";
+import {Sort} from "../core/sort";
+import {Area} from "./area";
+import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-areas',
@@ -37,28 +41,39 @@ import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
     CommonModule,
     RouterLink,
     SimpleDatePipe,
-    TableSortDirective
+    TableSortDirective,
+    HeaderSortComponent,
+    NgbPagination
   ],
   templateUrl: './areas.component.html'
 })
 export class AreasComponent implements OnInit {
-  areas: Area[] = [];
+
+  areas: Page<Area> = new Page();
+  private paging: Paging = new Paging();
 
   constructor(private areaService: AreaService) {
   }
 
   ngOnInit() {
-    forkJoin([this.areaService.getAreas()]).subscribe(data => {
+    this.refreshAreas();
+  }
+
+  private refreshAreas() {
+    forkJoin([
+      this.areaService.getAreas(this.paging)
+    ]).subscribe(data => {
       [this.areas] = data;
     });
   }
 
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.areas.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
+  onPageChange(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshAreas();
+  }
+
+  onSort(sort: SortEvent) {
+    this.paging.sort = [new Sort(sort.column, sort.direction)];
+    this.refreshAreas();
   }
 }

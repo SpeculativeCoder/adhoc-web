@@ -25,7 +25,7 @@
     Regions
   </h2>
   <div class="table-responsive">
-    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="sortBy($event)">
+    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="onSort($event)">
       <!--    <caption>{{regions.length}} regions</caption>-->
       <thead>
       <tr>
@@ -40,7 +40,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let region of regions">
+      <tr *ngFor="let region of regions.content">
         <th scope="row"><a routerLink="/regions/{{ region.id }}">{{ region.id }}</a></th>
         <td>{{ region.name }}</td>
         <td>{{ region.mapName }}</td>
@@ -51,5 +51,13 @@
       </tr>
       </tbody>
     </table>
+  </div>
+  <div class="d-flex justify-content-end" *ngIf="regions.numberOfElements">
+    <div class="mt-2 me-4">{{ (regions.number * regions.size) + 1 }} - {{ (regions.number * regions.size) + regions.numberOfElements }} of {{ regions.totalElements }}</div>
+    <ngb-pagination [page]="regions.number+1"
+                    [pageSize]="regions.size"
+                    [collectionSize]="regions.totalElements"
+                    [boundaryLinks]="true"
+                    (pageChange)="onPageChange($event - 1)"/>
   </div>
 </div>

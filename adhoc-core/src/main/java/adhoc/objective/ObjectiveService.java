@@ -24,12 +24,11 @@ package adhoc.objective;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -42,9 +41,8 @@ public class ObjectiveService {
     private final ObjectiveRepository objectiveRepository;
 
     @Transactional(readOnly = true)
-    public List<ObjectiveDto> getObjectives() {
-        return objectiveRepository.findAll(PageRequest.of(0, 100, Sort.Direction.ASC, "id"))
-                .stream().map(this::toDto).collect(Collectors.toList());
+    public Page<ObjectiveDto> getObjectives(Pageable pageable) {
+        return objectiveRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)

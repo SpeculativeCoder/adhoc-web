@@ -30,6 +30,8 @@ import {StompService} from '../core/stomp.service';
 import {map} from 'rxjs/operators';
 import {FactionService} from '../faction/faction.service';
 import {CsrfService} from "../core/csrf.service";
+import {Paging} from "../core/paging";
+import {Page} from "../core/page";
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +40,7 @@ export class ObjectiveService {
 
   private readonly objectivesUrl: string;
 
-  private objectives: Objective[];
+  private cachedObjectives: Objective[];
 
   constructor(
     @Inject('BASE_URL') baseUrl: string,
@@ -54,20 +56,8 @@ export class ObjectiveService {
       .subscribe((event: any) => this.handleObjectiveTaken(event.objectiveId, event.factionId));
   }
 
-  getObjectives(): Observable<Objective[]> {
-    if (this.objectives) {
-      return of(this.objectives);
-    }
-    return this.refreshObjectives();
-  }
-
-  refreshObjectives(): Observable<Objective[]> {
-    return this.http.get<Objective[]>(this.objectivesUrl).pipe(
-      map(objectives => {
-        this.objectives ? this.objectives.length = 0 : this.objectives = [];
-        this.objectives.push(...objectives);
-        return this.objectives;
-      }));
+  getObjectives(paging: Paging = new Paging()): Observable<Page<Objective>> {
+    return this.http.get<Page<Objective>>(this.objectivesUrl, {params: paging.toParams()});
   }
 
   getObjective(id: number): Observable<Objective> {
@@ -78,6 +68,22 @@ export class ObjectiveService {
     return this.http.put<Objective>(`${this.objectivesUrl}/${objective.id}`, objective);
   }
 
+  getCachedObjectives(): Observable<Objective[]> {
+    if (this.cachedObjectives) {
+      return of(this.cachedObjectives);
+    }
+    return this.refreshCachedObjectives();
+  }
+
+  refreshCachedObjectives(): Observable<Objective[]> {
+    return this.http.get<Page<Objective>>(this.objectivesUrl).pipe(
+      map(objectives => {
+        this.cachedObjectives ? this.cachedObjectives.length = 0 : this.cachedObjectives = [];
+        this.cachedObjectives.push(...objectives.content);
+        return this.cachedObjectives;
+      }));
+  }
+
   objectiveTaken(objective: Objective, faction: Faction) {
     this.stomp.send('ObjectiveTaken', {
       objectiveId: objective.id,
@@ -86,11 +92,11 @@ export class ObjectiveService {
   }
 
   handleObjectiveTaken(objectiveId: number, factionId: number) {
-    this.getObjectives().subscribe(objectives => {
+    this.getCachedObjectives().subscribe(objectives => {
       objectives.map(objective => {
         if (objective.id === objectiveId) {
           objective.factionId = factionId;
-          this.factionService.getFaction(factionId).subscribe(faction => {
+          this.factionService.getCachedFaction(factionId).subscribe(faction => {
             this.messages.addMessage(`${objective.name} taken by ${faction.name}`);
           });
         }

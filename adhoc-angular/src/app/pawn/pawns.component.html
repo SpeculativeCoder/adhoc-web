@@ -45,7 +45,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let pawn of pawnsPage.content">
+      <tr *ngFor="let pawn of pawns.content">
         <th scope="row"><a routerLink="/pawns/{{ pawn.id }}">{{ pawn.id }}</a></th>
         <!--<td>{{ pawn.uuid }}</td>-->
         <td>{{ pawn.serverId }}</td>
@@ -63,11 +63,11 @@
       </tbody>
     </table>
   </div>
-  <div class="d-flex justify-content-end" *ngIf="pawnsPage.numberOfElements">
-    <div class="mt-2 me-4">{{ (pawnsPage.number * pawnsPage.size) + 1 }} - {{ (pawnsPage.number * pawnsPage.size) + pawnsPage.numberOfElements }} of {{ pawnsPage.totalElements }}</div>
-    <ngb-pagination [page]="pawnsPage.number+1"
-                    [pageSize]="pawnsPage.size"
-                    [collectionSize]="pawnsPage.totalElements"
+  <div class="d-flex justify-content-end" *ngIf="pawns.numberOfElements">
+    <div class="mt-2 me-4">{{ (pawns.number * pawns.size) + 1 }} - {{ (pawns.number * pawns.size) + pawns.numberOfElements }} of {{ pawns.totalElements }}</div>
+    <ngb-pagination [page]="pawns.number+1"
+                    [pageSize]="pawns.size"
+                    [collectionSize]="pawns.totalElements"
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>
   </div>

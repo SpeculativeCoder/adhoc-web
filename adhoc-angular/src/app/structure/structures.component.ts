@@ -22,15 +22,19 @@
 
 import {Component, OnInit} from '@angular/core';
 import {StructureService} from './structure.service';
-import {Structure} from './structure';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
-import {SortEvent} from '../shared/table-sort/header-sort.component';
+import {HeaderSortComponent, SortEvent} from '../shared/table-sort/header-sort.component';
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {Page} from "../core/page";
+import {Paging} from "../core/paging";
+import {Sort} from "../core/sort";
+import {Structure} from "./structure";
+import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-structures',
@@ -39,12 +43,17 @@ import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
     CommonModule,
     RouterLink,
     SimpleDatePipe,
-    TableSortDirective
+    TableSortDirective,
+    HeaderSortComponent,
+    NgbPagination
   ],
   templateUrl: './structures.component.html'
 })
 export class StructuresComponent implements OnInit {
-  structures: Structure[] = [];
+
+  structures: Page<Structure> = new Page();
+  private paging: Paging = new Paging();
+
   factions: Faction[] = [];
 
   constructor(private structureService: StructureService, private factionService: FactionService) {
@@ -55,17 +64,25 @@ export class StructuresComponent implements OnInit {
   }
 
   ngOnInit() {
-    forkJoin([this.factionService.getFactions(), this.structureService.getStructures()]).subscribe(data => {
-      [this.factions, this.structures] = data;
+    this.refreshStructures();
+  }
+
+  private refreshStructures() {
+    forkJoin([
+      this.structureService.getStructures(this.paging),
+      this.factionService.getCachedFactions()
+    ]).subscribe(data => {
+      [this.structures, this.factions] = data;
     });
   }
 
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.structures.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
+  onPageChange(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshStructures();
+  }
+
+  onSort(sort: SortEvent) {
+    this.paging.sort = [new Sort(sort.column, sort.direction)];
+    this.refreshStructures();
   }
 }

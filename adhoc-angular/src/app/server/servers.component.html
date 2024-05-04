@@ -25,7 +25,7 @@
     Servers
   </h2>
   <div class="table-responsive">
-    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="sortBy($event)">
+    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="onSort($event)">
       <!--    <caption>{{servers.length}} servers</caption>-->
       <thead>
       <tr>
@@ -47,7 +47,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let server of servers">
+      <tr *ngFor="let server of servers.content">
         <th scope="row"><a routerLink="/servers/{{ server.id }}">{{ server.id }}</a></th>
         <td>{{ server.regionId }}</td>
         <td>
@@ -77,5 +77,13 @@
       </tr>
       </tbody>
     </table>
+  </div>
+  <div class="d-flex justify-content-end" *ngIf="servers.numberOfElements">
+    <div class="mt-2 me-4">{{ (servers.number * servers.size) + 1 }} - {{ (servers.number * servers.size) + servers.numberOfElements }} of {{ servers.totalElements }}</div>
+    <ngb-pagination [page]="servers.number+1"
+                    [pageSize]="servers.size"
+                    [collectionSize]="servers.totalElements"
+                    [boundaryLinks]="true"
+                    (pageChange)="onPageChange($event - 1)"/>
   </div>
 </div>

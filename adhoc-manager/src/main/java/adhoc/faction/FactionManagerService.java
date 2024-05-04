@@ -49,6 +49,10 @@ public class FactionManagerService {
 
     private final FactionService factionService;
 
+    public List<FactionDto> getServerFactions(Long serverId) {
+        return factionRepository.findAll().stream().map(factionService::toDto).toList();
+    }
+
     public FactionDto updateFaction(FactionDto factionDto) {
         Faction faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
 

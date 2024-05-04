@@ -55,7 +55,7 @@ export class StructureComponent implements OnInit {
 
   ngOnInit() {
     const structureId = +this.route.snapshot.paramMap.get('id');
-    forkJoin([this.structureService.getStructure(structureId), this.factionService.getFactions()]).subscribe(data => {
+    forkJoin([this.structureService.getStructure(structureId), this.factionService.getCachedFactions()]).subscribe(data => {
       [this.structure, this.factions] = data;
     });
   }

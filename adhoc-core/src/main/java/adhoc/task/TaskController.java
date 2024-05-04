@@ -24,12 +24,13 @@ package adhoc.task;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -40,10 +41,10 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping("/tasks")
-    public List<TaskDto> getTasks() {
+    public Page<TaskDto> getTasks(@SortDefault("id") Pageable pageable) {
 
         // TODO: sorting
-        return taskService.getTasks();
+        return taskService.getTasks(pageable);
     }
 
     @GetMapping("/tasks/{taskId}")

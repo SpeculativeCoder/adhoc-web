@@ -32,6 +32,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -41,6 +42,14 @@ import java.util.Objects;
 public class ServerManagerController {
 
     private final ServerManagerService serverManagerService;
+
+    @GetMapping("/servers/{serverId}/servers")
+    @PreAuthorize("hasRole('SERVER')")
+    public List<ServerDto> getServerServers(
+            @PathVariable Long serverId) {
+
+        return serverManagerService.getServerServers(serverId);
+    }
 
     @PutMapping("/servers/{serverId}")
     @PreAuthorize("hasRole('ADMIN')")

@@ -26,11 +26,15 @@ import {User} from './user';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
-import {SortEvent} from '../shared/table-sort/header-sort.component';
+import {HeaderSortComponent, SortEvent} from '../shared/table-sort/header-sort.component';
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {Page} from "../core/page";
+import {Paging} from "../core/paging";
+import {Sort} from "../core/sort";
+import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-users',
@@ -39,12 +43,17 @@ import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
     CommonModule,
     RouterLink,
     SimpleDatePipe,
-    TableSortDirective
+    TableSortDirective,
+    HeaderSortComponent,
+    NgbPagination
   ],
   templateUrl: './users.component.html'
 })
 export class UsersComponent implements OnInit {
-  users: User[] = [];
+
+  users: Page<User> = new Page();
+  private paging: Paging = new Paging();
+
   factions: Faction[] = [];
   selectedUsers: User[] = [];
 
@@ -56,8 +65,15 @@ export class UsersComponent implements OnInit {
   }
 
   ngOnInit() {
-    forkJoin([this.factionService.getFactions(), this.userService.getUsers()]).subscribe(data => {
-      [this.factions, this.users] = data;
+    this.refreshUsers();
+  }
+
+  private refreshUsers() {
+    forkJoin([
+      this.userService.getUsers(this.paging),
+      this.factionService.getCachedFactions()
+    ]).subscribe(data => {
+      [this.users, this.factions] = data;
     });
   }
 
@@ -81,12 +97,13 @@ export class UsersComponent implements OnInit {
     this.userService.userDefeatedUser(user, defeatedUser);
   }
 
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.users.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
+  onPageChange(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshUsers();
+  }
+
+  onSort(sort: SortEvent) {
+    this.paging.sort = [new Sort(sort.column, sort.direction)];
+    this.refreshUsers();
   }
 }

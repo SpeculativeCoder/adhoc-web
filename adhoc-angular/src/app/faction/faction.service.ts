@@ -26,6 +26,8 @@ import {Observable, of} from 'rxjs';
 import {MessageService} from '../message/message.service';
 import {HttpClient} from '@angular/common/http';
 import {map} from "rxjs/operators";
+import {Paging} from "../core/paging";
+import {Page} from "../core/page";
 
 @Injectable({
   providedIn: 'root'
@@ -34,40 +36,44 @@ export class FactionService {
 
   private readonly factionsUrl: string;
 
-  private factions: Faction[];
+  private cachedFactions: Faction[];
 
   constructor(@Inject('BASE_URL') baseUrl: string, private http: HttpClient, private messages: MessageService) {
     this.factionsUrl = `${baseUrl}/api/factions`;
   }
 
-  getFactions(): Observable<Faction[]> {
-    if (this.factions) {
-      return of(this.factions);
-    }
-    return this.refreshFactions();
-  }
-
-  refreshFactions(): Observable<Faction[]> {
-    return this.http.get<Faction[]>(this.factionsUrl).pipe(
-      map(factions => {
-        this.factions ? this.factions.length = 0 : this.factions = [];
-        this.factions.push(...factions);
-        return this.factions;
-      }));
+  getFactions(paging: Paging = new Paging()): Observable<Page<Faction>> {
+    return this.http.get<Page<Faction>>(this.factionsUrl, {params: paging.toParams()});
   }
 
   getFaction(id: number): Observable<Faction> {
-    if (this.factions) {
-      return of(this.factions.find(faction => faction.id === id));
-    }
-    return this.refreshFaction(id);
-  }
-
-  refreshFaction(id: number): Observable<Faction> {
     return this.http.get<Faction>(`${this.factionsUrl}/${id}`);
   }
 
   updateFaction(faction: Faction): Observable<Faction> {
     return this.http.put<Faction>(`${this.factionsUrl}/${faction.id}`, faction);
+  }
+
+  getCachedFactions(): Observable<Faction[]> {
+    if (this.cachedFactions) {
+      return of(this.cachedFactions);
+    }
+    return this.refreshCachedFactions();
+  }
+
+  getCachedFaction(id: number): Observable<Faction> {
+    if (this.cachedFactions) {
+      return of(this.cachedFactions.find(faction => faction.id === id));
+    }
+    return this.getFaction(id);
+  }
+
+  refreshCachedFactions(): Observable<Faction[]> {
+    return this.http.get<Page<Faction>>(this.factionsUrl).pipe(
+      map(factions => {
+        this.cachedFactions ? this.cachedFactions.length = 0 : this.cachedFactions = [];
+        this.cachedFactions.push(...factions.content);
+        return this.cachedFactions;
+      }));
   }
 }

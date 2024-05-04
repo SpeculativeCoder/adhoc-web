@@ -24,10 +24,11 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {StompService} from "../core/stomp.service";
 import {MessageService} from "../message/message.service";
-import {Observable, of} from "rxjs";
-import {map} from "rxjs/operators";
+import {Observable} from "rxjs";
 import {User} from "../user/user";
 import {Area} from "./area";
+import {Paging} from "../core/paging";
+import {Page} from "../core/page";
 
 @Injectable({
   providedIn: 'root'
@@ -36,26 +37,12 @@ export class AreaService {
 
   private readonly areasUrl: string;
 
-  private areas: Area[];
-
   constructor(@Inject('BASE_URL') baseUrl: string, private http: HttpClient, private stomp: StompService, private messages: MessageService) {
     this.areasUrl = `${baseUrl}/api/areas`;
   }
 
-  getAreas(): Observable<Area[]> {
-    if (this.areas) {
-      return of(this.areas);
-    }
-    return this.refreshAreas();
-  }
-
-  refreshAreas(): Observable<Area[]> {
-    return this.http.get<Area[]>(this.areasUrl).pipe(
-      map(areas => {
-        this.areas ? this.areas.length = 0 : this.areas = [];
-        this.areas.push(...areas);
-        return this.areas;
-      }));
+  getAreas(paging: Paging = new Paging()): Observable<Page<Area>> {
+    return this.http.get<Page<Area>>(this.areasUrl, {params: paging.toParams()});
   }
 
   getArea(id: number): Observable<User> {

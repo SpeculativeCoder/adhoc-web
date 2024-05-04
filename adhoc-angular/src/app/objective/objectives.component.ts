@@ -22,15 +22,19 @@
 
 import {Component, OnInit} from '@angular/core';
 import {ObjectiveService} from './objective.service';
-import {Objective} from './objective';
 import {FactionService} from '../faction/faction.service';
 import {Faction} from '../faction/faction';
 import {forkJoin} from 'rxjs';
-import {SortEvent} from "../shared/table-sort/header-sort.component";
+import {HeaderSortComponent, SortEvent} from "../shared/table-sort/header-sort.component";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {Page} from "../core/page";
+import {Paging} from "../core/paging";
+import {Sort} from "../core/sort";
+import {Objective} from "./objective";
+import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-objectives',
@@ -39,19 +43,31 @@ import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
     CommonModule,
     RouterLink,
     SimpleDatePipe,
-    TableSortDirective
+    TableSortDirective,
+    HeaderSortComponent,
+    NgbPagination
   ],
   templateUrl: './objectives.component.html'
 })
 export class ObjectivesComponent implements OnInit {
-  objectives: Objective[] = [];
+
+  objectives: Page<Objective> = new Page();
+  private paging: Paging = new Paging();
+
   factions: Faction[] = [];
 
   constructor(private objectiveService: ObjectiveService, private factionService: FactionService) {
   }
 
   ngOnInit() {
-    forkJoin([this.objectiveService.getObjectives(), this.factionService.getFactions()]).subscribe(data => {
+    this.refreshObjectives();
+  }
+
+  private refreshObjectives() {
+    forkJoin([
+      this.objectiveService.getObjectives(this.paging),
+      this.factionService.getCachedFactions()
+    ]).subscribe(data => {
       [this.objectives, this.factions] = data;
     });
   }
@@ -60,16 +76,13 @@ export class ObjectivesComponent implements OnInit {
     return this.factions.find(faction => faction.id === factionId);
   }
 
-  changeFaction(objective: Objective, faction: Faction) {
-    this.objectiveService.objectiveTaken(objective, faction);
+  onPageChange(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshObjectives();
   }
 
-  sortBy(sort: SortEvent) {
-    // console.log('sortBy');
-    // console.log(sort);
-    this.objectives.sort((a: any, b: any) => {
-      const result = a[sort.column] < b[sort.column] ? -1 : a[sort.column] > b[sort.column] ? 1 : 0;
-      return sort.direction === 'asc' ? result : -result;
-    });
+  onSort(sort: SortEvent) {
+    this.paging.sort = [new Sort(sort.column, sort.direction)];
+    this.refreshObjectives();
   }
 }

@@ -25,7 +25,7 @@
     Objectives
   </h2>
   <div class="table-responsive">
-    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="sortBy($event)">
+    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="onSort($event)">
       <!--    <caption>{{objectives.length}} objectives</caption>-->
       <thead>
       <tr>
@@ -42,7 +42,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let objective of objectives">
+      <tr *ngFor="let objective of objectives.content">
         <th scope="row"><a routerLink="/objectives/{{ objective.id }}">{{ objective.id }}</a></th>
         <td>{{ objective.name }}</td>
         <td>{{ objective.regionId }}</td>
@@ -73,5 +73,13 @@
       </tr>
       </tbody>
     </table>
+  </div>
+  <div class="d-flex justify-content-end" *ngIf="objectives.numberOfElements">
+    <div class="mt-2 me-4">{{ (objectives.number * objectives.size) + 1 }} - {{ (objectives.number * objectives.size) + objectives.numberOfElements }} of {{ objectives.totalElements }}</div>
+    <ngb-pagination [page]="objectives.number+1"
+                    [pageSize]="objectives.size"
+                    [collectionSize]="objectives.totalElements"
+                    [boundaryLinks]="true"
+                    (pageChange)="onPageChange($event - 1)"/>
   </div>
 </div>

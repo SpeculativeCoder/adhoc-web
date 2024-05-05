@@ -64,7 +64,7 @@
       <input class="form-control" id="userInput" name="user" type="number" readonly [(ngModel)]="pawn.userId"/>
     </div>
     <div class="mb-3 form-check">
-      <input class="form-check-input" id="humanInput" name="human" type="checkbox" readonly [(ngModel)]="pawn.human"/>
+      <input class="form-check-input" id="humanInput" name="human" type="checkbox" readonly onclick="return false;" [(ngModel)]="pawn.human"/>
       <label class="form-check-label" for="humanInput">Human</label>
     </div>
     <div class="mb-3">

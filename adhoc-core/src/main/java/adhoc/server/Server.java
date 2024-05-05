@@ -75,9 +75,8 @@ public class Server {
     @Column(nullable = false)
     private Boolean enabled;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ServerStatus status;
+    private Boolean active;
 
     private String publicIp;
 

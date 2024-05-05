@@ -105,8 +105,7 @@ public class ServerManagerService {
     public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
         Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
-        // TODO: internal server status
-        server.setStatus(ServerStatus.ACTIVE);
+        server.setActive(true);
 
         return toServerUpdatedEvent(server);
     }
@@ -118,7 +117,8 @@ public class ServerManagerService {
                 server.getRegion().getId(),
                 server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
                 server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
-                server.getStatus().name(),
+                server.getEnabled(),
+                server.getActive(),
                 server.getPublicIp(),
                 server.getPublicWebSocketPort(),
                 server.getWebSocketUrl());
@@ -187,11 +187,6 @@ public class ServerManagerService {
         Double areaGroupY = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
         Double areaGroupZ = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getZ).average().orElseThrow();
 
-        if (server.getStatus() == null) {
-            server.setStatus(ServerStatus.INACTIVE);
-            emitEvent = true;
-        }
-
         if (server.getRegion() != region) {
             server.setRegion(region);
             emitEvent = true;
@@ -240,9 +235,13 @@ public class ServerManagerService {
         // a server should be enabled if it has one or more areas assigned to it
         // (this will trigger the starting of a server task via the hosting service)
         Boolean enabled = !server.getAreas().isEmpty();
-
         if (!Objects.equals(server.getEnabled(), enabled)) {
             server.setEnabled(enabled);
+            emitEvent = true;
+        }
+
+        if (server.getActive() == null) {
+            server.setActive(false);
             emitEvent = true;
         }
 
@@ -278,6 +277,16 @@ public class ServerManagerService {
         log.trace("Managing server {} for server task {}", server, optionalServerTask);
         boolean emitEvent = false;
 
+        Boolean active = server.getActive();
+        // if server task has vanished, server is no longer active
+        if (active == null || active && optionalServerTask.isEmpty()) {
+            active = false;
+        }
+        if (!Objects.equals(server.getActive(), active)) {
+            server.setActive(active);
+            emitEvent = true;
+        }
+
         String serverTaskPublicIp = optionalServerTask
                 .map(ServerTask::getPublicIp)
                 .orElse(null);
@@ -307,20 +316,14 @@ public class ServerManagerService {
         }
 
         String webSocketUrl = null;
-        if (server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
+        if (Boolean.TRUE == server.getEnabled() && Boolean.TRUE == server.getActive() &&
+                server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
             webSocketUrl = (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + server.getPublicIp()) +
                     ":" + server.getPublicWebSocketPort();
         }
 
         if (!Objects.equals(server.getWebSocketUrl(), webSocketUrl)) {
             server.setWebSocketUrl(webSocketUrl);
-            emitEvent = true;
-        }
-
-        // TODO
-        ServerStatus serverStatus = optionalServerTask.isPresent() ? ServerStatus.ACTIVE : ServerStatus.INACTIVE;
-        if (server.getStatus() != serverStatus) {
-            server.setStatus(serverStatus);
             emitEvent = true;
         }
 

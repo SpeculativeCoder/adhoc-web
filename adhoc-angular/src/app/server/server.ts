@@ -29,7 +29,8 @@ export class Server {
   x?: number;
   y?: number;
   z?: number;
-  status?: string;
+  enabled?: boolean;
+  active?: boolean;
   publicIp?: string;
   publicWebSocketPort?: number;
   domain?: string;

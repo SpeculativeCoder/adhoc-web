@@ -180,8 +180,8 @@
                     type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="status"
-                    type="VARCHAR(255)">
+            <column name="active"
+                    type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
             <column name="manager_host"

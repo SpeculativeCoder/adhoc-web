@@ -35,7 +35,6 @@ import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import adhoc.server.ServerStatus;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
@@ -174,7 +173,7 @@ public class WorldManagerService {
         server1.setY(region1.getY());
         server1.setZ(region1.getZ());
         server1.setEnabled(true);
-        server1.setStatus(ServerStatus.INACTIVE);
+        server1.setActive(false);
         server1 = serverRepository.save(server1);
 
         area1.setServer(server1);

@@ -24,7 +24,6 @@ package adhoc.server.event;
 
 import adhoc.system.event.Event;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,8 +55,10 @@ public class ServerUpdatedEvent implements Event {
     @NotNull
     private List<Integer> areaIndexes;
 
-    @NotEmpty
-    private String status;
+    @NotNull
+    private Boolean enabled;
+    @NotNull
+    private Boolean active;
 
     private String publicIp;
 

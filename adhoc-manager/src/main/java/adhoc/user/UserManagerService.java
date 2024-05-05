@@ -150,11 +150,22 @@ public class UserManagerService {
         Server sourceServer = serverRepository.getReferenceById(userNavigateRequest.getSourceServerId());
         Area destinationArea = areaRepository.getReferenceById(userNavigateRequest.getDestinationAreaId());
 
+
         Preconditions.checkArgument(user.getServer() == sourceServer);
 
         Server destinationServer = destinationArea.getServer();
         if (destinationServer == null) {
             log.warn("User {} tried to navigate to area {} which does not have a server!", user.getId(), destinationArea.getId());
+            return ResponseEntity.unprocessableEntity().build();
+        }
+
+        if (Boolean.TRUE != destinationServer.getEnabled()) {
+            log.warn("User {} tried to navigate to server {} is not enabled!", user.getId(), destinationServer.getId());
+            return ResponseEntity.unprocessableEntity().build();
+        }
+
+        if (Boolean.TRUE != destinationServer.getActive()) {
+            log.warn("User {} tried to navigate to server {} is not active!", user.getId(), destinationServer.getId());
             return ResponseEntity.unprocessableEntity().build();
         }
 

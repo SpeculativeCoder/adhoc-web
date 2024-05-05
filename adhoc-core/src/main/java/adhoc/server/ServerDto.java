@@ -64,8 +64,10 @@ public class ServerDto {
     @NotNull
     Double z;
 
-    @NotEmpty
-    String status;
+    @NotNull
+    Boolean enabled;
+    @NotNull
+    Boolean active;
 
     String publicIp;
 

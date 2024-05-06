@@ -110,9 +110,9 @@ public class UserManagerService {
         user.setLastJoin(LocalDateTime.now());
         user.setSeen(user.getLastJoin());
 
-        log.atLevel(user.getHuman() ? Level.INFO : Level.DEBUG)
+        log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
                 .log("User joined: userId={} userName={} userHuman={} factionId={} serverId={}",
-                        user.getId(), user.getName(), user.getHuman(), user.getFaction().getIndex(), server.getId());
+                        user.getId(), user.getName(), user.isHuman(), user.getFaction().getIndex(), server.getId());
 
         return userService.toDetailDto(user);
     }
@@ -159,12 +159,12 @@ public class UserManagerService {
             return ResponseEntity.unprocessableEntity().build();
         }
 
-        if (Boolean.TRUE != destinationServer.getEnabled()) {
+        if (destinationServer.isEnabled()) {
             log.warn("User {} tried to navigate to server {} is not enabled!", user.getId(), destinationServer.getId());
             return ResponseEntity.unprocessableEntity().build();
         }
 
-        if (Boolean.TRUE != destinationServer.getActive()) {
+        if (destinationServer.isActive()) {
             log.warn("User {} tried to navigate to server {} is not active!", user.getId(), destinationServer.getId());
             return ResponseEntity.unprocessableEntity().build();
         }
@@ -192,13 +192,13 @@ public class UserManagerService {
         User user = userRepository.getReferenceById(serverUserDefeatedUserEvent.getUserId());
         User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
 
-        BigDecimal scoreAdd = BigDecimal.valueOf(user.getHuman() ? 1.0f : 0.1f);
+        BigDecimal scoreAdd = BigDecimal.valueOf(user.isHuman() ? 1.0f : 0.1f);
         userRepository.updateScoreAddById(scoreAdd, user.getId());
 
         // TODO
         return new UserDefeatedUserEvent(
-                user.getId(), user.getVersion() + 1, user.getName(), user.getHuman(),
-                defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.getHuman());
+                user.getId(), user.getVersion() + 1, user.getName(), user.isHuman(),
+                defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.isHuman());
     }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
@@ -218,12 +218,12 @@ public class UserManagerService {
 
         try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(seenBefore)) {
             users.forEach(unseenUser -> {
-                log.atLevel(Boolean.TRUE == unseenUser.getHuman() ? Level.INFO : Level.DEBUG)
+                log.atLevel(unseenUser.isHuman() ? Level.INFO : Level.DEBUG)
                         .log("Leaving unseen user: id={} name={} password?={} human={} factionIndex={} serverId={}",
                                 unseenUser.getId(),
                                 unseenUser.getName(),
                                 unseenUser.getPassword() != null,
-                                unseenUser.getHuman(),
+                                unseenUser.isHuman(),
                                 unseenUser.getFaction().getIndex(),
                                 unseenUser.getServer().getId());
 

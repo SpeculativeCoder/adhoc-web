@@ -172,7 +172,7 @@ public class UserService {
                         user.getId(),
                         user.getName(),
                         user.getPassword() != null,
-                        user.getHuman(),
+                        user.isHuman(),
                         user.getFaction().getIndex(),
                         remoteAddr,
                         userAgent);
@@ -241,7 +241,7 @@ public class UserService {
         user.setToken(newToken);
         user.setLastLogin(LocalDateTime.now());
 
-        log.debug("onAuthenticationSuccess: id={} name={} human={} token={}", user.getId(), user.getName(), user.getHuman(), user.getToken());
+        log.debug("onAuthenticationSuccess: id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getToken());
     }
 
     UserDto toDto(User user) {
@@ -249,7 +249,7 @@ public class UserService {
                 user.getId(),
                 user.getVersion(),
                 user.getName(),
-                user.getHuman(),
+                user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
                 user.getSeen(),
@@ -261,7 +261,7 @@ public class UserService {
                 user.getId(),
                 user.getVersion(),
                 user.getName(),
-                user.getHuman(),
+                user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
                 user.getX(),

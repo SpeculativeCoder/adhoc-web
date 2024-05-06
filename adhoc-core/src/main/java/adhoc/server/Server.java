@@ -73,10 +73,10 @@ public class Server {
     private Double z;
 
     @Column(nullable = false)
-    private Boolean enabled;
+    private boolean enabled;
 
     @Column(nullable = false)
-    private Boolean active;
+    private boolean active;
 
     private String publicIp;
 

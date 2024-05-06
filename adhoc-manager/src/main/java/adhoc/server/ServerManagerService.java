@@ -91,8 +91,6 @@ public class ServerManagerService {
         server.setY(server.getY());
         server.setZ(server.getZ());
 
-        //server.setStatus(ServerStatus.INACTIVE); // TODO
-
         server.setPublicIp(server.getPublicIp());
 
         server.setWebSocketUrl(server.getWebSocketUrl());
@@ -105,6 +103,7 @@ public class ServerManagerService {
     public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
         Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
+        // TODO: internal server status?
         server.setActive(true);
 
         return toServerUpdatedEvent(server);
@@ -117,8 +116,8 @@ public class ServerManagerService {
                 server.getRegion().getId(),
                 server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
                 server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
-                server.getEnabled(),
-                server.getActive(),
+                server.isEnabled(),
+                server.isActive(),
                 server.getPublicIp(),
                 server.getPublicWebSocketPort(),
                 server.getWebSocketUrl());
@@ -148,7 +147,7 @@ public class ServerManagerService {
                     Area firstArea = areaGroup.iterator().next();
                     Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
 
-                    // adjust server for the required region and area group
+                    // adjust server to represent this region and area group
                     boolean emitEvent = manageServer(server, region, areaGroup);
 
                     if (server.getId() == null) {
@@ -163,9 +162,10 @@ public class ServerManagerService {
                     }
                 }
 
-                // any servers in this region that are no longer used...
+                // any servers in this region that are no longer used should be adjusted to ensure they are not representing any areas
                 try (Stream<Server> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedServerIds)) {
                     unusedServers.forEach(unusedServer -> {
+
                         boolean emitEvent = manageServer(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
@@ -181,30 +181,49 @@ public class ServerManagerService {
 
     private boolean manageServer(Server server, Region region, Set<Area> areaGroup) {
         log.trace("Managing server {} for region {} area group {}", server, region, areaGroup);
-        boolean emitEvent = false;
+
+        Optional<ServerTask> optionalServerTask = Optional.ofNullable(server.getId()).flatMap(serverTaskRepository::findFirstByServerId);
+
+        Verify.verifyNotNull(region, "region must be not null");
+        String mapName = region.getMapName();
 
         Double areaGroupX = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getX).average().orElseThrow();
         Double areaGroupY = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
         Double areaGroupZ = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getZ).average().orElseThrow();
 
+        // a server should be enabled if it has one or more areas assigned to it
+        // (this will trigger the starting of a server task via the hosting service)
+        boolean enabled = !areaGroup.isEmpty();
+
+        // remain marked as active only if previously marked as active and the task is still alive
+        boolean active = server.isActive() && optionalServerTask.isPresent();
+
+        String publicIp = optionalServerTask
+                .map(ServerTask::getPublicIp)
+                .orElse(null);
+
+        Integer publicWebSocketPort = optionalServerTask
+                .map(ServerTask::getPublicWebSocketPort)
+                .orElse(null);
+
+        String domain = optionalServerTask
+                .map(ServerTask::getDomain)
+                .orElse(null);
+
+        String webSocketUrl = null;
+
+        if (server.isEnabled() && active &&
+                publicIp != null && publicWebSocketPort != null &&
+                (domain != null || !serverProperties.getSsl().isEnabled())) {
+
+            webSocketUrl = (serverProperties.getSsl().isEnabled() ? "wss://" + domain : "ws://" + publicIp)
+                    + ":" + publicWebSocketPort;
+        }
+
+        boolean emitEvent = false;
+
         if (server.getRegion() != region) {
             server.setRegion(region);
-            emitEvent = true;
-        }
-
-        Verify.verifyNotNull(region, "region must be not null");
-        String regionMapName = region.getMapName();
-        if (!Objects.equals(server.getMapName(), regionMapName)) {
-            server.setMapName(regionMapName);
-            emitEvent = true;
-        }
-
-        if (!Objects.equals(server.getX(), areaGroupX)
-                || !Objects.equals(server.getY(), areaGroupY)
-                || !Objects.equals(server.getZ(), areaGroupZ)) {
-            server.setX(areaGroupX);
-            server.setY(areaGroupY);
-            server.setZ(areaGroupZ);
             emitEvent = true;
         }
 
@@ -232,94 +251,43 @@ public class ServerManagerService {
             }
         }
 
-        // a server should be enabled if it has one or more areas assigned to it
-        // (this will trigger the starting of a server task via the hosting service)
-        Boolean enabled = !server.getAreas().isEmpty();
-        if (!Objects.equals(server.getEnabled(), enabled)) {
+        if (!Objects.equals(server.getMapName(), mapName)) {
+            server.setMapName(mapName);
+            emitEvent = true;
+        }
+
+        if (!Objects.equals(server.getX(), areaGroupX)
+                || !Objects.equals(server.getY(), areaGroupY)
+                || !Objects.equals(server.getZ(), areaGroupZ)) {
+            server.setX(areaGroupX);
+            server.setY(areaGroupY);
+            server.setZ(areaGroupZ);
+            emitEvent = true;
+        }
+
+        if (server.isEnabled() != enabled) {
             server.setEnabled(enabled);
             emitEvent = true;
         }
 
-        if (server.getActive() == null) {
-            server.setActive(false);
-            emitEvent = true;
-        }
-
-        return emitEvent;
-    }
-
-    /**
-     * Update server information for a server task that exists (or does not exist)
-     */
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public List<? extends Event> updateServersForServerTasks() {
-        log.trace("Updating servers for server tasks...");
-        List<Event> events = new ArrayList<>();
-
-        try (Stream<Server> servers = serverRepository.streamBy()) {
-            servers.forEach(server -> {
-                Optional<ServerTask> optionalServerTask = serverTaskRepository.findFirstByServerId(server.getId());
-
-                log.trace("Updating server {} for server task {}", server, optionalServerTask);
-                boolean emitEvent = updateServerForServerTask(server, optionalServerTask);
-
-                if (emitEvent) {
-                    events.add(toServerUpdatedEvent(server));
-                }
-            });
-        }
-
-        return events;
-    }
-
-    private boolean updateServerForServerTask(Server server, Optional<ServerTask> optionalServerTask) {
-        log.trace("Managing server {} for server task {}", server, optionalServerTask);
-        boolean emitEvent = false;
-
-        Boolean active = server.getActive();
-        // if server task has vanished, server is no longer active
-        if (active == null || active && optionalServerTask.isEmpty()) {
-            active = false;
-        }
-        if (!Objects.equals(server.getActive(), active)) {
+        if (server.isActive() != active) {
             server.setActive(active);
             emitEvent = true;
         }
 
-        String serverTaskPublicIp = optionalServerTask
-                .map(ServerTask::getPublicIp)
-                .orElse(null);
-
-        if (!Objects.equals(server.getPublicIp(), serverTaskPublicIp)) {
-            server.setPublicIp(serverTaskPublicIp);
+        if (!Objects.equals(server.getPublicIp(), publicIp)) {
+            server.setPublicIp(publicIp);
             emitEvent = true;
         }
 
-        Integer serverTaskPublicWebSocketPort = optionalServerTask
-                .map(ServerTask::getPublicWebSocketPort)
-                .orElse(null);
-
-        if (!Objects.equals(server.getPublicWebSocketPort(), serverTaskPublicWebSocketPort)) {
-            server.setPublicWebSocketPort(serverTaskPublicWebSocketPort);
+        if (!Objects.equals(server.getPublicWebSocketPort(), publicWebSocketPort)) {
+            server.setPublicWebSocketPort(publicWebSocketPort);
             emitEvent = true;
         }
 
-        String serverTaskDomain = optionalServerTask
-                .map(ServerTask::getDomain)
-                .orElse(null);
-
-        if (!Objects.equals(server.getDomain(), serverTaskDomain)) {
-            server.setDomain(serverTaskDomain);
-            server.setWebSocketUrl(null); // need to calculate the web socket URL (see below)
+        if (!Objects.equals(server.getDomain(), domain)) {
+            server.setDomain(domain);
             emitEvent = true;
-        }
-
-        String webSocketUrl = null;
-        if (Boolean.TRUE == server.getEnabled() && Boolean.TRUE == server.getActive() &&
-                server.getDomain() != null && server.getPublicIp() != null && server.getPublicWebSocketPort() != null) {
-            webSocketUrl = (serverProperties.getSsl().isEnabled() ? "wss://" + server.getDomain() : "ws://" + server.getPublicIp()) +
-                    ":" + server.getPublicWebSocketPort();
         }
 
         if (!Objects.equals(server.getWebSocketUrl(), webSocketUrl)) {
@@ -337,9 +305,11 @@ public class ServerManagerService {
 
     public void purgeOldServers() {
         LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
+
         try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
             oldServers.forEach(oldServer -> {
                 log.debug("Deleting old server {}", oldServer.getId());
+
                 serverRepository.delete(oldServer);
             });
         }

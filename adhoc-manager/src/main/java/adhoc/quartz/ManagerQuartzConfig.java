@@ -41,7 +41,6 @@ import java.util.Date;
 public class ManagerQuartzConfig {
 
     public static final String MANAGE_SERVERS = "manageServers";
-    public static final String UPDATE_SERVERS_FOR_SERVER_TASKS = "updateServersForServerTasks";
     public static final String PURGE_OLD_SERVERS = "purgeOldServers";
     public static final String REFRESH_TASKS = "refreshTasks";
     public static final String MANAGE_SERVER_TASKS = "manageServerTasks";
@@ -59,15 +58,6 @@ public class ManagerQuartzConfig {
     public Trigger manageServersTrigger() {
         return TriggerBuilder.newTrigger()
                 .forJob(MANAGE_SERVERS).withIdentity(MANAGE_SERVERS)
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(startInstant.plusSeconds(0))).build();
-    }
-
-    @Bean
-    public Trigger updateServersForServerTasks() {
-        return TriggerBuilder.newTrigger()
-                .forJob(UPDATE_SERVERS_FOR_SERVER_TASKS).withIdentity(UPDATE_SERVERS_FOR_SERVER_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
                 .startAt(Date.from(startInstant.plusSeconds(0))).build();
@@ -166,11 +156,6 @@ public class ManagerQuartzConfig {
     @Bean
     public JobDetail manageServersJobDetail() {
         return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_SERVERS).storeDurably().build();
-    }
-
-    @Bean
-    public JobDetail updateServersForServerTasksJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(UPDATE_SERVERS_FOR_SERVER_TASKS).storeDurably().build();
     }
 
     @Bean

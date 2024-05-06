@@ -83,7 +83,7 @@ public class Pawn {
     private User user;
 
     @Column(nullable = false)
-    private Boolean human;
+    private boolean human;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude

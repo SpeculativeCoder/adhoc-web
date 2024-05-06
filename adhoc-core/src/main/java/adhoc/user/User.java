@@ -73,7 +73,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private Boolean human;
+    private boolean human;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @ToString.Exclude

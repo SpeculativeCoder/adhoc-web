@@ -35,7 +35,7 @@
     </div>
     <div class="mb-3">
       <label class="form-label" for="factionInput">Faction</label>
-      <input class="form-control" id="factionInput" name="faction" type="faction" readonly [ngModel]="getFaction(user.factionId)?.name"/>
+      <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(user.factionId)?.name"/>
       <!-- <div *ngIf="false">
       <div ngbDropdown>
         <button class="btn" ngbDropdownToggle id="changeFactionDropdown">
@@ -80,7 +80,7 @@
     <!--  </div>-->
     <div class="mb-3">
       <label class="form-label" for="serverIdInput">Server</label>
-      <input class="form-control" id="serverIdInput" name="seen" type="text" readonly [ngModel]="user.serverId"/>
+      <input class="form-control" id="serverIdInput" name="serverId" type="text" readonly [ngModel]="user.serverId"/>
     </div>
     <div class="row">
       <!--<div class="col-auto mt-3 mb-3">

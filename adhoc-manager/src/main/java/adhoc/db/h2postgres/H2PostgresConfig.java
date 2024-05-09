@@ -66,7 +66,7 @@ public class H2PostgresConfig {
             public String getJdbcUrl() {
                 return !dataSourceProperties.getUrl().isEmpty() ?
                         // TODO
-                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2Dir.toString() + "/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=5000";
+                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2Dir.toString() + "/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=5000;DB_CLOSE_DELAY=-1";
             }
 
             @Override

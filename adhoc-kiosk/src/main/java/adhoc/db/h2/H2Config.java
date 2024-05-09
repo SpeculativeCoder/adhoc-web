@@ -49,7 +49,7 @@ public class H2Config {
             public String getJdbcUrl() {
                 return !dataSourceProperties.getUrl().isEmpty()
                         // TODO
-                        ? dataSourceProperties.getUrl() : "jdbc:h2:tcp://" + coreProperties.getManagerHost() + ":9092/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=5000";
+                        ? dataSourceProperties.getUrl() : "jdbc:h2:tcp://" + coreProperties.getManagerHost() + ":9092/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=5000;DB_CLOSE_DELAY=-1";
             }
 
             @Override

@@ -75,59 +75,71 @@ export class ClientComponent implements OnInit {
   }
 
   private runClient() {
-    let areaIdString: string = this.route.snapshot.paramMap.get('areaId');
-    console.log(`areaId: ${areaIdString}`);
-    if (!areaIdString) {
-      throw new Error(`areaId not set or empty`);
-    }
+    // let areaIdString: string = this.route.snapshot.paramMap.get('areaId');
+    // console.log(`areaId: ${areaIdString}`);
+    // if (!areaIdString) {
+    //   throw new Error(`areaId not set or empty`);
+    // }
+    //
+    // this.areaId = Number.parseInt(areaIdString);
+    // if (Number.isNaN(this.areaId)) {
+    //   throw new Error(`areaId is not a number: ${areaIdString}`);
+    // }
+    //
+    // this.areaService.getArea(this.areaId).subscribe(area => {
+    //   if (!area.serverId) {
+    //     throw new Error(`area ${this.areaId} has no server`);
+    //   }
+    //
+    //   this.serverService.getServer(area.serverId).subscribe(server => {
 
-    this.areaId = Number.parseInt(areaIdString);
-    if (Number.isNaN(this.areaId)) {
-      throw new Error(`areaId is not a number: ${areaIdString}`);
-    }
-
-    this.areaService.getArea(this.areaId).subscribe(area => {
-      if (!area.serverId) {
-        throw new Error(`area ${this.areaId} has no server`);
+    this.userService.getCurrentUserOrRegister().subscribe(user => {
+      if (!user.serverId) {
+        throw new Error(`User ${user.id} has no assigned server`);
       }
 
-      this.serverService.getServer(area.serverId).subscribe(server => {
+      this.serverService.getServer(user.serverId).subscribe(server => {
+        // TODO: url or ip
+        if (!server.webSocketUrl) {
+          throw new Error(`Server ${user.serverId} has no websocket URL`);
+        }
+        if (!(typeof server.publicWebSocketPort)) {
+          throw new Error(`Server ${user.serverId} has no websocket port`);
+        }
 
-        this.userService.getCurrentUserOrRegister(server.id).subscribe(user => {
-          let unrealEngineCommandLine = server.publicIp + ":" + server.publicWebSocketPort;
-          if (user && (typeof user.id) === 'number' && (typeof user.factionId) === 'number' && user.token) {
-            unrealEngineCommandLine += '?UserID=' + user.id + '?FactionID=' + user.factionId + '?Token=' + user.token;
-          }
-          if (this.configService.featureFlags) {
-            unrealEngineCommandLine += ' FeatureFlags=' + this.configService.featureFlags;
-          }
-          unrealEngineCommandLine += ' -stdout';
-          console.log(`unrealEngineCommandLine: ${unrealEngineCommandLine}`);
+        let unrealEngineCommandLine = server.publicIp + ":" + server.publicWebSocketPort;
+        if (user && (typeof user.id) === 'number' && (typeof user.factionId) === 'number' && user.token) {
+          unrealEngineCommandLine += '?UserID=' + user.id + '?FactionID=' + user.factionId + '?Token=' + user.token;
+        }
+        if (this.configService.featureFlags) {
+          unrealEngineCommandLine += ' FeatureFlags=' + this.configService.featureFlags;
+        }
+        unrealEngineCommandLine += ' -stdout';
+        console.log(`unrealEngineCommandLine: ${unrealEngineCommandLine}`);
 
-          window.sessionStorage.setItem('UnrealEngine_CommandLine', unrealEngineCommandLine);
+        window.sessionStorage.setItem('UnrealEngine_CommandLine', unrealEngineCommandLine);
 
-          if (server.webSocketUrl) {
-            console.log(`webSocketUrl: ${server.webSocketUrl}`);
-            window.sessionStorage.setItem('UnrealEngine_WebSocketUrl', server.webSocketUrl);
-          } else {
-            window.sessionStorage.removeItem('UnrealEngine_WebSocketUrl');
-          }
+        if (server.webSocketUrl) {
+          console.log(`webSocketUrl: ${server.webSocketUrl}`);
+          window.sessionStorage.setItem('UnrealEngine_WebSocketUrl', server.webSocketUrl);
+        } else {
+          window.sessionStorage.removeItem('UnrealEngine_WebSocketUrl');
+        }
 
-          if (!server.mapName || !server.mapName.match("^[A-Za-z0-9_]{1,50}$")) {
-            throw new Error(`invalid map name: ${server.mapName}`);
-          }
+        if (!server.mapName || !server.mapName.match("^[A-Za-z0-9_]{1,50}$")) {
+          throw new Error(`invalid map name: ${server.mapName}`);
+        }
 
-          const clientUrl = location.protocol + '//' + location.host + '/HTML5Client/' + server.mapName + '/HTML5Client.html';
-          console.log(`clientUrl: ${clientUrl}`);
+        const clientUrl = location.protocol + '//' + location.host + '/HTML5Client/' + server.mapName + '/HTML5Client.html';
+        console.log(`clientUrl: ${clientUrl}`);
 
-          // uncomment this if we prefer to send to the client directly rather than iframe
-          //window.location.href = clientUrl;
-          //return;
+        // uncomment this if we prefer to send to the client directly rather than iframe
+        //window.location.href = clientUrl;
+        //return;
 
-          // NOTE: mapName as part of clientUrl was sanitized above via regex to be only alphanumeric/underscores
-          this.clientUrl = this.sanitizer.bypassSecurityTrustResourceUrl(clientUrl);
-          this.showClient = true;
-        });
+        // NOTE: mapName as part of clientUrl was sanitized above via regex to be only alphanumeric/underscores
+        this.clientUrl = this.sanitizer.bypassSecurityTrustResourceUrl(clientUrl);
+        this.showClient = true;
       });
     });
   }

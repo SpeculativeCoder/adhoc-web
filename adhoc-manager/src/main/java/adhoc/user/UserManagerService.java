@@ -28,10 +28,10 @@ import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.event.ServerUserDefeatedUserEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
-import adhoc.user.request_response.RegisterUserRequest;
-import adhoc.user.request_response.UserJoinRequest;
-import adhoc.user.request_response.UserNavigateRequest;
-import adhoc.user.request_response.UserNavigateResponse;
+import adhoc.user.request_response.ServerUserJoinRequest;
+import adhoc.user.request_response.ServerUserNavigateRequest;
+import adhoc.user.request_response.ServerUserNavigateResponse;
+import adhoc.user.request_response.UserRegisterRequest;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -81,29 +81,29 @@ public class UserManagerService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserDetailDto serverUserJoin(UserJoinRequest userJoinRequest) {
+    public UserDetailDto serverUserJoin(ServerUserJoinRequest serverUserJoinRequest) {
         log.debug("userJoin: userId={} human={} factionId={} serverId={}",
-                userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
+                serverUserJoinRequest.getUserId(), serverUserJoinRequest.getHuman(), serverUserJoinRequest.getFactionId(), serverUserJoinRequest.getServerId());
 
-        Server server = serverRepository.getReferenceById(userJoinRequest.getServerId());
+        Server server = serverRepository.getReferenceById(serverUserJoinRequest.getServerId());
 
         User user;
         // existing user? verify token
-        if (userJoinRequest.getUserId() != null) {
-            user = userRepository.getReferenceById(userJoinRequest.getUserId());
-            Preconditions.checkArgument(Objects.equals(user.getFaction().getId(), userJoinRequest.getFactionId()));
+        if (serverUserJoinRequest.getUserId() != null) {
+            user = userRepository.getReferenceById(serverUserJoinRequest.getUserId());
+            Preconditions.checkArgument(Objects.equals(user.getFaction().getId(), serverUserJoinRequest.getFactionId()));
 
-            Preconditions.checkArgument(userJoinRequest.getToken() != null);
+            Preconditions.checkArgument(serverUserJoinRequest.getToken() != null);
             Verify.verifyNotNull(user.getToken());
 
             // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
-            if (!Objects.equals(user.getToken().toString(), userJoinRequest.getToken())) {
-                log.warn("Token {} mismatch {} for user {}", userJoinRequest.getToken(), user.getToken(), user);
+            if (!Objects.equals(user.getToken().toString(), serverUserJoinRequest.getToken())) {
+                log.warn("Token {} mismatch {} for user {}", serverUserJoinRequest.getToken(), user.getToken(), user);
                 throw new IllegalArgumentException("Token mismatch");
             }
 
         } else {
-            user = autoRegister(userJoinRequest);
+            user = autoRegister(serverUserJoinRequest);
         }
 
         user.setServer(server);
@@ -117,25 +117,25 @@ public class UserManagerService {
         return userService.toDetailDto(user);
     }
 
-    private User autoRegister(UserJoinRequest userJoinRequest) {
+    private User autoRegister(ServerUserJoinRequest serverUserJoinRequest) {
         User user = null;
 
-        Verify.verifyNotNull(userJoinRequest.getHuman());
-        if (!userJoinRequest.getHuman()) {
+        Verify.verifyNotNull(serverUserJoinRequest.getHuman());
+        if (!serverUserJoinRequest.getHuman()) {
             // bots should try to use existing bot account
             // TODO: avoid using seen (should use serverId)
             user = userRepository.findFirstByHumanFalseAndFactionIdAndSeenBefore(
-                    userJoinRequest.getFactionId(), LocalDateTime.now().minusMinutes(1)).orElse(null);
+                    serverUserJoinRequest.getFactionId(), LocalDateTime.now().minusMinutes(1)).orElse(null);
         }
 
         if (user == null) {
-            RegisterUserRequest registerUserRequest = RegisterUserRequest.builder()
-                    .factionId(userJoinRequest.getFactionId())
-                    .human(userJoinRequest.getHuman())
-                    .serverId(userJoinRequest.getServerId())
+            UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder()
+                    .factionId(serverUserJoinRequest.getFactionId())
+                    .human(serverUserJoinRequest.getHuman())
+                    .serverId(serverUserJoinRequest.getServerId())
                     .build();
 
-            UserDetailDto userDetailDto = userService.registerUser(registerUserRequest);
+            UserDetailDto userDetailDto = userService.registerUser(userRegisterRequest);
 
             user = userRepository.getReferenceById(userDetailDto.getId());
         }
@@ -145,10 +145,10 @@ public class UserManagerService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public ResponseEntity<UserNavigateResponse> serverUserNavigate(UserNavigateRequest userNavigateRequest) {
-        User user = userRepository.getReferenceById(userNavigateRequest.getUserId());
-        Server sourceServer = serverRepository.getReferenceById(userNavigateRequest.getSourceServerId());
-        Area destinationArea = areaRepository.getReferenceById(userNavigateRequest.getDestinationAreaId());
+    public ResponseEntity<ServerUserNavigateResponse> serverUserNavigate(ServerUserNavigateRequest serverUserNavigateRequest) {
+        User user = userRepository.getReferenceById(serverUserNavigateRequest.getUserId());
+        Server sourceServer = serverRepository.getReferenceById(serverUserNavigateRequest.getSourceServerId());
+        Area destinationArea = areaRepository.getReferenceById(serverUserNavigateRequest.getDestinationAreaId());
 
 
         Preconditions.checkArgument(user.getServer() == sourceServer);
@@ -169,17 +169,17 @@ public class UserManagerService {
             return ResponseEntity.unprocessableEntity().build();
         }
 
-        user.setX(userNavigateRequest.getX());
-        user.setY(userNavigateRequest.getY());
-        user.setZ(userNavigateRequest.getZ());
+        user.setX(serverUserNavigateRequest.getX());
+        user.setY(serverUserNavigateRequest.getY());
+        user.setZ(serverUserNavigateRequest.getZ());
 
-        user.setYaw(userNavigateRequest.getYaw());
-        user.setPitch(userNavigateRequest.getPitch());
+        user.setYaw(serverUserNavigateRequest.getYaw());
+        user.setPitch(serverUserNavigateRequest.getPitch());
 
         // NOTE: when user joins new server this will be updated
         //user.setServer(destinationServer);
 
-        return ResponseEntity.ok(new UserNavigateResponse(destinationServer.getId(),
+        return ResponseEntity.ok(new ServerUserNavigateResponse(destinationServer.getId(),
                 //adhocProperties.getServerDomain(),
                 destinationServer.getPublicIp(),
                 destinationServer.getPublicWebSocketPort(),

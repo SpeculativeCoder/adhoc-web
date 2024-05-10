@@ -397,11 +397,12 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
           hoverCursor: 'pointer',
         });
         serverGroup.on('mousedblclick', () => {
-          // TODO: should be to zone with preferred server
-          this.router.navigate(['client', 'area', server.areaIds[0]], {
-            // queryParams: {
-            //   areaId: area.id
-            // }
+          this.userService.navigateCurrentUserOrRegister(server.regionId, server.id).subscribe(user => {
+            this.router.navigate(['client'], {
+              // queryParams: {
+              //   areaId: area.id
+              // }
+            });
           });
         });
         this.canvas.add(serverGroup);

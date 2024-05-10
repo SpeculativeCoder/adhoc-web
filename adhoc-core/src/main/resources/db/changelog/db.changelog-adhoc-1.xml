@@ -63,6 +63,8 @@
                     type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
+            <column name="region_id"
+                    type="BIGINT"/>
             <column name="x"
                     type="DOUBLE"/>
             <column name="y"

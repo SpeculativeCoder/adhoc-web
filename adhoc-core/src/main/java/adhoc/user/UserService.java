@@ -24,9 +24,13 @@ package adhoc.user;
 
 import adhoc.faction.FactionRepository;
 import adhoc.properties.CoreProperties;
+import adhoc.region.Region;
+import adhoc.region.RegionRepository;
+import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.system.authentication.AdhocAuthenticationSuccessHandler;
-import adhoc.user.request_response.RegisterUserRequest;
+import adhoc.user.request_response.UserNavigateRequest;
+import adhoc.user.request_response.UserRegisterRequest;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,8 +61,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -72,6 +78,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
+    private final RegionRepository regionRepository;
 
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
@@ -108,66 +115,82 @@ public class UserService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserDetailDto registerUser(RegisterUserRequest registerUserRequest) {
+    public UserDetailDto registerUser(UserRegisterRequest userRegisterRequest) {
         String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();
 
         log.debug("registerUser: name={} password?={} human={} factionId={} remoteAddr={} userAgent={}",
-                registerUserRequest.getName(),
-                registerUserRequest.getPassword() != null,
-                registerUserRequest.getHuman(),
-                registerUserRequest.getFactionId(),
+                userRegisterRequest.getName(),
+                userRegisterRequest.getPassword() != null,
+                userRegisterRequest.getHuman(),
+                userRegisterRequest.getFactionId(),
                 remoteAddr,
                 userAgent);
 
         if (!coreProperties.getFeatureFlags().contains("development")) {
-            Preconditions.checkArgument(registerUserRequest.getEmail() == null, "Registering with email not allowed yet");
-            Preconditions.checkArgument(registerUserRequest.getPassword() == null, "Registering with password not allowed yet");
-            Preconditions.checkArgument(registerUserRequest.getName() == null, "Registering with name not allowed yet");
+            Preconditions.checkArgument(userRegisterRequest.getEmail() == null, "Registering with email not allowed yet");
+            Preconditions.checkArgument(userRegisterRequest.getPassword() == null, "Registering with password not allowed yet");
+            Preconditions.checkArgument(userRegisterRequest.getName() == null, "Registering with name not allowed yet");
         }
 
         boolean authenticatedAsServer = isAuthenticatedAsServer();
 
-        Preconditions.checkArgument(registerUserRequest.getHuman() != null);
+        Preconditions.checkArgument(userRegisterRequest.getHuman() != null);
         // human can only register user as human, but server may register users as human or bot
-        Preconditions.checkArgument(registerUserRequest.getHuman() || authenticatedAsServer);
+        Preconditions.checkArgument(userRegisterRequest.getHuman() || authenticatedAsServer);
 
         // TODO: think about existing name/email check before allowing name/email input
         Optional<User> existingUser;
-        if (registerUserRequest.getName() != null && registerUserRequest.getEmail() != null) {
-            existingUser = userRepository.findByNameOrEmail(registerUserRequest.getName(), registerUserRequest.getEmail());
-        } else if (registerUserRequest.getName() != null) {
-            existingUser = userRepository.findByName(registerUserRequest.getName());
+        if (userRegisterRequest.getName() != null && userRegisterRequest.getEmail() != null) {
+            existingUser = userRepository.findByNameOrEmail(userRegisterRequest.getName(), userRegisterRequest.getEmail());
+        } else if (userRegisterRequest.getName() != null) {
+            existingUser = userRepository.findByName(userRegisterRequest.getName());
         } else {
             existingUser = Optional.empty();
         }
 
         if (existingUser.isPresent()) {
-            log.warn("User name or email already in use: name={} email={}", registerUserRequest.getName(), registerUserRequest.getEmail());
+            log.warn("User name or email already in use: name={} email={}", userRegisterRequest.getName(), userRegisterRequest.getEmail());
             throw new IllegalArgumentException("User name or email already in use");
         }
 
-        RegisterUserRequest.RegisterUserRequestBuilder builder = registerUserRequest.toBuilder();
+        UserRegisterRequest.UserRegisterRequestBuilder builder = userRegisterRequest.toBuilder();
 
-        if (registerUserRequest.getName() == null) {
-            String prefix = registerUserRequest.getHuman() ? "Anon" : "Bot";
+        if (userRegisterRequest.getName() == null) {
+            String prefix = userRegisterRequest.getHuman() ? "Anon" : "Bot";
             builder.name(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
         }
 
-        if (registerUserRequest.getFactionId() == null) {
+        if (userRegisterRequest.getFactionId() == null) {
             builder.factionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
         }
 
-        registerUserRequest = builder.build();
+        Region region;
+        if (userRegisterRequest.getRegionId() == null) {
+            List<Region> regions = regionRepository.findAll();
+            // TODO
+            region = regions.get(ThreadLocalRandom.current().nextInt(regions.size()));
+            builder.regionId(region.getId());
+        } else {
+            region = regionRepository.getReferenceById(userRegisterRequest.getRegionId());
+        }
 
-        User user = userRepository.save(toEntity(registerUserRequest));
+        if (userRegisterRequest.getServerId() == null) {
+            // TODO
+            Server server = region.getServers().get(ThreadLocalRandom.current().nextInt(region.getServers().size()));
+            builder.serverId(server.getId());
+        }
+
+        userRegisterRequest = builder.build();
+
+        User user = userRepository.save(toEntity(userRegisterRequest));
 
         // if not an auto-register from server - log them in too
         if (!authenticatedAsServer) {
-            autoLogin(registerUserRequest, user);
+            autoLogin(userRegisterRequest, user);
         }
 
-        log.atLevel(Optional.ofNullable(registerUserRequest.getHuman()).orElse(false) ? Level.INFO : Level.DEBUG)
+        log.atLevel(Optional.ofNullable(userRegisterRequest.getHuman()).orElse(false) ? Level.INFO : Level.DEBUG)
                 .log("User registered: id={} name={} password?={} human={} factionIndex={} remoteAddr={} userAgent={}",
                         user.getId(),
                         user.getName(),
@@ -194,7 +217,7 @@ public class UserService {
                 && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
     }
 
-    private void autoLogin(RegisterUserRequest registerUserRequest, User user) {
+    private void autoLogin(UserRegisterRequest userRegisterRequest, User user) {
         String tempPassword = null;
         if (user.getPassword() == null) {
             tempPassword = UUID.randomUUID().toString();
@@ -202,8 +225,8 @@ public class UserService {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 UsernamePasswordAuthenticationToken.unauthenticated(
-                        registerUserRequest.getName(),
-                        tempPassword != null ? tempPassword : registerUserRequest.getPassword());
+                        userRegisterRequest.getName(),
+                        tempPassword != null ? tempPassword : userRegisterRequest.getPassword());
         authenticationToken.setDetails(authenticationDetailsSource.buildDetails(httpServletRequest));
 
         if (tempPassword != null) {
@@ -252,6 +275,7 @@ public class UserService {
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
+                user.getRegion() == null ? null : user.getRegion().getId(),
                 user.getSeen(),
                 user.getServer() == null ? null : user.getServer().getId());
     }
@@ -264,6 +288,7 @@ public class UserService {
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
+                user.getRegion().getId(),
                 user.getX(),
                 user.getY(),
                 user.getZ(),
@@ -279,18 +304,48 @@ public class UserService {
                 user.getServer() == null ? null : user.getServer().getId());
     }
 
-    User toEntity(RegisterUserRequest registerUserRequest) {
+    User toEntity(UserRegisterRequest userRegisterRequest) {
         User user = new User();
 
-        user.setName(registerUserRequest.getName());
-        user.setEmail(registerUserRequest.getEmail());
-        user.setPassword(registerUserRequest.getPassword() == null ? null : passwordEncoder.encode(registerUserRequest.getPassword()));
-        user.setHuman(registerUserRequest.getHuman());
-        user.setFaction(factionRepository.getReferenceById(registerUserRequest.getFactionId()));
+        user.setName(userRegisterRequest.getName());
+        user.setEmail(userRegisterRequest.getEmail());
+        user.setPassword(userRegisterRequest.getPassword() == null ? null : passwordEncoder.encode(userRegisterRequest.getPassword()));
+        user.setHuman(userRegisterRequest.getHuman());
+        user.setFaction(factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
         user.setScore(BigDecimal.valueOf(0.0));
+        user.setRegion(regionRepository.getReferenceById(userRegisterRequest.getRegionId()));
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());
+        user.setServer(serverRepository.getReferenceById(userRegisterRequest.getServerId()));
 
         return user;
+    }
+
+    public UserDetailDto navigateUser(Long userId, UserNavigateRequest userNavigateRequest) {
+        Preconditions.checkArgument(userNavigateRequest.getRegionId() != null,
+                "User navigation must specify a region");
+
+        User user = userRepository.getReferenceById(userId);
+
+        if (userNavigateRequest.getServerId() != null) {
+            Server server = serverRepository.getReferenceById(userNavigateRequest.getServerId());
+            user.setRegion(server.getRegion());
+            user.setServer(server);
+        } else {
+            Region region = regionRepository.getReferenceById(userNavigateRequest.getRegionId());
+            user.setRegion(region);
+            // TODO
+            user.setServer(region.getServers().get(ThreadLocalRandom.current().nextInt(region.getServers().size())));
+        }
+
+        // only internal navigation from unreal server to unreal server will preserve user location,
+        // manual user navigation will force a new spawn
+        user.setX(null);
+        user.setY(null);
+        user.setZ(null);
+        user.setPitch(null);
+        user.setYaw(null);
+
+        return toDetailDto(user);
     }
 }

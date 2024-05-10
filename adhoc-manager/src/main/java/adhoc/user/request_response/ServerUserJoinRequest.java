@@ -20,13 +20,43 @@
  * SOFTWARE.
  */
 
-export class UserRegisterRequest {
-  name?: string;
-  email?: string;
-  password?: string;
-  factionId?: number;
-  rememberMe?: boolean;
-  human?: boolean;
-  regionId?: number;
-  serverId?: number;
+package adhoc.user.request_response;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
+import org.hibernate.validator.constraints.Length;
+
+
+/**
+ * User joins server. This will either verify an existing user (if {@link #userId} is not null)
+ * or register a new user (if {@link #userId} is null).
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class ServerUserJoinRequest {
+
+    //@NotNull
+    @Min(1)
+    private Long userId;
+
+    @Min(1)
+    private Long factionId;
+
+    @NotNull
+    private Boolean human;
+
+    @NotNull
+    @Min(1)
+    private Long serverId;
+
+    @Length(min = 1)
+    private String token;
 }

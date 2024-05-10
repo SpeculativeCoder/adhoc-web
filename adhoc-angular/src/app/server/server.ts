@@ -23,7 +23,7 @@
 export class Server {
   id?: number;
   version?: number;
-  regionId?: number[];
+  regionId?: number;
   areaIds?: number[];
   mapName?: string;
   x?: number;

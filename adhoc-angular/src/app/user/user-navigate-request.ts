@@ -20,13 +20,7 @@
  * SOFTWARE.
  */
 
-export class UserRegisterRequest {
-  name?: string;
-  email?: string;
-  password?: string;
-  factionId?: number;
-  rememberMe?: boolean;
-  human?: boolean;
+export class UserNavigateRequest {
   regionId?: number;
   serverId?: number;
 }

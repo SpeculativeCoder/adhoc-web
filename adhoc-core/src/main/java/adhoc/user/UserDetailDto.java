@@ -62,6 +62,10 @@ public class UserDetailDto {
     BigDecimal score;
 
     @NotNull
+    @Min(1)
+    Long regionId;
+
+    @NotNull
     Double x;
     @NotNull
     Double y;

@@ -130,7 +130,7 @@ public class WorldManagerService {
 
         Region region1 = new Region();
         //region1.setId(1L);
-        region1.setName("R1");
+        region1.setName("Region 1");
         // TODO: handle multiple regions
         region1.setMapName(coreProperties.getUnrealProjectRegionMaps().get(0));
         region1.setX(1750.0);

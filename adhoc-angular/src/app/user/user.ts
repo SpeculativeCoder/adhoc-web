@@ -29,6 +29,7 @@ export class User {
   factionId?: number;
   human?: boolean;
   score?: number;
+  regionId?: number;
   //created?: string;
   //updated?: string;
   //lastLogin?: string;

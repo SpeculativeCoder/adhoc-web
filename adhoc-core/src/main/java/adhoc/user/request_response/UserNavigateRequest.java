@@ -26,37 +26,22 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import org.hibernate.validator.constraints.Length;
-
 
 /**
- * User joins server. This will either verify an existing user (if {@link #userId} is not null)
- * or register a new user (if {@link #userId} is null).
+ * Navigation request from user via web interface to move themselves to a region or specific server.
  */
-@Data
-@NoArgsConstructor
+@Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class UserJoinRequest {
-
-    //@NotNull
-    @Min(1)
-    private Long userId;
-
-    @Min(1)
-    private Long factionId;
-
-    @NotNull
-    private Boolean human;
+public class UserNavigateRequest {
 
     @NotNull
     @Min(1)
-    private Long serverId;
+    Long regionId;
 
-    @Length(min = 1)
-    private String token;
+    @Min(1)
+    Long serverId;
 }

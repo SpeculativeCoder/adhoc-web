@@ -67,5 +67,5 @@ export const routes: Routes = [
   {path: 'users/:id', title: 'User', component: UserComponent},
   {path: 'login-or-register', title: 'Login or Register', component: LoginOrRegisterComponent},
   {path: 'pages/:page', component: InfoPageComponent},
-  {path: 'client/area/:areaId', title: 'Client', component: ClientComponent},
+  {path: 'client', title: 'Client', component: ClientComponent},
 ];

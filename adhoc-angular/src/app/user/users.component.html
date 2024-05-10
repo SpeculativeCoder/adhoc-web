@@ -36,6 +36,7 @@
         <th scope="col" sortable="human">Human</th>
         <th scope="col" sortable="factionId">Faction</th>
         <th scope="col" sortable="score">Score</th>
+        <th scope="col" sortable="regionId">Region</th>
         <th scope="col" sortable="seen">Seen</th>
         <!--      <th scope="col" sortable="created">Created</th>-->
         <!--      <th scope="col" sortable="updated">Updated</th>-->
@@ -55,6 +56,7 @@
         <td>{{ user.human }}</td>
         <td>{{ getFaction(user.factionId)?.name }}</td>
         <td>{{ user.score | number : '1.0-0' }}</td>
+        <td>{{ user.regionId }}</td>
         <td>{{ user.seen | simpleDate }}</td>
         <!--      <td>{{ user.created | simpleDate }}</td>-->
         <!--      <td>{{ user.updated | simpleDate }}</td>-->

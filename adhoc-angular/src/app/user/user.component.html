@@ -55,6 +55,10 @@
       <input class="form-control" id="scoreInput" name="score" type="number" readonly [(ngModel)]="user.score"/>
     </div>
     <div class="mb-3">
+      <label class="form-label" for="regionIdInput">Region</label>
+      <input class="form-control" id="regionIdInput" name="regionId" type="text" readonly [ngModel]="user.regionId"/>
+    </div>
+    <div class="mb-3">
       <label class="form-label" for="seenInput">Seen</label>
       <input class="form-control" id="seenInput" name="seen" type="text" readonly [ngModel]="user.seen | simpleDate"/>
     </div>

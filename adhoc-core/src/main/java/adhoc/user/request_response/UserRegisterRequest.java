@@ -33,7 +33,7 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class RegisterUserRequest {
+public class UserRegisterRequest {
 
     // at the moment we only allow auto-generated name
     //@NotEmpty
@@ -53,6 +53,9 @@ public class RegisterUserRequest {
 
     @NotNull
     Boolean human;
+    
+    @Min(1)
+    Long regionId;
 
     @Min(1)
     Long serverId;

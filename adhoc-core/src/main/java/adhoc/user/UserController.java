@@ -23,9 +23,8 @@
 package adhoc.user;
 
 import adhoc.system.authentication.AdhocUserDetails;
-import adhoc.user.request_response.RegisterUserRequest;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import adhoc.user.request_response.UserNavigateRequest;
+import adhoc.user.request_response.UserRegisterRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +58,8 @@ public class UserController {
     }
 
     @GetMapping("/users/current")
-    public ResponseEntity<UserDetailDto> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<UserDetailDto> getCurrentUser(
+            Authentication authentication) {
 
         if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails userDetails)) {
             return ResponseEntity.noContent().build();
@@ -70,12 +70,20 @@ public class UserController {
 
     @PostMapping("/users/register")
     public ResponseEntity<UserDetailDto> postRegisterUser(
-            @Valid @RequestBody RegisterUserRequest registerUserRequest,
-            Authentication authentication,
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse) {
+            @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
 
+        return ResponseEntity.ok(userService.registerUser(userRegisterRequest));
+    }
 
-        return ResponseEntity.ok(userService.registerUser(registerUserRequest));
+    @PostMapping("/users/current/navigate")
+    public ResponseEntity<UserDetailDto> postNavigateCurrentUser(
+            @Valid @RequestBody UserNavigateRequest userNavigateRequest,
+            Authentication authentication) {
+
+        if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails userDetails)) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(userService.navigateUser(userDetails.getUserId(), userNavigateRequest));
     }
 }

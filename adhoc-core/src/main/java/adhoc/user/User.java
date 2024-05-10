@@ -24,6 +24,7 @@ package adhoc.user;
 
 import adhoc.faction.Faction;
 import adhoc.pawn.Pawn;
+import adhoc.region.Region;
 import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
@@ -81,6 +82,10 @@ public class User {
 
     @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal score;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Region region;
 
     private Double x;
     private Double y;

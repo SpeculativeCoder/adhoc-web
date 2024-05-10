@@ -24,9 +24,9 @@ package adhoc.user;
 
 import adhoc.user.event.ServerUserDefeatedUserEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
-import adhoc.user.request_response.UserJoinRequest;
-import adhoc.user.request_response.UserNavigateRequest;
-import adhoc.user.request_response.UserNavigateResponse;
+import adhoc.user.request_response.ServerUserJoinRequest;
+import adhoc.user.request_response.ServerUserNavigateRequest;
+import adhoc.user.request_response.ServerUserNavigateResponse;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,24 +60,24 @@ public class UserManagerController {
 
     @PostMapping("/servers/{serverId}/userNavigate")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
+    public ResponseEntity<ServerUserNavigateResponse> postServerUserNavigate(
             @PathVariable("serverId") Long serverId,
-            @Valid @RequestBody UserNavigateRequest userNavigateRequest) {
-        Preconditions.checkArgument(Objects.equals(serverId, userNavigateRequest.getSourceServerId()),
-                "Server ID mismatch: %s != %s", serverId, userNavigateRequest.getSourceServerId());
+            @Valid @RequestBody ServerUserNavigateRequest serverUserNavigateRequest) {
+        Preconditions.checkArgument(Objects.equals(serverId, serverUserNavigateRequest.getSourceServerId()),
+                "Server ID mismatch: %s != %s", serverId, serverUserNavigateRequest.getSourceServerId());
 
-        return userManagerService.serverUserNavigate(userNavigateRequest);
+        return userManagerService.serverUserNavigate(serverUserNavigateRequest);
     }
 
     @PostMapping("/servers/{serverId}/userJoin")
     @PreAuthorize("hasRole('SERVER')")
     public ResponseEntity<UserDetailDto> postServerUserJoin(
             @PathVariable("serverId") Long serverId,
-            @Valid @RequestBody UserJoinRequest userJoinRequest) {
-        Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()),
-                "Server ID mismatch: %s != %s", serverId, userJoinRequest.getServerId());
+            @Valid @RequestBody ServerUserJoinRequest serverUserJoinRequest) {
+        Preconditions.checkArgument(Objects.equals(serverId, serverUserJoinRequest.getServerId()),
+                "Server ID mismatch: %s != %s", serverId, serverUserJoinRequest.getServerId());
 
-        return ResponseEntity.ok(userManagerService.serverUserJoin(userJoinRequest));
+        return ResponseEntity.ok(userManagerService.serverUserJoin(serverUserJoinRequest));
     }
 
     @MessageMapping("UserDefeatedUser")

@@ -31,6 +31,7 @@ import {Router} from "@angular/router";
 import {UserRegisterRequest} from "./user-register-request";
 import {Paging} from "../core/paging";
 import {Page} from "../core/page";
+import {UserNavigateRequest} from "./user-navigate-request";
 
 @Injectable({
   providedIn: 'root'
@@ -105,11 +106,12 @@ export class UserService {
       }));
   }
 
-  getCurrentUserOrRegister(serverId: number): Observable<User> {
+  getCurrentUserOrRegister(): Observable<User> {
     return this.currentUser$.value ? of(this.currentUser$.value)
       : this.register({
-        serverId: serverId,
-        human: true
+        human: true,
+        // regionId: regionId,
+        // serverId: serverId,
       });
   }
 
@@ -131,6 +133,30 @@ export class UserService {
 
   updateUser(user: User): Observable<User> {
     return this.http.put<User>(`${this.usersUrl}/${user.id}`, user);
+  }
+
+  navigateCurrentUserOrRegister(regionId: number, serverId: number): Observable<User> {
+    return this.currentUser$.value
+      ? this.navigateCurrentUser({
+        regionId: regionId,
+        serverId: serverId,
+      })
+      : this.register({
+        human: true,
+        regionId: regionId,
+        serverId: serverId,
+      });
+    ;
+  }
+
+  navigateCurrentUser(userNavigateRequest: UserNavigateRequest): Observable<User> {
+    return this.http.post(`${this.usersUrl}/current/navigate`, {...userNavigateRequest}, {
+      withCredentials: true
+    }).pipe(
+      mergeMap(user => {
+        this.currentUser$.next(user);
+        return of(this.currentUser$.value);
+      }));
   }
 
   userDefeatedUser(user: User, defeatedUser: User) {

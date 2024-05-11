@@ -111,6 +111,12 @@ export class ClientComponent implements OnInit {
         if (user && (typeof user.id) === 'number' && (typeof user.factionId) === 'number' && user.token) {
           unrealEngineCommandLine += '?UserID=' + user.id + '?FactionID=' + user.factionId + '?Token=' + user.token;
         }
+        // if user is joining region they were last in, try to start their initial location where they may be spawned at
+        if (user && user.regionId === server.regionId
+          && (typeof user.x) === 'number' && (typeof user.y) === 'number' && (typeof user.z) === 'number'
+          && (typeof user.pitch) === 'number' && (typeof user.yaw) === 'number') {
+          unrealEngineCommandLine += '?X=' + user.x + '?Y=' + user.y + '?Z=' + user.z + '?Pitch=' + user.pitch + '?Yaw=' + user.yaw;
+        }
         if (this.configService.featureFlags) {
           unrealEngineCommandLine += ' FeatureFlags=' + this.configService.featureFlags;
         }

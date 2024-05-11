@@ -327,24 +327,29 @@ public class UserService {
 
         User user = userRepository.getReferenceById(userId);
 
+        Region oldRegion = user.getRegion();
+        Region region;
+
         if (userNavigateRequest.getServerId() != null) {
             Server server = serverRepository.getReferenceById(userNavigateRequest.getServerId());
-            user.setRegion(server.getRegion());
+            region = server.getRegion();
+            user.setRegion(region);
             user.setServer(server);
         } else {
-            Region region = regionRepository.getReferenceById(userNavigateRequest.getRegionId());
+            region = regionRepository.getReferenceById(userNavigateRequest.getRegionId());
             user.setRegion(region);
             // TODO
             user.setServer(region.getServers().get(ThreadLocalRandom.current().nextInt(region.getServers().size())));
         }
 
-        // only internal navigation from unreal server to unreal server will preserve user location,
-        // manual user navigation will force a new spawn
-        user.setX(null);
-        user.setY(null);
-        user.setZ(null);
-        user.setPitch(null);
-        user.setYaw(null);
+        // changing region nukes last location
+        if (region != oldRegion) {
+            user.setX(null);
+            user.setY(null);
+            user.setZ(null);
+            user.setPitch(null);
+            user.setYaw(null);
+        }
 
         return toDetailDto(user);
     }

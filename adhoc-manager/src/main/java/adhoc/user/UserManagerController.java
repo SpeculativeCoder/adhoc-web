@@ -66,6 +66,8 @@ public class UserManagerController {
         Preconditions.checkArgument(Objects.equals(serverId, serverUserNavigateRequest.getSourceServerId()),
                 "Server ID mismatch: %s != %s", serverId, serverUserNavigateRequest.getSourceServerId());
 
+        //log.info("Server user navigate: request={}", serverUserNavigateRequest);
+
         return userManagerService.serverUserNavigate(serverUserNavigateRequest);
     }
 

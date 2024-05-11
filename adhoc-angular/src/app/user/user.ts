@@ -30,6 +30,11 @@ export class User {
   human?: boolean;
   score?: number;
   regionId?: number;
+  x?: number;
+  y?: number;
+  z?: number;
+  pitch?: number;
+  yaw?: number;
   //created?: string;
   //updated?: string;
   //lastLogin?: string;

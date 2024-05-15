@@ -34,7 +34,7 @@ import java.util.UUID;
 
 public interface PawnRepository extends JpaRepository<Pawn, Long> {
 
-    Optional<Pawn> findByServerAndUuid(Server server, UUID uuid);
+    Optional<Pawn> findByUuid(UUID uuid);
 
     @Modifying
     @Query("delete from Pawn p where p.server = ?1 and p.uuid not in ?2")

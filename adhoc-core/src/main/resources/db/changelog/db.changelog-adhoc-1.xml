@@ -98,6 +98,35 @@
         <!-- NOTE: deliberately no foreign keys for adhoc_user on faction and server.
         this is so we can nuke all tables except adhoc_user during development process (for now) -->
 
+        <createIndex indexName="idx_adhoc_user_name"
+                     tableName="adhoc_user">
+            <column name="name"/>
+        </createIndex>
+        <createIndex indexName="idx_adhoc_user_email"
+                     tableName="adhoc_user">
+            <column name="email"/>
+        </createIndex>
+        <createIndex indexName="idx_adhoc_user_faction_id"
+                     tableName="adhoc_user">
+            <column name="faction_id"/>
+        </createIndex>
+        <createIndex indexName="idx_adhoc_user_region_id"
+                     tableName="adhoc_user">
+            <column name="region_id"/>
+        </createIndex>
+        <createIndex indexName="idx_adhoc_user_created"
+                     tableName="adhoc_user">
+            <column name="created"/>
+        </createIndex>
+        <createIndex indexName="idx_adhoc_user_seen"
+                     tableName="adhoc_user">
+            <column name="seen"/>
+        </createIndex>
+        <createIndex indexName="idx_adhoc_user_server_id"
+                     tableName="adhoc_user">
+            <column name="server_id"/>
+        </createIndex>
+
         <createTable tableName="adhoc_user_roles">
             <column name="adhoc_user_id"
                     type="BIGINT">

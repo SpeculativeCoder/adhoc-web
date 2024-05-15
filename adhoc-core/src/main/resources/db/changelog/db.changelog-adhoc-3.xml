@@ -434,6 +434,14 @@
                     type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
+            <column name="pitch"
+                    type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="yaw"
+                    type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
             <column name="user_id"
                     type="BIGINT"/>
             <column name="human"

@@ -78,6 +78,11 @@ public class Pawn {
     @Column(nullable = false)
     private Double z;
 
+    @Column(nullable = false)
+    private Double pitch;
+    @Column(nullable = false)
+    private Double yaw;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private User user;

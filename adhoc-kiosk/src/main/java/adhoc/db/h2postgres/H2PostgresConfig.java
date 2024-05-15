@@ -49,7 +49,7 @@ public class H2PostgresConfig {
             public String getJdbcUrl() {
                 return !dataSourceProperties.getUrl().isEmpty()
                         // TODO
-                        ? dataSourceProperties.getUrl() : "jdbc:h2:tcp://" + coreProperties.getManagerHost() + ":9092/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=5000;DB_CLOSE_DELAY=-1";
+                        ? dataSourceProperties.getUrl() : "jdbc:h2:tcp://" + coreProperties.getManagerHost() + ":9092/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
             }
 
             @Override

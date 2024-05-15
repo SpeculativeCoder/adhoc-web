@@ -65,10 +65,11 @@ public class PawnManagerService {
         pawn.setX(pawnDto.getX());
         pawn.setY(pawnDto.getY());
         pawn.setZ(pawnDto.getZ());
+        pawn.setPitch(pawnDto.getPitch());
+        pawn.setYaw(pawnDto.getYaw());
         pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
         pawn.setHuman(pawnDto.getHuman());
-        pawn.setFaction(pawnDto.getFactionIndex() == null ? null : factionRepository.getByIndex(pawnDto.getFactionIndex()));
-        pawn.setSeen(pawnDto.getSeen());
+        pawn.setFaction(pawnDto.getFactionId() == null ? null : factionRepository.getReferenceById(pawnDto.getFactionId()));
 
         return pawn;
     }
@@ -82,23 +83,37 @@ public class PawnManagerService {
 
         List<UUID> pawnUuids = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
+        List<PawnDto> pawnDtos = new ArrayList<>();
 
-        List<PawnDto> pawnDtos = serverPawnsEvent.getPawns().stream()
-                .map(pawnDto -> {
-                    Preconditions.checkArgument(Objects.equals(server.getId(), pawnDto.getServerId()));
+        for (PawnDto dto : serverPawnsEvent.getPawns()) {
+            Preconditions.checkArgument(Objects.equals(server.getId(), dto.getServerId()));
 
-                    Pawn pawn = toEntity(pawnDto,
-                            pawnRepository.findByServerAndUuid(server, pawnDto.getUuid()).orElseGet(Pawn::new));
+            Pawn pawn = toEntity(dto,
+                    pawnRepository.findByUuid(dto.getUuid()).orElseGet(Pawn::new));
 
-                    pawn.setSeen(seen);
+            pawn.setSeen(seen);
 
-                    pawnUuids.add(pawn.getUuid());
-                    if (pawn.getUser() != null) {
-                        userIds.add(pawn.getUser().getId());
-                    }
+            pawnUuids.add(pawn.getUuid());
 
-                    return pawnService.toDto(pawnRepository.save(pawn));
-                }).toList();
+            if (pawn.getUser() != null) {
+                // TODO
+                //pawn.getUser().setX(pawn.getX());
+                //pawn.getUser().setY(pawn.getY());
+                //pawn.getUser().setZ(pawn.getZ());
+                //pawn.getUser().setPitch(pawn.getPitch());
+                //pawn.getUser().setYaw(pawn.getYaw());
+                //pawn.getUser().setServer(server);
+                //pawn.getUser().setSeen(seen);
+
+                userIds.add(pawn.getUser().getId());
+            }
+
+            if (pawn.getId() == null) {
+                pawn = pawnRepository.save(pawn);
+            }
+
+            pawnDtos.add(pawnService.toDto(pawn));
+        }
 
         // clean up any pawns that are no longer on this server
         pawnRepository.deleteByServerAndUuidNotIn(server, pawnUuids);

@@ -94,10 +94,9 @@ public class FactionManagerService {
             Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
             BigDecimal humanScoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
-            BigDecimal nonHumanScoreAdd = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
+            BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
 
-            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(humanScoreAdd, true, faction.getId(), seenBefore);
-            userRepository.updateScoreAddByHumanAndFactionIdAndSeenAfter(nonHumanScoreAdd, false, faction.getId(), seenBefore);
+            userRepository.updateScoreAddByFactionIdAndSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenBefore);
         }
     }
 

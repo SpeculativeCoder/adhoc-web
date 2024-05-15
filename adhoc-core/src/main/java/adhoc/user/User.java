@@ -46,6 +46,15 @@ import java.util.stream.Collectors;
  * the same account. A user is also automatically created on joining an Unreal server if there was no logged-in user.
  */
 @Entity(name = "AdhocUser")
+@Table(indexes = {
+        @Index(name = "idx_adhoc_user_name", columnList = "name"),
+        @Index(name = "idx_adhoc_user_email", columnList = "email"),
+        @Index(name = "idx_adhoc_user_faction_id", columnList = "faction_id"),
+        @Index(name = "idx_adhoc_user_region_id", columnList = "region_id"),
+        @Index(name = "idx_adhoc_user_created", columnList = "created"),
+        @Index(name = "idx_adhoc_user_seen", columnList = "seen"),
+        @Index(name = "idx_adhoc_user_server_id", columnList = "server_id")
+})
 // TODO: unique constraint(s)
 //@DynamicInsert
 //@DynamicUpdate

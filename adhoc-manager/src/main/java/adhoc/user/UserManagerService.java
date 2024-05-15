@@ -111,8 +111,8 @@ public class UserManagerService {
         user.setSeen(user.getLastJoin());
 
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
-                .log("User joined: userId={} userName={} userHuman={} factionId={} serverId={}",
-                        user.getId(), user.getName(), user.isHuman(), user.getFaction().getIndex(), server.getId());
+                .log("User joined: userId={} userName={} userHuman={} factionId={} serverId={} regionId={} x={} y={} z={} pitch={} yaw={}",
+                        user.getId(), user.getName(), user.isHuman(), user.getFaction().getIndex(), server.getId(), server.getRegion().getId(), user.getX(), user.getY(), user.getZ(), user.getPitch(), user.getYaw());
 
         return userService.toDetailDto(user);
     }
@@ -205,8 +205,10 @@ public class UserManagerService {
     public void decayUserScores() {
         log.trace("Decaying user scores...");
 
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(30);
+
         // TODO: multiplier property
-        userRepository.updateScoreMultiply(BigDecimal.valueOf(0.999));
+        userRepository.updateScoreMultiply(BigDecimal.valueOf(0.999), seenBefore);
     }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
@@ -246,8 +248,7 @@ public class UserManagerService {
 
         if (!oldUserIds.isEmpty()) {
             log.debug("Purging old users: {}", oldUserIds);
+            userRepository.deleteAllByIdInBatch(oldUserIds);
         }
-
-        userRepository.deleteAllByIdInBatch(oldUserIds);
     }
 }

@@ -57,6 +57,7 @@ public class PawnService {
                 pawn.getName(),
                 pawn.getDescription(),
                 pawn.getX(), pawn.getY(), pawn.getZ(),
+                pawn.getPitch(), pawn.getYaw(),
                 pawn.getUser() == null ? null : pawn.getUser().getId(),
                 pawn.isHuman(),
                 pawn.getFaction() == null ? null : pawn.getFaction().getId(),

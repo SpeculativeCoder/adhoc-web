@@ -66,7 +66,7 @@ public class H2Config {
             public String getJdbcUrl() {
                 return !dataSourceProperties.getUrl().isEmpty() ?
                         // TODO
-                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2Dir.toString() + "/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=5000;DB_CLOSE_DELAY=-1";
+                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2Dir.toString() + "/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
             }
 
             @Override

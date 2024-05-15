@@ -68,6 +68,11 @@ public class PawnDto {
     @NotNull
     Double z;
 
+    @NotNull
+    Double pitch;
+    @NotNull
+    Double yaw;
+
     @Min(1)
     Long userId;
 

@@ -22,14 +22,12 @@
 
 package adhoc.user;
 
-import adhoc.server.Server;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -42,6 +40,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findFirstByHumanFalseAndFactionIdAndSeenBefore(Long factionId, LocalDateTime seenBefore);
 
+    Stream<User> streamByServerNotNull();
+
     Stream<User> streamByServerNotNullAndSeenBefore(LocalDateTime seenBefore);
 
     @Query("select u.id from AdhocUser u where u.created < ?1 and u.seen is null and u.password is null and u.pawns is empty")
@@ -50,9 +50,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u.id from AdhocUser u where u.seen < ?1 and u.password is null and u.pawns is empty")
     List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime seenBefore);
 
-    @Modifying
-    @Query("update AdhocUser u set u.version = u.version + 1, u.server = ?1, u.seen = ?2 where u.id in ?3")
-    void updateServerAndSeenByIdIn(Server server, LocalDateTime seen, Collection<Long> idIn);
+    //@Modifying
+    //@Query("update AdhocUser u set u.version = u.version + 1, u.server = ?1, u.seen = ?2 where u.id in ?3")
+    //void updateServerAndSeenByIdIn(Server server, LocalDateTime seen, Collection<Long> idIn);
 
     @Modifying
     @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score + ?1 where u.id = ?2")

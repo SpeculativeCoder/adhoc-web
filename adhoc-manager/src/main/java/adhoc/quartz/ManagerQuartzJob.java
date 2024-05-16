@@ -70,9 +70,6 @@ public class ManagerQuartzJob implements Job {
             case ManagerQuartzConfig.MANAGE_SERVERS:
                 events = serverManagerService.manageServers();
                 break;
-            case ManagerQuartzConfig.PURGE_OLD_SERVERS:
-                serverManagerService.purgeOldServers();
-                break;
             case ManagerQuartzConfig.REFRESH_TASKS:
                 taskManagerService.refreshTasks();
                 break;
@@ -88,11 +85,17 @@ public class ManagerQuartzJob implements Job {
             case ManagerQuartzConfig.MANAGE_USER_SCORES:
                 userManagerService.manageUserScores();
                 break;
+            case ManagerQuartzConfig.MANAGE_USER_LOCATIONS:
+                userManagerService.manageUserLocations();
+                break;
             case ManagerQuartzConfig.LEAVE_UNSEEN_USERS:
                 userManagerService.leaveUnseenUsers();
                 break;
             case ManagerQuartzConfig.PURGE_OLD_USERS:
                 userManagerService.purgeOldUsers();
+                break;
+            case ManagerQuartzConfig.PURGE_OLD_SERVERS:
+                serverManagerService.purgeOldServers();
                 break;
             case ManagerQuartzConfig.PURGE_OLD_PAWNS:
                 pawnManagerService.purgeOldPawns();

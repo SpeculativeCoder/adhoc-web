@@ -26,6 +26,7 @@ import adhoc.area.Area;
 import adhoc.area.AreaRepository;
 import adhoc.faction.Faction;
 import adhoc.objective.ObjectiveRepository;
+import adhoc.pawn.PawnRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.event.ServerUserDefeatedUserEvent;
@@ -65,6 +66,7 @@ public class UserManagerService {
     private final ServerRepository serverRepository;
     private final AreaRepository areaRepository;
     private final ObjectiveRepository objectiveRepository;
+    private final PawnRepository pawnRepository;
 
     private final UserService userService;
 
@@ -227,6 +229,31 @@ public class UserManagerService {
 
         // TODO: multiplier property
         userRepository.updateScoreMultiply(BigDecimal.valueOf(0.999));
+    }
+
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public void manageUserLocations() {
+        log.trace("Managing user locations...");
+
+        LocalDateTime now = LocalDateTime.now();
+
+        try (Stream<User> users = userRepository.streamByServerNotNull()) {
+            users.forEach(user -> {
+                // see if there is a pawn for the user
+                pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user).ifPresent(pawn -> {
+
+                    user.setX(pawn.getX());
+                    user.setY(pawn.getY());
+                    user.setZ(pawn.getZ());
+                    user.setPitch(pawn.getPitch());
+                    user.setYaw(pawn.getYaw());
+
+                    user.setSeen(now);
+
+                });
+            });
+        }
     }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},

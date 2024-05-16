@@ -82,7 +82,7 @@ public class PawnManagerService {
         Server server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
 
         List<UUID> pawnUuids = new ArrayList<>();
-        List<Long> userIds = new ArrayList<>();
+        //List<Long> userIds = new ArrayList<>();
         List<PawnDto> pawnDtos = new ArrayList<>();
 
         for (PawnDto dto : serverPawnsEvent.getPawns()) {
@@ -105,7 +105,7 @@ public class PawnManagerService {
                 //pawn.getUser().setServer(server);
                 //pawn.getUser().setSeen(seen);
 
-                userIds.add(pawn.getUser().getId());
+                //userIds.add(pawn.getUser().getId());
             }
 
             if (pawn.getId() == null) {
@@ -119,7 +119,7 @@ public class PawnManagerService {
         pawnRepository.deleteByServerAndUuidNotIn(server, pawnUuids);
 
         // update users seen
-        userRepository.updateServerAndSeenByIdIn(server, seen, userIds);
+        //userRepository.updateServerAndSeenByIdIn(server, seen, userIds);
 
         return pawnDtos;
     }

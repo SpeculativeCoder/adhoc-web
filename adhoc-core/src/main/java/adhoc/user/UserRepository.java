@@ -66,6 +66,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updateScoreAddByFactionIdAndSeenAfter(BigDecimal humanScoreAdd, BigDecimal notHumanScoreAdd, Long factionId, LocalDateTime seenAfter);
 
     @Modifying
-    @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score * ?1 where u.seen < ?2")
-    void updateScoreMultiply(BigDecimal scoreMultiply, LocalDateTime seenBefore);
+    @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score * ?1")
+    void updateScoreMultiply(BigDecimal scoreMultiply);
 }

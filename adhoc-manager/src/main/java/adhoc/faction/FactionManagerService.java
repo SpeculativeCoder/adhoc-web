@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Transactional
@@ -71,8 +70,8 @@ public class FactionManagerService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void awardFactionScores() {
-        log.trace("Awarding faction scores...");
+    public void manageFactionScores() {
+        log.trace("Managing faction scores...");
 
         List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
                 objectiveRepository.getFactionObjectiveCounts();
@@ -85,25 +84,6 @@ public class FactionManagerService {
 
             factionRepository.updateScoreAddById(scoreAdd, faction.getId());
         }
-
-        LocalDateTime seenBefore = LocalDateTime.now().minusHours(48);
-
-        // TODO: move to user
-        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
-            Faction faction = factionObjectiveCount.getFaction();
-            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
-
-            BigDecimal humanScoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
-            BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
-
-            userRepository.updateScoreAddByFactionIdAndSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenBefore);
-        }
-    }
-
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void decayFactionScores() {
-        log.trace("Decaying faction scores...");
 
         // TODO: multiplier property
         BigDecimal scoreMultiply = BigDecimal.valueOf(0.999);

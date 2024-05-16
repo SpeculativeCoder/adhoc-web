@@ -82,14 +82,11 @@ public class ManagerQuartzJob implements Job {
             case ManagerQuartzConfig.MANAGE_SERVER_TASKS:
                 serverTaskManagerService.manageServerTasks();
                 break;
-            case ManagerQuartzConfig.AWARD_FACTION_SCORES:
-                factionManagerService.awardFactionScores();
+            case ManagerQuartzConfig.MANAGE_FACTION_SCORES:
+                factionManagerService.manageFactionScores();
                 break;
-            case ManagerQuartzConfig.DECAY_FACTION_SCORES:
-                factionManagerService.decayFactionScores();
-                break;
-            case ManagerQuartzConfig.DECAY_USER_SCORES:
-                userManagerService.decayUserScores();
+            case ManagerQuartzConfig.MANAGE_USER_SCORES:
+                userManagerService.manageUserScores();
                 break;
             case ManagerQuartzConfig.LEAVE_UNSEEN_USERS:
                 userManagerService.leaveUnseenUsers();

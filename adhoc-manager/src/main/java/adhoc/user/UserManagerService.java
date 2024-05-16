@@ -24,6 +24,8 @@ package adhoc.user;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
+import adhoc.faction.Faction;
+import adhoc.objective.ObjectiveRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.event.ServerUserDefeatedUserEvent;
@@ -47,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -61,6 +64,7 @@ public class UserManagerService {
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
     private final AreaRepository areaRepository;
+    private final ObjectiveRepository objectiveRepository;
 
     private final UserService userService;
 
@@ -202,13 +206,27 @@ public class UserManagerService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void decayUserScores() {
-        log.trace("Decaying user scores...");
+    public void manageUserScores() {
+        log.trace("Managing user scores...");
 
-        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(30);
+        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
+                objectiveRepository.getFactionObjectiveCounts();
+
+        LocalDateTime seenAfter = LocalDateTime.now().minusHours(48);
+
+        // TODO: move to user
+        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
+            Faction faction = factionObjectiveCount.getFaction();
+            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
+
+            BigDecimal humanScoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
+            BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
+
+            userRepository.updateScoreAddByFactionIdAndSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
+        }
 
         // TODO: multiplier property
-        userRepository.updateScoreMultiply(BigDecimal.valueOf(0.999), seenBefore);
+        userRepository.updateScoreMultiply(BigDecimal.valueOf(0.999));
     }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
@@ -220,7 +238,7 @@ public class UserManagerService {
         try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(seenBefore)) {
             users.forEach(unseenUser -> {
                 log.atLevel(unseenUser.isHuman() ? Level.INFO : Level.DEBUG)
-                        .log("Leaving unseen user: id={} name={} password?={} human={} factionIndex={} serverId={}",
+                        .log("User left: id={} name={} password?={} human={} factionIndex={} serverId={}",
                                 unseenUser.getId(),
                                 unseenUser.getName(),
                                 unseenUser.getPassword() != null,

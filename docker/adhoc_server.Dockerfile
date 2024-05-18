@@ -20,7 +20,7 @@
 # SOFTWARE.
 #
 
-FROM ubuntu:rolling
+FROM ubuntu:latest
 
 RUN apt-get update -y && apt-get dist-upgrade -y
 # RUN apt-get install -y openssl ca-certificates

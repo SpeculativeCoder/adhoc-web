@@ -20,17 +20,41 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.message;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import adhoc.user.User;
+import jakarta.persistence.*;
+import lombok.*;
 
-@RequiredArgsConstructor
-public enum TaskType {
-    MANAGER("Manager"),
-    KIOSK("Kiosk"),
-    SERVER("Server");
+import java.time.LocalDateTime;
 
-    @Getter
-    private final String text;
+@Entity
+//@DynamicInsert
+//@DynamicUpdate
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+public class Message {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MessageIdSequence")
+    @SequenceGenerator(name = "MessageIdSequence", initialValue = 1, allocationSize = 50)
+    private Long id;
+
+    @Version
+    @Column(nullable = false)
+    private Long version;
+
+    @Column(nullable = false, length = 10000)
+    private String text;
+
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
+
+    /** If this message is only relevant to a specific user, this will be set. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private User user;
 }

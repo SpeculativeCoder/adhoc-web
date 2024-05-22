@@ -22,7 +22,6 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {MessageService} from '../message/message.service';
 import {Observable} from 'rxjs';
 import {Server} from './server';
 import {StompService} from '../core/stomp.service';
@@ -39,7 +38,6 @@ export class ServerService {
   constructor(
     @Inject('BASE_URL') baseUrl: string,
     private http: HttpClient,
-    private messages: MessageService,
     private stomp: StompService
   ) {
     this.serversUrl = `${baseUrl}/api/servers`;

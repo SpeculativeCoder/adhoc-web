@@ -20,8 +20,37 @@
   ~ SOFTWARE.
   -->
 
-<div *ngIf="messages.length">
-  <div *ngFor="let message of messages">
-    {{message}}
+<div class="container-xxl">
+  <h2>
+    Messages
+  </h2>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="onSort($event)">
+      <!--<caption>{{messages.length}} messages</caption>-->
+      <thead>
+      <tr>
+        <th scope="col" sortable="id">ID</th>
+        <th scope="col" sortable="timestamp">Timestamp</th>
+        <th scope="col" width="80%" sortable="text">Text</th>
+        <!--<th scope="col" sortable="userId">User</th>-->
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let message of messages.content">
+        <th scope="row"><!--<a routerLink="/messages/{{ message.id }}">-->{{ message.id }}<!--</a>--></th>
+        <td>{{ message.timestamp | simpleDate }}</td>
+        <td>{{ message.text }}</td>
+        <!--<td>{{ message.userId }}</td>-->
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-end" *ngIf="messages.numberOfElements">
+    <div class="mt-2 me-4">{{ (messages.number * messages.size) + 1 }} - {{ (messages.number * messages.size) + messages.numberOfElements }} of {{ messages.totalElements }}</div>
+    <ngb-pagination [page]="messages.number+1"
+                    [pageSize]="messages.size"
+                    [collectionSize]="messages.totalElements"
+                    [boundaryLinks]="true"
+                    (pageChange)="onPageChange($event - 1)"/>
   </div>
 </div>

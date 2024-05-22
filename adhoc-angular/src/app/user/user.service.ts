@@ -175,7 +175,8 @@ export class UserService {
     //   }
     // });
     // user.score++;
-    this.messages.addMessage(`User ${userId} defeated user ${defeatedUserId}`);
+    // TODO
+    console.log(`User ${userId} defeated user ${defeatedUserId}`);
   }
 
   handleFactionScoring(factionIdToAwardedScore: any) {

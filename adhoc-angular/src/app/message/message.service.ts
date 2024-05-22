@@ -20,24 +20,38 @@
  * SOFTWARE.
  */
 
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
+import {HttpClient} from "@angular/common/http";
+import {StompService} from "../core/stomp.service";
+import {Paging} from "../core/paging";
+import {Observable} from "rxjs";
+import {Page} from "../core/page";
+import {Message} from "./message";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
 
-  messages: string[] = [];
+  private readonly messagesUrl: string;
 
-  addMessage(message: string) {
-    console.log(message);
-    this.messages.push(message);
-    // if (this.messages.length > 5) {
-    //   this.messages.pop();
-    // }
+  constructor(
+    @Inject('BASE_URL') baseUrl: string,
+    private http: HttpClient,
+    private stomp: StompService
+  ) {
+    this.messagesUrl = `${baseUrl}/api/messages`;
   }
 
-  clearMessages() {
-    this.messages.length = 0;
+  getMessages(paging: Paging = new Paging()): Observable<Page<Message>> {
+    return this.http.get<Page<Message>>(this.messagesUrl, {params: paging.toParams()});
+  }
+
+  getMessage(id: number): Observable<Message> {
+    return this.http.get<Message>(`${this.messagesUrl}/${id}`);
+  }
+
+  updateMessage(message: Message): Observable<Message> {
+    return this.http.put<Message>(`${this.messagesUrl}/${message.id}`, message);
   }
 }

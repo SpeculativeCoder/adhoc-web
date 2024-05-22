@@ -24,6 +24,7 @@ package adhoc.task;
 
 import adhoc.dns.DnsService;
 import adhoc.hosting.*;
+import adhoc.message.MessageService;
 import adhoc.properties.ManagerProperties;
 import adhoc.system.event.Event;
 import com.google.common.base.Verify;
@@ -54,6 +55,7 @@ public class TaskManagerService {
     private final ManagerProperties managerProperties;
 
     private final TaskRepository taskRepository;
+    private final MessageService messageService;
 
     private final HostingService hostingService;
     private final DnsService dnsService;
@@ -169,5 +171,7 @@ public class TaskManagerService {
         if (!Objects.equals(task.getDomain(), domain)) {
             task.setDomain(domain);
         }
+
+        messageService.addGlobalMessage(String.format("%s task %d mapped to domain %s", task.getTaskType().getText(), task.getId(), domain));
     }
 }

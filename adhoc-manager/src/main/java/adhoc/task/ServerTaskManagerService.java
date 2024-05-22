@@ -24,6 +24,7 @@ package adhoc.task;
 
 import adhoc.hosting.HostedServerTask;
 import adhoc.hosting.HostingService;
+import adhoc.message.MessageService;
 import adhoc.server.Server;
 import adhoc.server.ServerManagerService;
 import adhoc.server.ServerRepository;
@@ -55,6 +56,7 @@ public class ServerTaskManagerService {
     private final ServerRepository serverRepository;
     private final ServerTaskRepository serverTaskRepository;
     private final ManagerTaskRepository managerTaskRepository;
+    private final MessageService messageService;
 
     private final ServerManagerService serverManagerService;
 
@@ -131,6 +133,8 @@ public class ServerTaskManagerService {
         serverTask.setServerId(server.getId());
 
         serverTaskRepository.save(serverTask);
+
+        messageService.addGlobalMessage(String.format("Server task %d created", server.getId()));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -138,5 +142,7 @@ public class ServerTaskManagerService {
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     void deleteServerTaskInNewTransaction(Long serverTaskId) {
         serverTaskRepository.deleteById(serverTaskId);
+
+        messageService.addGlobalMessage(String.format("Server task %d deleted", serverTaskId));
     }
 }

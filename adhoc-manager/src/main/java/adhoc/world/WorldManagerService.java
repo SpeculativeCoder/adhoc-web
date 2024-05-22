@@ -27,6 +27,7 @@ import adhoc.area.AreaRepository;
 import adhoc.dns.DnsService;
 import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
+import adhoc.message.MessageService;
 import adhoc.objective.Objective;
 import adhoc.objective.ObjectiveRepository;
 import adhoc.properties.CoreProperties;
@@ -78,6 +79,7 @@ public class WorldManagerService {
 
     private final PasswordEncoder passwordEncoder;
     private final SimpMessageSendingOperations stomp;
+    private final MessageService messageService;
 
     /**
      * Inserts some initial data to set up the world e.g. factions.
@@ -348,6 +350,8 @@ public class WorldManagerService {
         //pawn1.setSeen(LocalDateTime.now());
         //pawn1.setUser(alphaUser);
         //pawn1 = pawnRepository.save(pawn1);
+
+        messageService.addGlobalMessage(String.format("World %d initialized", world.getId()));
     }
 
     private WorldUpdatedEvent toWorldUpdatedEvent(World world) {

@@ -20,17 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
-public enum TaskType {
-    MANAGER("Manager"),
-    KIOSK("Kiosk"),
-    SERVER("Server");
-
-    @Getter
-    private final String text;
+export class Message {
+  id?: number;
+  version?: number;
+  timestamp?: string;
+  text?: string;
+  userId?: number;
 }

@@ -20,17 +20,17 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.message;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-@RequiredArgsConstructor
-public enum TaskType {
-    MANAGER("Manager"),
-    KIOSK("Kiosk"),
-    SERVER("Server");
+public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    @Getter
-    private final String text;
+    Page<Message> findByUserNullOrUserId(Long userId, Pageable pageable);
+
+    @Query("select m from Message m where m.id = ?1 and (m.user is null or m.user.id = ?2)")
+    Message findByIdAnd_UserNullOrUserId_(Long id, Long userId);
 }

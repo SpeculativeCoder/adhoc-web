@@ -33,16 +33,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * Serves up the index.html which provides the Angular app.
- */
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-public class IndexController {
+public class CoreController {
 
     private final CoreProperties coreProperties;
 
+    /**
+     * Serves up the index.html which provides the Angular app.
+     */
     // TODO: better way than this to catch browser refresh in non-root URLs
     @GetMapping(value = {
             "/",
@@ -57,6 +57,7 @@ public class IndexController {
             "/users/**",
             "/pawns/**",
             "/structures/**",
+            "/messages/**",
             "/pages/**",
             "/client/**"
     })

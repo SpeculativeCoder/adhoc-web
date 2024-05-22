@@ -97,7 +97,8 @@ export class ObjectiveService {
         if (objective.id === objectiveId) {
           objective.factionId = factionId;
           this.factionService.getCachedFaction(factionId).subscribe(faction => {
-            this.messages.addMessage(`${objective.name} taken by ${faction.name}`);
+            // TODO
+            console.log(`${objective.name} taken by ${faction.name}`)
           });
         }
       })

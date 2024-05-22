@@ -20,17 +20,42 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.message;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-@RequiredArgsConstructor
-public enum TaskType {
-    MANAGER("Manager"),
-    KIOSK("Kiosk"),
-    SERVER("Server");
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
-    @Getter
-    private final String text;
+/**
+ * DTO for {@link Message}
+ */
+@Value
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class MessageDto implements Serializable {
+
+    @Min(1)
+    Long id;
+
+    @Min(0)
+    Long version;
+
+    @NotEmpty
+    @Size(max = 10000)
+    String text;
+
+    @NotNull
+    LocalDateTime timestamp;
+
+    @Min(1)
+    Long userId;
 }

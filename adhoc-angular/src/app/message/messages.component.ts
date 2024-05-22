@@ -20,23 +20,61 @@
  * SOFTWARE.
  */
 
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MessageService} from './message.service';
 import {CommonModule} from "@angular/common";
+import {HeaderSortComponent, SortEvent} from "../shared/table-sort/header-sort.component";
+import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {Router, RouterLink} from "@angular/router";
+import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {Page} from "../core/page";
+import {Message} from "./message";
+import {Paging} from "../core/paging";
+import {forkJoin} from "rxjs";
+import {Sort} from "../core/sort";
 
 @Component({
   selector: 'app-messages',
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    RouterLink,
+    SimpleDatePipe,
+    TableSortDirective,
+    HeaderSortComponent,
+    NgbPagination
   ],
   templateUrl: './messages.component.html'
 })
-export class MessagesComponent {
-  messages: string[];
+export class MessagesComponent implements OnInit {
 
-  constructor(private messageService: MessageService) {
-    this.messages = messageService.messages;
+  messages: Page<Message> = new Page();
+  private paging: Paging = new Paging();
+
+  constructor(private messageService: MessageService,
+              private router: Router) {
   }
 
+  ngOnInit() {
+    this.refreshMessages();
+  }
+
+  private refreshMessages() {
+    forkJoin([
+      this.messageService.getMessages(this.paging)
+    ]).subscribe(data => {
+      [this.messages] = data;
+    });
+  }
+
+  onPageChange(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshMessages();
+  }
+
+  onSort(sort: SortEvent) {
+    this.paging.sort = [new Sort(sort.column, sort.direction)];
+    this.refreshMessages();
+  }
 }

@@ -62,6 +62,9 @@
     <a class="nav-link" routerLink="/users">Users</a>
   </li>
   <li class="nav-item">
+    <a class="nav-link" routerLink="/messages">Messages</a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link" routerLink="/login-or-register" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
       <em>Login&nbsp;or&nbsp;Register</em>
     </a>

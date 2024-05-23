@@ -62,7 +62,8 @@
               <workingDirectory>.</workingDirectory>
               <arguments>
                 <argument>install</argument>
-                <!--<argument>&#45;&#45;legacy-peer-deps</argument>-->
+                <!-- TODO: disable when ng-bootstrap updated -->
+                <argument>--legacy-peer-deps</argument>
               </arguments>
             </configuration>
           </execution>
@@ -79,8 +80,7 @@
                 <argument>run</argument>
                 <argument>build</argument>
                 <argument>--</argument>
-                <!-- TODO: remove jsdom_fix when no longer needed -->
-                <argument>--configuration=jsdom_fix,${angular.configuration}${angular-app-customization},en-US</argument>
+                <argument>--configuration=${angular.configuration}${angular-app-customization},en-US</argument>
               </arguments>
               <environmentVariables>
                 <!-- TODO: figure out a way to have analytics on -->

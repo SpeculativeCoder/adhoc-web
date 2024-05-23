@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.authentication;
+package adhoc.system.security;
 
 import adhoc.user.UserService;
 import com.google.common.base.Verify;

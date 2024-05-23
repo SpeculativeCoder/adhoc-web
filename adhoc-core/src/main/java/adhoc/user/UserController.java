@@ -22,7 +22,7 @@
 
 package adhoc.user;
 
-import adhoc.system.authentication.AdhocUserDetails;
+import adhoc.system.security.AdhocUserDetails;
 import adhoc.user.request_response.UserNavigateRequest;
 import adhoc.user.request_response.UserRegisterRequest;
 import jakarta.validation.Valid;

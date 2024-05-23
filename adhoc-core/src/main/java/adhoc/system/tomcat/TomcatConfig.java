@@ -20,39 +20,21 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.tomcat;
 
 import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.Connector;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@Slf4j
 @RequiredArgsConstructor
-public class WebConfig implements WebMvcConfigurer {
+public class TomcatConfig {
 
     private final CoreProperties coreProperties;
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns(
-                        "https://" + coreProperties.getAdhocDomain(),
-                        "http://" + coreProperties.getAdhocDomain(),
-                        "https://*." + coreProperties.getAdhocDomain(),
-                        "http://*." + coreProperties.getAdhocDomain())
-                .allowedMethods("*")
-                .allowedHeaders("*")
-                .exposedHeaders("*")
-                .allowCredentials(true);
-    }
 
     @Bean(destroyMethod = "destroy")
     public Connector httpConnector() {
@@ -69,28 +51,3 @@ public class WebConfig implements WebMvcConfigurer {
         };
     }
 }
-
-//@Slf4j
-//@Configuration
-//@RequiredArgsConstructor
-//public class ErrorConfig {
-//
-//	private final ApplicationContext applicationContext;
-//
-//	private final WebProperties webProperties;
-//
-//	@Bean
-//	public ErrorViewResolver errorViewResolver() {
-//		return new DefaultErrorViewResolver(this.applicationContext, this.webProperties.getResources()) {
-//			@Override
-//			public ModelAndView resolveErrorView(HttpServletRequest request, HttpStatus status, Map<String, Object> model) {
-//				// any 404 just send them to the main page for now
-//				if (status == HttpStatus.NOT_FOUND) {
-//					return new ModelAndView("forward:/", HttpStatus.PERMANENT_REDIRECT);
-//				} else {
-//					return super.resolveErrorView(request, status, model);
-//				}
-//			}
-//		};
-//	}
-//}

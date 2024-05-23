@@ -25,7 +25,6 @@ package adhoc.system;
 import adhoc.properties.CoreProperties;
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,16 +32,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+/** Serves up the index.html which provides the Angular app. */
 @RestController
-@Slf4j
 @RequiredArgsConstructor
-public class CoreController {
+public class IndexController {
 
     private final CoreProperties coreProperties;
 
-    /**
-     * Serves up the index.html which provides the Angular app.
-     */
     // TODO: better way than this to catch browser refresh in non-root URLs
     @GetMapping(value = {
             "/",

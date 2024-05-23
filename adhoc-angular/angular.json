@@ -38,8 +38,10 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -48,15 +50,13 @@
               "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
               "node_modules/fabric/dist/fabric.js"
             ],
+            "externalDependencies": [
+              "jsdom"
+            ],
             "i18nMissingTranslation": "error",
             "i18nDuplicateTranslation": "error"
           },
           "configurations": {
-            "jsdom_fix": {
-              "externalDependencies": [
-                "jsdom"
-              ]
-            },
             "production": {
               "budgets": [
                 {
@@ -140,8 +140,10 @@
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
             ],
             "styles": [
               "src/styles.scss"

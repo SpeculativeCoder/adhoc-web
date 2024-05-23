@@ -22,7 +22,7 @@
 
 package adhoc.message;
 
-import adhoc.system.authentication.AdhocUserDetails;
+import adhoc.system.security.AdhocUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

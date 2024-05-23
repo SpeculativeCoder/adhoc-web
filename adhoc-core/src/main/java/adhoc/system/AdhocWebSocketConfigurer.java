@@ -27,21 +27,19 @@ import adhoc.system.logging.AdhocMdcExecutorChannelInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.session.Session;
 import org.springframework.session.web.socket.config.annotation.AbstractSessionWebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
-@Configuration
-@EnableWebSocketMessageBroker
+@Component
 @RequiredArgsConstructor
-public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfigurer<Session> {
+public class AdhocWebSocketConfigurer extends AbstractSessionWebSocketMessageBrokerConfigurer<Session> {
 
     private final CoreProperties coreProperties;
 
@@ -91,6 +89,5 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration
                 .interceptors(new AdhocMdcExecutorChannelInterceptor());
-
     }
 }

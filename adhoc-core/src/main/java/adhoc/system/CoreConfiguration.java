@@ -24,9 +24,19 @@ package adhoc.system;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 
 @Configuration
+//@EnableConfigurationProperties
+//@EnableScheduling
+//@EnableCaching
+@EnableRetry
+@EnableWebSocketMessageBroker
+// TODO
+@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.DIRECT)
 public class CoreConfiguration {
 
     @Bean

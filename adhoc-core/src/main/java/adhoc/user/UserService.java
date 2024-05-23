@@ -28,7 +28,7 @@ import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import adhoc.system.authentication.AdhocAuthenticationSuccessHandler;
+import adhoc.system.security.AdhocAuthenticationSuccessHandler;
 import adhoc.user.request_response.UserNavigateRequest;
 import adhoc.user.request_response.UserRegisterRequest;
 import com.google.common.base.Preconditions;

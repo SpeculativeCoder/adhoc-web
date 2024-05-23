@@ -20,19 +20,15 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.security;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Allows access to CSRF token for the Angular app.
- */
+/** Allows access to CSRF token for the Angular app. */
 @RestController
-@Slf4j
 @RequiredArgsConstructor
 public class CsrfController {
 

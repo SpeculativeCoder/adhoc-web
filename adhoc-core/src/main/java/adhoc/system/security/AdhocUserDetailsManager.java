@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.authentication;
+package adhoc.system.security;
 
 import adhoc.properties.CoreProperties;
 import adhoc.user.User;

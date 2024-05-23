@@ -25,7 +25,6 @@ package adhoc.system;
 import adhoc.properties.CoreProperties;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Objects;
 
 @RestController
-@Slf4j
 @RequiredArgsConstructor
 public class RobotsController {
 

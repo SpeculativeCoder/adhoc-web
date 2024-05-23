@@ -22,7 +22,7 @@
 
 @NonNullApi
 @NonNullFields
-package adhoc.system.authentication;
+package adhoc.system.security;
 
 import org.springframework.lang.NonNullApi;
 import org.springframework.lang.NonNullFields;

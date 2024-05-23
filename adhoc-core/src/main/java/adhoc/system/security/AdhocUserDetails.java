@@ -20,28 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.security;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
-import org.springframework.security.authorization.AuthorizationManager;
-import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
-import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
+import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
 
-@Configuration
-@EnableWebSocketSecurity
-public class WebSocketSecurityConfig {
+import java.util.Collection;
 
-    @Bean
-    AuthorizationManager<Message<?>> messageAuthorizationManager(
-            MessageMatcherDelegatingAuthorizationManager.Builder messages) {
+public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {
 
-        messages.nullDestMatcher().permitAll();
-        messages.simpSubscribeDestMatchers("/topic/events/**").permitAll();
-        messages.simpMessageDestMatchers("/app/**").hasAnyRole("SERVER");
-        messages.anyMessage().denyAll();
+    @Getter
+    private final Long userId;
 
-        return messages.build();
+    public AdhocUserDetails(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long userId) {
+        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+        this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " userId=" + userId;
     }
 }

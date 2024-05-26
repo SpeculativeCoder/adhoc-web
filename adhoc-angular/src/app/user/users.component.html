@@ -67,11 +67,11 @@
       </tbody>
     </table>
   </div>
-  <div class="d-flex justify-content-end" *ngIf="users.numberOfElements">
-    <div class="mt-2 me-4">{{ (users.number * users.size) + 1 }} - {{ (users.number * users.size) + users.numberOfElements }} of {{ users.totalElements }}</div>
-    <ngb-pagination [page]="users.number+1"
-                    [pageSize]="users.size"
-                    [collectionSize]="users.totalElements"
+  <div class="d-flex justify-content-end" *ngIf="users.page.totalElements">
+    <div class="mt-2 me-4">{{ (users.page.number * users.page.size) + 1 }} - {{ (users.page.number * users.page.size) + users.content.length }} of {{ users.page.totalElements }}</div>
+    <ngb-pagination [page]="users.page.number + 1"
+                    [pageSize]="users.page.size"
+                    [collectionSize]="users.page.totalElements"
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>
   </div>

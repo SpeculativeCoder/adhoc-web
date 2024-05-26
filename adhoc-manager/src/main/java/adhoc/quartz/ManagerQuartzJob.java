@@ -67,37 +67,37 @@ public class ManagerQuartzJob implements Job {
         try (MDC.MDCCloseable closeable = MDC.putCloseable("job", jobName)) {
             //log.info("jobName={}", jobName);
             switch (jobName) {
-            case ManagerQuartzConfig.MANAGE_SERVERS:
+            case ManagerQuartzConfiguration.MANAGE_SERVERS:
                 events = serverManagerService.manageServers();
                 break;
-            case ManagerQuartzConfig.REFRESH_TASKS:
+            case ManagerQuartzConfiguration.REFRESH_TASKS:
                 taskManagerService.refreshTasks();
                 break;
-            case ManagerQuartzConfig.MANAGE_TASK_DOMAINS:
+            case ManagerQuartzConfiguration.MANAGE_TASK_DOMAINS:
                 events = taskManagerService.manageTaskDomains();
                 break;
-            case ManagerQuartzConfig.MANAGE_SERVER_TASKS:
+            case ManagerQuartzConfiguration.MANAGE_SERVER_TASKS:
                 serverTaskManagerService.manageServerTasks();
                 break;
-            case ManagerQuartzConfig.MANAGE_FACTION_SCORES:
+            case ManagerQuartzConfiguration.MANAGE_FACTION_SCORES:
                 factionManagerService.manageFactionScores();
                 break;
-            case ManagerQuartzConfig.MANAGE_USER_SCORES:
+            case ManagerQuartzConfiguration.MANAGE_USER_SCORES:
                 userManagerService.manageUserScores();
                 break;
-            case ManagerQuartzConfig.MANAGE_USER_LOCATIONS:
+            case ManagerQuartzConfiguration.MANAGE_USER_LOCATIONS:
                 userManagerService.manageUserLocations();
                 break;
-            case ManagerQuartzConfig.LEAVE_UNSEEN_USERS:
+            case ManagerQuartzConfiguration.LEAVE_UNSEEN_USERS:
                 userManagerService.leaveUnseenUsers();
                 break;
-            case ManagerQuartzConfig.PURGE_OLD_USERS:
+            case ManagerQuartzConfiguration.PURGE_OLD_USERS:
                 userManagerService.purgeOldUsers();
                 break;
-            case ManagerQuartzConfig.PURGE_OLD_SERVERS:
+            case ManagerQuartzConfiguration.PURGE_OLD_SERVERS:
                 serverManagerService.purgeOldServers();
                 break;
-            case ManagerQuartzConfig.PURGE_OLD_PAWNS:
+            case ManagerQuartzConfiguration.PURGE_OLD_PAWNS:
                 pawnManagerService.purgeOldPawns();
                 break;
             default:

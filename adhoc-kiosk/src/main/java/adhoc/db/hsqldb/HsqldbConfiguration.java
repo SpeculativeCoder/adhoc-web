@@ -22,62 +22,33 @@
 
 package adhoc.db.hsqldb;
 
+import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hsqldb.server.Server;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-
 @Configuration
 @Profile("db-hsqldb")
 @Slf4j
 @RequiredArgsConstructor
-public class HsqldbConfig {
+public class HsqldbConfiguration {
+
+    private final CoreProperties coreProperties;
 
     private final DataSourceProperties dataSourceProperties;
 
-    static {
-        System.setProperty("hsqldb.reconfig_logging", "false");
-    }
-
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    Server hsqldbServer() throws IOException {
-        Server server = new Server();
-
-        //server.setAddress("localhost"); //"0.0.0.0");
-        server.setDatabaseName(0, "adhoc");
-        server.setDatabasePath(0, "file:" + Files.createTempFile("adhoc_hsqldb_", ".dat").toString() +
-                ";user=" + dataSourceProperties.getUsername() + ";password=" + dataSourceProperties.getPassword() +
-                // TODO: back to mvcc when hsqldb issue fixed
-                ";hsqldb.tx=locks" + // locks/mvlocks/mvcc
-                ";check_props=true" +
-                ";sql.restrict_exec=true" +
-                ";sql.enforce_names=true" +
-                ";sql.enforce_refs=true" +
-                ";sql.enforce_types=true");
-        server.setNoSystemExit(true);
-        server.setSilent(true); // TODO
-        //Properties hsqldbProperties = new Properties();
-        //server.setProperties(hsqldbProperties);
-        server.setPort(9001);
-
-        return server;
-    }
-
     @Bean
-    public JdbcConnectionDetails dataSourceProperties(Server hsqldbServer) {
+    public JdbcConnectionDetails dataSourceProperties() {
         return new JdbcConnectionDetails() {
 
             @Override
             public String getJdbcUrl() {
-                return !dataSourceProperties.getUrl().isEmpty() ?
-                        dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://localhost:9001/adhoc";
+                return !dataSourceProperties.getUrl().isEmpty()
+                        ? dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://" + coreProperties.getManagerHost() + ":9001/adhoc";
             }
 
             @Override

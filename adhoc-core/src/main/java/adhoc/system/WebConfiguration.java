@@ -24,28 +24,34 @@ package adhoc.system;
 
 import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Component
+@Configuration
 @RequiredArgsConstructor
-public class AdhocWebConfigurer implements WebMvcConfigurer {
+public class WebConfiguration {
 
     private final CoreProperties coreProperties;
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns(
-                        "https://" + coreProperties.getAdhocDomain(),
-                        "http://" + coreProperties.getAdhocDomain(),
-                        "https://*." + coreProperties.getAdhocDomain(),
-                        "http://*." + coreProperties.getAdhocDomain())
-                .allowedMethods("*")
-                .allowedHeaders("*")
-                .exposedHeaders("*")
-                .allowCredentials(true);
+    @Bean
+    public WebMvcConfigurer adhocWebMvcConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOriginPatterns(
+                                "https://" + coreProperties.getAdhocDomain(),
+                                "http://" + coreProperties.getAdhocDomain(),
+                                "https://*." + coreProperties.getAdhocDomain(),
+                                "http://*." + coreProperties.getAdhocDomain())
+                        .allowedMethods("*")
+                        .allowedHeaders("*")
+                        .exposedHeaders("*")
+                        .allowCredentials(true);
+            }
+        };
     }
 }
 

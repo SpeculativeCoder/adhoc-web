@@ -36,7 +36,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 @EnableRetry
 @EnableWebSocketMessageBroker
 // TODO
-@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.DIRECT)
+@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 public class CoreConfiguration {
 
     @Bean

@@ -38,7 +38,7 @@
   <description>adhoc-angular</description>
 
   <properties>
-    <angular-app-customization></angular-app-customization>
+    <angular-app-customization/>
   </properties>
 
   <build>
@@ -80,7 +80,8 @@
                 <argument>run</argument>
                 <argument>build</argument>
                 <argument>--</argument>
-                <argument>--configuration=${angular.configuration}${angular-app-customization},en-US</argument>
+                <!-- TODO: remove jsdom_fix when no longer needed -->
+                <argument>--configuration=jsdom_fix,${angular.configuration}${angular-app-customization},en-US</argument>
               </arguments>
               <environmentVariables>
                 <!-- TODO: figure out a way to have analytics on -->

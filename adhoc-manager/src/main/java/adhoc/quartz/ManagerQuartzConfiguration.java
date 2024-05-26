@@ -38,7 +38,7 @@ import java.util.Date;
 @Configuration
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerQuartzConfig {
+public class ManagerQuartzConfiguration {
 
     public static final String MANAGE_SERVERS = "manageServers";
     public static final String REFRESH_TASKS = "refreshTasks";

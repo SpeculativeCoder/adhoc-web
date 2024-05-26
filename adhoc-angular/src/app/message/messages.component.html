@@ -45,11 +45,11 @@
       </tbody>
     </table>
   </div>
-  <div class="d-flex justify-content-end" *ngIf="messages.numberOfElements">
-    <div class="mt-2 me-4">{{ (messages.number * messages.size) + 1 }} - {{ (messages.number * messages.size) + messages.numberOfElements }} of {{ messages.totalElements }}</div>
-    <ngb-pagination [page]="messages.number+1"
-                    [pageSize]="messages.size"
-                    [collectionSize]="messages.totalElements"
+  <div class="d-flex justify-content-end" *ngIf="messages.page.totalElements">
+    <div class="mt-2 me-4">{{ (messages.page.number * messages.page.size) + 1 }} - {{ (messages.page.number * messages.page.size) + messages.content.length }} of {{ messages.page.totalElements }}</div>
+    <ngb-pagination [page]="messages.page.number + 1"
+                    [pageSize]="messages.page.size"
+                    [collectionSize]="messages.page.totalElements"
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>
   </div>

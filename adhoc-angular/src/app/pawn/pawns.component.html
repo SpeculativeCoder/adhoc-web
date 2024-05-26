@@ -63,11 +63,11 @@
       </tbody>
     </table>
   </div>
-  <div class="d-flex justify-content-end" *ngIf="pawns.numberOfElements">
-    <div class="mt-2 me-4">{{ (pawns.number * pawns.size) + 1 }} - {{ (pawns.number * pawns.size) + pawns.numberOfElements }} of {{ pawns.totalElements }}</div>
-    <ngb-pagination [page]="pawns.number+1"
-                    [pageSize]="pawns.size"
-                    [collectionSize]="pawns.totalElements"
+  <div class="d-flex justify-content-end" *ngIf="pawns.page.totalElements">
+    <div class="mt-2 me-4">{{ (pawns.page.number * pawns.page.size) + 1 }} - {{ (pawns.page.number * pawns.page.size) + pawns.content.length }} of {{ pawns.page.totalElements }}</div>
+    <ngb-pagination [page]="pawns.page.number + 1"
+                    [pageSize]="pawns.page.size"
+                    [collectionSize]="pawns.page.totalElements"
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>
   </div>

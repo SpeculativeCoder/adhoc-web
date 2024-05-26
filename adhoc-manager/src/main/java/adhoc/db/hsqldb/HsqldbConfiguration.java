@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.db.h2;
+package adhoc.db.hsqldb;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.h2.tools.Server;
+import org.hsqldb.server.Server;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.context.annotation.Bean;
@@ -33,40 +33,51 @@ import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.SQLException;
 
 @Configuration
-@Profile("db-h2")
+@Profile("db-hsqldb")
 @Slf4j
 @RequiredArgsConstructor
-public class H2Config {
+public class HsqldbConfiguration {
 
     private final DataSourceProperties dataSourceProperties;
-    private Path h2Dir;
+
+    static {
+        System.setProperty("hsqldb.reconfig_logging", "false");
+    }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    Server h2Server() throws SQLException, IOException {
-        h2Dir = Files.createTempDirectory("adhoc_h2_");
-        log.info("h2Dir={}", h2Dir);
+    Server hsqldbServer() throws IOException {
+        Server server = new Server();
 
-        Server server = Server.createTcpServer(
-                "-baseDir", h2Dir.toString(),
-                //"-ifNotExists",
-                "-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
+        //server.setAddress("localhost"); //"0.0.0.0");
+        server.setDatabaseName(0, "adhoc");
+        server.setDatabasePath(0, "file:" + Files.createTempFile("adhoc_hsqldb_", ".dat").toString() +
+                ";user=" + dataSourceProperties.getUsername() + ";password=" + dataSourceProperties.getPassword() +
+                // TODO: back to mvcc when hsqldb issue fixed
+                ";hsqldb.tx=locks" + // locks/mvlocks/mvcc
+                ";check_props=true" +
+                ";sql.restrict_exec=true" +
+                ";sql.enforce_names=true" +
+                ";sql.enforce_refs=true" +
+                ";sql.enforce_types=true");
+        server.setNoSystemExit(true);
+        server.setSilent(true); // TODO
+        //Properties hsqldbProperties = new Properties();
+        //server.setProperties(hsqldbProperties);
+        server.setPort(9001);
 
         return server;
     }
 
     @Bean
-    public JdbcConnectionDetails dataSourceProperties(Server h2Server) {
+    public JdbcConnectionDetails dataSourceProperties(Server hsqldbServer) {
         return new JdbcConnectionDetails() {
 
             @Override
             public String getJdbcUrl() {
                 return !dataSourceProperties.getUrl().isEmpty() ?
-                        // TODO
-                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2Dir.toString() + "/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
+                        dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://localhost:9001/adhoc";
             }
 
             @Override

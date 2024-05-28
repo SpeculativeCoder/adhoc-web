@@ -51,15 +51,6 @@ public class MessageService {
         return toDto(messageRepository.findByIdAnd_UserNullOrUserId_(id, optionalUserId.orElse(null)));
     }
 
-    MessageDto toDto(Message message) {
-        return new MessageDto(
-                message.getId(),
-                message.getVersion(),
-                message.getText(),
-                message.getTimestamp(),
-                message.getUser() == null ? null : message.getUser().getId());
-    }
-
     @Transactional
     public void addGlobalMessage(String text) {
         LocalDateTime now = LocalDateTime.now();
@@ -74,5 +65,14 @@ public class MessageService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void addGlobalMessageInNewTransaction(String text) {
         addGlobalMessage(text);
+    }
+
+    MessageDto toDto(Message message) {
+        return new MessageDto(
+                message.getId(),
+                message.getVersion(),
+                message.getText(),
+                message.getTimestamp(),
+                message.getUser() == null ? null : message.getUser().getId());
     }
 }

@@ -22,7 +22,7 @@
 
 package adhoc.user;
 
-import adhoc.system.security.AdhocUserDetails;
+import adhoc.system.authentication.AdhocUserDetails;
 import adhoc.user.request_response.UserNavigateRequest;
 import adhoc.user.request_response.UserRegisterRequest;
 import jakarta.validation.Valid;
@@ -43,6 +43,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final UserRegistrationService userRegistrationService;
+    private final UserNavigationService userNavigationService;
 
     @GetMapping("/users")
     public Page<UserDto> getUsers(@SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -72,7 +74,7 @@ public class UserController {
     public ResponseEntity<UserDetailDto> postRegisterUser(
             @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
 
-        return ResponseEntity.ok(userService.registerUser(userRegisterRequest));
+        return ResponseEntity.ok(userRegistrationService.registerUser(userRegisterRequest));
     }
 
     @PostMapping("/users/current/navigate")
@@ -84,6 +86,6 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(userService.navigateUser(userDetails.getUserId(), userNavigateRequest));
+        return ResponseEntity.ok(userNavigationService.navigateUser(userDetails.getUserId(), userNavigateRequest));
     }
 }

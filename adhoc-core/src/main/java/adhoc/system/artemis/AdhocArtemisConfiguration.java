@@ -53,7 +53,7 @@ import java.util.Map;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class ArtemisConfig implements ArtemisConfigurationCustomizer {
+public class AdhocArtemisConfiguration {
 
     private final CoreProperties coreProperties;
 
@@ -73,30 +73,35 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         return queueConfiguration;
     }
 
-    @Override
-    public void customize(org.apache.activemq.artemis.core.config.Configuration configuration) {
-        configuration.addAddressSetting("/topic/events", eventsAddressSettings());
-        configuration.addAddressSetting("/queue/server_emissions", emissionsAddressSettings());
+    @Bean
+    public ArtemisConfigurationCustomizer adhocArtemisConfigurationCustomizer() {
+        return new ArtemisConfigurationCustomizer() {
+            @Override
+            public void customize(org.apache.activemq.artemis.core.config.Configuration configuration) {
+                configuration.addAddressSetting("/topic/events", eventsAddressSettings());
+                configuration.addAddressSetting("/queue/server_emissions", emissionsAddressSettings());
 
-        configuration.addAcceptorConfiguration(
-                new TransportConfiguration(NettyAcceptorFactory.class.getName(), stompConnectorProps(), "stomp-acceptor"));
+                configuration.addAcceptorConfiguration(
+                        new TransportConfiguration(NettyAcceptorFactory.class.getName(), stompConnectorProps(), "stomp-acceptor"));
 
-        configuration.addAcceptorConfiguration(
-                new TransportConfiguration(NettyAcceptorFactory.class.getName(), coreConnectorProps(), "core-acceptor"));
+                configuration.addAcceptorConfiguration(
+                        new TransportConfiguration(NettyAcceptorFactory.class.getName(), coreConnectorProps(), "core-acceptor"));
 
-        configuration.addConnectorConfiguration("core-connector",
-                new TransportConfiguration(NettyConnectorFactory.class.getName(), coreConnectorProps()));
+                configuration.addConnectorConfiguration("core-connector",
+                        new TransportConfiguration(NettyConnectorFactory.class.getName(), coreConnectorProps()));
 
-        configuration.addConnectorConfiguration("kiosk-core-connector",
-                new TransportConfiguration(NettyConnectorFactory.class.getName(), kioskCoreConnectorProps()));
+                configuration.addConnectorConfiguration("kiosk-core-connector",
+                        new TransportConfiguration(NettyConnectorFactory.class.getName(), kioskCoreConnectorProps()));
 
-        configuration.addConnectorConfiguration("manager-core-connector",
-                new TransportConfiguration(NettyConnectorFactory.class.getName(), managerCoreConnectorProps()));
+                configuration.addConnectorConfiguration("manager-core-connector",
+                        new TransportConfiguration(NettyConnectorFactory.class.getName(), managerCoreConnectorProps()));
 
-        configuration.setGracefulShutdownEnabled(true);
-        configuration.setGracefulShutdownTimeout(3000);
+                configuration.setGracefulShutdownEnabled(true);
+                configuration.setGracefulShutdownTimeout(3000);
 
-        configuration.addClusterConfiguration(clusterConnectionConfiguration());
+                configuration.addClusterConfiguration(clusterConnectionConfiguration());
+            }
+        };
     }
 
     private static ClusterConnectionConfiguration clusterConnectionConfiguration() {
@@ -122,7 +127,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         return clusterConnection;
     }
 
-    private AddressSettings eventsAddressSettings() {
+    private static AddressSettings eventsAddressSettings() {
         AddressSettings addressSettings = new AddressSettings();
         addressSettings.setAutoCreateAddresses(true);
         addressSettings.setAutoCreateQueues(false);
@@ -133,7 +138,7 @@ public class ArtemisConfig implements ArtemisConfigurationCustomizer {
         return addressSettings;
     }
 
-    private AddressSettings emissionsAddressSettings() {
+    private static AddressSettings emissionsAddressSettings() {
         AddressSettings addressSettings = new AddressSettings();
         addressSettings.setAutoCreateAddresses(true);
         addressSettings.setAutoCreateQueues(true);

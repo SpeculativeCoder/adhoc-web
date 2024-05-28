@@ -35,7 +35,7 @@ public class WorldService {
 
     public static final long WORLD_ID = 1L;
 
-    public WorldDto toDto(World world) {
+    WorldDto toDto(World world) {
         return new WorldDto(
                 world.getId(),
                 world.getVersion());

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.security;
+package adhoc.system;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

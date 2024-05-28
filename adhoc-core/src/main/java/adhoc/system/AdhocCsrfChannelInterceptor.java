@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.security;
+package adhoc.system;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

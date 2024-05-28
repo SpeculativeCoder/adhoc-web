@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.system.security;
+package adhoc.system.authentication;
 
-import adhoc.user.UserService;
+import adhoc.user.UserLoginService;
 import com.google.common.base.Verify;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
 public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private UserService userService;
+    private UserLoginService userLoginService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -51,6 +51,6 @@ public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessH
 
         log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
 
-        userService.onAuthenticationSuccess(userDetails.getUserId());
+        userLoginService.onAuthenticationSuccess(userDetails.getUserId());
     }
 }

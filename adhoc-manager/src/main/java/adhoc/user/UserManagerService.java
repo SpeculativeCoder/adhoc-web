@@ -69,6 +69,7 @@ public class UserManagerService {
     private final PawnRepository pawnRepository;
 
     private final UserService userService;
+    private final UserRegistrationService userRegistrationService;
 
     public UserDto updateUser(UserDto userDto) {
         return userService.toDto(
@@ -141,7 +142,7 @@ public class UserManagerService {
                     .serverId(serverUserJoinRequest.getServerId())
                     .build();
 
-            UserDetailDto userDetailDto = userService.registerUser(userRegisterRequest);
+            UserDetailDto userDetailDto = userRegistrationService.registerUser(userRegisterRequest);
 
             user = userRepository.getReferenceById(userDetailDto.getId());
         }

@@ -25,8 +25,8 @@ package adhoc.task;
 import adhoc.hosting.HostedServerTask;
 import adhoc.hosting.HostingService;
 import adhoc.message.MessageService;
+import adhoc.server.ManagerServerService;
 import adhoc.server.Server;
-import adhoc.server.ServerManagerService;
 import adhoc.server.ServerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -51,19 +51,19 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ServerTaskManagerService {
+public class ManagerServerTaskService {
 
     private final ServerRepository serverRepository;
     private final ServerTaskRepository serverTaskRepository;
     private final ManagerTaskRepository managerTaskRepository;
     private final MessageService messageService;
 
-    private final ServerManagerService serverManagerService;
+    private final ManagerServerService managerServerService;
 
     private final HostingService hostingService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private ServerTaskManagerService self;
+    private ManagerServerTaskService self;
 
     /**
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.

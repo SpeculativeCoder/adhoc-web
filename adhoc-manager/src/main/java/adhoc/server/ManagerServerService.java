@@ -55,7 +55,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ServerManagerService {
+public class ManagerServerService {
 
     private final ServerProperties serverProperties;
 
@@ -69,7 +69,7 @@ public class ServerManagerService {
     private final AreaGroupsFactory areaGroupsFactory;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private ServerManagerService self;
+    private ManagerServerService self;
 
     public List<ServerDto> getServerServers(Long serverId) {
         return serverRepository.findAll().stream().map(serverService::toDto).toList();

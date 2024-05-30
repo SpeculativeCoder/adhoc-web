@@ -50,7 +50,7 @@ import java.util.*;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TaskManagerService {
+public class ManagerTaskService {
 
     private final ManagerProperties managerProperties;
 
@@ -61,7 +61,7 @@ public class TaskManagerService {
     private final DnsService dnsService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private TaskManagerService self;
+    private ManagerTaskService self;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))

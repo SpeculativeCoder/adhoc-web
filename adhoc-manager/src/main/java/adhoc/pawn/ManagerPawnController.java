@@ -20,54 +20,40 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.pawn;
 
-import adhoc.server.event.ServerStartedEvent;
-import adhoc.server.event.ServerUpdatedEvent;
-import com.google.common.base.Preconditions;
+import adhoc.pawn.event.ServerPawnsEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ServerManagerController {
+public class ManagerPawnController {
 
-    private final ServerManagerService serverManagerService;
+    private final ManagerPawnService managerPawnService;
 
-    @GetMapping("/servers/{serverId}/servers")
+    @MessageMapping("ServerPawns")
+    @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER')")
-    public List<ServerDto> getServerServers(
-            @PathVariable Long serverId) {
+    public ServerPawnsEvent handleServerPawns(
+            @Valid @RequestBody ServerPawnsEvent event) {
+        log.debug("Handling: {}", event);
 
-        return serverManagerService.getServerServers(serverId);
-    }
+        List<PawnDto> pawnDtos = managerPawnService.handleServerPawns(event);
 
-    @PutMapping("/servers/{serverId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ServerDto putServer(
-            @PathVariable("serverId") Long serverId,
-            @Valid @RequestBody ServerDto serverDto) {
-        Preconditions.checkArgument(Objects.equals(serverId, serverDto.getId()),
-                "Server ID mismatch: %s != %s", serverId, serverDto.getId());
-
-        return serverManagerService.updateServer(serverDto);
-    }
-
-    @MessageMapping("ServerStarted")
-    @PreAuthorize("hasRole('SERVER')")
-    public ServerUpdatedEvent handleServerStarted(
-            @Valid @RequestBody ServerStartedEvent serverStartedEvent) {
-        log.debug("Handling: {}", serverStartedEvent);
-
-        return serverManagerService.handleServerStarted(serverStartedEvent);
+        ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
+        log.debug("Sending: {}", serverPawnsEvent);
+        return serverPawnsEvent;
     }
 }

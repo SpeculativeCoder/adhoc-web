@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.quartz;
+package adhoc.system.quartz;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -43,9 +43,9 @@ import java.util.Objects;
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class UserManagerController {
+public class ManagerUserController {
 
-    private final UserManagerService userManagerService;
+    private final ManagerUserService managerUserService;
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -55,7 +55,7 @@ public class UserManagerController {
         Preconditions.checkArgument(Objects.equals(userId, userDto.getId()),
                 "User ID mismatch: %s != %s", userId, userDto.getId());
 
-        return userManagerService.updateUser(userDto);
+        return managerUserService.updateUser(userDto);
     }
 
     @PostMapping("/servers/{serverId}/userNavigate")
@@ -68,7 +68,7 @@ public class UserManagerController {
 
         //log.info("Server user navigate: request={}", serverUserNavigateRequest);
 
-        return userManagerService.serverUserNavigate(serverUserNavigateRequest);
+        return managerUserService.serverUserNavigate(serverUserNavigateRequest);
     }
 
     @PostMapping("/servers/{serverId}/userJoin")
@@ -79,7 +79,7 @@ public class UserManagerController {
         Preconditions.checkArgument(Objects.equals(serverId, serverUserJoinRequest.getServerId()),
                 "Server ID mismatch: %s != %s", serverId, serverUserJoinRequest.getServerId());
 
-        return ResponseEntity.ok(userManagerService.serverUserJoin(serverUserJoinRequest));
+        return ResponseEntity.ok(managerUserService.serverUserJoin(serverUserJoinRequest));
     }
 
     @MessageMapping("UserDefeatedUser")
@@ -89,7 +89,7 @@ public class UserManagerController {
             @Valid @RequestBody ServerUserDefeatedUserEvent event) {
         log.debug("Handling: {}", event);
 
-        UserDefeatedUserEvent userDefeatedUserEvent = userManagerService.handleUserDefeatedUser(event);
+        UserDefeatedUserEvent userDefeatedUserEvent = managerUserService.handleUserDefeatedUser(event);
 
         log.debug("Sending: {}", userDefeatedUserEvent);
         return userDefeatedUserEvent;

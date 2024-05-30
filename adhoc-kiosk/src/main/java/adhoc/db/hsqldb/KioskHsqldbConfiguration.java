@@ -20,40 +20,46 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.db.hsqldb;
 
-import adhoc.pawn.event.ServerPawnsEvent;
-import jakarta.validation.Valid;
+import adhoc.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
-import java.util.List;
-
-@RestController
-@RequestMapping("/api")
+@Configuration
+@Profile("db-hsqldb")
 @Slf4j
 @RequiredArgsConstructor
-public class PawnManagerController {
+public class KioskHsqldbConfiguration {
 
-    private final PawnManagerService pawnManagerService;
+    private final CoreProperties coreProperties;
 
-    @MessageMapping("ServerPawns")
-    @SendTo("/topic/events")
-    @PreAuthorize("hasRole('SERVER')")
-    public ServerPawnsEvent handleServerPawns(
-            @Valid @RequestBody ServerPawnsEvent event) {
-        log.debug("Handling: {}", event);
+    private final DataSourceProperties dataSourceProperties;
 
-        List<PawnDto> pawnDtos = pawnManagerService.handleServerPawns(event);
+    @Bean
+    public JdbcConnectionDetails dataSourceProperties() {
+        return new JdbcConnectionDetails() {
 
-        ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
-        log.debug("Sending: {}", serverPawnsEvent);
-        return serverPawnsEvent;
+            @Override
+            public String getJdbcUrl() {
+                return !dataSourceProperties.getUrl().isEmpty()
+                        ? dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://" + coreProperties.getManagerHost() + ":9001/adhoc";
+            }
+
+            @Override
+            public String getUsername() {
+                return dataSourceProperties.getUsername();
+            }
+
+            @Override
+            public String getPassword() {
+                return dataSourceProperties.getPassword();
+            }
+        };
     }
 }

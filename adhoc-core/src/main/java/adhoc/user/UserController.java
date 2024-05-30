@@ -43,8 +43,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    private final UserRegistrationService userRegistrationService;
-    private final UserNavigationService userNavigationService;
+    private final UserRegisterService userRegisterService;
+    private final UserNavigateService userNavigateService;
 
     @GetMapping("/users")
     public Page<UserDto> getUsers(@SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -74,7 +74,7 @@ public class UserController {
     public ResponseEntity<UserDetailDto> postRegisterUser(
             @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
 
-        return ResponseEntity.ok(userRegistrationService.registerUser(userRegisterRequest));
+        return ResponseEntity.ok(userRegisterService.registerUser(userRegisterRequest));
     }
 
     @PostMapping("/users/current/navigate")
@@ -86,6 +86,6 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(userNavigationService.navigateUser(userDetails.getUserId(), userNavigateRequest));
+        return ResponseEntity.ok(userNavigateService.navigateUser(userDetails.getUserId(), userNavigateRequest));
     }
 }

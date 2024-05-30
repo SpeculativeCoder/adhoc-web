@@ -20,15 +20,15 @@
  * SOFTWARE.
  */
 
-package adhoc.quartz;
+package adhoc.system.quartz;
 
-import adhoc.faction.FactionManagerService;
-import adhoc.pawn.PawnManagerService;
-import adhoc.server.ServerManagerService;
+import adhoc.faction.ManagerFactionService;
+import adhoc.pawn.ManagerPawnService;
+import adhoc.server.ManagerServerService;
 import adhoc.system.event.Event;
-import adhoc.task.ServerTaskManagerService;
-import adhoc.task.TaskManagerService;
-import adhoc.user.UserManagerService;
+import adhoc.task.ManagerServerTaskService;
+import adhoc.task.ManagerTaskService;
+import adhoc.user.ManagerUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
@@ -49,12 +49,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagerQuartzJob implements Job {
 
-    private final ServerManagerService serverManagerService;
-    private final TaskManagerService taskManagerService;
-    private final ServerTaskManagerService serverTaskManagerService;
-    private final FactionManagerService factionManagerService;
-    private final UserManagerService userManagerService;
-    private final PawnManagerService pawnManagerService;
+    private final ManagerServerService managerServerService;
+    private final ManagerTaskService managerTaskService;
+    private final ManagerServerTaskService managerServerTaskService;
+    private final ManagerFactionService managerFactionService;
+    private final ManagerUserService managerUserService;
+    private final ManagerPawnService managerPawnService;
 
     private final SimpMessageSendingOperations stomp;
 
@@ -68,37 +68,37 @@ public class ManagerQuartzJob implements Job {
             //log.info("jobName={}", jobName);
             switch (jobName) {
             case ManagerQuartzConfiguration.MANAGE_SERVERS:
-                events = serverManagerService.manageServers();
+                events = managerServerService.manageServers();
                 break;
             case ManagerQuartzConfiguration.REFRESH_TASKS:
-                taskManagerService.refreshTasks();
+                managerTaskService.refreshTasks();
                 break;
             case ManagerQuartzConfiguration.MANAGE_TASK_DOMAINS:
-                events = taskManagerService.manageTaskDomains();
+                events = managerTaskService.manageTaskDomains();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SERVER_TASKS:
-                serverTaskManagerService.manageServerTasks();
+                managerServerTaskService.manageServerTasks();
                 break;
             case ManagerQuartzConfiguration.MANAGE_FACTION_SCORES:
-                factionManagerService.manageFactionScores();
+                managerFactionService.manageFactionScores();
                 break;
             case ManagerQuartzConfiguration.MANAGE_USER_SCORES:
-                userManagerService.manageUserScores();
+                managerUserService.manageUserScores();
                 break;
             case ManagerQuartzConfiguration.MANAGE_USER_LOCATIONS:
-                userManagerService.manageUserLocations();
+                managerUserService.manageUserLocations();
                 break;
             case ManagerQuartzConfiguration.LEAVE_UNSEEN_USERS:
-                userManagerService.leaveUnseenUsers();
+                managerUserService.leaveUnseenUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_USERS:
-                userManagerService.purgeOldUsers();
+                managerUserService.purgeOldUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_SERVERS:
-                serverManagerService.purgeOldServers();
+                managerServerService.purgeOldServers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_PAWNS:
-                pawnManagerService.purgeOldPawns();
+                managerPawnService.purgeOldPawns();
                 break;
             default:
                 log.warn("Skipping unknown manager quartz job! jobName={}", jobName);

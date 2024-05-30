@@ -20,16 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.objective;
+package adhoc.faction;
 
-import adhoc.objective.event.ObjectiveTakenEvent;
-import adhoc.objective.event.ServerObjectiveTakenEvent;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,38 +36,26 @@ import java.util.Objects;
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ObjectiveManagerController {
+public class ManagerFactionController {
 
-    private final ObjectiveManagerService objectiveManagerService;
+    private final ManagerFactionService managerFactionService;
 
-    @PutMapping("/objectives/{objectiveId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ObjectiveDto putObjective(
-            @PathVariable("objectiveId") Long objectiveId,
-            @Valid @RequestBody ObjectiveDto objectiveDto) {
-        Preconditions.checkArgument(Objects.equals(objectiveId, objectiveDto.getId()),
-                "Objective ID mismatch: %s != %s", objectiveId, objectiveDto.getId());
-
-        return objectiveManagerService.updateObjective(objectiveDto);
-    }
-
-    @PostMapping("/servers/{serverId}/objectives")
+    @GetMapping("/servers/{serverId}/factions")
     @PreAuthorize("hasRole('SERVER')")
-    public List<ObjectiveDto> postServerObjectives(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
+    public List<FactionDto> getServerFactions(
+            @PathVariable Long serverId) {
 
-        return objectiveManagerService.processServerObjectives(serverId, objectiveDtos);
+        return managerFactionService.getServerFactions(serverId);
     }
 
-    @MessageMapping("ObjectiveTaken")
-    @SendTo("/topic/events")
-    @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public ObjectiveTakenEvent handleObjectiveTaken(
-            @Valid @RequestBody ServerObjectiveTakenEvent event) {
-        log.debug("Handling: {}", event);
+    @PutMapping("/factions/{factionId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public FactionDto putFaction(
+            @PathVariable("factionId") Long factionId,
+            @Valid @RequestBody FactionDto factionDto) {
+        Preconditions.checkArgument(Objects.equals(factionId, factionDto.getId()),
+                "Faction ID mismatch: %s != %s", factionId, factionDto.getId());
 
-        return objectiveManagerService.handleObjectiveTaken(event);
+        return managerFactionService.updateFaction(factionDto);
     }
-
 }

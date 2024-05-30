@@ -20,9 +20,30 @@
  * SOFTWARE.
  */
 
-@NonNullApi
-@NonNullFields
-package adhoc.quartz;
+package adhoc.area;
 
-import org.springframework.lang.NonNullApi;
-import org.springframework.lang.NonNullFields;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api")
+@Slf4j
+@RequiredArgsConstructor
+public class ManagerAreaController {
+
+    private final ManagerAreaService managerAreaService;
+
+    @PostMapping("/servers/{serverId}/areas")
+    @PreAuthorize("hasRole('SERVER')")
+    public List<AreaDto> postServerAreas(
+            @PathVariable Long serverId,
+            @Valid @RequestBody List<AreaDto> areaDtos) {
+
+        return managerAreaService.processServerAreas(serverId, areaDtos);
+    }
+}

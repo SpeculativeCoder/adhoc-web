@@ -39,7 +39,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserNavigationService {
+public class UserNavigateService {
 
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;

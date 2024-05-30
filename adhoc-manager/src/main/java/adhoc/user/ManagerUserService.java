@@ -60,7 +60,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserManagerService {
+public class ManagerUserService {
 
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
@@ -69,7 +69,7 @@ public class UserManagerService {
     private final PawnRepository pawnRepository;
 
     private final UserService userService;
-    private final UserRegistrationService userRegistrationService;
+    private final UserRegisterService userRegisterService;
 
     public UserDto updateUser(UserDto userDto) {
         return userService.toDto(
@@ -142,7 +142,7 @@ public class UserManagerService {
                     .serverId(serverUserJoinRequest.getServerId())
                     .build();
 
-            UserDetailDto userDetailDto = userRegistrationService.registerUser(userRegisterRequest);
+            UserDetailDto userDetailDto = userRegisterService.registerUser(userRegisterRequest);
 
             user = userRepository.getReferenceById(userDetailDto.getId());
         }

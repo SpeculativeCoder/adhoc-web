@@ -40,7 +40,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class FactionManagerService {
+public class ManagerFactionService {
 
     private final FactionRepository factionRepository;
     private final ObjectiveRepository objectiveRepository;

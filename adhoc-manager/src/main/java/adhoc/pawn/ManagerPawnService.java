@@ -47,7 +47,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class PawnManagerService {
+public class ManagerPawnService {
 
     private final PawnRepository pawnRepository;
     private final UserRepository userRepository;

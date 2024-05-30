@@ -20,12 +20,15 @@
  * SOFTWARE.
  */
 
-package adhoc.faction;
+package adhoc.server;
 
+import adhoc.server.event.ServerStartedEvent;
+import adhoc.server.event.ServerUpdatedEvent;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,26 +39,35 @@ import java.util.Objects;
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class FactionManagerController {
+public class ManagerServerController {
 
-    private final FactionManagerService factionManagerService;
+    private final ManagerServerService managerServerService;
 
-    @GetMapping("/servers/{serverId}/factions")
+    @GetMapping("/servers/{serverId}/servers")
     @PreAuthorize("hasRole('SERVER')")
-    public List<FactionDto> getServerFactions(
+    public List<ServerDto> getServerServers(
             @PathVariable Long serverId) {
 
-        return factionManagerService.getServerFactions(serverId);
+        return managerServerService.getServerServers(serverId);
     }
 
-    @PutMapping("/factions/{factionId}")
+    @PutMapping("/servers/{serverId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public FactionDto putFaction(
-            @PathVariable("factionId") Long factionId,
-            @Valid @RequestBody FactionDto factionDto) {
-        Preconditions.checkArgument(Objects.equals(factionId, factionDto.getId()),
-                "Faction ID mismatch: %s != %s", factionId, factionDto.getId());
+    public ServerDto putServer(
+            @PathVariable("serverId") Long serverId,
+            @Valid @RequestBody ServerDto serverDto) {
+        Preconditions.checkArgument(Objects.equals(serverId, serverDto.getId()),
+                "Server ID mismatch: %s != %s", serverId, serverDto.getId());
 
-        return factionManagerService.updateFaction(factionDto);
+        return managerServerService.updateServer(serverDto);
+    }
+
+    @MessageMapping("ServerStarted")
+    @PreAuthorize("hasRole('SERVER')")
+    public ServerUpdatedEvent handleServerStarted(
+            @Valid @RequestBody ServerStartedEvent serverStartedEvent) {
+        log.debug("Handling: {}", serverStartedEvent);
+
+        return managerServerService.handleServerStarted(serverStartedEvent);
     }
 }

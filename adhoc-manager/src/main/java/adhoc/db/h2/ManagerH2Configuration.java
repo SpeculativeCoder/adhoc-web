@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.db.h2postgres;
+package adhoc.db.h2;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,17 +37,17 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 
 @Configuration
-@Profile("db-h2postgres")
+@Profile("db-h2")
 @Slf4j
 @RequiredArgsConstructor
-public class H2PostgresConfiguration {
+public class ManagerH2Configuration {
 
     private final DataSourceProperties dataSourceProperties;
     private Path h2Dir;
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     Server h2Server() throws SQLException, IOException {
-        h2Dir = Files.createTempDirectory("adhoc_h2");
+        h2Dir = Files.createTempDirectory("adhoc_h2_");
         log.info("h2Dir={}", h2Dir);
 
         Server server = Server.createTcpServer(
@@ -66,7 +66,7 @@ public class H2PostgresConfiguration {
             public String getJdbcUrl() {
                 return !dataSourceProperties.getUrl().isEmpty() ?
                         // TODO
-                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2Dir.toString() + "/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
+                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2Dir.toString() + "/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
             }
 
             @Override

@@ -38,7 +38,7 @@ import java.nio.file.Files;
 @Profile("db-hsqldb")
 @Slf4j
 @RequiredArgsConstructor
-public class HsqldbConfiguration {
+public class ManagerHsqldbConfiguration {
 
     private final DataSourceProperties dataSourceProperties;
 

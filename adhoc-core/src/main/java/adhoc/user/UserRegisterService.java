@@ -50,7 +50,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserRegistrationService {
+public class UserRegisterService {
 
     private final CoreProperties coreProperties;
 

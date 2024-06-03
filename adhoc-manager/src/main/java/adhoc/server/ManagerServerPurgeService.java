@@ -20,23 +20,33 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.server;
 
-import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Entity
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString(callSuper = true)
-public class KioskTask extends Task {
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
-    @Override
-    public TaskType getTaskType() {
-        return TaskType.KIOSK;
+@Transactional
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class ManagerServerPurgeService {
+
+    private final ServerRepository serverRepository;
+
+    public void purgeOldServers() {
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
+
+        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
+            oldServers.forEach(oldServer -> {
+                log.debug("Deleting old server {}", oldServer.getId());
+
+                serverRepository.delete(oldServer);
+            });
+        }
     }
 }

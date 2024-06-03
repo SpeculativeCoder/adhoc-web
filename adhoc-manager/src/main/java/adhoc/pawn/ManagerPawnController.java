@@ -41,7 +41,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagerPawnController {
 
-    private final ManagerPawnService managerPawnService;
+    private final ManagerPawnEventService managerPawnEventService;
 
     @MessageMapping("ServerPawns")
     @SendTo("/topic/events")
@@ -50,7 +50,7 @@ public class ManagerPawnController {
             @Valid @RequestBody ServerPawnsEvent event) {
         log.debug("Handling: {}", event);
 
-        List<PawnDto> pawnDtos = managerPawnService.handleServerPawns(event);
+        List<PawnDto> pawnDtos = managerPawnEventService.handleServerPawns(event);
 
         ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
         log.debug("Sending: {}", serverPawnsEvent);

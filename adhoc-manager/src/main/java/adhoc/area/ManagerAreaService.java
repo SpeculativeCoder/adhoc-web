@@ -22,26 +22,12 @@
 
 package adhoc.area;
 
-import adhoc.objective.Objective;
-import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -49,11 +35,8 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ManagerAreaService {
 
-    private final AreaRepository areaRepository;
     private final RegionRepository regionRepository;
     private final ServerRepository serverRepository;
-
-    private final AreaService areaService;
 
     Area toEntity(AreaDto areaDto, Area area) {
         area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
@@ -71,39 +54,5 @@ public class ManagerAreaService {
         }
 
         return area;
-    }
-
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public List<AreaDto> processServerAreas(Long serverId, List<AreaDto> areaDtos) {
-        Server server = serverRepository.getReferenceById(serverId);
-        Region region = server.getRegion();
-
-        Set<Integer> areaIndexes = new TreeSet<>();
-        for (AreaDto areaDto : areaDtos) {
-            Preconditions.checkArgument(Objects.equals(region.getId(), areaDto.getRegionId()),
-                    "Region ID mismatch: %s != %s", region.getId(), areaDto.getRegionId());
-
-            boolean unique = areaIndexes.add(areaDto.getIndex());
-            Preconditions.checkArgument(unique, "Area index not unique: %s", areaDto.getIndex());
-        }
-
-        try (Stream<Area> areasToDelete = areaRepository.streamByRegionAndIndexNotIn(region, areaIndexes)) {
-            areasToDelete.forEach(areaToDelete -> {
-                log.info("Deleting unused area: {}", areaToDelete);
-                // before deleting unused areas we must unlink any objectives that will become orphaned
-                for (Objective orphanedObjective : areaToDelete.getObjectives()) {
-                    orphanedObjective.setArea(null);
-                }
-                areaRepository.delete(areaToDelete);
-            });
-        }
-
-        return areaDtos.stream()
-                .map(areaDto -> toEntity(areaDto,
-                        areaRepository.findByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
-                .map(areaRepository::save)
-                .map(areaService::toDto)
-                .toList();
     }
 }

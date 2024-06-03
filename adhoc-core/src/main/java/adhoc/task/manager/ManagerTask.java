@@ -20,30 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.task.manager;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import adhoc.task.Task;
+import adhoc.task.TaskType;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.util.List;
+@Entity
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString(callSuper = true)
+public class ManagerTask extends Task {
 
-@RestController
-@RequestMapping("/api")
-@Slf4j
-@RequiredArgsConstructor
-public class ManagerAreaController {
-
-    private final ManagerAreaReconcileService managerAreaReconcileService;
-
-    @PostMapping("/servers/{serverId}/areas")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> postServerAreas(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<AreaDto> areaDtos) {
-
-        return managerAreaReconcileService.reconcileServerAreas(serverId, areaDtos);
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.MANAGER;
     }
 }

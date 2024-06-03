@@ -20,30 +20,23 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.task.manager;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Optional;
 
-@RestController
-@RequestMapping("/api")
-@Slf4j
-@RequiredArgsConstructor
-public class ManagerAreaController {
+// TODO: common
+public interface ManagerTaskRepository extends JpaRepository<ManagerTask, Long> {
 
-    private final ManagerAreaReconcileService managerAreaReconcileService;
+    boolean existsBy();
 
-    @PostMapping("/servers/{serverId}/areas")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> postServerAreas(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<AreaDto> areaDtos) {
+    Optional<ManagerTask> findByTaskIdentifier(String taskIdentifier);
 
-        return managerAreaReconcileService.reconcileServerAreas(serverId, areaDtos);
-    }
+    @Modifying
+    @Query("delete from ManagerTask st where st.taskIdentifier not in ?1")
+    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
 }

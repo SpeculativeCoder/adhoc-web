@@ -24,7 +24,6 @@ package adhoc.world;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
-import adhoc.dns.DnsService;
 import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
 import adhoc.message.MessageService;
@@ -46,7 +45,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,11 +73,9 @@ public class ManagerWorldService {
     private final ServerRepository serverRepository;
 
     private final WorldService worldService;
-    private final DnsService dnsService;
+    private final MessageService messageService;
 
     private final PasswordEncoder passwordEncoder;
-    private final SimpMessageSendingOperations stomp;
-    private final MessageService messageService;
 
     /**
      * Inserts some initial data to set up the world e.g. factions.

@@ -27,6 +27,9 @@ import adhoc.hosting.*;
 import adhoc.message.MessageService;
 import adhoc.properties.ManagerProperties;
 import adhoc.system.event.Event;
+import adhoc.task.kiosk.KioskTask;
+import adhoc.task.manager.ManagerTask;
+import adhoc.task.server.ServerTask;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -55,10 +58,10 @@ public class ManagerTaskService {
     private final ManagerProperties managerProperties;
 
     private final TaskRepository taskRepository;
-    private final MessageService messageService;
 
     private final HostingService hostingService;
     private final DnsService dnsService;
+    private final MessageService messageService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
     private ManagerTaskService self;

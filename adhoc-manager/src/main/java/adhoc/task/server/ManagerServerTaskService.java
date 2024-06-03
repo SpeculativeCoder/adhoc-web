@@ -20,12 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.task.server;
 
 import adhoc.hosting.HostedServerTask;
 import adhoc.hosting.HostingService;
 import adhoc.message.MessageService;
-import adhoc.server.ManagerServerService;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,12 +54,9 @@ public class ManagerServerTaskService {
 
     private final ServerRepository serverRepository;
     private final ServerTaskRepository serverTaskRepository;
-    private final ManagerTaskRepository managerTaskRepository;
-    private final MessageService messageService;
-
-    private final ManagerServerService managerServerService;
 
     private final HostingService hostingService;
+    private final MessageService messageService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
     private ManagerServerTaskService self;

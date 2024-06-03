@@ -20,48 +20,41 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.user;
 
-import adhoc.task.server.ServerTask;
-import jakarta.persistence.EntityNotFoundException;
+import adhoc.user.event.ServerUserDefeatedUserEvent;
+import adhoc.user.event.UserDefeatedUserEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.SortDefault;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TaskService {
+public class ManagerUserEventService {
 
-    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
-    public Page<TaskDto> getTasks(@SortDefault("id") Pageable pageable) {
-        return taskRepository.findAll(pageable).map(this::toDto);
-    }
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public UserDefeatedUserEvent handleUserDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
+        User user = userRepository.getReferenceById(serverUserDefeatedUserEvent.getUserId());
+        User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
 
-    @Transactional(readOnly = true)
-    public TaskDto getTask(Long taskId) {
-        // used findById rather than getReferenceById to ensure correct entity subclass
-        return toDto(taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Failed to find task " + taskId)));
-    }
+        BigDecimal scoreAdd = BigDecimal.valueOf(user.isHuman() ? 1.0f : 0.1f);
+        userRepository.updateScoreAddById(scoreAdd, user.getId());
 
-    TaskDto toDto(Task task) {
-        return new TaskDto(
-                task.getId(),
-                task.getVersion(),
-                task.getTaskType().name(),
-                task.getPublicIp(),
-                task.getPublicWebSocketPort(),
-                task.getDomain(),
-                task.getInitiated(),
-                task.getSeen(),
-                task instanceof ServerTask serverTask ? serverTask.getServerId() : null);
+        // TODO
+        return new UserDefeatedUserEvent(
+                user.getId(), user.getVersion() + 1, user.getName(), user.isHuman(),
+                defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.isHuman());
     }
 }

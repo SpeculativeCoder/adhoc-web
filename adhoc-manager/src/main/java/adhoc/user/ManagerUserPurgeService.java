@@ -20,48 +20,44 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.user;
 
-import adhoc.task.server.ServerTask;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.SortDefault;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TaskService {
+public class ManagerUserPurgeService {
 
-    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
-    public Page<TaskDto> getTasks(@SortDefault("id") Pageable pageable) {
-        return taskRepository.findAll(pageable).map(this::toDto);
-    }
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public void purgeOldUsers() {
+        log.trace("Purging old users...");
 
-    @Transactional(readOnly = true)
-    public TaskDto getTask(Long taskId) {
-        // used findById rather than getReferenceById to ensure correct entity subclass
-        return toDto(taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Failed to find task " + taskId)));
-    }
+        Set<Long> oldUserIds = new TreeSet<>();
 
-    TaskDto toDto(Task task) {
-        return new TaskDto(
-                task.getId(),
-                task.getVersion(),
-                task.getTaskType().name(),
-                task.getPublicIp(),
-                task.getPublicWebSocketPort(),
-                task.getDomain(),
-                task.getInitiated(),
-                task.getSeen(),
-                task instanceof ServerTask serverTask ? serverTask.getServerId() : null);
+        // regular cleanup of anon users who had a temp account created but never were seen in a server
+        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
+        // regular cleanup of anon users who were last seen in a server a long time ago
+        oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
+
+        if (!oldUserIds.isEmpty()) {
+            log.debug("Purging old users: {}", oldUserIds);
+            userRepository.deleteAllByIdInBatch(oldUserIds);
+        }
     }
 }

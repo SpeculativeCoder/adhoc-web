@@ -46,6 +46,9 @@ import java.util.Objects;
 public class ManagerUserController {
 
     private final ManagerUserService managerUserService;
+    private final ManagerUserJoinService managerUserJoinService;
+    private final ManagerUserNavigateService managerUserNavigateService;
+    private final ManagerUserEventService managerUserEventService;
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -58,6 +61,17 @@ public class ManagerUserController {
         return managerUserService.updateUser(userDto);
     }
 
+    @PostMapping("/servers/{serverId}/userJoin")
+    @PreAuthorize("hasRole('SERVER')")
+    public ResponseEntity<UserDetailDto> postServerUserJoin(
+            @PathVariable("serverId") Long serverId,
+            @Valid @RequestBody ServerUserJoinRequest serverUserJoinRequest) {
+        Preconditions.checkArgument(Objects.equals(serverId, serverUserJoinRequest.getServerId()),
+                "Server ID mismatch: %s != %s", serverId, serverUserJoinRequest.getServerId());
+
+        return ResponseEntity.ok(managerUserJoinService.serverUserJoin(serverUserJoinRequest));
+    }
+
     @PostMapping("/servers/{serverId}/userNavigate")
     @PreAuthorize("hasRole('SERVER')")
     public ResponseEntity<ServerUserNavigateResponse> postServerUserNavigate(
@@ -68,18 +82,7 @@ public class ManagerUserController {
 
         //log.info("Server user navigate: request={}", serverUserNavigateRequest);
 
-        return managerUserService.serverUserNavigate(serverUserNavigateRequest);
-    }
-
-    @PostMapping("/servers/{serverId}/userJoin")
-    @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserDetailDto> postServerUserJoin(
-            @PathVariable("serverId") Long serverId,
-            @Valid @RequestBody ServerUserJoinRequest serverUserJoinRequest) {
-        Preconditions.checkArgument(Objects.equals(serverId, serverUserJoinRequest.getServerId()),
-                "Server ID mismatch: %s != %s", serverId, serverUserJoinRequest.getServerId());
-
-        return ResponseEntity.ok(managerUserService.serverUserJoin(serverUserJoinRequest));
+        return managerUserNavigateService.serverUserNavigate(serverUserNavigateRequest);
     }
 
     @MessageMapping("UserDefeatedUser")
@@ -89,7 +92,7 @@ public class ManagerUserController {
             @Valid @RequestBody ServerUserDefeatedUserEvent event) {
         log.debug("Handling: {}", event);
 
-        UserDefeatedUserEvent userDefeatedUserEvent = managerUserService.handleUserDefeatedUser(event);
+        UserDefeatedUserEvent userDefeatedUserEvent = managerUserEventService.handleUserDefeatedUser(event);
 
         log.debug("Sending: {}", userDefeatedUserEvent);
         return userDefeatedUserEvent;

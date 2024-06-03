@@ -23,30 +23,17 @@
 package adhoc.objective;
 
 import adhoc.area.AreaRepository;
-import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
-import adhoc.objective.event.ObjectiveTakenEvent;
-import adhoc.objective.event.ServerObjectiveTakenEvent;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.server.Server;
-import adhoc.server.ServerRepository;
-import adhoc.user.UserRepository;
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -55,11 +42,9 @@ import java.util.stream.Stream;
 public class ManagerObjectiveService {
 
     private final ObjectiveRepository objectiveRepository;
-    private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
     private final FactionRepository factionRepository;
-    private final UserRepository userRepository;
 
     private final ObjectiveService objectiveService;
 
@@ -114,78 +99,5 @@ public class ManagerObjectiveService {
         objective.getLinkedObjectives().addAll(linkedObjectives);
 
         return objective;
-    }
-
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public List<ObjectiveDto> processServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
-        Server server = serverRepository.getReferenceById(serverId);
-        Region region = server.getRegion();
-
-        Set<Integer> objectiveIndexes = new TreeSet<>();
-        for (ObjectiveDto objectiveDto : objectiveDtos) {
-            Preconditions.checkArgument(Objects.equals(region.getId(), objectiveDto.getRegionId()));
-
-            objectiveDto.getLinkedObjectiveIndexes().forEach(linkedObjectiveIndex -> {
-                Preconditions.checkArgument(!Objects.equals(objectiveDto.getIndex(), linkedObjectiveIndex),
-                        "Self loop not allowed: %s -> %s", objectiveDto.getIndex(), linkedObjectiveIndex);
-
-                for (ObjectiveDto otherObjectiveDto : objectiveDtos) {
-                    if (Objects.equals(otherObjectiveDto.getIndex(), linkedObjectiveIndex)) {
-                        Preconditions.checkArgument(otherObjectiveDto.getLinkedObjectiveIndexes().contains(objectiveDto.getIndex()),
-                                "Linked objectives must have matching backlink: %s -> %s", otherObjectiveDto.getIndex(), linkedObjectiveIndex);
-                    }
-                }
-            });
-
-            boolean unique = objectiveIndexes.add(objectiveDto.getIndex());
-            Preconditions.checkArgument(unique, "Objective index not unique: %s", objectiveDto.getIndex());
-        }
-
-        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamByRegionAndIndexNotIn(region, objectiveIndexes)) {
-            objectivesToDelete.forEach(objectiveToDelete -> {
-                log.info("Deleting unused objective: {}", objectiveToDelete);
-                objectiveRepository.delete(objectiveToDelete);
-            });
-        }
-
-        // NOTE: this is a two stage save to allow linked objectives to be set too
-        return objectiveDtos.stream().map(objectiveDto -> {
-            Objective objective = toEntityStage1(objectiveDto,
-                    objectiveRepository.findByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new));
-
-            // set faction to be initial faction if this is a new entity
-            if (objective.getId() == null) {
-                objective.setFaction(objective.getInitialFaction());
-            }
-
-            return new AbstractMap.SimpleEntry<>(objectiveDto, objectiveRepository.save(objective));
-        }).toList().stream().map(entry -> {
-            Objective objective = toEntityStage2(entry.getKey(), entry.getValue());
-
-            return objectiveService.toDto(objective);
-        }).toList();
-    }
-
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
-        Objective objective = objectiveRepository.getReferenceById(event.getObjectiveId());
-        Faction faction = factionRepository.getReferenceById(event.getFactionId());
-
-        log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
-
-        objective.setFaction(faction);
-
-        factionRepository.updateScoreAddById(BigDecimal.valueOf(1.0), faction.getId());
-
-        BigDecimal humanScoreAdd = BigDecimal.valueOf(1.0);
-        BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.1);
-        LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
-
-        userRepository.updateScoreAddByFactionIdAndSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
-
-        // TODO
-        return new ObjectiveTakenEvent(objective.getId(), objective.getVersion(), faction.getId(), faction.getVersion() + 1);
     }
 }

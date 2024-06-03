@@ -27,11 +27,9 @@ import adhoc.area.AreaRepository;
 import adhoc.area.groups.AreaGroupsFactory;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.server.event.ServerStartedEvent;
-import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
-import adhoc.task.ServerTask;
-import adhoc.task.ServerTaskRepository;
+import adhoc.task.server.ServerTask;
+import adhoc.task.server.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -65,6 +63,7 @@ public class ManagerServerService {
     private final ServerTaskRepository serverTaskRepository;
 
     private final ServerService serverService;
+    private final ManagerServerEventService managerServerEventService;
 
     private final AreaGroupsFactory areaGroupsFactory;
 
@@ -96,32 +95,6 @@ public class ManagerServerService {
         server.setWebSocketUrl(server.getWebSocketUrl());
 
         return server;
-    }
-
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
-        Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
-
-        // TODO: internal server status?
-        server.setActive(true);
-
-        return toServerUpdatedEvent(server);
-    }
-
-    public static ServerUpdatedEvent toServerUpdatedEvent(Server server) {
-        ServerUpdatedEvent event = new ServerUpdatedEvent(
-                server.getId(),
-                server.getVersion(),
-                server.getRegion().getId(),
-                server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
-                server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
-                server.isEnabled(),
-                server.isActive(),
-                server.getPublicIp(),
-                server.getPublicWebSocketPort(),
-                server.getWebSocketUrl());
-        return event;
     }
 
     /**
@@ -158,7 +131,7 @@ public class ManagerServerService {
                     usedServerIds.add(server.getId());
 
                     if (emitEvent) {
-                        events.add(toServerUpdatedEvent(server));
+                        events.add(managerServerEventService.toServerUpdatedEvent(server));
                     }
                 }
 
@@ -169,7 +142,7 @@ public class ManagerServerService {
                         boolean emitEvent = manageServer(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
-                            events.add(toServerUpdatedEvent(unusedServer));
+                            events.add(managerServerEventService.toServerUpdatedEvent(unusedServer));
                         }
                     });
                 }
@@ -301,17 +274,5 @@ public class ManagerServerService {
         }
 
         return emitEvent;
-    }
-
-    public void purgeOldServers() {
-        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
-
-        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
-            oldServers.forEach(oldServer -> {
-                log.debug("Deleting old server {}", oldServer.getId());
-
-                serverRepository.delete(oldServer);
-            });
-        }
     }
 }

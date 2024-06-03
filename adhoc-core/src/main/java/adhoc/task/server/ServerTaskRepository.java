@@ -20,23 +20,23 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.task.server;
 
-import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Entity
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString(callSuper = true)
-public class ManagerTask extends Task {
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-    @Override
-    public TaskType getTaskType() {
-        return TaskType.MANAGER;
-    }
+// TODO: common
+public interface ServerTaskRepository extends JpaRepository<ServerTask, Long> {
+
+    Optional<ServerTask> findByTaskIdentifier(String taskIdentifier);
+
+    Stream<ServerTask> streamByTaskIdentifierNotInAndInitiatedBefore(Collection<String> taskIdentifiers, LocalDateTime initiatedBefore);
+
+    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
+
+    Optional<ServerTask> findFirstByServerId(Long serverId);
 }

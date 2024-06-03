@@ -20,23 +20,32 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.pawn;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.time.LocalDateTime;
 
-// TODO: common
-public interface ManagerTaskRepository extends JpaRepository<ManagerTask, Long> {
+@Transactional
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class ManagerPawnPurgeService {
 
-    boolean existsBy();
+    private final PawnRepository pawnRepository;
 
-    Optional<ManagerTask> findByTaskIdentifier(String taskIdentifier);
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public void purgeOldPawns() {
+        log.trace("Purging old pawns...");
 
-    @Modifying
-    @Query("delete from ManagerTask st where st.taskIdentifier not in ?1")
-    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
+        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
+    }
 }

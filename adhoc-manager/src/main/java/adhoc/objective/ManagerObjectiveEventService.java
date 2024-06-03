@@ -20,9 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.faction;
+package adhoc.objective;
 
-import adhoc.objective.ObjectiveRepository;
+import adhoc.faction.Faction;
+import adhoc.faction.FactionRepository;
+import adhoc.objective.event.ObjectiveTakenEvent;
+import adhoc.objective.event.ServerObjectiveTakenEvent;
+import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -33,59 +37,37 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerFactionService {
+public class ManagerObjectiveEventService {
 
-    private final FactionRepository factionRepository;
     private final ObjectiveRepository objectiveRepository;
-
-    private final FactionService factionService;
-
-    public List<FactionDto> getServerFactions(Long serverId) {
-        return factionRepository.findAll().stream().map(factionService::toDto).toList();
-    }
-
-    public FactionDto updateFaction(FactionDto factionDto) {
-        Faction faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
-
-        return factionService.toDto(faction);
-    }
-
-    Faction toEntity(FactionDto factionDto, Faction faction) {
-        faction.setId(faction.getId());
-        faction.setIndex(faction.getIndex());
-        faction.setName(factionDto.getName());
-        faction.setColor(factionDto.getColor());
-        faction.setScore(factionDto.getScore());
-
-        return faction;
-    }
+    private final FactionRepository factionRepository;
+    private final UserRepository userRepository;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageFactionScores() {
-        log.trace("Managing faction scores...");
+    public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
+        Objective objective = objectiveRepository.getReferenceById(event.getObjectiveId());
+        Faction faction = factionRepository.getReferenceById(event.getFactionId());
 
-        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
-                objectiveRepository.getFactionObjectiveCounts();
+        log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
 
-        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
-            Faction faction = factionObjectiveCount.getFaction();
-            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
+        objective.setFaction(faction);
 
-            BigDecimal scoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
+        factionRepository.updateScoreAddById(BigDecimal.valueOf(1.0), faction.getId());
 
-            factionRepository.updateScoreAddById(scoreAdd, faction.getId());
-        }
+        BigDecimal humanScoreAdd = BigDecimal.valueOf(1.0);
+        BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.1);
+        LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
 
-        // TODO: multiplier property
-        BigDecimal scoreMultiply = BigDecimal.valueOf(0.999);
+        userRepository.updateScoreAddByFactionIdAndSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
 
-        factionRepository.updateScoreMultiply(scoreMultiply);
+        // TODO
+        return new ObjectiveTakenEvent(objective.getId(), objective.getVersion(), faction.getId(), faction.getVersion() + 1);
     }
 }

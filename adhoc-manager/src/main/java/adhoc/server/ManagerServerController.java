@@ -42,14 +42,7 @@ import java.util.Objects;
 public class ManagerServerController {
 
     private final ManagerServerService managerServerService;
-
-    @GetMapping("/servers/{serverId}/servers")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<ServerDto> getServerServers(
-            @PathVariable Long serverId) {
-
-        return managerServerService.getServerServers(serverId);
-    }
+    private final ManagerServerEventService managerServerEventService;
 
     @PutMapping("/servers/{serverId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -62,12 +55,20 @@ public class ManagerServerController {
         return managerServerService.updateServer(serverDto);
     }
 
+    @GetMapping("/servers/{serverId}/servers")
+    @PreAuthorize("hasRole('SERVER')")
+    public List<ServerDto> getServerServers(
+            @PathVariable Long serverId) {
+
+        return managerServerService.getServerServers(serverId);
+    }
+
     @MessageMapping("ServerStarted")
     @PreAuthorize("hasRole('SERVER')")
     public ServerUpdatedEvent handleServerStarted(
             @Valid @RequestBody ServerStartedEvent serverStartedEvent) {
         log.debug("Handling: {}", serverStartedEvent);
 
-        return managerServerService.handleServerStarted(serverStartedEvent);
+        return managerServerEventService.handleServerStarted(serverStartedEvent);
     }
 }

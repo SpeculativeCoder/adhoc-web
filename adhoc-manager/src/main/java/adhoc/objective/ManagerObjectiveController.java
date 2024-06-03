@@ -43,6 +43,8 @@ import java.util.Objects;
 public class ManagerObjectiveController {
 
     private final ManagerObjectiveService managerObjectiveService;
+    private final ManagerObjectiveReconcileService managerObjectiveReconcileService;
+    private final ManagerObjectiveEventService managerObjectiveEventService;
 
     @PutMapping("/objectives/{objectiveId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -61,7 +63,7 @@ public class ManagerObjectiveController {
             @PathVariable Long serverId,
             @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
 
-        return managerObjectiveService.processServerObjectives(serverId, objectiveDtos);
+        return managerObjectiveReconcileService.reconcileServerObjectives(serverId, objectiveDtos);
     }
 
     @MessageMapping("ObjectiveTaken")
@@ -71,7 +73,7 @@ public class ManagerObjectiveController {
             @Valid @RequestBody ServerObjectiveTakenEvent event) {
         log.debug("Handling: {}", event);
 
-        return managerObjectiveService.handleObjectiveTaken(event);
+        return managerObjectiveEventService.handleObjectiveTaken(event);
     }
 
 }

@@ -20,39 +20,53 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.server.event;
 
-import adhoc.region.RegionRepository;
+import adhoc.area.Area;
+import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerAreaService {
+public class ServerEventService {
 
-    private final RegionRepository regionRepository;
     private final ServerRepository serverRepository;
 
-    public Area toEntity(AreaDto areaDto, Area area) {
-        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
-        area.setIndex(areaDto.getIndex());
-        area.setName(areaDto.getName());
-        area.setX(areaDto.getX());
-        area.setY(areaDto.getY());
-        area.setZ(areaDto.getZ());
-        area.setSizeX(areaDto.getSizeX());
-        area.setSizeY(areaDto.getSizeY());
-        area.setSizeZ(areaDto.getSizeZ());
-        //noinspection OptionalAssignedToNull
-        if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
-        }
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
+        Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
-        return area;
+        // TODO: internal server status?
+        server.setActive(true);
+
+        return toServerUpdatedEvent(server);
+    }
+
+    public ServerUpdatedEvent toServerUpdatedEvent(Server server) {
+        ServerUpdatedEvent event = new ServerUpdatedEvent(
+                server.getId(),
+                server.getVersion(),
+                server.getRegion().getId(),
+                server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
+                server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
+                server.isEnabled(),
+                server.isActive(),
+                server.getPublicIp(),
+                server.getPublicWebSocketPort(),
+                server.getWebSocketUrl());
+        return event;
     }
 }

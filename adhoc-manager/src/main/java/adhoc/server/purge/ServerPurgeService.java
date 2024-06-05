@@ -20,39 +20,35 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.server.purge;
 
-import adhoc.region.RegionRepository;
+import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
+
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerAreaService {
+public class ServerPurgeService {
 
-    private final RegionRepository regionRepository;
     private final ServerRepository serverRepository;
 
-    public Area toEntity(AreaDto areaDto, Area area) {
-        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
-        area.setIndex(areaDto.getIndex());
-        area.setName(areaDto.getName());
-        area.setX(areaDto.getX());
-        area.setY(areaDto.getY());
-        area.setZ(areaDto.getZ());
-        area.setSizeX(areaDto.getSizeX());
-        area.setSizeY(areaDto.getSizeY());
-        area.setSizeZ(areaDto.getSizeZ());
-        //noinspection OptionalAssignedToNull
-        if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
-        }
+    public void purgeOldServers() {
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
 
-        return area;
+        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
+            oldServers.forEach(oldServer -> {
+                log.debug("Deleting old server {}", oldServer.getId());
+
+                serverRepository.delete(oldServer);
+            });
+        }
     }
 }

@@ -25,7 +25,7 @@ package adhoc.user;
 import adhoc.faction.FactionRepository;
 import adhoc.region.RegionRepository;
 import adhoc.server.ServerRepository;
-import adhoc.user.request_response.UserRegisterRequest;
+import adhoc.user.register.UserRegisterRequest;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +73,7 @@ public class UserService {
         return toDetailDto(userRepository.getReferenceById(userId));
     }
 
-    UserDto toDto(User user) {
+    public UserDto toDto(User user) {
         return new UserDto(
                 user.getId(),
                 user.getVersion(),
@@ -86,7 +86,7 @@ public class UserService {
                 user.getServer() == null ? null : user.getServer().getId());
     }
 
-    UserDetailDto toDetailDto(User user) {
+    public UserDetailDto toDetailDto(User user) {
         return new UserDetailDto(
                 user.getId(),
                 user.getVersion(),
@@ -110,7 +110,7 @@ public class UserService {
                 user.getServer() == null ? null : user.getServer().getId());
     }
 
-    User toEntity(UserRegisterRequest userRegisterRequest) {
+    public User toEntity(UserRegisterRequest userRegisterRequest) {
         User user = new User();
 
         user.setName(userRegisterRequest.getName());

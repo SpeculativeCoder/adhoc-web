@@ -20,31 +20,43 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.user.join;
 
-import adhoc.area.reconcile.AreaReconcileService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
+import org.hibernate.validator.constraints.Length;
 
-import java.util.List;
 
-@RestController
-@RequestMapping("/api")
-@Slf4j
-@RequiredArgsConstructor
-public class ManagerAreaController {
+/**
+ * User joins server. This will either verify an existing user (if {@link #userId} is not null)
+ * or register a new user (if {@link #userId} is null).
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class ServerUserJoinRequest {
 
-    private final AreaReconcileService areaReconcileService;
+    //@NotNull
+    @Min(1)
+    private Long userId;
 
-    @PostMapping("/servers/{serverId}/areas")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> postServerAreas(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<AreaDto> areaDtos) {
+    @Min(1)
+    private Long factionId;
 
-        return areaReconcileService.reconcileServerAreas(serverId, areaDtos);
-    }
+    @NotNull
+    private Boolean human;
+
+    @NotNull
+    @Min(1)
+    private Long serverId;
+
+    @Length(min = 1)
+    private String token;
 }

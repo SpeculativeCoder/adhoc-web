@@ -22,7 +22,7 @@
 
 package adhoc.system.authentication;
 
-import adhoc.user.UserLoginService;
+import adhoc.user.login.UserLoginService;
 import com.google.common.base.Verify;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -20,39 +20,37 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.user.navigate;
 
-import adhoc.region.RegionRepository;
-import adhoc.server.ServerRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
-@Transactional
-@Service
-@Slf4j
-@RequiredArgsConstructor
-public class ManagerAreaService {
 
-    private final RegionRepository regionRepository;
-    private final ServerRepository serverRepository;
+/** Navigation response indicating which server the user should be sent to. */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class ServerUserNavigateResponse {
 
-    public Area toEntity(AreaDto areaDto, Area area) {
-        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
-        area.setIndex(areaDto.getIndex());
-        area.setName(areaDto.getName());
-        area.setX(areaDto.getX());
-        area.setY(areaDto.getY());
-        area.setZ(areaDto.getZ());
-        area.setSizeX(areaDto.getSizeX());
-        area.setSizeY(areaDto.getSizeY());
-        area.setSizeZ(areaDto.getSizeZ());
-        //noinspection OptionalAssignedToNull
-        if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
-        }
+    @NotNull
+    @Min(1)
+    private Long destinationServerId;
 
-        return area;
-    }
+    @NotEmpty
+    private String ip;
+
+    @NotNull
+    @Min(0)
+    private Integer port;
+
+    @NotEmpty
+    private String webSocketUrl;
 }

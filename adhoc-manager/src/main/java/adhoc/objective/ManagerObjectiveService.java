@@ -57,7 +57,7 @@ public class ManagerObjectiveService {
         return objectiveService.toDto(objective);
     }
 
-    Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
+    public Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         objective.setRegion(region);
@@ -87,7 +87,7 @@ public class ManagerObjectiveService {
         return objective;
     }
 
-    Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
+    public Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         Set<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()

@@ -40,7 +40,7 @@ public class ManagerPawnService {
     private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
 
-    Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
+    public Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
         pawn.setUuid(pawnDto.getUuid());
         pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
         pawn.setIndex(pawnDto.getIndex());

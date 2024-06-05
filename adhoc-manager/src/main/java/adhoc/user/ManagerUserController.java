@@ -24,9 +24,12 @@ package adhoc.user;
 
 import adhoc.user.event.ServerUserDefeatedUserEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
-import adhoc.user.request_response.ServerUserJoinRequest;
-import adhoc.user.request_response.ServerUserNavigateRequest;
-import adhoc.user.request_response.ServerUserNavigateResponse;
+import adhoc.user.event.UserEventService;
+import adhoc.user.join.ServerUserJoinRequest;
+import adhoc.user.join.UserJoinService;
+import adhoc.user.navigate.ServerUserNavigateRequest;
+import adhoc.user.navigate.ServerUserNavigateResponse;
+import adhoc.user.navigate.UserNavigateService;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,9 +49,9 @@ import java.util.Objects;
 public class ManagerUserController {
 
     private final ManagerUserService managerUserService;
-    private final ManagerUserJoinService managerUserJoinService;
-    private final ManagerUserNavigateService managerUserNavigateService;
-    private final ManagerUserEventService managerUserEventService;
+    private final UserJoinService userJoinService;
+    private final UserNavigateService userNavigateService;
+    private final UserEventService userEventService;
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -69,7 +72,7 @@ public class ManagerUserController {
         Preconditions.checkArgument(Objects.equals(serverId, serverUserJoinRequest.getServerId()),
                 "Server ID mismatch: %s != %s", serverId, serverUserJoinRequest.getServerId());
 
-        return ResponseEntity.ok(managerUserJoinService.serverUserJoin(serverUserJoinRequest));
+        return ResponseEntity.ok(userJoinService.serverUserJoin(serverUserJoinRequest));
     }
 
     @PostMapping("/servers/{serverId}/userNavigate")
@@ -82,7 +85,7 @@ public class ManagerUserController {
 
         //log.info("Server user navigate: request={}", serverUserNavigateRequest);
 
-        return managerUserNavigateService.serverUserNavigate(serverUserNavigateRequest);
+        return userNavigateService.serverUserNavigate(serverUserNavigateRequest);
     }
 
     @MessageMapping("UserDefeatedUser")
@@ -92,7 +95,7 @@ public class ManagerUserController {
             @Valid @RequestBody ServerUserDefeatedUserEvent event) {
         log.debug("Handling: {}", event);
 
-        UserDefeatedUserEvent userDefeatedUserEvent = managerUserEventService.handleUserDefeatedUser(event);
+        UserDefeatedUserEvent userDefeatedUserEvent = userEventService.handleUserDefeatedUser(event);
 
         log.debug("Sending: {}", userDefeatedUserEvent);
         return userDefeatedUserEvent;

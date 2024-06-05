@@ -23,15 +23,15 @@
 package adhoc.system.quartz;
 
 import adhoc.faction.ManagerFactionService;
-import adhoc.pawn.ManagerPawnPurgeService;
-import adhoc.server.ManagerServerPurgeService;
+import adhoc.pawn.purge.PawnPurgeService;
 import adhoc.server.ManagerServerService;
+import adhoc.server.purge.ServerPurgeService;
 import adhoc.system.event.Event;
 import adhoc.task.ManagerTaskService;
 import adhoc.task.server.ManagerServerTaskService;
-import adhoc.user.ManagerUserLeaveService;
-import adhoc.user.ManagerUserPurgeService;
 import adhoc.user.ManagerUserService;
+import adhoc.user.leave.UserLeaveService;
+import adhoc.user.purge.UserPurgeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
@@ -53,14 +53,14 @@ import java.util.List;
 public class ManagerQuartzJob implements Job {
 
     private final ManagerServerService managerServerService;
-    private final ManagerServerPurgeService managerServerPurgeService;
+    private final ServerPurgeService serverPurgeService;
     private final ManagerTaskService managerTaskService;
     private final ManagerServerTaskService managerServerTaskService;
     private final ManagerFactionService managerFactionService;
     private final ManagerUserService managerUserService;
-    private final ManagerUserLeaveService managerUserLeaveService;
-    private final ManagerUserPurgeService managerUserPurgeService;
-    private final ManagerPawnPurgeService managerPawnPurgeService;
+    private final UserLeaveService userLeaveService;
+    private final UserPurgeService userPurgeService;
+    private final PawnPurgeService pawnPurgeService;
 
     private final SimpMessageSendingOperations stomp;
 
@@ -95,16 +95,16 @@ public class ManagerQuartzJob implements Job {
                 managerUserService.manageUserLocations();
                 break;
             case ManagerQuartzConfiguration.LEAVE_UNSEEN_USERS:
-                managerUserLeaveService.leaveUnseenUsers();
+                userLeaveService.leaveUnseenUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_USERS:
-                managerUserPurgeService.purgeOldUsers();
+                userPurgeService.purgeOldUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_SERVERS:
-                managerServerPurgeService.purgeOldServers();
+                serverPurgeService.purgeOldServers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_PAWNS:
-                managerPawnPurgeService.purgeOldPawns();
+                pawnPurgeService.purgeOldPawns();
                 break;
             default:
                 log.warn("Skipping unknown manager quartz job! jobName={}", jobName);

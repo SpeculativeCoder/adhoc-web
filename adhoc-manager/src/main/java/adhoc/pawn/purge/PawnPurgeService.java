@@ -20,39 +20,33 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.pawn.purge;
 
-import adhoc.region.RegionRepository;
-import adhoc.server.ServerRepository;
+import adhoc.pawn.PawnRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerAreaService {
+public class PawnPurgeService {
 
-    private final RegionRepository regionRepository;
-    private final ServerRepository serverRepository;
+    private final PawnRepository pawnRepository;
 
-    public Area toEntity(AreaDto areaDto, Area area) {
-        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
-        area.setIndex(areaDto.getIndex());
-        area.setName(areaDto.getName());
-        area.setX(areaDto.getX());
-        area.setY(areaDto.getY());
-        area.setZ(areaDto.getZ());
-        area.setSizeX(areaDto.getSizeX());
-        area.setSizeY(areaDto.getSizeY());
-        area.setSizeZ(areaDto.getSizeZ());
-        //noinspection OptionalAssignedToNull
-        if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
-        }
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public void purgeOldPawns() {
+        log.trace("Purging old pawns...");
 
-        return area;
+        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
     }
 }

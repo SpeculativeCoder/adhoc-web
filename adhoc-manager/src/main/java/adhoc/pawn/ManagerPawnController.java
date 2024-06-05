@@ -22,6 +22,7 @@
 
 package adhoc.pawn;
 
+import adhoc.pawn.event.PawnEventService;
 import adhoc.pawn.event.ServerPawnsEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagerPawnController {
 
-    private final ManagerPawnEventService managerPawnEventService;
+    private final PawnEventService pawnEventService;
 
     @MessageMapping("ServerPawns")
     @SendTo("/topic/events")
@@ -50,7 +51,7 @@ public class ManagerPawnController {
             @Valid @RequestBody ServerPawnsEvent event) {
         log.debug("Handling: {}", event);
 
-        List<PawnDto> pawnDtos = managerPawnEventService.handleServerPawns(event);
+        List<PawnDto> pawnDtos = pawnEventService.handleServerPawns(event);
 
         ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
         log.debug("Sending: {}", serverPawnsEvent);

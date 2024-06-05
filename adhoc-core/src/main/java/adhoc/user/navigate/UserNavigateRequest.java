@@ -20,31 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.user.navigate;
 
-import adhoc.area.reconcile.AreaReconcileService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-import java.util.List;
+/**
+ * Navigation request from user via web interface to move themselves to a region or specific server.
+ */
+@Value
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class UserNavigateRequest {
 
-@RestController
-@RequestMapping("/api")
-@Slf4j
-@RequiredArgsConstructor
-public class ManagerAreaController {
+    @NotNull
+    @Min(1)
+    Long regionId;
 
-    private final AreaReconcileService areaReconcileService;
-
-    @PostMapping("/servers/{serverId}/areas")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> postServerAreas(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<AreaDto> areaDtos) {
-
-        return areaReconcileService.reconcileServerAreas(serverId, areaDtos);
-    }
+    @Min(1)
+    Long serverId;
 }

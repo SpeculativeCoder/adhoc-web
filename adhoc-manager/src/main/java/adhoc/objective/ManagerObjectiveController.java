@@ -22,8 +22,10 @@
 
 package adhoc.objective;
 
+import adhoc.objective.event.ObjectiveEventService;
 import adhoc.objective.event.ObjectiveTakenEvent;
 import adhoc.objective.event.ServerObjectiveTakenEvent;
+import adhoc.objective.reconcile.ObjectiveReconcileService;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +45,8 @@ import java.util.Objects;
 public class ManagerObjectiveController {
 
     private final ManagerObjectiveService managerObjectiveService;
-    private final ManagerObjectiveReconcileService managerObjectiveReconcileService;
-    private final ManagerObjectiveEventService managerObjectiveEventService;
+    private final ObjectiveReconcileService objectiveReconcileService;
+    private final ObjectiveEventService objectiveEventService;
 
     @PutMapping("/objectives/{objectiveId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -63,7 +65,7 @@ public class ManagerObjectiveController {
             @PathVariable Long serverId,
             @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
 
-        return managerObjectiveReconcileService.reconcileServerObjectives(serverId, objectiveDtos);
+        return objectiveReconcileService.reconcileServerObjectives(serverId, objectiveDtos);
     }
 
     @MessageMapping("ObjectiveTaken")
@@ -73,7 +75,7 @@ public class ManagerObjectiveController {
             @Valid @RequestBody ServerObjectiveTakenEvent event) {
         log.debug("Handling: {}", event);
 
-        return managerObjectiveEventService.handleObjectiveTaken(event);
+        return objectiveEventService.handleObjectiveTaken(event);
     }
 
 }

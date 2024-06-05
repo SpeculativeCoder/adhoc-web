@@ -20,39 +20,48 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.user.navigate;
 
-import adhoc.region.RegionRepository;
-import adhoc.server.ServerRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
-@Transactional
-@Service
-@Slf4j
-@RequiredArgsConstructor
-public class ManagerAreaService {
+/**
+ * User is navigating from one server to another.
+ * We want their last location so the receiving server can position them appropriately when they join.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class ServerUserNavigateRequest {
 
-    private final RegionRepository regionRepository;
-    private final ServerRepository serverRepository;
+    @NotNull
+    @Min(1)
+    private Long userId;
 
-    public Area toEntity(AreaDto areaDto, Area area) {
-        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
-        area.setIndex(areaDto.getIndex());
-        area.setName(areaDto.getName());
-        area.setX(areaDto.getX());
-        area.setY(areaDto.getY());
-        area.setZ(areaDto.getZ());
-        area.setSizeX(areaDto.getSizeX());
-        area.setSizeY(areaDto.getSizeY());
-        area.setSizeZ(areaDto.getSizeZ());
-        //noinspection OptionalAssignedToNull
-        if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
-        }
+    @NotNull
+    @Min(1)
+    private Long sourceServerId;
 
-        return area;
-    }
+    @NotNull
+    @Min(1)
+    private Long destinationAreaId;
+
+    @NotNull
+    private Double x;
+    @NotNull
+    private Double y;
+    @NotNull
+    private Double z;
+
+    @NotNull
+    private Double yaw;
+    @NotNull
+    private Double pitch;
 }

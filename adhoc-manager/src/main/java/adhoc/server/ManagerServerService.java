@@ -27,6 +27,7 @@ import adhoc.area.AreaRepository;
 import adhoc.area.groups.AreaGroupsFactory;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
+import adhoc.server.event.ServerEventService;
 import adhoc.system.event.Event;
 import adhoc.task.server.ServerTask;
 import adhoc.task.server.ServerTaskRepository;
@@ -63,7 +64,7 @@ public class ManagerServerService {
     private final ServerTaskRepository serverTaskRepository;
 
     private final ServerService serverService;
-    private final ManagerServerEventService managerServerEventService;
+    private final ServerEventService serverEventService;
 
     private final AreaGroupsFactory areaGroupsFactory;
 
@@ -131,7 +132,7 @@ public class ManagerServerService {
                     usedServerIds.add(server.getId());
 
                     if (emitEvent) {
-                        events.add(managerServerEventService.toServerUpdatedEvent(server));
+                        events.add(serverEventService.toServerUpdatedEvent(server));
                     }
                 }
 
@@ -142,7 +143,7 @@ public class ManagerServerService {
                         boolean emitEvent = manageServer(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
-                            events.add(managerServerEventService.toServerUpdatedEvent(unusedServer));
+                            events.add(serverEventService.toServerUpdatedEvent(unusedServer));
                         }
                     });
                 }

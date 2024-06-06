@@ -22,38 +22,30 @@
 
 package adhoc.pawn;
 
-import adhoc.pawn.event.ServerPawnsEvent;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-@RestController
-@RequestMapping("/api")
+@Transactional
+@Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerPawnController {
+public class PawnPurgeService {
 
-    private final PawnEventService pawnEventService;
+    private final PawnRepository pawnRepository;
 
-    @MessageMapping("ServerPawns")
-    @SendTo("/topic/events")
-    @PreAuthorize("hasRole('SERVER')")
-    public ServerPawnsEvent handleServerPawns(
-            @Valid @RequestBody ServerPawnsEvent event) {
-        log.debug("Handling: {}", event);
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public void purgeOldPawns() {
+        log.trace("Purging old pawns...");
 
-        List<PawnDto> pawnDtos = pawnEventService.handleServerPawns(event);
-
-        ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
-        log.debug("Sending: {}", serverPawnsEvent);
-        return serverPawnsEvent;
+        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
     }
 }

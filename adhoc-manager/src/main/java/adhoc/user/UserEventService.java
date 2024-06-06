@@ -22,7 +22,8 @@
 
 package adhoc.user;
 
-import adhoc.pawn.PawnRepository;
+import adhoc.user.event.ServerUserDefeatedUserEvent;
+import adhoc.user.event.UserDefeatedUserEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -32,57 +33,28 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
+import java.math.BigDecimal;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerUserService {
+public class UserEventService {
 
     private final UserRepository userRepository;
-    private final PawnRepository pawnRepository;
-
-    private final UserService userService;
-
-    public UserDto updateUser(UserDto userDto) {
-        return userService.toDto(
-                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
-    }
-
-    private User toEntity(UserDto userDto, User user) {
-        // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
-    }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageUserLocations() {
-        log.trace("Managing user locations...");
+    public UserDefeatedUserEvent handleUserDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
+        User user = userRepository.getReferenceById(serverUserDefeatedUserEvent.getUserId());
+        User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
 
-        LocalDateTime now = LocalDateTime.now();
+        BigDecimal scoreAdd = BigDecimal.valueOf(user.isHuman() ? 1.0f : 0.1f);
+        userRepository.updateScoreAddById(scoreAdd, user.getId());
 
-        try (Stream<User> users = userRepository.streamByServerNotNull()) {
-            users.forEach(user -> {
-                // see if there is a pawn for the user
-                pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user).ifPresent(pawn -> {
-
-                    user.setX(pawn.getX());
-                    user.setY(pawn.getY());
-                    user.setZ(pawn.getZ());
-                    user.setPitch(pawn.getPitch());
-                    user.setYaw(pawn.getYaw());
-
-                    user.setSeen(now);
-
-                });
-            });
-        }
+        // TODO
+        return new UserDefeatedUserEvent(
+                user.getId(), user.getVersion() + 1, user.getName(), user.isHuman(),
+                defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.isHuman());
     }
 }

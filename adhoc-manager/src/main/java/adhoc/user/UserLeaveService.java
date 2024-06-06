@@ -22,10 +22,10 @@
 
 package adhoc.user;
 
-import adhoc.pawn.PawnRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
+import org.slf4j.event.Level;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -39,49 +39,29 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerUserService {
+public class UserLeaveService {
 
     private final UserRepository userRepository;
-    private final PawnRepository pawnRepository;
-
-    private final UserService userService;
-
-    public UserDto updateUser(UserDto userDto) {
-        return userService.toDto(
-                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
-    }
-
-    private User toEntity(UserDto userDto, User user) {
-        // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
-    }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageUserLocations() {
-        log.trace("Managing user locations...");
+    public void leaveUnseenUsers() {
+        log.trace("Leaving unseen users...");
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(1);
 
-        LocalDateTime now = LocalDateTime.now();
+        try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(seenBefore)) {
+            users.forEach(unseenUser -> {
+                log.atLevel(unseenUser.isHuman() ? Level.INFO : Level.DEBUG)
+                        .log("User left: id={} name={} password?={} human={} factionIndex={} serverId={}",
+                                unseenUser.getId(),
+                                unseenUser.getName(),
+                                unseenUser.getPassword() != null,
+                                unseenUser.isHuman(),
+                                unseenUser.getFaction().getIndex(),
+                                unseenUser.getServer().getId());
 
-        try (Stream<User> users = userRepository.streamByServerNotNull()) {
-            users.forEach(user -> {
-                // see if there is a pawn for the user
-                pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user).ifPresent(pawn -> {
-
-                    user.setX(pawn.getX());
-                    user.setY(pawn.getY());
-                    user.setZ(pawn.getZ());
-                    user.setPitch(pawn.getPitch());
-                    user.setYaw(pawn.getYaw());
-
-                    user.setSeen(now);
-
-                });
+                // TODO: common path?
+                unseenUser.setServer(null);
             });
         }
     }

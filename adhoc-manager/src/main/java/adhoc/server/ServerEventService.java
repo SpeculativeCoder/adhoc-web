@@ -20,9 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.server;
 
-import adhoc.pawn.PawnRepository;
+import adhoc.area.Area;
+import adhoc.server.event.ServerStartedEvent;
+import adhoc.server.event.ServerUpdatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -32,57 +34,39 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerUserService {
+public class ServerEventService {
 
-    private final UserRepository userRepository;
-    private final PawnRepository pawnRepository;
-
-    private final UserService userService;
-
-    public UserDto updateUser(UserDto userDto) {
-        return userService.toDto(
-                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
-    }
-
-    private User toEntity(UserDto userDto, User user) {
-        // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
-    }
+    private final ServerRepository serverRepository;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageUserLocations() {
-        log.trace("Managing user locations...");
+    public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
+        Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
-        LocalDateTime now = LocalDateTime.now();
+        // TODO: internal server status?
+        server.setActive(true);
 
-        try (Stream<User> users = userRepository.streamByServerNotNull()) {
-            users.forEach(user -> {
-                // see if there is a pawn for the user
-                pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user).ifPresent(pawn -> {
+        return toServerUpdatedEvent(server);
+    }
 
-                    user.setX(pawn.getX());
-                    user.setY(pawn.getY());
-                    user.setZ(pawn.getZ());
-                    user.setPitch(pawn.getPitch());
-                    user.setYaw(pawn.getYaw());
-
-                    user.setSeen(now);
-
-                });
-            });
-        }
+    public ServerUpdatedEvent toServerUpdatedEvent(Server server) {
+        ServerUpdatedEvent event = new ServerUpdatedEvent(
+                server.getId(),
+                server.getVersion(),
+                server.getRegion().getId(),
+                server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
+                server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
+                server.isEnabled(),
+                server.isActive(),
+                server.getPublicIp(),
+                server.getPublicWebSocketPort(),
+                server.getWebSocketUrl());
+        return event;
     }
 }

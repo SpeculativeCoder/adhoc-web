@@ -20,30 +20,43 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.user.request_response;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.ToString;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-import java.util.List;
+@Value
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class UserRegisterRequest {
 
-@RestController
-@RequestMapping("/api")
-@Slf4j
-@RequiredArgsConstructor
-public class ManagerAreaController {
+    // at the moment we only allow auto-generated name
+    //@NotEmpty
+    //@Pattern(regexp = "Anon[0-9]{1,10}")
+    @Null
+    String name;
 
-    private final AreaReconcileService areaReconcileService;
+    @Email
+    String email;
 
-    @PostMapping("/servers/{serverId}/areas")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> postServerAreas(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<AreaDto> areaDtos) {
+    @Size(min = 1)
+    @ToString.Exclude
+    String password;
 
-        return areaReconcileService.reconcileServerAreas(serverId, areaDtos);
-    }
+    @Min(1)
+    Long factionId;
+
+    @NotNull
+    Boolean human;
+
+    @Min(1)
+    Long regionId;
+
+    @Min(1)
+    Long serverId;
 }

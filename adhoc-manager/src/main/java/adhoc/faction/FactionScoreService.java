@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.faction;
 
-import adhoc.pawn.PawnRepository;
+import adhoc.objective.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -32,57 +32,38 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerUserService {
+public class FactionScoreService {
 
-    private final UserRepository userRepository;
-    private final PawnRepository pawnRepository;
-
-    private final UserService userService;
-
-    public UserDto updateUser(UserDto userDto) {
-        return userService.toDto(
-                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
-    }
-
-    private User toEntity(UserDto userDto, User user) {
-        // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
-    }
+    private final FactionRepository factionRepository;
+    private final ObjectiveRepository objectiveRepository;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageUserLocations() {
-        log.trace("Managing user locations...");
+    public void manageFactionScores() {
+        log.trace("Managing faction scores...");
 
-        LocalDateTime now = LocalDateTime.now();
+        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
+                objectiveRepository.getFactionObjectiveCounts();
 
-        try (Stream<User> users = userRepository.streamByServerNotNull()) {
-            users.forEach(user -> {
-                // see if there is a pawn for the user
-                pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user).ifPresent(pawn -> {
+        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
+            Faction faction = factionObjectiveCount.getFaction();
+            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
-                    user.setX(pawn.getX());
-                    user.setY(pawn.getY());
-                    user.setZ(pawn.getZ());
-                    user.setPitch(pawn.getPitch());
-                    user.setYaw(pawn.getYaw());
+            BigDecimal scoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
 
-                    user.setSeen(now);
-
-                });
-            });
+            factionRepository.updateScoreAddById(scoreAdd, faction.getId());
         }
+
+        // TODO: multiplier property
+        BigDecimal scoreMultiply = BigDecimal.valueOf(0.999);
+
+        factionRepository.updateScoreMultiply(scoreMultiply);
     }
 }

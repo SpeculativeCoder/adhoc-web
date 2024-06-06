@@ -20,9 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.objective;
 
-import adhoc.pawn.PawnRepository;
+import adhoc.faction.Faction;
+import adhoc.faction.FactionRepository;
+import adhoc.objective.event.ObjectiveTakenEvent;
+import adhoc.objective.event.ServerObjectiveTakenEvent;
+import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -32,57 +36,38 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.stream.Stream;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerUserService {
+public class ObjectiveEventService {
 
+    private final ObjectiveRepository objectiveRepository;
+    private final FactionRepository factionRepository;
     private final UserRepository userRepository;
-    private final PawnRepository pawnRepository;
-
-    private final UserService userService;
-
-    public UserDto updateUser(UserDto userDto) {
-        return userService.toDto(
-                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
-    }
-
-    private User toEntity(UserDto userDto, User user) {
-        // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
-    }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageUserLocations() {
-        log.trace("Managing user locations...");
+    public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
+        Objective objective = objectiveRepository.getReferenceById(event.getObjectiveId());
+        Faction faction = factionRepository.getReferenceById(event.getFactionId());
 
-        LocalDateTime now = LocalDateTime.now();
+        log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
 
-        try (Stream<User> users = userRepository.streamByServerNotNull()) {
-            users.forEach(user -> {
-                // see if there is a pawn for the user
-                pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user).ifPresent(pawn -> {
+        objective.setFaction(faction);
 
-                    user.setX(pawn.getX());
-                    user.setY(pawn.getY());
-                    user.setZ(pawn.getZ());
-                    user.setPitch(pawn.getPitch());
-                    user.setYaw(pawn.getYaw());
+        factionRepository.updateScoreAddById(BigDecimal.valueOf(1.0), faction.getId());
 
-                    user.setSeen(now);
+        BigDecimal humanScoreAdd = BigDecimal.valueOf(1.0);
+        BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.1);
+        LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
 
-                });
-            });
-        }
+        userRepository.updateScoreAddByFactionIdAndSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
+
+        // TODO
+        return new ObjectiveTakenEvent(objective.getId(), objective.getVersion(), faction.getId(), faction.getVersion() + 1);
     }
 }

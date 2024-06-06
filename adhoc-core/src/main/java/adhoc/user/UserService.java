@@ -25,7 +25,7 @@ package adhoc.user;
 import adhoc.faction.FactionRepository;
 import adhoc.region.RegionRepository;
 import adhoc.server.ServerRepository;
-import adhoc.user.register.UserRegisterRequest;
+import adhoc.user.request_response.UserRegisterRequest;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

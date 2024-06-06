@@ -22,7 +22,12 @@
 
 package adhoc.user;
 
-import adhoc.pawn.PawnRepository;
+import adhoc.region.Region;
+import adhoc.region.RegionRepository;
+import adhoc.server.Server;
+import adhoc.server.ServerRepository;
+import adhoc.user.request_response.UserNavigateRequest;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -32,57 +37,52 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerUserService {
+public class UserNavigateService {
 
     private final UserRepository userRepository;
-    private final PawnRepository pawnRepository;
+    private final ServerRepository serverRepository;
+    private final RegionRepository regionRepository;
 
     private final UserService userService;
 
-    public UserDto updateUser(UserDto userDto) {
-        return userService.toDto(
-                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
-    }
-
-    private User toEntity(UserDto userDto, User user) {
-        // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
-    }
-
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageUserLocations() {
-        log.trace("Managing user locations...");
+    public UserDetailDto navigateUser(Long userId, UserNavigateRequest userNavigateRequest) {
+        Preconditions.checkArgument(userNavigateRequest.getRegionId() != null,
+                "User navigation must specify a region");
 
-        LocalDateTime now = LocalDateTime.now();
+        User user = userRepository.getReferenceById(userId);
 
-        try (Stream<User> users = userRepository.streamByServerNotNull()) {
-            users.forEach(user -> {
-                // see if there is a pawn for the user
-                pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user).ifPresent(pawn -> {
+        Region oldRegion = user.getRegion();
+        Region region;
 
-                    user.setX(pawn.getX());
-                    user.setY(pawn.getY());
-                    user.setZ(pawn.getZ());
-                    user.setPitch(pawn.getPitch());
-                    user.setYaw(pawn.getYaw());
-
-                    user.setSeen(now);
-
-                });
-            });
+        if (userNavigateRequest.getServerId() != null) {
+            Server server = serverRepository.getReferenceById(userNavigateRequest.getServerId());
+            region = server.getRegion();
+            user.setRegion(region);
+            user.setServer(server);
+        } else {
+            region = regionRepository.getReferenceById(userNavigateRequest.getRegionId());
+            user.setRegion(region);
+            // TODO
+            user.setServer(region.getServers().get(ThreadLocalRandom.current().nextInt(region.getServers().size())));
         }
+
+        // changing region nukes last location
+        if (region != oldRegion) {
+            user.setX(null);
+            user.setY(null);
+            user.setZ(null);
+            user.setPitch(null);
+            user.setYaw(null);
+        }
+
+        return userService.toDetailDto(user);
     }
 }

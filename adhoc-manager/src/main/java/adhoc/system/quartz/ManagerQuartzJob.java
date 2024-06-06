@@ -22,16 +22,18 @@
 
 package adhoc.system.quartz;
 
+import adhoc.faction.FactionScoreService;
 import adhoc.faction.ManagerFactionService;
-import adhoc.pawn.purge.PawnPurgeService;
-import adhoc.server.ManagerServerService;
-import adhoc.server.purge.ServerPurgeService;
+import adhoc.pawn.PawnPurgeService;
+import adhoc.server.ServerManageService;
+import adhoc.server.ServerPurgeService;
 import adhoc.system.event.Event;
 import adhoc.task.ManagerTaskService;
 import adhoc.task.server.ManagerServerTaskService;
 import adhoc.user.ManagerUserService;
-import adhoc.user.leave.UserLeaveService;
-import adhoc.user.purge.UserPurgeService;
+import adhoc.user.UserLeaveService;
+import adhoc.user.UserPurgeService;
+import adhoc.user.UserScoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
@@ -52,12 +54,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagerQuartzJob implements Job {
 
-    private final ManagerServerService managerServerService;
+    private final ServerManageService serverManageService;
     private final ServerPurgeService serverPurgeService;
     private final ManagerTaskService managerTaskService;
     private final ManagerServerTaskService managerServerTaskService;
     private final ManagerFactionService managerFactionService;
+    private final FactionScoreService factionScoreService;
     private final ManagerUserService managerUserService;
+    private final UserScoreService userScoreService;
     private final UserLeaveService userLeaveService;
     private final UserPurgeService userPurgeService;
     private final PawnPurgeService pawnPurgeService;
@@ -74,7 +78,7 @@ public class ManagerQuartzJob implements Job {
             //log.info("jobName={}", jobName);
             switch (jobName) {
             case ManagerQuartzConfiguration.MANAGE_SERVERS:
-                events = managerServerService.manageServers();
+                events = serverManageService.manageServers();
                 break;
             case ManagerQuartzConfiguration.REFRESH_TASKS:
                 managerTaskService.refreshTasks();
@@ -86,10 +90,10 @@ public class ManagerQuartzJob implements Job {
                 managerServerTaskService.manageServerTasks();
                 break;
             case ManagerQuartzConfiguration.MANAGE_FACTION_SCORES:
-                managerFactionService.manageFactionScores();
+                factionScoreService.manageFactionScores();
                 break;
             case ManagerQuartzConfiguration.MANAGE_USER_SCORES:
-                managerUserService.manageUserScores();
+                userScoreService.manageUserScores();
                 break;
             case ManagerQuartzConfiguration.MANAGE_USER_LOCATIONS:
                 managerUserService.manageUserLocations();

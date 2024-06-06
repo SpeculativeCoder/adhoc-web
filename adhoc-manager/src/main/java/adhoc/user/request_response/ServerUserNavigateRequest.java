@@ -20,30 +20,48 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.user.request_response;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
-import java.util.List;
+/**
+ * User is navigating from one server to another.
+ * We want their last location so the receiving server can position them appropriately when they join.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class ServerUserNavigateRequest {
 
-@RestController
-@RequestMapping("/api")
-@Slf4j
-@RequiredArgsConstructor
-public class ManagerAreaController {
+    @NotNull
+    @Min(1)
+    private Long userId;
 
-    private final AreaReconcileService areaReconcileService;
+    @NotNull
+    @Min(1)
+    private Long sourceServerId;
 
-    @PostMapping("/servers/{serverId}/areas")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> postServerAreas(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<AreaDto> areaDtos) {
+    @NotNull
+    @Min(1)
+    private Long destinationAreaId;
 
-        return areaReconcileService.reconcileServerAreas(serverId, areaDtos);
-    }
+    @NotNull
+    private Double x;
+    @NotNull
+    private Double y;
+    @NotNull
+    private Double z;
+
+    @NotNull
+    private Double yaw;
+    @NotNull
+    private Double pitch;
 }

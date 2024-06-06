@@ -23,10 +23,8 @@
 package adhoc.user;
 
 import adhoc.system.authentication.AdhocUserDetails;
-import adhoc.user.navigate.UserNavigateRequest;
-import adhoc.user.navigate.UserNavigateService;
-import adhoc.user.register.UserRegisterRequest;
-import adhoc.user.register.UserRegisterService;
+import adhoc.user.request_response.UserNavigateRequest;
+import adhoc.user.request_response.UserRegisterRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

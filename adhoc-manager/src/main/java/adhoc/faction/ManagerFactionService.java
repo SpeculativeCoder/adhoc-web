@@ -22,17 +22,11 @@
 
 package adhoc.faction;
 
-import adhoc.objective.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Transactional
@@ -42,7 +36,6 @@ import java.util.List;
 public class ManagerFactionService {
 
     private final FactionRepository factionRepository;
-    private final ObjectiveRepository objectiveRepository;
 
     private final FactionService factionService;
 
@@ -64,28 +57,5 @@ public class ManagerFactionService {
         faction.setScore(factionDto.getScore());
 
         return faction;
-    }
-
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageFactionScores() {
-        log.trace("Managing faction scores...");
-
-        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
-                objectiveRepository.getFactionObjectiveCounts();
-
-        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
-            Faction faction = factionObjectiveCount.getFaction();
-            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
-
-            BigDecimal scoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
-
-            factionRepository.updateScoreAddById(scoreAdd, faction.getId());
-        }
-
-        // TODO: multiplier property
-        BigDecimal scoreMultiply = BigDecimal.valueOf(0.999);
-
-        factionRepository.updateScoreMultiply(scoreMultiply);
     }
 }

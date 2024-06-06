@@ -20,30 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+@NonNullApi
+@NonNullFields
+package adhoc.user.request_response;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-@RestController
-@RequestMapping("/api")
-@Slf4j
-@RequiredArgsConstructor
-public class ManagerAreaController {
-
-    private final AreaReconcileService areaReconcileService;
-
-    @PostMapping("/servers/{serverId}/areas")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> postServerAreas(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<AreaDto> areaDtos) {
-
-        return areaReconcileService.reconcileServerAreas(serverId, areaDtos);
-    }
-}
+import org.springframework.lang.NonNullApi;
+import org.springframework.lang.NonNullFields;

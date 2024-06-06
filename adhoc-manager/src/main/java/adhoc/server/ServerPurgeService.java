@@ -20,40 +20,33 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.server;
 
-import adhoc.pawn.event.ServerPawnsEvent;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
-@RestController
-@RequestMapping("/api")
+@Transactional
+@Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerPawnController {
+public class ServerPurgeService {
 
-    private final PawnEventService pawnEventService;
+    private final ServerRepository serverRepository;
 
-    @MessageMapping("ServerPawns")
-    @SendTo("/topic/events")
-    @PreAuthorize("hasRole('SERVER')")
-    public ServerPawnsEvent handleServerPawns(
-            @Valid @RequestBody ServerPawnsEvent event) {
-        log.debug("Handling: {}", event);
+    public void purgeOldServers() {
+        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
 
-        List<PawnDto> pawnDtos = pawnEventService.handleServerPawns(event);
+        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
+            oldServers.forEach(oldServer -> {
+                log.debug("Deleting old server {}", oldServer.getId());
 
-        ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
-        log.debug("Sending: {}", serverPawnsEvent);
-        return serverPawnsEvent;
+                serverRepository.delete(oldServer);
+            });
+        }
     }
 }

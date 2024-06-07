@@ -20,12 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.pawn;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
-import org.slf4j.event.Level;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -33,36 +32,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.stream.Stream;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserLeaveService {
+public class PawnPurgeJobService {
 
-    private final UserRepository userRepository;
+    private final PawnRepository pawnRepository;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void leaveUnseenUsers() {
-        log.trace("Leaving unseen users...");
-        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(1);
+    public void purgeOldPawns() {
+        log.trace("Purging old pawns...");
 
-        try (Stream<User> users = userRepository.streamByServerNotNullAndSeenBefore(seenBefore)) {
-            users.forEach(unseenUser -> {
-                log.atLevel(unseenUser.isHuman() ? Level.INFO : Level.DEBUG)
-                        .log("User left: id={} name={} password?={} human={} factionIndex={} serverId={}",
-                                unseenUser.getId(),
-                                unseenUser.getName(),
-                                unseenUser.getPassword() != null,
-                                unseenUser.isHuman(),
-                                unseenUser.getFaction().getIndex(),
-                                unseenUser.getServer().getId());
-
-                // TODO: common path?
-                unseenUser.setServer(null);
-            });
-        }
+        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
     }
 }

@@ -81,13 +81,15 @@ public class UserLoginService {
         User user = userRepository.getReferenceById(userId);
 
         UUID newToken = UUID.randomUUID();
+        LocalDateTime now = LocalDateTime.now();
+
         user.setToken(newToken);
-        user.setLastLogin(LocalDateTime.now());
+        user.setLastLogin(now);
 
         log.debug("onAuthenticationSuccess: id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getToken());
     }
 
-    public void autoLogin(UserRegisterRequest userRegisterRequest, User user) {
+    void autoLogin(UserRegisterRequest userRegisterRequest, User user) {
         String tempPassword = null;
         if (user.getPassword() == null) {
             tempPassword = UUID.randomUUID().toString();

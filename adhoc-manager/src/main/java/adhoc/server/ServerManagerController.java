@@ -20,30 +20,55 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.server;
 
+import adhoc.server.event.ServerStartedEvent;
+import adhoc.server.event.ServerUpdatedEvent;
+import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerAreaController {
+public class ServerManagerController {
 
-    private final AreaReconcileService areaReconcileService;
+    private final ServerManagerService serverManagerService;
+    private final ServerEventService serverEventService;
 
-    @PostMapping("/servers/{serverId}/areas")
+    @PutMapping("/servers/{serverId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ServerDto putServer(
+            @PathVariable("serverId") Long serverId,
+            @Valid @RequestBody ServerDto serverDto) {
+        Preconditions.checkArgument(Objects.equals(serverId, serverDto.getId()),
+                "Server ID mismatch: %s != %s", serverId, serverDto.getId());
+
+        return serverManagerService.updateServer(serverDto);
+    }
+
+    @GetMapping("/servers/{serverId}/servers")
     @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> postServerAreas(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<AreaDto> areaDtos) {
+    public List<ServerDto> getServerServers(
+            @PathVariable Long serverId) {
 
-        return areaReconcileService.reconcileServerAreas(serverId, areaDtos);
+        return serverManagerService.getServerServers(serverId);
+    }
+
+    @MessageMapping("ServerStarted")
+    @PreAuthorize("hasRole('SERVER')")
+    public ServerUpdatedEvent handleServerStarted(
+            @Valid @RequestBody ServerStartedEvent serverStartedEvent) {
+        log.debug("Handling: {}", serverStartedEvent);
+
+        return serverEventService.handleServerStarted(serverStartedEvent);
     }
 }

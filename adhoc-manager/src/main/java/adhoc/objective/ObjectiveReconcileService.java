@@ -48,7 +48,7 @@ public class ObjectiveReconcileService {
     private final ServerRepository serverRepository;
 
     private final ObjectiveService objectiveService;
-    private final ManagerObjectiveService managerObjectiveService;
+    private final ObjectiveManagerService objectiveManagerService;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
@@ -85,7 +85,7 @@ public class ObjectiveReconcileService {
 
         // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveDtos.stream().map(objectiveDto -> {
-            Objective objective = managerObjectiveService.toEntityStage1(objectiveDto,
+            Objective objective = objectiveManagerService.toEntityStage1(objectiveDto,
                     objectiveRepository.findByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new));
 
             // set faction to be initial faction if this is a new entity
@@ -95,7 +95,7 @@ public class ObjectiveReconcileService {
 
             return new AbstractMap.SimpleEntry<>(objectiveDto, objectiveRepository.save(objective));
         }).toList().stream().map(entry -> {
-            Objective objective = managerObjectiveService.toEntityStage2(entry.getKey(), entry.getValue());
+            Objective objective = objectiveManagerService.toEntityStage2(entry.getKey(), entry.getValue());
 
             return objectiveService.toDto(objective);
         }).toList();

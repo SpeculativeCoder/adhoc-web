@@ -43,9 +43,9 @@ import java.util.Objects;
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerUserController {
+public class UserManagerController {
 
-    private final ManagerUserService managerUserService;
+    private final UserManagerService userManagerService;
     private final UserJoinService userJoinService;
     private final UserNavigateService userNavigateService;
     private final UserEventService userEventService;
@@ -58,7 +58,7 @@ public class ManagerUserController {
         Preconditions.checkArgument(Objects.equals(userId, userDto.getId()),
                 "User ID mismatch: %s != %s", userId, userDto.getId());
 
-        return managerUserService.updateUser(userDto);
+        return userManagerService.updateUser(userDto);
     }
 
     @PostMapping("/servers/{serverId}/userJoin")

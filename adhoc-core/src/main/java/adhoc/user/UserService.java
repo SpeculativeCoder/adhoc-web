@@ -73,7 +73,7 @@ public class UserService {
         return toDetailDto(userRepository.getReferenceById(userId));
     }
 
-    public UserDto toDto(User user) {
+    UserDto toDto(User user) {
         return new UserDto(
                 user.getId(),
                 user.getVersion(),
@@ -86,7 +86,7 @@ public class UserService {
                 user.getServer() == null ? null : user.getServer().getId());
     }
 
-    public UserDetailDto toDetailDto(User user) {
+    UserDetailDto toDetailDto(User user) {
         return new UserDetailDto(
                 user.getId(),
                 user.getVersion(),
@@ -110,7 +110,7 @@ public class UserService {
                 user.getServer() == null ? null : user.getServer().getId());
     }
 
-    public User toEntity(UserRegisterRequest userRegisterRequest) {
+    User toEntity(UserRegisterRequest userRegisterRequest) {
         User user = new User();
 
         user.setName(userRegisterRequest.getName());

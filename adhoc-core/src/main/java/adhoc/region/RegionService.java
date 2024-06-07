@@ -51,7 +51,7 @@ public class RegionService {
         return toDto(regionRepository.getReferenceById(regionId));
     }
 
-    private RegionDto toDto(Region region) {
+    RegionDto toDto(Region region) {
         return new RegionDto(
                 region.getId(),
                 region.getVersion(),

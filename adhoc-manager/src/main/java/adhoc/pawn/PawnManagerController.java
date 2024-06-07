@@ -20,44 +20,40 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.pawn;
 
+import adhoc.pawn.event.ServerPawnsEvent;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
+import java.util.List;
 
-@Transactional
-@Service
+@RestController
+@RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class AreaService {
+public class PawnManagerController {
 
-    private final AreaRepository areaRepository;
+    private final PawnEventService pawnEventService;
 
-    @Transactional(readOnly = true)
-    public Page<AreaDto> getAreas(Pageable pageable) {
-        return areaRepository.findAll(pageable).map(this::toDto);
-    }
+    @MessageMapping("ServerPawns")
+    @SendTo("/topic/events")
+    @PreAuthorize("hasRole('SERVER')")
+    public ServerPawnsEvent handleServerPawns(
+            @Valid @RequestBody ServerPawnsEvent event) {
+        log.debug("Handling: {}", event);
 
-    @Transactional(readOnly = true)
-    public AreaDto getArea(Long areaId) {
-        return toDto(areaRepository.getReferenceById(areaId));
-    }
+        List<PawnDto> pawnDtos = pawnEventService.handleServerPawns(event);
 
-    AreaDto toDto(Area area) {
-        return new AreaDto(
-                area.getId(),
-                area.getVersion(),
-                area.getRegion().getId(),
-                area.getIndex(),
-                area.getName(),
-                area.getX(), area.getY(), area.getZ(),
-                area.getSizeX(), area.getSizeY(), area.getSizeZ(),
-                area.getServer() == null ? Optional.empty() : Optional.of(area.getServer().getId()));
+        ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
+        log.debug("Sending: {}", serverPawnsEvent);
+        return serverPawnsEvent;
     }
 }

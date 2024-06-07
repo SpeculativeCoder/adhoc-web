@@ -23,15 +23,9 @@
 package adhoc.server;
 
 import adhoc.area.AreaRepository;
-import adhoc.area.groups.AreaGroupsFactory;
 import adhoc.region.RegionRepository;
-import adhoc.task.server.ServerTaskRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,22 +36,13 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerServerService {
-
-    private final ServerProperties serverProperties;
+public class ServerManagerService {
 
     private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
-    private final ServerTaskRepository serverTaskRepository;
 
     private final ServerService serverService;
-    private final ServerEventService serverEventService;
-
-    private final AreaGroupsFactory areaGroupsFactory;
-
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private ManagerServerService self;
 
     public List<ServerDto> getServerServers(Long serverId) {
         return serverRepository.findAll().stream().map(serverService::toDto).toList();

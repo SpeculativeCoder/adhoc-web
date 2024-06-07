@@ -52,7 +52,7 @@ public class AreaReconcileService {
     private final ServerRepository serverRepository;
 
     private final AreaService areaService;
-    private final ManagerAreaService managerAreaService;
+    private final AreaManagerService areaManagerService;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
@@ -81,7 +81,7 @@ public class AreaReconcileService {
         }
 
         return areaDtos.stream()
-                .map(areaDto -> managerAreaService.toEntity(areaDto,
+                .map(areaDto -> areaManagerService.toEntity(areaDto,
                         areaRepository.findByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
                 .map(areaRepository::save)
                 .map(areaService::toDto)

@@ -20,44 +20,39 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.area;
 
+import adhoc.region.RegionRepository;
+import adhoc.server.ServerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.TreeSet;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserPurgeService {
+public class AreaManagerService {
 
-    private final UserRepository userRepository;
+    private final RegionRepository regionRepository;
+    private final ServerRepository serverRepository;
 
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void purgeOldUsers() {
-        log.trace("Purging old users...");
-
-        Set<Long> oldUserIds = new TreeSet<>();
-
-        // regular cleanup of anon users who had a temp account created but never were seen in a server
-        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
-        // regular cleanup of anon users who were last seen in a server a long time ago
-        oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
-
-        if (!oldUserIds.isEmpty()) {
-            log.debug("Purging old users: {}", oldUserIds);
-            userRepository.deleteAllByIdInBatch(oldUserIds);
+    Area toEntity(AreaDto areaDto, Area area) {
+        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
+        area.setIndex(areaDto.getIndex());
+        area.setName(areaDto.getName());
+        area.setX(areaDto.getX());
+        area.setY(areaDto.getY());
+        area.setZ(areaDto.getZ());
+        area.setSizeX(areaDto.getSizeX());
+        area.setSizeY(areaDto.getSizeY());
+        area.setSizeZ(areaDto.getSizeZ());
+        //noinspection OptionalAssignedToNull
+        if (areaDto.getServerId() != null) {
+            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
         }
+
+        return area;
     }
 }

@@ -40,9 +40,9 @@ import java.util.Objects;
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerObjectiveController {
+public class ObjectiveManagerController {
 
-    private final ManagerObjectiveService managerObjectiveService;
+    private final ObjectiveManagerService objectiveManagerService;
     private final ObjectiveReconcileService objectiveReconcileService;
     private final ObjectiveEventService objectiveEventService;
 
@@ -54,7 +54,7 @@ public class ManagerObjectiveController {
         Preconditions.checkArgument(Objects.equals(objectiveId, objectiveDto.getId()),
                 "Objective ID mismatch: %s != %s", objectiveId, objectiveDto.getId());
 
-        return managerObjectiveService.updateObjective(objectiveDto);
+        return objectiveManagerService.updateObjective(objectiveDto);
     }
 
     @PostMapping("/servers/{serverId}/objectives")

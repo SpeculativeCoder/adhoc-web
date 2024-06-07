@@ -51,7 +51,7 @@ public class PawnEventService {
     private final ServerRepository serverRepository;
 
     private final PawnService pawnService;
-    private final ManagerPawnService managerPawnService;
+    private final PawnManagerService pawnManagerService;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
@@ -67,25 +67,25 @@ public class PawnEventService {
         for (PawnDto dto : serverPawnsEvent.getPawns()) {
             Preconditions.checkArgument(Objects.equals(server.getId(), dto.getServerId()));
 
-            Pawn pawn = managerPawnService.toEntity(dto,
+            Pawn pawn = pawnManagerService.toEntity(dto,
                     pawnRepository.findByUuid(dto.getUuid()).orElseGet(Pawn::new));
 
             pawn.setSeen(seen);
 
             pawnUuids.add(pawn.getUuid());
 
-            if (pawn.getUser() != null) {
-                // TODO
-                //pawn.getUser().setX(pawn.getX());
-                //pawn.getUser().setY(pawn.getY());
-                //pawn.getUser().setZ(pawn.getZ());
-                //pawn.getUser().setPitch(pawn.getPitch());
-                //pawn.getUser().setYaw(pawn.getYaw());
-                //pawn.getUser().setServer(server);
-                //pawn.getUser().setSeen(seen);
+            //if (pawn.getUser() != null) {
+            // TODO
+            //pawn.getUser().setX(pawn.getX());
+            //pawn.getUser().setY(pawn.getY());
+            //pawn.getUser().setZ(pawn.getZ());
+            //pawn.getUser().setPitch(pawn.getPitch());
+            //pawn.getUser().setYaw(pawn.getYaw());
+            //pawn.getUser().setServer(server);
+            //pawn.getUser().setSeen(seen);
 
-                //userIds.add(pawn.getUser().getId());
-            }
+            //userIds.add(pawn.getUser().getId());
+            //}
 
             if (pawn.getId() == null) {
                 pawn = pawnRepository.save(pawn);

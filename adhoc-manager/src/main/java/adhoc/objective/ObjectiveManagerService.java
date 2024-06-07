@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerObjectiveService {
+public class ObjectiveManagerService {
 
     private final ObjectiveRepository objectiveRepository;
     private final RegionRepository regionRepository;
@@ -57,7 +57,7 @@ public class ManagerObjectiveService {
         return objectiveService.toDto(objective);
     }
 
-    public Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
+    Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         objective.setRegion(region);
@@ -87,7 +87,7 @@ public class ManagerObjectiveService {
         return objective;
     }
 
-    public Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
+    Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
         Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         Set<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()

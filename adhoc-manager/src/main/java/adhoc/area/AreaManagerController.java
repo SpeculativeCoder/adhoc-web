@@ -20,42 +20,30 @@
  * SOFTWARE.
  */
 
-package adhoc.faction;
+package adhoc.area;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Transactional
-@Service
+@RestController
+@RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerFactionService {
+public class AreaManagerController {
 
-    private final FactionRepository factionRepository;
+    private final AreaReconcileService areaReconcileService;
 
-    private final FactionService factionService;
+    @PostMapping("/servers/{serverId}/areas")
+    @PreAuthorize("hasRole('SERVER')")
+    public List<AreaDto> postServerAreas(
+            @PathVariable Long serverId,
+            @Valid @RequestBody List<AreaDto> areaDtos) {
 
-    public List<FactionDto> getServerFactions(Long serverId) {
-        return factionRepository.findAll().stream().map(factionService::toDto).toList();
-    }
-
-    public FactionDto updateFaction(FactionDto factionDto) {
-        Faction faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
-
-        return factionService.toDto(faction);
-    }
-
-    Faction toEntity(FactionDto factionDto, Faction faction) {
-        faction.setId(faction.getId());
-        faction.setIndex(faction.getIndex());
-        faction.setName(factionDto.getName());
-        faction.setColor(factionDto.getColor());
-        faction.setScore(factionDto.getScore());
-
-        return faction;
+        return areaReconcileService.reconcileServerAreas(serverId, areaDtos);
     }
 }

@@ -20,41 +20,42 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.faction;
 
-import adhoc.faction.FactionRepository;
-import adhoc.server.ServerRepository;
-import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerPawnService {
+public class FactionManagerService {
 
-    private final UserRepository userRepository;
     private final FactionRepository factionRepository;
-    private final ServerRepository serverRepository;
 
-    public Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
-        pawn.setUuid(pawnDto.getUuid());
-        pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
-        pawn.setIndex(pawnDto.getIndex());
-        pawn.setName(pawnDto.getName());
-        pawn.setDescription(pawnDto.getDescription());
-        pawn.setX(pawnDto.getX());
-        pawn.setY(pawnDto.getY());
-        pawn.setZ(pawnDto.getZ());
-        pawn.setPitch(pawnDto.getPitch());
-        pawn.setYaw(pawnDto.getYaw());
-        pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
-        pawn.setHuman(pawnDto.getHuman());
-        pawn.setFaction(pawnDto.getFactionId() == null ? null : factionRepository.getReferenceById(pawnDto.getFactionId()));
+    private final FactionService factionService;
 
-        return pawn;
+    public List<FactionDto> getServerFactions(Long serverId) {
+        return factionRepository.findAll().stream().map(factionService::toDto).toList();
+    }
+
+    public FactionDto updateFaction(FactionDto factionDto) {
+        Faction faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
+
+        return factionService.toDto(faction);
+    }
+
+    Faction toEntity(FactionDto factionDto, Faction faction) {
+        faction.setId(faction.getId());
+        faction.setIndex(faction.getIndex());
+        faction.setName(factionDto.getName());
+        faction.setColor(factionDto.getColor());
+        faction.setScore(factionDto.getScore());
+
+        return faction;
     }
 }

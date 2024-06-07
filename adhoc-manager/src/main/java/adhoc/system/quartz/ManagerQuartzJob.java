@@ -22,18 +22,17 @@
 
 package adhoc.system.quartz;
 
-import adhoc.faction.FactionScoreService;
-import adhoc.faction.ManagerFactionService;
-import adhoc.pawn.PawnPurgeService;
-import adhoc.server.ServerManageService;
-import adhoc.server.ServerPurgeService;
+import adhoc.faction.FactionScoreJobService;
+import adhoc.pawn.PawnPurgeJobService;
+import adhoc.server.ServerManagerJobService;
+import adhoc.server.ServerPurgeJobService;
 import adhoc.system.event.Event;
-import adhoc.task.ManagerTaskService;
-import adhoc.task.server.ManagerServerTaskService;
-import adhoc.user.ManagerUserService;
-import adhoc.user.UserLeaveService;
-import adhoc.user.UserPurgeService;
-import adhoc.user.UserScoreService;
+import adhoc.task.TaskDomainJobService;
+import adhoc.task.TaskManagerJobService;
+import adhoc.task.server.ServerTaskManagerJobService;
+import adhoc.user.UserManagerJobService;
+import adhoc.user.UserPurgeJobService;
+import adhoc.user.UserScoreJobService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
@@ -54,17 +53,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagerQuartzJob implements Job {
 
-    private final ServerManageService serverManageService;
-    private final ServerPurgeService serverPurgeService;
-    private final ManagerTaskService managerTaskService;
-    private final ManagerServerTaskService managerServerTaskService;
-    private final ManagerFactionService managerFactionService;
-    private final FactionScoreService factionScoreService;
-    private final ManagerUserService managerUserService;
-    private final UserScoreService userScoreService;
-    private final UserLeaveService userLeaveService;
-    private final UserPurgeService userPurgeService;
-    private final PawnPurgeService pawnPurgeService;
+    private final ServerManagerJobService serverManagerJobService;
+    private final ServerPurgeJobService serverPurgeJobService;
+    private final TaskManagerJobService taskManagerJobService;
+    private final TaskDomainJobService taskDomainJobService;
+    private final ServerTaskManagerJobService serverTaskManagerJobService;
+    private final FactionScoreJobService factionScoreJobService;
+    private final UserManagerJobService userManagerJobService;
+    private final UserScoreJobService userScoreJobService;
+    private final UserPurgeJobService userPurgeJobService;
+    private final PawnPurgeJobService pawnPurgeJobService;
 
     private final SimpMessageSendingOperations stomp;
 
@@ -78,37 +76,34 @@ public class ManagerQuartzJob implements Job {
             //log.info("jobName={}", jobName);
             switch (jobName) {
             case ManagerQuartzConfiguration.MANAGE_SERVERS:
-                events = serverManageService.manageServers();
+                events = serverManagerJobService.manageServers();
                 break;
-            case ManagerQuartzConfiguration.REFRESH_TASKS:
-                managerTaskService.refreshTasks();
+            case ManagerQuartzConfiguration.MANAGE_TASKS:
+                taskManagerJobService.manageTasks();
                 break;
             case ManagerQuartzConfiguration.MANAGE_TASK_DOMAINS:
-                events = managerTaskService.manageTaskDomains();
+                events = taskDomainJobService.manageTaskDomains();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SERVER_TASKS:
-                managerServerTaskService.manageServerTasks();
+                serverTaskManagerJobService.manageServerTasks();
                 break;
-            case ManagerQuartzConfiguration.MANAGE_FACTION_SCORES:
-                factionScoreService.manageFactionScores();
+            case ManagerQuartzConfiguration.AWARD_AND_DECAY_FACTION_SCORES:
+                factionScoreJobService.awardAndDecayFactionScores();
                 break;
-            case ManagerQuartzConfiguration.MANAGE_USER_SCORES:
-                userScoreService.manageUserScores();
+            case ManagerQuartzConfiguration.AWARD_AND_DECAY_USER_SCORES:
+                userScoreJobService.awardAndDecayUserScores();
                 break;
-            case ManagerQuartzConfiguration.MANAGE_USER_LOCATIONS:
-                managerUserService.manageUserLocations();
-                break;
-            case ManagerQuartzConfiguration.LEAVE_UNSEEN_USERS:
-                userLeaveService.leaveUnseenUsers();
+            case ManagerQuartzConfiguration.MANAGE_USERS:
+                userManagerJobService.manageUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_USERS:
-                userPurgeService.purgeOldUsers();
+                userPurgeJobService.purgeOldUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_SERVERS:
-                serverPurgeService.purgeOldServers();
+                serverPurgeJobService.purgeOldServers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_PAWNS:
-                pawnPurgeService.purgeOldPawns();
+                pawnPurgeJobService.purgeOldPawns();
                 break;
             default:
                 log.warn("Skipping unknown manager quartz job! jobName={}", jobName);

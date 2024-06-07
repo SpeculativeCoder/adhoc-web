@@ -20,42 +20,39 @@
  * SOFTWARE.
  */
 
-package adhoc.faction;
+package adhoc.user;
 
-import com.google.common.base.Preconditions;
-import jakarta.validation.Valid;
+import adhoc.pawn.PawnRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDateTime;
 
-@RestController
-@RequestMapping("/api")
+@Transactional
+@Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerFactionController {
+public class UserManagerService {
 
-    private final ManagerFactionService managerFactionService;
+    private final UserRepository userRepository;
+    private final PawnRepository pawnRepository;
 
-    @GetMapping("/servers/{serverId}/factions")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<FactionDto> getServerFactions(
-            @PathVariable Long serverId) {
+    private final UserService userService;
 
-        return managerFactionService.getServerFactions(serverId);
+    public UserDto updateUser(UserDto userDto) {
+        return userService.toDto(
+                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }
 
-    @PutMapping("/factions/{factionId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public FactionDto putFaction(
-            @PathVariable("factionId") Long factionId,
-            @Valid @RequestBody FactionDto factionDto) {
-        Preconditions.checkArgument(Objects.equals(factionId, factionDto.getId()),
-                "Faction ID mismatch: %s != %s", factionId, factionDto.getId());
+    User toEntity(UserDto userDto, User user) {
+        // TODO
+        //user.setName(userDto.getName());
+        //user.setFaction(user.getFaction());
 
-        return managerFactionService.updateFaction(factionDto);
+        user.setUpdated(LocalDateTime.now());
+
+        return user;
     }
 }

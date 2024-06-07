@@ -48,7 +48,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ServerManageService {
+public class ServerManagerJobService {
 
     private final ServerProperties serverProperties;
 
@@ -61,8 +61,8 @@ public class ServerManageService {
     private final AreaGroupsFactory areaGroupsFactory;
 
     /**
-     * Manage the required servers to represent the areas within each region.
-     * This will typically be based on number of players in each area.
+     * Manage servers to ensure every area is being represented by a server, creating new servers as needed.
+     * Some servers may represent more than one area - this will typically be based on number of players in each area.
      */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
@@ -81,10 +81,12 @@ public class ServerManageService {
                 for (Set<Area> areaGroup : areaGroups) {
                     // TODO: prefer searching by area(s) that have human(s) in them
                     Area firstArea = areaGroup.iterator().next();
+
+                    // try to use an existing server for this area group, otherwise we will need to create a new server
                     Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
 
-                    // adjust server to represent this region and area group
-                    boolean emitEvent = manageServer(server, region, areaGroup);
+                    // adjust server as necessary to ensure it is representing this region and area group
+                    boolean emitEvent = updateServerWithRegionAndAreaGroup(server, region, areaGroup);
 
                     if (server.getId() == null) {
                         server = serverRepository.save(server);
@@ -101,8 +103,9 @@ public class ServerManageService {
                 // any servers in this region that are no longer used should be adjusted to ensure they are not representing any areas
                 try (Stream<Server> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedServerIds)) {
                     unusedServers.forEach(unusedServer -> {
+                        log.trace("Managing unused server {} for region {}", unusedServer, region);
 
-                        boolean emitEvent = manageServer(unusedServer, region, Collections.emptySet());
+                        boolean emitEvent = updateServerWithRegionAndAreaGroup(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
                             events.add(serverEventService.toServerUpdatedEvent(unusedServer));
@@ -115,8 +118,8 @@ public class ServerManageService {
         return events;
     }
 
-    private boolean manageServer(Server server, Region region, Set<Area> areaGroup) {
-        log.trace("Managing server {} for region {} area group {}", server, region, areaGroup);
+    private boolean updateServerWithRegionAndAreaGroup(Server server, Region region, Set<Area> areaGroup) {
+        log.trace("Updating server {} with region {} and area group {}", server, region, areaGroup);
 
         Optional<ServerTask> optionalServerTask = Optional.ofNullable(server.getId()).flatMap(serverTaskRepository::findFirstByServerId);
 
@@ -131,7 +134,7 @@ public class ServerManageService {
         // (this will trigger the starting of a server task via the hosting service)
         boolean enabled = !areaGroup.isEmpty();
 
-        // remain marked as active only if previously marked as active and the task is still alive
+        // only remain marked as active if there is still a server task
         boolean active = server.isActive() && optionalServerTask.isPresent();
 
         String publicIp = optionalServerTask
@@ -147,7 +150,6 @@ public class ServerManageService {
                 .orElse(null);
 
         String webSocketUrl = null;
-
         if (server.isEnabled() && active &&
                 publicIp != null && publicWebSocketPort != null &&
                 (domain != null || !serverProperties.getSsl().isEnabled())) {

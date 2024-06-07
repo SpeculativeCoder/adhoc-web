@@ -41,13 +41,12 @@ import java.util.Date;
 public class ManagerQuartzConfiguration {
 
     public static final String MANAGE_SERVERS = "manageServers";
-    public static final String REFRESH_TASKS = "refreshTasks";
+    public static final String MANAGE_TASKS = "manageTasks";
     public static final String MANAGE_SERVER_TASKS = "manageServerTasks";
     public static final String MANAGE_TASK_DOMAINS = "manageTaskDomains";
-    public static final String MANAGE_FACTION_SCORES = "manageFactionScores";
-    public static final String MANAGE_USER_SCORES = "manageUserScores";
-    public static final String MANAGE_USER_LOCATIONS = "manageUserLocations";
-    public static final String LEAVE_UNSEEN_USERS = "leaveUnseenUsers";
+    public static final String AWARD_AND_DECAY_FACTION_SCORES = "awardAndDecayFactionScores";
+    public static final String AWARD_AND_DECAY_USER_SCORES = "awardAndDecayUserScores";
+    public static final String MANAGE_USERS = "manageUsers";
     public static final String PURGE_OLD_USERS = "purgeOldUsers";
     public static final String PURGE_OLD_SERVERS = "purgeOldServers";
     public static final String PURGE_OLD_PAWNS = "purgeOldPawns";
@@ -61,16 +60,16 @@ public class ManagerQuartzConfiguration {
                 .forJob(MANAGE_SERVERS).withIdentity(MANAGE_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 100))).build();
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
     }
 
     @Bean
-    public Trigger refreshTasksTrigger() {
+    public Trigger manageTasksTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(REFRESH_TASKS).withIdentity(REFRESH_TASKS)
+                .forJob(MANAGE_TASKS).withIdentity(MANAGE_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 100))).build();
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
     }
 
     @Bean
@@ -79,7 +78,7 @@ public class ManagerQuartzConfiguration {
                 .forJob(MANAGE_TASK_DOMAINS).withIdentity(MANAGE_TASK_DOMAINS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 100))).build();
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
     }
 
     @Bean
@@ -88,43 +87,34 @@ public class ManagerQuartzConfiguration {
                 .forJob(MANAGE_SERVER_TASKS).withIdentity(MANAGE_SERVER_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 100))).build();
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
     }
 
     @Bean
-    public Trigger manageFactionScoresTrigger() {
+    public Trigger awardAndDecayFactionScoresTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_FACTION_SCORES).withIdentity(MANAGE_FACTION_SCORES)
+                .forJob(AWARD_AND_DECAY_FACTION_SCORES).withIdentity(AWARD_AND_DECAY_FACTION_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 100))).build();
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
     }
 
     @Bean
     public Trigger manageUserScoresTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_USER_SCORES).withIdentity(MANAGE_USER_SCORES)
+                .forJob(AWARD_AND_DECAY_USER_SCORES).withIdentity(AWARD_AND_DECAY_USER_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 100))).build();
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
     }
 
     @Bean
-    public Trigger manageUserLocationsTrigger() {
+    public Trigger manageUsersTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_USER_LOCATIONS).withIdentity(MANAGE_USER_LOCATIONS)
+                .forJob(MANAGE_USERS).withIdentity(MANAGE_USERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 100))).build();
-    }
-
-    @Bean
-    public Trigger leaveUnseenUsersTrigger() {
-        return TriggerBuilder.newTrigger()
-                .forJob(LEAVE_UNSEEN_USERS).withIdentity(LEAVE_UNSEEN_USERS)
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 100))).build();
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
     }
 
     @Bean
@@ -133,7 +123,7 @@ public class ManagerQuartzConfiguration {
                 .forJob(PURGE_OLD_USERS).withIdentity(PURGE_OLD_USERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 100))).build();
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
     }
 
     @Bean
@@ -142,7 +132,7 @@ public class ManagerQuartzConfiguration {
                 .forJob(PURGE_OLD_SERVERS).withIdentity(PURGE_OLD_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 100))).build();
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
     }
 
     @Bean
@@ -151,7 +141,7 @@ public class ManagerQuartzConfiguration {
                 .forJob(PURGE_OLD_PAWNS).withIdentity(PURGE_OLD_PAWNS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusSeconds(startOffset += 100))).build();
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
     }
 
     @Bean
@@ -160,8 +150,8 @@ public class ManagerQuartzConfiguration {
     }
 
     @Bean
-    public JobDetail refreshTasksJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(REFRESH_TASKS).storeDurably().build();
+    public JobDetail manageTasksJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_TASKS).storeDurably().build();
     }
 
     @Bean
@@ -175,23 +165,18 @@ public class ManagerQuartzConfiguration {
     }
 
     @Bean
-    public JobDetail manageFactionScoresJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_FACTION_SCORES).storeDurably().build();
+    public JobDetail awardAndDecayFactionScoresJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(AWARD_AND_DECAY_FACTION_SCORES).storeDurably().build();
     }
 
     @Bean
-    public JobDetail manageUserScoresJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_USER_SCORES).storeDurably().build();
+    public JobDetail awardAndDecayUserScoresJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(AWARD_AND_DECAY_USER_SCORES).storeDurably().build();
     }
 
     @Bean
-    public JobDetail manageUserLocationsJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_USER_LOCATIONS).storeDurably().build();
-    }
-
-    @Bean
-    public JobDetail leaveUnseenUsersJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(LEAVE_UNSEEN_USERS).storeDurably().build();
+    public JobDetail manageUsersJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_USERS).storeDurably().build();
     }
 
     @Bean

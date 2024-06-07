@@ -59,6 +59,7 @@ public class UserNavigateService {
         Preconditions.checkArgument(user.getServer() == sourceServer);
 
         Server destinationServer = destinationArea.getServer();
+
         if (destinationServer == null) {
             log.warn("User {} tried to navigate to area {} which does not have a server!", user.getId(), destinationArea.getId());
             return ResponseEntity.unprocessableEntity().build();

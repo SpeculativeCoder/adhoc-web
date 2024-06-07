@@ -27,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -43,11 +42,13 @@ public class MessageService {
 
     @Transactional(readOnly = true)
     public Page<MessageDto> getMessages(Optional<Long> optionalUserId, Pageable pageable) {
+        // TODO
         return messageRepository.findByUserNullOrUserId(optionalUserId.orElse(null), pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
     public MessageDto getMessage(Long id, Optional<Long> optionalUserId) {
+        // TODO
         return toDto(messageRepository.findByIdAnd_UserNullOrUserId_(id, optionalUserId.orElse(null)));
     }
 
@@ -60,11 +61,6 @@ public class MessageService {
         message.setText(text);
 
         messageRepository.save(message);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void addGlobalMessageInNewTransaction(String text) {
-        addGlobalMessage(text);
     }
 
     MessageDto toDto(Message message) {

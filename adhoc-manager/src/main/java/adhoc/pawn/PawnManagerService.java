@@ -20,10 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.pawn;
 
-import adhoc.region.RegionRepository;
+import adhoc.faction.FactionRepository;
 import adhoc.server.ServerRepository;
+import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,26 +34,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerAreaService {
+public class PawnManagerService {
 
-    private final RegionRepository regionRepository;
+    private final UserRepository userRepository;
+    private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
 
-    public Area toEntity(AreaDto areaDto, Area area) {
-        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
-        area.setIndex(areaDto.getIndex());
-        area.setName(areaDto.getName());
-        area.setX(areaDto.getX());
-        area.setY(areaDto.getY());
-        area.setZ(areaDto.getZ());
-        area.setSizeX(areaDto.getSizeX());
-        area.setSizeY(areaDto.getSizeY());
-        area.setSizeZ(areaDto.getSizeZ());
-        //noinspection OptionalAssignedToNull
-        if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
-        }
+    Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
+        pawn.setUuid(pawnDto.getUuid());
+        pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
+        pawn.setIndex(pawnDto.getIndex());
+        pawn.setName(pawnDto.getName());
+        pawn.setDescription(pawnDto.getDescription());
+        pawn.setX(pawnDto.getX());
+        pawn.setY(pawnDto.getY());
+        pawn.setZ(pawnDto.getZ());
+        pawn.setPitch(pawnDto.getPitch());
+        pawn.setYaw(pawnDto.getYaw());
+        pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
+        pawn.setHuman(pawnDto.getHuman());
+        pawn.setFaction(pawnDto.getFactionId() == null ? null : factionRepository.getReferenceById(pawnDto.getFactionId()));
 
-        return area;
+        return pawn;
     }
 }

@@ -50,7 +50,7 @@ public class ObjectiveService {
         return toDto(objectiveRepository.getReferenceById(objectiveId));
     }
 
-    public ObjectiveDto toDto(Objective objective) {
+    ObjectiveDto toDto(Objective objective) {
         return new ObjectiveDto(
                 objective.getId(),
                 objective.getVersion(),

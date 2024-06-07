@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerWorldService {
+public class WorldManagerService {
 
     private final CoreProperties coreProperties;
     private final ManagerProperties managerProperties;
@@ -350,7 +350,7 @@ public class ManagerWorldService {
         messageService.addGlobalMessage(String.format("World %d initialized", world.getId()));
     }
 
-    private WorldUpdatedEvent toWorldUpdatedEvent(World world) {
+    WorldUpdatedEvent toWorldUpdatedEvent(World world) {
         return new WorldUpdatedEvent(worldService.toDto(world));
     }
 }

@@ -20,33 +20,44 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ServerPurgeService {
+public class UserPurgeJobService {
 
-    private final ServerRepository serverRepository;
+    private final UserRepository userRepository;
 
-    public void purgeOldServers() {
-        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public void purgeOldUsers() {
+        log.trace("Purging old users...");
+        Set<Long> oldUserIds = new TreeSet<>();
 
-        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
-            oldServers.forEach(oldServer -> {
-                log.debug("Deleting old server {}", oldServer.getId());
+        // regular cleanup of anon users who had a temp account created but never were seen in a server
+        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
+        // regular cleanup of anon users who were last seen in a server a long time ago
+        oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
 
-                serverRepository.delete(oldServer);
-            });
+        if (!oldUserIds.isEmpty()) {
+            log.debug("Purging old users: {}", oldUserIds);
+
+            userRepository.deleteAllByIdInBatch(oldUserIds);
         }
     }
 }

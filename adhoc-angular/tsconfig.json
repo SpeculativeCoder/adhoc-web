@@ -1,11 +1,7 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
-    "forceConsistentCasingInFileNames": false,
-    //true,
-    "strictPropertyInitialization": false,
     "strict": false,
     //true,
     "noImplicitOverride": true,

@@ -42,10 +42,6 @@
   </properties>
 
   <build>
-    <resources>
-
-    </resources>
-
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -62,8 +58,8 @@
               <workingDirectory>.</workingDirectory>
               <arguments>
                 <argument>install</argument>
-                <!-- TODO: disable when ng-bootstrap updated -->
-                <argument>--legacy-peer-deps</argument>
+                <!-- this is sometimes needed e.g. if using older version of ng-boostrap -->
+                <!--<argument>&#45;&#45;legacy-peer-deps</argument>-->
               </arguments>
             </configuration>
           </execution>

@@ -130,7 +130,7 @@ public class ServerTaskManagerJobService {
 
         serverTaskRepository.save(serverTask);
 
-        messageService.addGlobalMessage(String.format("Server task %d created", server.getId()));
+        //messageService.addGlobalMessage(String.format("Server task %d created", server.getId()));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -139,6 +139,6 @@ public class ServerTaskManagerJobService {
     void deleteServerTaskInNewTransaction(Long serverTaskId) {
         serverTaskRepository.deleteById(serverTaskId);
 
-        messageService.addGlobalMessage(String.format("Server task %d deleted", serverTaskId));
+        //messageService.addGlobalMessage(String.format("Server task %d deleted", serverTaskId));
     }
 }

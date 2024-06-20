@@ -113,6 +113,6 @@ public class TaskDomainJobService {
             task.setDomain(domain);
         }
 
-        messageService.addGlobalMessage(String.format("%s task %d mapped to domain %s", task.getTaskType().getText(), task.getId(), domain));
+        messageService.addGlobalMessage(String.format("Task %d (of type %s) mapped to domain %s", task.getId(), task.getTaskType().name(), domain));
     }
 }

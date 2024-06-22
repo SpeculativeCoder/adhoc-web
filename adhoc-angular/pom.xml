@@ -129,7 +129,7 @@
       <id>angular-app-customization</id>
       <activation>
         <file>
-          <exists>src/customization/app-constants.ts</exists>
+          <exists>src/customization/app-customization.ts</exists>
         </file>
       </activation>
       <properties>

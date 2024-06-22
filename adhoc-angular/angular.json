@@ -49,7 +49,7 @@
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
               "node_modules/fabric/dist/fabric.js"
-            ]
+            ],
             "i18nMissingTranslation": "error",
             "i18nDuplicateTranslation": "error"
           },
@@ -82,8 +82,8 @@
             "customization": {
               "fileReplacements": [
                 {
-                  "replace": "src/app/app-constants.ts",
-                  "with": "src/customization/app-constants.ts"
+                  "replace": "src/app/app-customization.ts",
+                  "with": "src/customization/app-customization.ts"
                 }
               ]
             },

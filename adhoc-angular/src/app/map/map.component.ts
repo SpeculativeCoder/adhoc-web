@@ -42,9 +42,9 @@ import {StompService} from "../core/stomp.service";
 import {CommonModule, DOCUMENT} from "@angular/common";
 import {CsrfService} from "../core/csrf.service";
 import {MapComponentExtraInterface} from "./map-component-extra-interface";
-import {appExtra} from "../app-extra";
 import {Page} from "../core/page";
 import {Paging} from "../core/paging";
+import {appCustomization} from "../app-customization";
 
 @Component({
   selector: 'app-map',
@@ -107,8 +107,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               private injector: Injector,
               @Inject(DOCUMENT) private document: Document) {
 
-    if (appExtra) {
-      this.mapComponentExtra = new appExtra.MapComponentExtra(this, injector);
+    if (appCustomization.extra) {
+      this.mapComponentExtra = new appCustomization.extra.MapComponentExtra(this, injector);
     }
   }
 

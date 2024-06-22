@@ -31,8 +31,7 @@ import {CsrfService} from "./core/csrf.service";
 import {HeaderInterceptor} from "./core/http-interceptor/header-interceptor";
 import {PropertiesService} from "./properties/properties.service";
 import {Faction} from "./faction/faction";
-import {appConstants} from "./app-constants";
-import {appExtra} from "./app-extra";
+import {appCustomization} from "./app-customization";
 import {Meta} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 
@@ -48,7 +47,7 @@ import {CommonModule} from "@angular/common";
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, OnDestroy {
-  appTitle = appConstants.appTitle;
+  appTitle = appCustomization.appTitle;
 
   featureFlags: string;
   extra: boolean;
@@ -68,13 +67,14 @@ export class AppComponent implements OnInit, OnDestroy {
               private router: Router,
               private meta: Meta) {
 
-    this.extra = !!appExtra;
+    // TODO
+    this.extra = !!appCustomization.extra;
   }
 
   ngOnInit() {
     this.featureFlags = this.configService.featureFlags;
 
-    this.meta.addTag({name: 'description', content: appConstants.appDescription});
+    this.meta.addTag({name: 'description', content: appCustomization.appDescription});
 
     this.userService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser = currentUser;

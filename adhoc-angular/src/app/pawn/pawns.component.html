@@ -63,7 +63,7 @@
       </tbody>
     </table>
   </div>
-  <div class="d-flex justify-content-end" *ngIf="pawns.page.totalElements">
+  <div class="d-flex justify-content-end" *ngIf="pawns?.page?.totalElements">
     <div class="mt-2 me-4">{{ (pawns.page.number * pawns.page.size) + 1 }} - {{ (pawns.page.number * pawns.page.size) + pawns.content.length }} of {{ pawns.page.totalElements }}</div>
     <ngb-pagination [page]="pawns.page.number + 1"
                     [pageSize]="pawns.page.size"

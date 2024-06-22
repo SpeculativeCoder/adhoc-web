@@ -20,7 +20,17 @@
  * SOFTWARE.
  */
 
-//import {extra} from "./adhoc-angular-extra/extra";
+/** you can create a copy of this in src/customization and tailor it to your needs */
+export const appCustomization = {
+  appTitle: 'WebApp',
+  appDescription: 'Web Application',
+  appDeveloper: 'the developer(s) of this web page / application',
 
-/** if adhoc-angular-extra is available this can be set to <tt>extra</tt> */
-export const appExtra = null;
+  /** any additional about information (e.g. assets used etc.) can go in here */
+  aboutPageMoreHtml: `
+<br/>
+  `,
+
+  /** if adhoc-angular-extra is available this can be set to <tt>extra</tt> */
+  extra: null
+};

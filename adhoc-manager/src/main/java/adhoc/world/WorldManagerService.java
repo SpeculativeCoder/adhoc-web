@@ -33,7 +33,6 @@ import adhoc.properties.CoreProperties;
 import adhoc.properties.ManagerProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
@@ -98,7 +97,7 @@ public class WorldManagerService {
         //team1.setId(1L);
         team1.setIndex(0);
         team1.setName("Alpha");
-        team1.setColor("#0088FF");
+        team1.setColor("#FFFF00");
         team1.setScore(BigDecimal.valueOf(0.0));
         team1 = factionRepository.save(team1);
 
@@ -106,7 +105,7 @@ public class WorldManagerService {
         //team2.setId(2L);
         team2.setIndex(1);
         team2.setName("Beta");
-        team2.setColor("#FF2200");
+        team2.setColor("#00AAFF");
         team2.setScore(BigDecimal.valueOf(0.0));
         team2 = factionRepository.save(team2);
 
@@ -114,17 +113,17 @@ public class WorldManagerService {
         //team3.setId(3L);
         team3.setIndex(2);
         team3.setName("Gamma");
-        team3.setColor("#FFFF00");
+        team3.setColor("#AA00FF");
         team3.setScore(BigDecimal.valueOf(0.0));
         team3 = factionRepository.save(team3);
 
-        Faction team4 = new Faction();
-        //team4.setId(4L);
-        team4.setIndex(3);
-        team4.setName("Delta");
-        team4.setColor("#8800FF");
-        team4.setScore(BigDecimal.valueOf(0.0));
-        team4 = factionRepository.save(team4);
+        //Faction team4 = new Faction();
+        ////team4.setId(4L);
+        //team4.setIndex(3);
+        //team4.setName("Delta");
+        //team4.setColor("#FF2200");
+        //team4.setScore(BigDecimal.valueOf(0.0));
+        //team4 = factionRepository.save(team4);
 
         Region region1 = new Region();
         //region1.setId(1L);
@@ -163,18 +162,18 @@ public class WorldManagerService {
 
         region1.setAreas(Arrays.asList(area1, area2));
 
-        Server server1 = new Server();
-        server1.setRegion(region1);
-        server1.setAreas(Arrays.asList(area1));
-        server1.setMapName(region1.getMapName());
-        server1.setX(region1.getX());
-        server1.setY(region1.getY());
-        server1.setZ(region1.getZ());
-        server1.setEnabled(true);
-        server1.setActive(false);
-        server1 = serverRepository.save(server1);
-
-        area1.setServer(server1);
+        //Server server1 = new Server();
+        //server1.setRegion(region1);
+        //server1.setAreas(Arrays.asList(area1));
+        //server1.setMapName(region1.getMapName());
+        //server1.setX(region1.getX());
+        //server1.setY(region1.getY());
+        //server1.setZ(region1.getZ());
+        //server1.setEnabled(true);
+        //server1.setActive(false);
+        //server1 = serverRepository.save(server1);
+        //
+        //area1.setServer(server1);
 
         //Server server2 = new Server();
         //server2.setX(area2.getX());
@@ -224,8 +223,8 @@ public class WorldManagerService {
         objectiveA3.setX(2000.0);
         objectiveA3.setY(1800.0);
         objectiveA3.setZ(0.0);
-        objectiveA3.setFaction(team4);
-        objectiveA3.setInitialFaction(team4);
+        //objectiveA3.setFaction(team4);
+        //objectiveA3.setInitialFaction(team4);
         objectiveA3.setArea(area1);
         objectiveA3 = objectiveRepository.save(objectiveA3);
 
@@ -308,31 +307,31 @@ public class WorldManagerService {
             betaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             betaUser = userRepository.save(betaUser);
 
-            User deltaUser = new User();
-            deltaUser.setName("TestDelta");
-            deltaUser.setEmail("testdelta@" + coreProperties.getAdhocDomain());
-            deltaUser.setFaction(team3);
-            deltaUser.setHuman(true);
-            deltaUser.setScore(BigDecimal.valueOf(20.0));
-            deltaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
-            deltaUser.setCreated(userCreated);
-            deltaUser.setUpdated(userCreated);
-            //deltaUser.setSeen(seen);
-            deltaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
-            deltaUser = userRepository.save(deltaUser);
-
             User gammaUser = new User();
             gammaUser.setName("TestGamma");
             gammaUser.setEmail("testgamma@" + coreProperties.getAdhocDomain());
-            gammaUser.setFaction(team4);
+            gammaUser.setFaction(team3);
             gammaUser.setHuman(true);
-            gammaUser.setScore(BigDecimal.valueOf(30.0));
+            gammaUser.setScore(BigDecimal.valueOf(20.0));
             gammaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
             gammaUser.setCreated(userCreated);
             gammaUser.setUpdated(userCreated);
             //gammaUser.setSeen(seen);
             gammaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             gammaUser = userRepository.save(gammaUser);
+
+            //User deltaUser = new User();
+            //deltaUser.setName("TestDelta");
+            //deltaUser.setEmail("testdelta@" + coreProperties.getAdhocDomain());
+            //deltaUser.setFaction(team4);
+            //deltaUser.setHuman(true);
+            //deltaUser.setScore(BigDecimal.valueOf(30.0));
+            //deltaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
+            //deltaUser.setCreated(userCreated);
+            //deltaUser.setUpdated(userCreated);
+            ////deltaUser.setSeen(seen);
+            //deltaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
+            //deltaUser = userRepository.save(deltaUser);
         }
 
         //Pawn pawn1 = new Pawn();

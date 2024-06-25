@@ -77,7 +77,7 @@
       </notes>
       <segment>
         <source>««</source>
-        <target>«« First</target>
+        <target>««&nbsp;First</target>
       </segment>
     </unit>
     <unit id="ngb.pagination.previous">
@@ -86,7 +86,7 @@
       </notes>
       <segment>
         <source>«</source>
-        <target>« Prev</target>
+        <target>«&nbsp;Prev</target>
       </segment>
     </unit>
     <unit id="ngb.pagination.next">
@@ -95,7 +95,7 @@
       </notes>
       <segment>
         <source>»</source>
-        <target>Next »</target>
+        <target>Next&nbsp;»</target>
       </segment>
     </unit>
     <unit id="ngb.pagination.last">
@@ -104,7 +104,7 @@
       </notes>
       <segment>
         <source>»»</source>
-        <target>Last »»</target>
+        <target>Last&nbsp;»»</target>
       </segment>
     </unit>
     <unit id="ngb.pagination.first-aria">

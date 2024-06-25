@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {SortDirection} from "../shared/table-sort/header-sort.component";
+import {SortDirection} from "../table-sort/header-sort.component";
 
 export class Sort {
 

@@ -26,8 +26,8 @@ import {HttpClient} from "@angular/common/http";
 import {MessageService} from "../message/message.service";
 import {StompService} from "../core/stomp.service";
 import {Observable} from "rxjs";
-import {Paging} from "../core/paging";
-import {Page} from "../core/page";
+import {Paging} from "../shared/paging/paging";
+import {Page} from "../shared/paging/page";
 
 @Injectable({
   providedIn: 'root'

@@ -61,7 +61,7 @@
     </table>
   </div>
   <div class="d-flex justify-content-end" *ngIf="areas?.page?.totalElements">
-    <div class="mt-2 me-4">{{ (areas.page.number * areas.page.size) + 1 }} - {{ (areas.page.number * areas.page.size) + areas.content.length }} of {{ areas.page.totalElements }}</div>
+    <div class="mt-2 me-4 text-nowrap">{{ (areas.page.number * areas.page.size) + 1 }} - {{ (areas.page.number * areas.page.size) + areas.content.length }} of {{ areas.page.totalElements }}</div>
     <ngb-pagination [page]="areas.page.number + 1"
                     [pageSize]="areas.page.size"
                     [collectionSize]="areas.page.totalElements"

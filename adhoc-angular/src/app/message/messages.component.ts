@@ -28,11 +28,11 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {Router, RouterLink} from "@angular/router";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
-import {Page} from "../core/page";
+import {Page} from "../shared/paging/page";
 import {Message} from "./message";
-import {Paging} from "../core/paging";
+import {Paging} from "../shared/paging/paging";
 import {forkJoin} from "rxjs";
-import {Sort} from "../core/sort";
+import {Sort} from "../shared/paging/sort";
 
 @Component({
   selector: 'app-messages',

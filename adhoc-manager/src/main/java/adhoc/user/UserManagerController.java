@@ -47,7 +47,7 @@ public class UserManagerController {
 
     private final UserManagerService userManagerService;
     private final UserJoinService userJoinService;
-    private final UserNavigateService userNavigateService;
+    private final UserNavigateManagerService userNavigateManagerService;
     private final UserEventService userEventService;
 
     @PutMapping("/users/{userId}")
@@ -82,7 +82,7 @@ public class UserManagerController {
 
         //log.info("Server user navigate: request={}", serverUserNavigateRequest);
 
-        return userNavigateService.serverUserNavigate(serverUserNavigateRequest);
+        return userNavigateManagerService.serverUserNavigate(serverUserNavigateRequest);
     }
 
     @MessageMapping("UserDefeatedUser")

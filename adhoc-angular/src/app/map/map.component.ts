@@ -42,8 +42,8 @@ import {StompService} from "../core/stomp.service";
 import {CommonModule, DOCUMENT} from "@angular/common";
 import {CsrfService} from "../core/csrf.service";
 import {MapComponentExtraInterface} from "./map-component-extra-interface";
-import {Page} from "../core/page";
-import {Paging} from "../core/paging";
+import {Page} from "../shared/paging/page";
+import {Paging} from "../shared/paging/paging";
 import {appCustomization} from "../app-customization";
 
 @Component({

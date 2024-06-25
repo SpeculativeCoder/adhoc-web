@@ -27,8 +27,8 @@ import {StompService} from "../core/stomp.service";
 import {MessageService} from "../message/message.service";
 import {Observable} from "rxjs";
 import {User} from "../user/user";
-import {Page} from "../core/page";
-import {Paging} from "../core/paging";
+import {Page} from "../shared/paging/page";
+import {Paging} from "../shared/paging/paging";
 
 @Injectable({
   providedIn: 'root'

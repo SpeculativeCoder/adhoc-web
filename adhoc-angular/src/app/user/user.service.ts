@@ -29,8 +29,8 @@ import {StompService} from '../core/stomp.service';
 import {PropertiesService} from "../properties/properties.service";
 import {Router} from "@angular/router";
 import {UserRegisterRequest} from "./user-register-request";
-import {Paging} from "../core/paging";
-import {Page} from "../core/page";
+import {Paging} from "../shared/paging/paging";
+import {Page} from "../shared/paging/page";
 import {UserNavigateRequest} from "./user-navigate-request";
 
 @Injectable({

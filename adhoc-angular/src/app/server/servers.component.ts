@@ -31,9 +31,9 @@ import {Router, RouterLink} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
-import {Page} from "../core/page";
-import {Paging} from "../core/paging";
-import {Sort} from "../core/sort";
+import {Page} from "../shared/paging/page";
+import {Paging} from "../shared/paging/paging";
+import {Sort} from "../shared/paging/sort";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({

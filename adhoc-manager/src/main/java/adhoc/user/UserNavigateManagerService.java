@@ -43,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserNavigateService {
+public class UserNavigateManagerService {
 
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;

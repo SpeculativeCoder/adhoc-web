@@ -21,10 +21,10 @@
  */
 
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
-import {HeaderInterceptor} from './header-interceptor';
+import {CsrfInterceptor} from './csrf-interceptor';
 import {ErrorInterceptor} from './error-interceptor';
 
 export const httpInterceptorProviders = [
-  {provide: HTTP_INTERCEPTORS, useExisting: HeaderInterceptor, multi: true},
+  {provide: HTTP_INTERCEPTORS, useExisting: CsrfInterceptor, multi: true},
   {provide: HTTP_INTERCEPTORS, useExisting: ErrorInterceptor, multi: true},
 ];

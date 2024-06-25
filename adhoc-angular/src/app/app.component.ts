@@ -28,7 +28,6 @@ import {UserService} from './user/user.service';
 import {User} from './user/user';
 import {ObjectiveService} from "./objective/objective.service";
 import {CsrfService} from "./core/csrf.service";
-import {HeaderInterceptor} from "./core/http-interceptor/header-interceptor";
 import {PropertiesService} from "./properties/properties.service";
 import {Faction} from "./faction/faction";
 import {appCustomization} from "./app-customization";
@@ -60,7 +59,6 @@ export class AppComponent implements OnInit, OnDestroy {
               private factionService: FactionService,
               private controlPointService: ObjectiveService,
               private userService: UserService,
-              private headerInterceptor: HeaderInterceptor,
               private elementRef: ElementRef,
               private configService: PropertiesService,
               private route: ActivatedRoute,
@@ -86,12 +84,13 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.csrfService.getCsrf().subscribe(csrf => {
-      this.headerInterceptor.setCsrf(csrf);
-
-      //   this.stompService.setCsrf(csrf);
-      //   this.stompService.connect();
-    });
+    // TODO
+    // this.csrfService.getCsrf().subscribe(csrf => {
+    //   this.headerInterceptor.setCsrf(csrf);
+    //
+    //   //   this.stompService.setCsrf(csrf);
+    //   //   this.stompService.connect();
+    // });
   }
 
   // @HostListener("window:beforeunload")

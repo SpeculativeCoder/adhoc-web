@@ -30,8 +30,8 @@ import {StompService} from '../core/stomp.service';
 import {map} from 'rxjs/operators';
 import {FactionService} from '../faction/faction.service';
 import {CsrfService} from "../core/csrf.service";
-import {Paging} from "../core/paging";
-import {Page} from "../core/page";
+import {Paging} from "../shared/paging/paging";
+import {Page} from "../shared/paging/page";
 
 @Injectable({
   providedIn: 'root'

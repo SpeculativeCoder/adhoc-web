@@ -23,9 +23,9 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {StompService} from "../core/stomp.service";
-import {Paging} from "../core/paging";
+import {Paging} from "../shared/paging/paging";
 import {Observable} from "rxjs";
-import {Page} from "../core/page";
+import {Page} from "../shared/paging/page";
 import {Message} from "./message";
 
 @Injectable({

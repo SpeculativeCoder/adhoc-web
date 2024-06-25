@@ -22,26 +22,30 @@
 
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {Csrf} from "../csrf";
+import {mergeMap, Observable} from 'rxjs';
+import {CsrfService} from "../csrf.service";
 
 @Injectable({providedIn: 'root'})
-export class HeaderInterceptor implements HttpInterceptor {
-  private csrf: Csrf;
+export class CsrfInterceptor implements HttpInterceptor {
 
-  setCsrf(csrf: Csrf) {
-    this.csrf = csrf;
+  constructor(private csrfService: CsrfService) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (this.csrf && req.method !== 'GET') {
+    // GET requests don't need CSRF token to be set
+    if (req.method === 'GET') {
+      return next.handle(req);
+    }
+
+    // for non-GET requests, make user we have got the CSRF token then add it to the request
+    return this.csrfService.getCsrf().pipe(mergeMap(csrf => {
       req = req.clone({
         headers: req.headers
-          .set(this.csrf.headerName, this.csrf.token)
+          .set(csrf.headerName, csrf.token)
         //.set('Content-Type', 'application/json')
         //.set('Authorization', 'Basic ' + window.btoa('user:password'))
       })
-    }
-    return next.handle(req);
+      return next.handle(req);
+    }));
   }
 }

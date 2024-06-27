@@ -23,22 +23,17 @@
 import {Injectable} from '@angular/core';
 import webstomp, {Client, Message} from 'webstomp-client';
 import {Observable, Subject} from 'rxjs';
-import {Csrf} from "./csrf";
 import SockJS from "sockjs-client";
+import {CsrfService} from "./csrf.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class StompService {
-  private csrf: Csrf;
   private client: Client;
   private eventListeners: { [key: string]: Subject<object> } = {};
 
-  constructor() {
-  }
-
-  setCsrf(csrf: Csrf) {
-    this.csrf = csrf;
+  constructor(private csrfService: CsrfService) {
   }
 
   connect() {
@@ -53,11 +48,12 @@ export class StompService {
     this.client = webstomp.over(new SockJS(window.location.protocol + '//' + location.host + '/ws/stomp/user_sockjs', {}), {
       debug: false,
     });
-    let headers = {};
-    if (this.csrf) {
-      headers[this.csrf.headerName] = this.csrf.token;
-    }
-    this.client.connect(headers, () => this.onConnect(), () => this.onError());
+
+    this.csrfService.getCsrf().subscribe(csrf => {
+      let headers = {};
+      headers[csrf.headerName] = csrf.token;
+      this.client.connect(headers, () => this.onConnect(), () => this.onError());
+    });
   }
 
   disconnect() {
@@ -91,8 +87,10 @@ export class StompService {
   }
 
   private onError() {
+    // TODO
   }
 
   private onDisconnect() {
+    // TODO
   }
 }

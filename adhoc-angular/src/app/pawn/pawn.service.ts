@@ -23,8 +23,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {Pawn} from "./pawn";
 import {HttpClient} from "@angular/common/http";
-import {StompService} from "../core/stomp.service";
-import {MessageService} from "../message/message.service";
 import {Observable} from "rxjs";
 import {User} from "../user/user";
 import {Page} from "../shared/paging/page";
@@ -37,7 +35,8 @@ export class PawnService {
 
   private readonly pawnsUrl: string;
 
-  constructor(@Inject('BASE_URL') baseUrl: string, private http: HttpClient, private stomp: StompService, private messages: MessageService) {
+  constructor(@Inject('BASE_URL') baseUrl: string,
+              private http: HttpClient) {
     this.pawnsUrl = `${baseUrl}/api/pawns`;
   }
 

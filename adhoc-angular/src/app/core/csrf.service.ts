@@ -32,9 +32,10 @@ export class CsrfService {
 
   private readonly csrfUrl: string;
 
-  private csrf$: Observable<Csrf>;
+  private csrf$: Observable<Csrf> = null;
 
-  constructor(@Inject('BASE_URL') baseUrl: string, private http: HttpClient) {
+  constructor(@Inject('BASE_URL') baseUrl: string,
+              private http: HttpClient) {
     this.csrfUrl = `${baseUrl}/csrf`;
   }
 
@@ -42,8 +43,15 @@ export class CsrfService {
     return this.csrf$ || this.refreshCsrf();
   }
 
+  /** Force refresh the CSRF token information. */
   refreshCsrf() {
-    return this.csrf$ = this.http.get<Csrf>(`${this.csrfUrl}`, {withCredentials: true})
-      .pipe(shareReplay(1));
+    return this.csrf$ = this.http.get<Csrf>(`${this.csrfUrl}`).pipe(
+      shareReplay(1));
+  }
+
+  /** Clear CSRF token information, forcing it to be obtained again when next needed.
+   * Typically, this is called when the current user changes due to register/login etc. */
+  clearCsrf() {
+    this.csrf$ = null;
   }
 }

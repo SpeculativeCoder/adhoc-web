@@ -22,8 +22,6 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {StompService} from "../core/stomp.service";
-import {MessageService} from "../message/message.service";
 import {Region} from "./region";
 import {Observable} from "rxjs";
 import {Paging} from "../shared/paging/paging";
@@ -36,7 +34,8 @@ export class RegionService {
 
   private readonly regionsUrl: string;
 
-  constructor(@Inject('BASE_URL') baseUrl: string, private http: HttpClient, private stomp: StompService, private messages: MessageService) {
+  constructor(@Inject('BASE_URL') baseUrl: string,
+              private http: HttpClient) {
     this.regionsUrl = `${baseUrl}/api/regions`;
   }
 

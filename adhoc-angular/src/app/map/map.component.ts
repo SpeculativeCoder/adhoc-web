@@ -98,7 +98,6 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               private serverService: ServerService,
               private pawnService: PawnService,
               private userService: UserService,
-              private stomp: StompService,
               private configService: PropertiesService,
               private iterableDiffers: IterableDiffers,
               private keyValueDiffers: KeyValueDiffers,
@@ -130,18 +129,15 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     //   this.refreshData();
     // });
 
-    this.csrfService.getCsrf().subscribe(csrf => {
-      this.stompService.setCsrf(csrf);
-      this.stompService.connect();
-    });
-
-    this.stomp
+    this.stompService
       .observeEvent('ObjectiveTaken')
       .subscribe((event: any) => this.handleObjectiveTaken(event));
 
-    this.stomp
+    this.stompService
       .observeEvent('ServerPawns')
       .subscribe((event: any) => this.handleServerPawns(event));
+
+    this.stompService.connect();
 
     if (this.mapComponentExtra) {
       this.mapComponentExtra.ngOnInit();

@@ -24,7 +24,6 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Task} from './task';
-import {StompService} from '../core/stomp.service';
 import {Paging} from "../shared/paging/paging";
 import {Page} from "../shared/paging/page";
 
@@ -35,11 +34,8 @@ export class TaskService {
 
   private readonly tasksUrl: string;
 
-  constructor(
-    @Inject('BASE_URL') baseUrl: string,
-    private http: HttpClient,
-    private stomp: StompService
-  ) {
+  constructor(@Inject('BASE_URL') baseUrl: string,
+              private http: HttpClient) {
     this.tasksUrl = `${baseUrl}/api/tasks`;
   }
 
@@ -54,5 +50,4 @@ export class TaskService {
   updateTask(task: Task): Observable<Task> {
     return this.http.put<Task>(`${this.tasksUrl}/${task.id}`, task);
   }
-
 }

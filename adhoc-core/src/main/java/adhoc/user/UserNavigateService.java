@@ -59,23 +59,22 @@ public class UserNavigateService {
 
         User user = userRepository.getReferenceById(userId);
 
-        Region oldRegion = user.getRegion();
-        Region region;
+        Server oldServer = user.getServer();
 
         if (userNavigateRequest.getServerId() != null) {
             Server server = serverRepository.getReferenceById(userNavigateRequest.getServerId());
-            region = server.getRegion();
+            Region region = server.getRegion();
             user.setRegion(region);
             user.setServer(server);
         } else {
-            region = regionRepository.getReferenceById(userNavigateRequest.getRegionId());
+            Region region = regionRepository.getReferenceById(userNavigateRequest.getRegionId());
             user.setRegion(region);
             // TODO
             user.setServer(region.getServers().get(ThreadLocalRandom.current().nextInt(region.getServers().size())));
         }
 
-        // changing region nukes last location
-        if (region != oldRegion) {
+        // when user manually navigates to another server they will need to spawn again
+        if (user.getServer() != oldServer) {
             user.setX(null);
             user.setY(null);
             user.setZ(null);

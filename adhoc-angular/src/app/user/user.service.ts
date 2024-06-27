@@ -23,15 +23,13 @@
 import {Inject, Injectable} from '@angular/core';
 import {User} from './user';
 import {HttpClient} from '@angular/common/http';
-import {MessageService} from '../message/message.service';
 import {BehaviorSubject, mergeMap, Observable, of, take} from 'rxjs';
 import {StompService} from '../core/stomp.service';
-import {PropertiesService} from "../properties/properties.service";
-import {Router} from "@angular/router";
 import {UserRegisterRequest} from "./user-register-request";
 import {Paging} from "../shared/paging/paging";
 import {Page} from "../shared/paging/page";
 import {UserNavigateRequest} from "./user-navigate-request";
+import {CsrfService} from "../core/csrf.service";
 
 @Injectable({
   providedIn: 'root'
@@ -45,18 +43,15 @@ export class UserService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient,
-              private configService: PropertiesService,
-              private stomp: StompService,
-              private messages: MessageService,
-              private router: Router) {
+              private csrfService: CsrfService,
+              private stomp: StompService) {
 
     this.usersUrl = `${baseUrl}/api/users`;
     this.loginUrl = `${baseUrl}/login`;
 
-    this.stomp.observeEvent('UserDefeatedUser').subscribe(body => this.handleUserDefeatedUser(body['userId'], body['defeatedUserId']));
     this.stomp
-      .observeEvent('FactionScoring')
-      .subscribe((body: any) => this.handleFactionScoring(body['factionAwardedScores']));
+      .observeEvent('UserDefeatedUser')
+      .subscribe((body: any) => this.handleUserDefeatedUser(body['userId'], body['defeatedUserId']));
   }
 
   getUsers(paging: Paging = new Paging()): Observable<Page<User>> {
@@ -67,6 +62,14 @@ export class UserService {
     return this.http.get<User>(`${this.usersUrl}/${id}`);
   }
 
+  updateUser(user: User): Observable<User> {
+    return this.http.put<User>(`${this.usersUrl}/${user.id}`, user);
+  }
+
+  getCurrentUser(): Observable<User> {
+    return this.getCurrentUser$().pipe(take(1));
+  }
+
   getCurrentUser$(): Observable<User> {
     if (this.currentUser$.value) {
       return this.currentUser$;
@@ -74,40 +77,35 @@ export class UserService {
     return this.refreshCurrentUser$();
   }
 
-  refreshCurrentUser$() {
-    return this.http.get<User>(`${this.usersUrl}/current`, {withCredentials: true}).pipe(
-      mergeMap(user => {
-        this.currentUser$.next(user);
-        return this.currentUser$;
-      }));
-  }
-
-  getCurrentUser(): Observable<User> {
-    if (this.currentUser$.value) {
-      return of(this.currentUser$.value);
-    }
-    return this.refreshCurrentUser();
-  }
-
   refreshCurrentUser(): Observable<User> {
     return this.refreshCurrentUser$().pipe(take(1));
   }
 
+  refreshCurrentUser$() {
+    return this.http.get<User>(`${this.usersUrl}/current`).pipe(
+      mergeMap(user => {
+        this.currentUser$.next(user);
+        this.csrfService.clearCsrf();
+        return this.currentUser$;
+      }));
+  }
+
   register(userRegisterRequest: UserRegisterRequest): Observable<User> {
     return this.http.post(`${this.usersUrl}/register`, {...userRegisterRequest}, {
-      withCredentials: true,
       params: {
         'remember-me': userRegisterRequest.rememberMe || false
       }
     }).pipe(
       mergeMap(user => {
         this.currentUser$.next(user);
+        this.csrfService.clearCsrf();
         return of(this.currentUser$.value);
       }));
   }
 
   getCurrentUserOrRegister(): Observable<User> {
-    return this.currentUser$.value ? of(this.currentUser$.value)
+    return this.currentUser$.value
+      ? of(this.currentUser$.value)
       : this.register({
         human: true,
         // regionId: regionId,
@@ -123,7 +121,6 @@ export class UserService {
 
     return this.http.post(`${this.loginUrl}`, formData, {
       responseType: 'text',
-      withCredentials: true,
       params: {
         'remember-me': rememberMe
       }
@@ -131,32 +128,28 @@ export class UserService {
       mergeMap(_ => this.refreshCurrentUser()));
   }
 
-  updateUser(user: User): Observable<User> {
-    return this.http.put<User>(`${this.usersUrl}/${user.id}`, user);
+  navigateCurrentUser(userNavigateRequest: UserNavigateRequest): Observable<User> {
+    return this.http.post(`${this.usersUrl}/current/navigate`,
+      {...userNavigateRequest}).pipe(
+      mergeMap(user => {
+        this.currentUser$.next(user);
+        this.csrfService.clearCsrf();
+        return of(this.currentUser$.value);
+      }));
   }
 
   navigateCurrentUserOrRegister(regionId: number, serverId: number): Observable<User> {
     return this.currentUser$.value
       ? this.navigateCurrentUser({
         regionId: regionId,
-        serverId: serverId,
+        serverId: serverId
       })
       : this.register({
         human: true,
         regionId: regionId,
-        serverId: serverId,
+        serverId: serverId
       });
     ;
-  }
-
-  navigateCurrentUser(userNavigateRequest: UserNavigateRequest): Observable<User> {
-    return this.http.post(`${this.usersUrl}/current/navigate`, {...userNavigateRequest}, {
-      withCredentials: true
-    }).pipe(
-      mergeMap(user => {
-        this.currentUser$.next(user);
-        return of(this.currentUser$.value);
-      }));
   }
 
   userDefeatedUser(user: User, defeatedUser: User) {
@@ -177,14 +170,5 @@ export class UserService {
     // user.score++;
     // TODO
     console.log(`User ${userId} defeated user ${defeatedUserId}`);
-  }
-
-  handleFactionScoring(factionIdToAwardedScore: any) {
-    console.log(factionIdToAwardedScore);
-    for (const factionId of Object.keys(factionIdToAwardedScore)) {
-      console.log(`${factionId} = ${factionIdToAwardedScore[factionId]}`);
-    }
-    // TODO: announce score
-    //this.messages.add(JSON.stringify(factionIdToAwardedScore));
   }
 }

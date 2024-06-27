@@ -23,7 +23,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {Faction} from './faction';
 import {Observable, of} from 'rxjs';
-import {MessageService} from '../message/message.service';
 import {HttpClient} from '@angular/common/http';
 import {map} from "rxjs/operators";
 import {Paging} from "../shared/paging/paging";
@@ -38,7 +37,8 @@ export class FactionService {
 
   private cachedFactions: Faction[];
 
-  constructor(@Inject('BASE_URL') baseUrl: string, private http: HttpClient, private messages: MessageService) {
+  constructor(@Inject('BASE_URL') baseUrl: string,
+              private http: HttpClient) {
     this.factionsUrl = `${baseUrl}/api/factions`;
   }
 

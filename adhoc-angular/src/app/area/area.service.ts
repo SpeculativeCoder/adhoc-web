@@ -22,8 +22,6 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {StompService} from "../core/stomp.service";
-import {MessageService} from "../message/message.service";
 import {Observable} from "rxjs";
 import {User} from "../user/user";
 import {Area} from "./area";
@@ -37,7 +35,8 @@ export class AreaService {
 
   private readonly areasUrl: string;
 
-  constructor(@Inject('BASE_URL') baseUrl: string, private http: HttpClient, private stomp: StompService, private messages: MessageService) {
+  constructor(@Inject('BASE_URL') baseUrl: string,
+              private http: HttpClient) {
     this.areasUrl = `${baseUrl}/api/areas`;
   }
 

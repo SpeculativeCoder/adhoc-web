@@ -23,8 +23,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {Structure} from "../structure/structure";
 import {HttpClient} from "@angular/common/http";
-import {MessageService} from "../message/message.service";
-import {StompService} from "../core/stomp.service";
 import {Observable} from "rxjs";
 import {Paging} from "../shared/paging/paging";
 import {Page} from "../shared/paging/page";
@@ -36,14 +34,8 @@ export class StructureService {
 
   private readonly structuresUrl: string;
 
-  private structures: Structure[] = [];
-
-  constructor(
-    @Inject('BASE_URL') baseUrl: string,
-    private http: HttpClient,
-    private messages: MessageService,
-    private stomp: StompService
-  ) {
+  constructor(@Inject('BASE_URL') baseUrl: string,
+              private http: HttpClient) {
     this.structuresUrl = `${baseUrl}/api/structures`;
   }
 

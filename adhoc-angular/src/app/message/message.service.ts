@@ -22,7 +22,6 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {StompService} from "../core/stomp.service";
 import {Paging} from "../shared/paging/paging";
 import {Observable} from "rxjs";
 import {Page} from "../shared/paging/page";
@@ -35,11 +34,8 @@ export class MessageService {
 
   private readonly messagesUrl: string;
 
-  constructor(
-    @Inject('BASE_URL') baseUrl: string,
-    private http: HttpClient,
-    private stomp: StompService
-  ) {
+  constructor(@Inject('BASE_URL') baseUrl: string,
+              private http: HttpClient) {
     this.messagesUrl = `${baseUrl}/api/messages`;
   }
 

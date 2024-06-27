@@ -24,7 +24,6 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Server} from './server';
-import {StompService} from '../core/stomp.service';
 import {Paging} from "../shared/paging/paging";
 import {Page} from "../shared/paging/page";
 
@@ -35,11 +34,8 @@ export class ServerService {
 
   private readonly serversUrl: string;
 
-  constructor(
-    @Inject('BASE_URL') baseUrl: string,
-    private http: HttpClient,
-    private stomp: StompService
-  ) {
+  constructor(@Inject('BASE_URL') baseUrl: string,
+              private http: HttpClient) {
     this.serversUrl = `${baseUrl}/api/servers`;
   }
 
@@ -54,5 +50,4 @@ export class ServerService {
   updateServer(server: Server): Observable<Server> {
     return this.http.put<Server>(`${this.serversUrl}/${server.id}`, server);
   }
-
 }

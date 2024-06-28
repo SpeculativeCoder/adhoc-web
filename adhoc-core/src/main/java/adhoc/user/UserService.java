@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -83,6 +84,7 @@ public class UserService {
                 user.getScore(),
                 user.getRegion() == null ? null : user.getRegion().getId(),
                 user.getSeen(),
+                user.getDestinationServer() == null ? null : user.getDestinationServer().getId(),
                 user.getServer() == null ? null : user.getServer().getId());
     }
 
@@ -103,10 +105,12 @@ public class UserService {
                 user.getCreated(),
                 user.getUpdated(),
                 user.getLastLogin(),
+                user.getNavigated(),
                 user.getLastJoin(),
                 user.getSeen(),
                 user.getRoles().stream().map(UserRole::name).collect(Collectors.toList()),
                 user.getToken().toString(),
+                user.getDestinationServer() == null ? null : user.getDestinationServer().getId(),
                 user.getServer() == null ? null : user.getServer().getId());
     }
 
@@ -122,7 +126,8 @@ public class UserService {
         user.setRegion(regionRepository.getReferenceById(userRegisterRequest.getRegionId()));
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());
-        user.setServer(serverRepository.getReferenceById(userRegisterRequest.getServerId()));
+        user.setDestinationServer(serverRepository.getReferenceById(userRegisterRequest.getDestinationServerId()));
+        user.setNavigated(LocalDateTime.now());
 
         return user;
     }

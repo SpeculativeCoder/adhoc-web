@@ -45,7 +45,7 @@ import java.util.Objects;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TaskManagerJobService {
+public class TaskManagerService {
 
     private final TaskRepository taskRepository;
 

@@ -51,7 +51,7 @@ import java.util.*;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TaskDomainJobService {
+public class TaskDomainService {
 
     private final ManagerProperties managerProperties;
 
@@ -61,7 +61,7 @@ public class TaskDomainJobService {
     private final MessageService messageService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private TaskDomainJobService self;
+    private TaskDomainService self;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))

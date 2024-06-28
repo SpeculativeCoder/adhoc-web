@@ -42,5 +42,6 @@ export class User {
   seen?: string;
   roles?: string[];
   token?: string;
+  destinationServerId?: number;
   serverId?: number;
 }

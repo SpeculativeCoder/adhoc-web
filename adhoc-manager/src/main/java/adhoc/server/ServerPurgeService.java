@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ServerPurgeJobService {
+public class ServerPurgeService {
 
     private final ServerRepository serverRepository;
 

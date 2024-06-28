@@ -22,8 +22,6 @@
 
 package adhoc.user;
 
-import adhoc.pawn.Pawn;
-import adhoc.pawn.PawnRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -35,54 +33,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserManagerJobService {
+public class UserLeaveService {
 
     private final UserRepository userRepository;
-    private final PawnRepository pawnRepository;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageUsers() {
+    public void leavingUsers() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime leaveUsersSeenBefore = now.minusMinutes(1);
-        log.trace("Managing users... now={} leaveUsersSeenBefore={}", now, leaveUsersSeenBefore);
+        log.trace("Leaving users... now={} leaveUsersSeenBefore={}", now, leaveUsersSeenBefore);
 
         // manage users who we think are connected to a server
         try (Stream<User> users = userRepository.streamByServerNotNull()) {
             users.forEach(user -> {
-
-                // see if there is a pawn for the user
-                Optional<Pawn> optionalPawn = pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user);
-
-                //user.getPawns().stream()
-                //.filter(pawn -> pawn.getServer() == user.getServer())
-                //.max(Comparator.comparing(Pawn::getSeen));
-
-                if (optionalPawn.isPresent()) {
-                    updateUserForPawn(user, optionalPawn.get(), now);
-
-                } else if (user.getSeen() != null && user.getSeen().isBefore(leaveUsersSeenBefore)) {
+                if (user.getSeen() != null && user.getSeen().isBefore(leaveUsersSeenBefore)) {
                     leaveUser(user);
                 }
             });
         }
-    }
-
-    private static void updateUserForPawn(User user, Pawn pawn, LocalDateTime now) {
-        user.setX(pawn.getX());
-        user.setY(pawn.getY());
-        user.setZ(pawn.getZ());
-        user.setPitch(pawn.getPitch());
-        user.setYaw(pawn.getYaw());
-
-        user.setSeen(now);
     }
 
     private static void leaveUser(User user) {

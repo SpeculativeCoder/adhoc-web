@@ -22,6 +22,7 @@
 
 package adhoc.user;
 
+import adhoc.server.Server;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -49,6 +50,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select u.id from AdhocUser u where u.seen < ?1 and u.password is null and u.pawns is empty")
     List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime seenBefore);
+
+    @Query("select cast(count(1) as boolean) " +
+            "from AdhocUser u " +
+            "where u.human and ((u.destinationServer = ?1 and u.navigated > ?2) or (u.server = ?1))")
+    boolean existsByHumanTrueAnd_DestinationServerAndNavigatedAfterOrServer_(Server server, LocalDateTime navigatedAfter);
 
     //@Modifying
     //@Query("update AdhocUser u set u.version = u.version + 1, u.server = ?1, u.seen = ?2 where u.id in ?3")

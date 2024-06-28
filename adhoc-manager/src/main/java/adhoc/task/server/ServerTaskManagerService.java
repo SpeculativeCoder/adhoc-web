@@ -50,7 +50,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ServerTaskManagerJobService {
+public class ServerTaskManagerService {
 
     private final ServerRepository serverRepository;
     private final ServerTaskRepository serverTaskRepository;
@@ -59,7 +59,7 @@ public class ServerTaskManagerJobService {
     private final MessageService messageService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private ServerTaskManagerJobService self;
+    private ServerTaskManagerService self;
 
     /**
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.

@@ -22,12 +22,8 @@
 
 package adhoc.user;
 
-import adhoc.region.Region;
-import adhoc.region.RegionRepository;
-import adhoc.server.Server;
-import adhoc.server.ServerRepository;
-import adhoc.user.request_response.UserNavigateRequest;
-import com.google.common.base.Preconditions;
+import adhoc.pawn.Pawn;
+import adhoc.pawn.PawnRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -38,56 +34,49 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserNavigateService {
+public class UserPawnService {
 
     private final UserRepository userRepository;
-    private final ServerRepository serverRepository;
-    private final RegionRepository regionRepository;
-
-    private final UserService userService;
+    private final PawnRepository pawnRepository;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserDetailDto navigateUser(Long userId, UserNavigateRequest userNavigateRequest) {
-        Preconditions.checkArgument(userNavigateRequest.getRegionId() != null,
-                "User navigation must specify a region");
+    public void manageUserPawns() {
+        LocalDateTime now = LocalDateTime.now();
+        log.trace("Managing user pawns... now={}", now);
 
-        User user = userRepository.getReferenceById(userId);
+        // manage users who we think are connected to a server
+        try (Stream<User> users = userRepository.streamByServerNotNull()) {
+            users.forEach(user -> {
 
-        Server oldDestinationServer = user.getDestinationServer();
+                // see if there is a pawn for the user
+                Optional<Pawn> optionalPawn = pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user);
 
-        if (userNavigateRequest.getDestinationServerId() != null) {
-            Server destinationServer = serverRepository.getReferenceById(userNavigateRequest.getDestinationServerId());
-            Region region = destinationServer.getRegion();
+                //user.getPawns().stream()
+                //.filter(pawn -> pawn.getServer() == user.getServer())
+                //.max(Comparator.comparing(Pawn::getSeen));
 
-            user.setRegion(region);
-            user.setDestinationServer(destinationServer);
-
-        } else {
-            Region region = regionRepository.getReferenceById(userNavigateRequest.getRegionId());
-
-            user.setRegion(region);
-            // TODO
-            user.setDestinationServer(region.getServers().get(ThreadLocalRandom.current().nextInt(region.getServers().size())));
+                if (optionalPawn.isPresent()) {
+                    updateUserForPawn(user, optionalPawn.get(), now);
+                }
+            });
         }
+    }
 
-        // when user manually navigates to another server they will need to spawn again
-        if (user.getDestinationServer() != oldDestinationServer) {
-            user.setX(null);
-            user.setY(null);
-            user.setZ(null);
-            user.setPitch(null);
-            user.setYaw(null);
-        }
+    private static void updateUserForPawn(User user, Pawn pawn, LocalDateTime now) {
+        user.setX(pawn.getX());
+        user.setY(pawn.getY());
+        user.setZ(pawn.getZ());
+        user.setPitch(pawn.getPitch());
+        user.setYaw(pawn.getYaw());
 
-        user.setNavigated(LocalDateTime.now());
-
-        return userService.toDetailDto(user);
+        user.setSeen(now);
     }
 }

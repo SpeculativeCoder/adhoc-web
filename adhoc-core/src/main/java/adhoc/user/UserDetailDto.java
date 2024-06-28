@@ -82,6 +82,7 @@ public class UserDetailDto {
     @NotNull
     LocalDateTime updated;
     LocalDateTime lastLogin;
+    LocalDateTime navigated;
     LocalDateTime lastJoin;
     LocalDateTime seen;
 
@@ -91,6 +92,9 @@ public class UserDetailDto {
 
     @NotEmpty
     String token;
+
+    @Min(1)
+    Long destinationServerId;
 
     @Min(1)
     Long serverId;

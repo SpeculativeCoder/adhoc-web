@@ -113,6 +113,8 @@ public class User {
 
     private LocalDateTime lastLogin;
 
+    private LocalDateTime navigated;
+
     private LocalDateTime lastJoin;
 
     private LocalDateTime seen;
@@ -122,6 +124,10 @@ public class User {
     private Set<UserRole> roles;
 
     private UUID token;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Server destinationServer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude

@@ -85,12 +85,16 @@
             </column>
             <column name="last_login"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="navigated"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="last_join"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="seen"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="token"
                     type="UUID"/>
+            <column name="destination_server_id"
+                    type="BIGINT"/>
             <column name="server_id"
                     type="BIGINT"/>
         </createTable>

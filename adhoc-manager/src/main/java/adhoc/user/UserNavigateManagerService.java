@@ -39,6 +39,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Transactional
 @Service
 @Slf4j
@@ -82,8 +84,9 @@ public class UserNavigateManagerService {
         user.setYaw(serverUserNavigateRequest.getYaw());
         user.setPitch(serverUserNavigateRequest.getPitch());
 
-        // NOTE: when user joins new server this will be updated
-        //user.setServer(destinationServer);
+        user.setNavigated(LocalDateTime.now());
+
+        user.setDestinationServer(destinationServer);
 
         return ResponseEntity.ok(new ServerUserNavigateResponse(destinationServer.getId(),
                 //adhocProperties.getServerDomain(),

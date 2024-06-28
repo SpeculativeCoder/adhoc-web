@@ -125,10 +125,10 @@ public class UserRegisterService {
             region = regionRepository.getReferenceById(userRegisterRequest.getRegionId());
         }
 
-        if (userRegisterRequest.getServerId() == null) {
+        if (userRegisterRequest.getDestinationServerId() == null) {
             // TODO
             Server server = region.getServers().get(ThreadLocalRandom.current().nextInt(region.getServers().size()));
-            builder.serverId(server.getId());
+            builder.destinationServerId(server.getId());
         }
 
         userRegisterRequest = builder.build();

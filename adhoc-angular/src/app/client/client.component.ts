@@ -94,25 +94,25 @@ export class ClientComponent implements OnInit {
     //   this.serverService.getServer(area.serverId).subscribe(server => {
 
     this.userService.getCurrentUserOrRegister().subscribe(user => {
-      if (!user.serverId) {
+      if (!user.destinationServerId) {
         throw new Error(`User ${user.id} has no assigned server`);
       }
 
-      this.serverService.getServer(user.serverId).subscribe(server => {
+      this.serverService.getServer(user.destinationServerId).subscribe(destinationServer => {
         // TODO: url or ip
-        if (!server.webSocketUrl) {
-          throw new Error(`Server ${user.serverId} has no websocket URL`);
+        if (!destinationServer.webSocketUrl) {
+          throw new Error(`Server ${user.destinationServerId} has no websocket URL`);
         }
-        if (!(typeof server.publicWebSocketPort)) {
-          throw new Error(`Server ${user.serverId} has no websocket port`);
+        if (!(typeof destinationServer.publicWebSocketPort)) {
+          throw new Error(`Server ${user.destinationServerId} has no websocket port`);
         }
 
-        let unrealEngineCommandLine = server.publicIp + ":" + server.publicWebSocketPort;
+        let unrealEngineCommandLine = destinationServer.publicIp + ":" + destinationServer.publicWebSocketPort;
         if (user && (typeof user.id) === 'number' && (typeof user.factionId) === 'number' && user.token) {
           unrealEngineCommandLine += '?UserID=' + user.id + '?FactionID=' + user.factionId + '?Token=' + user.token;
         }
         // if user is joining region they were last in, try to start their initial location where they may be spawned at
-        if (user && user.regionId === server.regionId
+        if (user && user.regionId === destinationServer.regionId
           && (typeof user.x) === 'number' && (typeof user.y) === 'number' && (typeof user.z) === 'number'
           && (typeof user.pitch) === 'number' && (typeof user.yaw) === 'number') {
           unrealEngineCommandLine += '?X=' + user.x + '?Y=' + user.y + '?Z=' + user.z + '?Pitch=' + user.pitch + '?Yaw=' + user.yaw;
@@ -125,18 +125,18 @@ export class ClientComponent implements OnInit {
 
         window.sessionStorage.setItem('UnrealEngine_CommandLine', unrealEngineCommandLine);
 
-        if (server.webSocketUrl) {
-          console.log(`webSocketUrl: ${server.webSocketUrl}`);
-          window.sessionStorage.setItem('UnrealEngine_WebSocketUrl', server.webSocketUrl);
+        if (destinationServer.webSocketUrl) {
+          console.log(`webSocketUrl: ${destinationServer.webSocketUrl}`);
+          window.sessionStorage.setItem('UnrealEngine_WebSocketUrl', destinationServer.webSocketUrl);
         } else {
           window.sessionStorage.removeItem('UnrealEngine_WebSocketUrl');
         }
 
-        if (!server.mapName || !server.mapName.match("^[A-Za-z0-9_]{1,50}$")) {
-          throw new Error(`invalid map name: ${server.mapName}`);
+        if (!destinationServer.mapName || !destinationServer.mapName.match("^[A-Za-z0-9_]{1,50}$")) {
+          throw new Error(`invalid map name: ${destinationServer.mapName}`);
         }
 
-        const clientUrl = location.protocol + '//' + location.host + '/HTML5Client/' + server.mapName + '/HTML5Client.html';
+        const clientUrl = location.protocol + '//' + location.host + '/HTML5Client/' + destinationServer.mapName + '/HTML5Client.html';
         console.log(`clientUrl: ${clientUrl}`);
 
         // uncomment this if we prefer to send to the client directly rather than iframe

@@ -58,5 +58,5 @@ public class UserRegisterRequest {
     Long regionId;
 
     @Min(1)
-    Long serverId;
+    Long destinationServerId;
 }

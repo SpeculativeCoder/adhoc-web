@@ -20,8 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.faction;
+package adhoc.user;
 
+import adhoc.faction.Faction;
 import adhoc.objective.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,41 +34,43 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class FactionScoreJobService {
+public class UserScoreService {
 
-    private final FactionRepository factionRepository;
+    private final UserRepository userRepository;
     private final ObjectiveRepository objectiveRepository;
 
     /**
-     * Award faction score according to how many objectives the faction currently owns.
-     * Also decay all faction scores.
+     * Award user score according to how many objectives the user's faction currently owns.
+     * Also decay all user scores.
      */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void awardAndDecayFactionScores() {
-        log.trace("Awarding and decaying faction scores...");
+    public void awardAndDecayUserScores() {
+        log.trace("Awarding and decaying user scores...");
 
         List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
                 objectiveRepository.getFactionObjectiveCounts();
+
+        LocalDateTime seenAfter = LocalDateTime.now().minusHours(48);
 
         for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
             Faction faction = factionObjectiveCount.getFaction();
             Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
-            BigDecimal scoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
+            BigDecimal humanScoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
+            BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
 
-            factionRepository.updateScoreAddById(scoreAdd, faction.getId());
+            userRepository.updateScoreAddByFactionIdAndSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
         }
 
         // TODO: multiplier property
-        BigDecimal scoreMultiply = BigDecimal.valueOf(0.999);
-
-        factionRepository.updateScoreMultiply(scoreMultiply);
+        userRepository.updateScoreMultiply(BigDecimal.valueOf(0.999));
     }
 }

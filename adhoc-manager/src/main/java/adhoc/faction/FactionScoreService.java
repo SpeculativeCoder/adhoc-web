@@ -20,8 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.faction;
 
+import adhoc.objective.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -31,21 +32,42 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class PawnPurgeJobService {
+public class FactionScoreService {
 
-    private final PawnRepository pawnRepository;
+    private final FactionRepository factionRepository;
+    private final ObjectiveRepository objectiveRepository;
 
+    /**
+     * Award faction score according to how many objectives the faction currently owns.
+     * Also decay all faction scores.
+     */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void purgeOldPawns() {
-        log.trace("Purging old pawns...");
+    public void awardAndDecayFactionScores() {
+        log.trace("Awarding and decaying faction scores...");
 
-        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
+        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
+                objectiveRepository.getFactionObjectiveCounts();
+
+        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
+            Faction faction = factionObjectiveCount.getFaction();
+            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
+
+            BigDecimal scoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
+
+            factionRepository.updateScoreAddById(scoreAdd, faction.getId());
+        }
+
+        // TODO: multiplier property
+        BigDecimal scoreMultiply = BigDecimal.valueOf(0.999);
+
+        factionRepository.updateScoreMultiply(scoreMultiply);
     }
 }

@@ -106,7 +106,7 @@ public class UserJoinService {
             UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder()
                     .factionId(serverUserJoinRequest.getFactionId())
                     .human(serverUserJoinRequest.getHuman())
-                    .serverId(serverUserJoinRequest.getServerId())
+                    .destinationServerId(serverUserJoinRequest.getServerId())
                     .build();
 
             UserDetailDto userDetailDto = userRegisterService.registerUser(userRegisterRequest);

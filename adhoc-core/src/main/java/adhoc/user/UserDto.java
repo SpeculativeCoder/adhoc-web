@@ -59,12 +59,15 @@ public class UserDto {
 
     @NotNull
     BigDecimal score;
-    
+
     @NotNull
     @Min(1)
     Long regionId;
 
     LocalDateTime seen;
+
+    @Min(1)
+    Long destinationServerId;
 
     @Min(1)
     Long serverId;

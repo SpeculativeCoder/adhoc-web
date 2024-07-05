@@ -22,7 +22,7 @@
 
 import {RouterStateSnapshot, TitleStrategy} from "@angular/router";
 import {Title} from "@angular/platform-browser";
-import {appCustomization} from "./app-customization";
+import {customization} from "./customization";
 import {Injectable} from "@angular/core";
 
 @Injectable({providedIn: 'root'})
@@ -33,7 +33,7 @@ export class AppTitleStrategy extends TitleStrategy {
   }
 
   updateTitle(routerStateSnapshot: RouterStateSnapshot): void {
-    let title = appCustomization.appTitle;
+    let title = customization.title;
     const routeStateTitle = this.buildTitle(routerStateSnapshot);
     if (routeStateTitle) {
       title += ' - ' + routeStateTitle;
@@ -44,5 +44,4 @@ export class AppTitleStrategy extends TitleStrategy {
     }
     this.title.setTitle(title);
   }
-
 }

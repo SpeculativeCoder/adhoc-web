@@ -82,8 +82,8 @@
             "customization": {
               "fileReplacements": [
                 {
-                  "replace": "src/app/app-customization.ts",
-                  "with": "src/customization/app-customization.ts"
+                  "replace": "src/app/customization.ts",
+                  "with": "src/customization/customization.ts"
                 }
               ]
             },

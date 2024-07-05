@@ -56,7 +56,8 @@ export class PawnsComponent implements OnInit {
 
   private factions: Faction[] = [];
 
-  constructor(private pawnService: PawnService, private factionService: FactionService) {
+  constructor(private pawnService: PawnService,
+              private factionService: FactionService) {
   }
 
   getFaction(factionId: number): Faction {

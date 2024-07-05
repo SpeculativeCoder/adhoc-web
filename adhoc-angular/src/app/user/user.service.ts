@@ -25,10 +25,10 @@ import {User} from './user';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, mergeMap, Observable, of, take} from 'rxjs';
 import {StompService} from '../core/stomp.service';
-import {UserRegisterRequest} from "./user-register-request";
+import {UserRegisterRequest} from "./request-response/user-register-request";
 import {Paging} from "../shared/paging/paging";
 import {Page} from "../shared/paging/page";
-import {UserNavigateRequest} from "./user-navigate-request";
+import {UserNavigateRequest} from "./request-response/user-navigate-request";
 import {CsrfService} from "../core/csrf.service";
 
 @Injectable({

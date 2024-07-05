@@ -56,7 +56,8 @@ export class StructuresComponent implements OnInit {
 
   factions: Faction[] = [];
 
-  constructor(private structureService: StructureService, private factionService: FactionService) {
+  constructor(private structureService: StructureService,
+              private factionService: FactionService) {
   }
 
   getFaction(factionId: number): Faction {

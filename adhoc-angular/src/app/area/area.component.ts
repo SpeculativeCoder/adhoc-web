@@ -42,11 +42,9 @@ export class AreaComponent implements OnInit {
 
   area: Area = {};
 
-  constructor(
-    private route: ActivatedRoute,
-    private areaService: AreaService,
-    private router: Router
-  ) {
+  constructor(private route: ActivatedRoute,
+              private areaService: AreaService,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -65,5 +63,4 @@ export class AreaComponent implements OnInit {
   back() {
     this.router.navigateByUrl('/areas');
   }
-
 }

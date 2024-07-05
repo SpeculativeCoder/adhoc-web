@@ -44,7 +44,7 @@ import {CsrfService} from "../core/csrf.service";
 import {MapComponentExtraInterface} from "./map-component-extra-interface";
 import {Page} from "../shared/paging/page";
 import {Paging} from "../shared/paging/paging";
-import {appCustomization} from "../app-customization";
+import {customization} from "../customization";
 
 @Component({
   selector: 'app-map',
@@ -55,6 +55,7 @@ import {appCustomization} from "../app-customization";
   templateUrl: './map.component.html'
 })
 export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
+
   regions: Region[] = [];
   areas: Area[] = [];
   objectives: Objective[] = [];
@@ -106,8 +107,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               private injector: Injector,
               @Inject(DOCUMENT) private document: Document) {
 
-    if (appCustomization.extra) {
-      this.mapComponentExtra = new appCustomization.extra.MapComponentExtra(this, injector);
+    if (customization.extra) {
+      this.mapComponentExtra = new customization.extra.MapComponentExtra(this, injector);
     }
   }
 

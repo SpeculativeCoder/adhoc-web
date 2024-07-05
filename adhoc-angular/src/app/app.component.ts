@@ -30,7 +30,7 @@ import {ObjectiveService} from "./objective/objective.service";
 import {CsrfService} from "./core/csrf.service";
 import {PropertiesService} from "./properties/properties.service";
 import {Faction} from "./faction/faction";
-import {appCustomization} from "./app-customization";
+import {customization} from "./customization";
 import {Meta} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 
@@ -46,7 +46,8 @@ import {CommonModule} from "@angular/common";
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, OnDestroy {
-  appTitle = appCustomization.appTitle;
+
+  title = customization.title;
 
   featureFlags: string;
   extra: boolean;
@@ -66,13 +67,13 @@ export class AppComponent implements OnInit, OnDestroy {
               private meta: Meta) {
 
     // TODO
-    this.extra = !!appCustomization.extra;
+    this.extra = !!customization.extra;
   }
 
   ngOnInit() {
     this.featureFlags = this.configService.featureFlags;
 
-    this.meta.addTag({name: 'description', content: appCustomization.appDescription});
+    this.meta.addTag({name: 'description', content: customization.description});
 
     this.userService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser = currentUser;

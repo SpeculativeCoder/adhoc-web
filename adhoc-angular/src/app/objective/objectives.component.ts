@@ -56,7 +56,8 @@ export class ObjectivesComponent implements OnInit {
 
   factions: Faction[] = [];
 
-  constructor(private objectiveService: ObjectiveService, private factionService: FactionService) {
+  constructor(private objectiveService: ObjectiveService,
+              private factionService: FactionService) {
   }
 
   ngOnInit() {

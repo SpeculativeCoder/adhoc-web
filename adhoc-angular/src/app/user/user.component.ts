@@ -42,15 +42,14 @@ import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
   templateUrl: './user.component.html'
 })
 export class UserComponent implements OnInit {
+
   user: User = {};
   factions: Faction[] = [];
 
-  constructor(
-    private route: ActivatedRoute,
-    private userService: UserService,
-    private factionService: FactionService,
-    private router: Router
-  ) {
+  constructor(private route: ActivatedRoute,
+              private userService: UserService,
+              private factionService: FactionService,
+              private router: Router) {
   }
 
   ngOnInit() {

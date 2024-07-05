@@ -39,11 +39,14 @@ import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
   templateUrl: './faction.component.html'
 })
 export class FactionComponent implements OnInit {
+
   faction: Faction = {};
 
   //colors: string[] = ['blue', 'red', 'green', 'yellow', 'black', 'white', 'gray']; // TODO
 
-  constructor(private route: ActivatedRoute, private factionService: FactionService, private router: Router) {
+  constructor(private route: ActivatedRoute,
+              private factionService: FactionService,
+              private router: Router) {
   }
 
   ngOnInit() {

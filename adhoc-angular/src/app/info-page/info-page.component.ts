@@ -40,10 +40,8 @@ export class InfoPageComponent {
 
   page: string;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router
-  ) {
+  constructor(private route: ActivatedRoute,
+              private router: Router) {
     this.route.paramMap.subscribe(params => {
       this.page = params.get('page');
     });

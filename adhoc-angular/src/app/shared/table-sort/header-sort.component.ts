@@ -40,10 +40,13 @@ export interface SortEvent {
     '<ng-content></ng-content><span class="position-fixed" *ngIf="direction">&nbsp;<span class="small oi {{openIconicIconClass}}"></span></span>'
 })
 export class HeaderSortComponent {
+
   // tslint:disable-next-line: no-input-rename
   @Input('sortable') column: string;
-  direction: SortDirection;
+
   @Output('sort') sortEvent$ = new EventEmitter<SortEvent>();
+
+  direction: SortDirection;
 
   get openIconicIconClass() {
     return this.direction === 'asc' ? 'oi-sort-ascending' : 'oi-sort-descending';

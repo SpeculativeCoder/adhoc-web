@@ -21,7 +21,7 @@
  */
 
 import {Component} from '@angular/core';
-import {appCustomization} from '../../app-customization';
+import {customization} from '../../customization';
 import {CommonModule} from "@angular/common";
 
 @Component({
@@ -34,6 +34,6 @@ import {CommonModule} from "@angular/common";
 })
 export class EulaComponent {
 
-  appTitle = appCustomization.appTitle;
-  appDeveloper = appCustomization.appDeveloper;
+  title = customization.title;
+  developer = customization.developer;
 }

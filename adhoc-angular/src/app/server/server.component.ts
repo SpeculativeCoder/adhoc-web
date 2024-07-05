@@ -40,13 +40,12 @@ import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
   templateUrl: './server.component.html'
 })
 export class ServerComponent implements OnInit {
+
   server: Server = {};
 
-  constructor(
-    private route: ActivatedRoute,
-    private serverService: ServerService,
-    private router: Router
-  ) {
+  constructor(private route: ActivatedRoute,
+              private serverService: ServerService,
+              private router: Router) {
   }
 
   ngOnInit() {

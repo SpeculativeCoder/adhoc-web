@@ -40,6 +40,7 @@ import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
   templateUrl: './task.component.html'
 })
 export class TaskComponent implements OnInit {
+
   task: Task = {};
 
   constructor(

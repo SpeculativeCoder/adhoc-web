@@ -28,7 +28,9 @@ import {HeaderSortComponent, SortEvent} from './header-sort.component';
   standalone: true
 })
 export class TableSortDirective implements AfterContentInit {
+
   @ContentChildren(HeaderSortComponent, {descendants: true}) headers: QueryList<HeaderSortComponent>;
+
   @Output('sort') sortEvent$ = new EventEmitter<SortEvent>();
 
   ngAfterContentInit() {

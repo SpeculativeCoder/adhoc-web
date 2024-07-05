@@ -30,6 +30,7 @@ import {CsrfService} from "./csrf.service";
   providedIn: 'root'
 })
 export class StompService {
+
   private client: Client;
   private eventListeners: { [key: string]: Subject<object> } = {};
 

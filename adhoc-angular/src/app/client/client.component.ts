@@ -27,7 +27,7 @@ import {PropertiesService} from "../properties/properties.service";
 import {AreaService} from "../area/area.service";
 import {UserService} from "../user/user.service";
 import {ServerService} from "../server/server.service";
-import {appCustomization} from "../app-customization";
+import {customization} from "../customization";
 import {CommonModule} from "@angular/common";
 
 @Component({
@@ -40,7 +40,7 @@ import {CommonModule} from "@angular/common";
 })
 export class ClientComponent implements OnInit {
 
-  appTitle = appCustomization.appTitle;
+  title = customization.title;
 
   showClient: boolean;
   showCompatibilityWarning: boolean;

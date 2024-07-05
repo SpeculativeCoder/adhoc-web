@@ -42,6 +42,7 @@ import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
   templateUrl: './pawn.component.html'
 })
 export class PawnComponent implements OnInit {
+
   pawn: Pawn = {};
   factions: Faction[] = [];
 
@@ -49,8 +50,7 @@ export class PawnComponent implements OnInit {
     private route: ActivatedRoute,
     private pawnService: PawnService,
     private factionService: FactionService,
-    private router: Router
-  ) {
+    private router: Router) {
   }
 
   ngOnInit() {

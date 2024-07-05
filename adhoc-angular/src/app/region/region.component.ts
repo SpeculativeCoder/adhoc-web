@@ -46,8 +46,7 @@ export class RegionComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private regionService: RegionService,
-    private router: Router
-  ) {
+    private router: Router) {
   }
 
   ngOnInit() {

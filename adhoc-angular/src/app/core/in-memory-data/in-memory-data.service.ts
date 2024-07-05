@@ -30,6 +30,7 @@ import {User} from '../../user/user';
   providedIn: 'root'
 })
 export class InMemoryDataService implements InMemoryDbService {
+
   constructor() {
   }
 

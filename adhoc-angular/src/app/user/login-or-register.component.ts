@@ -26,7 +26,7 @@ import {Router} from '@angular/router';
 import {Faction} from '../faction/faction';
 import {User} from './user';
 import {FactionService} from '../faction/faction.service';
-import {UserRegisterRequest} from "./user-register-request";
+import {UserRegisterRequest} from "./request-response/user-register-request";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {NgbDropdownModule} from "@ng-bootstrap/ng-bootstrap";
@@ -57,7 +57,9 @@ export class LoginOrRegisterComponent implements OnInit, AfterViewInit {
   @ViewChild('loginNameOrEmailInput')
   loginNameOrEmailInput: ElementRef;
 
-  constructor(private userService: UserService, private factionService: FactionService, private router: Router) {
+  constructor(private userService: UserService,
+              private factionService: FactionService,
+              private router: Router) {
     this.userRegisterRequest.name = null; // 'Anon' + Math.floor(Math.random() * 1000000000);
     this.userRegisterRequest.email = null; // this.users.email = `${this.users.name}@localhost`;
     this.userRegisterRequest.password = null;

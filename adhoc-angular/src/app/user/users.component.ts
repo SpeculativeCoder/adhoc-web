@@ -26,7 +26,7 @@ import {User} from './user';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
-import {HeaderSortComponent, SortEvent} from '../shared/table-sort/header-sort.component';
+import {HeaderSortComponent} from '../shared/table-sort/header-sort.component';
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
@@ -102,7 +102,7 @@ export class UsersComponent implements OnInit {
     this.refreshUsers();
   }
 
-  onSort(sort: SortEvent) {
+  onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
     this.refreshUsers();
   }

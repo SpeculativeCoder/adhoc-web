@@ -22,13 +22,8 @@
 
 import {Component, EventEmitter, HostListener, Input, Output,} from '@angular/core';
 import {CommonModule} from "@angular/common";
-
-export type SortDirection = 'asc' | 'desc';
-
-export interface SortEvent {
-  column: string;
-  direction: SortDirection;
-}
+import {SortDirection} from "../paging/sort-direction";
+import {Sort} from "../paging/sort";
 
 @Component({
   selector: 'th[sortable]',
@@ -44,7 +39,7 @@ export class HeaderSortComponent {
   // tslint:disable-next-line: no-input-rename
   @Input('sortable') column: string;
 
-  @Output('sort') sortEvent$ = new EventEmitter<SortEvent>();
+  @Output('sort') sortEvent$ = new EventEmitter<Sort>();
 
   direction: SortDirection;
 

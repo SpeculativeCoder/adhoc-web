@@ -20,29 +20,43 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.user.request_response;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
-import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
-import org.springframework.retry.annotation.EnableRetry;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
+import org.hibernate.validator.constraints.Length;
 
-@Configuration
-//@EnableConfigurationProperties
-//@EnableScheduling
-//@EnableCaching
-@EnableRetry
-@EnableWebSocketMessageBroker
-// TODO
-@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
-public class CoreConfiguration {
 
-    @Bean
-    PageableHandlerMethodArgumentResolverCustomizer pageableHandlerMethodArgumentResolverCustomizer() {
-        return pc -> {
-            pc.setMaxPageSize(100);
-        };
-    }
+/**
+ * User joins server. This will either verify an existing user (if {@link #userId} is not null)
+ * or register a new user (if {@link #userId} is null).
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class UserJoinRequest {
+
+    //@NotNull
+    @Min(1)
+    private Long userId;
+
+    @Min(1)
+    private Long factionId;
+
+    @NotNull
+    private Boolean human;
+
+    @NotNull
+    @Min(1)
+    private Long serverId;
+
+    @Length(min = 1)
+    private String token;
 }

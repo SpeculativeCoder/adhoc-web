@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 
+/** (Manual) navigation is when the user chooses a server they wish to be connected to. */
 @Transactional
 @Service
 @Slf4j

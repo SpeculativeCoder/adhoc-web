@@ -26,7 +26,7 @@ import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
 import {PropertiesService} from "../properties/properties.service";
-import {HeaderSortComponent, SortEvent} from "../shared/table-sort/header-sort.component";
+import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
 import {Router, RouterLink} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
@@ -94,7 +94,7 @@ export class ServersComponent implements OnInit {
     this.refreshServers();
   }
 
-  onSort(sort: SortEvent) {
+  onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
     this.refreshServers();
   }

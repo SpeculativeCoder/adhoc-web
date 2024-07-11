@@ -23,7 +23,7 @@
 import {Component, OnInit} from '@angular/core';
 import {MessageService} from './message.service';
 import {CommonModule} from "@angular/common";
-import {HeaderSortComponent, SortEvent} from "../shared/table-sort/header-sort.component";
+import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {Router, RouterLink} from "@angular/router";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
@@ -73,7 +73,7 @@ export class MessagesComponent implements OnInit {
     this.refreshMessages();
   }
 
-  onSort(sort: SortEvent) {
+  onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
     this.refreshMessages();
   }

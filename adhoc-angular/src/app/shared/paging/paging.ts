@@ -38,7 +38,7 @@ export class Paging {
       params['size'] = this.size;
     }
     if (typeof this.sort !== 'undefined') {
-      params['sort'] = this.sort.map(s => s.sort + "," + s.direction);
+      params['sort'] = this.sort.map(s => s.column + "," + s.direction);
     }
     return params;
   }

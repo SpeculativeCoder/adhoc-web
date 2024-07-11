@@ -20,39 +20,4 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
-
-import adhoc.region.RegionRepository;
-import adhoc.server.ServerRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-@Transactional
-@Service
-@Slf4j
-@RequiredArgsConstructor
-public class AreaManagerService {
-
-    private final RegionRepository regionRepository;
-    private final ServerRepository serverRepository;
-
-    Area toEntity(AreaDto areaDto, Area area) {
-        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
-        area.setIndex(areaDto.getIndex());
-        area.setName(areaDto.getName());
-        area.setX(areaDto.getX());
-        area.setY(areaDto.getY());
-        area.setZ(areaDto.getZ());
-        area.setSizeX(areaDto.getSizeX());
-        area.setSizeY(areaDto.getSizeY());
-        area.setSizeZ(areaDto.getSizeZ());
-        //noinspection OptionalAssignedToNull
-        if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
-        }
-
-        return area;
-    }
-}
+export type SortDirection = 'asc' | 'desc';

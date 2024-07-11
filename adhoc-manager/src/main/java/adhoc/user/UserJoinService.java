@@ -24,7 +24,7 @@ package adhoc.user;
 
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import adhoc.user.request_response.ServerUserJoinRequest;
+import adhoc.user.request_response.UserJoinRequest;
 import adhoc.user.request_response.UserRegisterRequest;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -55,29 +55,29 @@ public class UserJoinService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserDetailDto serverUserJoin(ServerUserJoinRequest serverUserJoinRequest) {
+    public UserDetailDto userJoin(UserJoinRequest userJoinRequest) {
         log.debug("userJoin: userId={} human={} factionId={} serverId={}",
-                serverUserJoinRequest.getUserId(), serverUserJoinRequest.getHuman(), serverUserJoinRequest.getFactionId(), serverUserJoinRequest.getServerId());
+                userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
 
-        Server server = serverRepository.getReferenceById(serverUserJoinRequest.getServerId());
+        Server server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
         User user;
         // existing user? verify token
-        if (serverUserJoinRequest.getUserId() != null) {
-            user = userRepository.getReferenceById(serverUserJoinRequest.getUserId());
-            Preconditions.checkArgument(Objects.equals(user.getFaction().getId(), serverUserJoinRequest.getFactionId()));
+        if (userJoinRequest.getUserId() != null) {
+            user = userRepository.getReferenceById(userJoinRequest.getUserId());
+            Preconditions.checkArgument(Objects.equals(user.getFaction().getId(), userJoinRequest.getFactionId()));
 
-            Preconditions.checkArgument(serverUserJoinRequest.getToken() != null);
+            Preconditions.checkArgument(userJoinRequest.getToken() != null);
             Verify.verifyNotNull(user.getToken());
 
             // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
-            if (!Objects.equals(user.getToken().toString(), serverUserJoinRequest.getToken())) {
-                log.warn("Token {} mismatch {} for user {}", serverUserJoinRequest.getToken(), user.getToken(), user);
+            if (!Objects.equals(user.getToken().toString(), userJoinRequest.getToken())) {
+                log.warn("Token {} mismatch {} for user {}", userJoinRequest.getToken(), user.getToken(), user);
                 throw new IllegalArgumentException("Token mismatch");
             }
 
         } else {
-            user = autoRegister(serverUserJoinRequest);
+            user = autoRegister(userJoinRequest);
         }
 
         user.setServer(server);
@@ -91,22 +91,22 @@ public class UserJoinService {
         return userService.toDetailDto(user);
     }
 
-    private User autoRegister(ServerUserJoinRequest serverUserJoinRequest) {
+    private User autoRegister(UserJoinRequest userJoinRequest) {
         User user = null;
 
-        Verify.verifyNotNull(serverUserJoinRequest.getHuman());
-        if (!serverUserJoinRequest.getHuman()) {
+        Verify.verifyNotNull(userJoinRequest.getHuman());
+        if (!userJoinRequest.getHuman()) {
             // bots should try to use existing bot account
             // TODO: avoid using seen (should use serverId)
             user = userRepository.findFirstByHumanFalseAndFactionIdAndSeenBefore(
-                    serverUserJoinRequest.getFactionId(), LocalDateTime.now().minusMinutes(1)).orElse(null);
+                    userJoinRequest.getFactionId(), LocalDateTime.now().minusMinutes(1)).orElse(null);
         }
 
         if (user == null) {
             UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder()
-                    .factionId(serverUserJoinRequest.getFactionId())
-                    .human(serverUserJoinRequest.getHuman())
-                    .destinationServerId(serverUserJoinRequest.getServerId())
+                    .factionId(userJoinRequest.getFactionId())
+                    .human(userJoinRequest.getHuman())
+                    .destinationServerId(userJoinRequest.getServerId())
                     .build();
 
             UserDetailDto userDetailDto = userRegisterService.registerUser(userRegisterRequest);

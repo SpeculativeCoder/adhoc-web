@@ -77,21 +77,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.userService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser = currentUser;
-
       if (this.currentUser) {
         this.factionService.getCachedFaction(currentUser.factionId).subscribe(faction => {
           this.currentUserFaction = faction
         });
       }
     });
-
-    // TODO
-    // this.csrfService.getCsrf().subscribe(csrf => {
-    //   this.headerInterceptor.setCsrf(csrf);
-    //
-    //   //   this.stompService.setCsrf(csrf);
-    //   //   this.stompService.connect();
-    // });
   }
 
   // @HostListener("window:beforeunload")

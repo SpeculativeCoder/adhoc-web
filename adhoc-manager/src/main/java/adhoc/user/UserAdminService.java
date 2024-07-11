@@ -20,41 +20,39 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.user;
 
-import adhoc.faction.FactionRepository;
-import adhoc.server.ServerRepository;
-import adhoc.user.UserRepository;
+import adhoc.pawn.PawnRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class PawnManagerService {
+public class UserAdminService {
 
     private final UserRepository userRepository;
-    private final FactionRepository factionRepository;
-    private final ServerRepository serverRepository;
+    private final PawnRepository pawnRepository;
 
-    Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
-        pawn.setUuid(pawnDto.getUuid());
-        pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
-        pawn.setIndex(pawnDto.getIndex());
-        pawn.setName(pawnDto.getName());
-        pawn.setDescription(pawnDto.getDescription());
-        pawn.setX(pawnDto.getX());
-        pawn.setY(pawnDto.getY());
-        pawn.setZ(pawnDto.getZ());
-        pawn.setPitch(pawnDto.getPitch());
-        pawn.setYaw(pawnDto.getYaw());
-        pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
-        pawn.setHuman(pawnDto.getHuman());
-        pawn.setFaction(pawnDto.getFactionId() == null ? null : factionRepository.getReferenceById(pawnDto.getFactionId()));
+    private final UserService userService;
 
-        return pawn;
+    public UserDto updateUser(UserDto userDto) {
+        return userService.toDto(
+                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
+    }
+
+    User toEntity(UserDto userDto, User user) {
+        // TODO
+        //user.setName(userDto.getName());
+        //user.setFaction(user.getFaction());
+
+        user.setUpdated(LocalDateTime.now());
+
+        return user;
     }
 }

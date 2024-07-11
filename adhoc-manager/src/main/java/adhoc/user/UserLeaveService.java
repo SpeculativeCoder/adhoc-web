@@ -45,7 +45,7 @@ public class UserLeaveService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void leavingUsers() {
+    public void leaveUsers() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime leaveUsersSeenBefore = now.minusMinutes(1);
         log.trace("Leaving users... now={} leaveUsersSeenBefore={}", now, leaveUsersSeenBefore);

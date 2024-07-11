@@ -24,10 +24,15 @@ package adhoc;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.retry.annotation.EnableRetry;
 
 import java.security.Security;
 
 @SpringBootApplication
+//@EnableConfigurationProperties
+//@EnableScheduling
+//@EnableCaching
+@EnableRetry
 @Slf4j
 public abstract class AbstractAdhocApplication {
 

@@ -51,7 +51,7 @@ public class PawnEventService {
     private final ServerRepository serverRepository;
 
     private final PawnService pawnService;
-    private final PawnManagerService pawnManagerService;
+    private final PawnAdminService pawnAdminService;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
@@ -67,7 +67,7 @@ public class PawnEventService {
         for (PawnDto dto : serverPawnsEvent.getPawns()) {
             Preconditions.checkArgument(Objects.equals(server.getId(), dto.getServerId()));
 
-            Pawn pawn = pawnManagerService.toEntity(dto,
+            Pawn pawn = pawnAdminService.toEntity(dto,
                     pawnRepository.findByUuid(dto.getUuid()).orElseGet(Pawn::new));
 
             pawn.setSeen(seen);

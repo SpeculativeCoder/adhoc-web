@@ -27,6 +27,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -37,6 +38,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class AdhocResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
+    @Nullable
     public ResponseEntity<Object> handleEntityNotFoundException(Exception exception, WebRequest webRequest) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
@@ -44,6 +46,7 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
     }
 
     @ExceptionHandler(Throwable.class)
+    @Nullable
     public ResponseEntity<Object> handleThrowable(Exception exception, WebRequest webRequest) {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);

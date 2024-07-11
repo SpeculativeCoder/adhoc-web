@@ -21,7 +21,8 @@
  */
 
 import {AfterContentInit, ContentChildren, Directive, EventEmitter, Output, QueryList,} from '@angular/core';
-import {HeaderSortComponent, SortEvent} from './header-sort.component';
+import {HeaderSortComponent} from './header-sort.component';
+import {Sort} from "../paging/sort";
 
 @Directive({
   selector: 'table[sort]',
@@ -31,17 +32,17 @@ export class TableSortDirective implements AfterContentInit {
 
   @ContentChildren(HeaderSortComponent, {descendants: true}) headers: QueryList<HeaderSortComponent>;
 
-  @Output('sort') sortEvent$ = new EventEmitter<SortEvent>();
+  @Output('sort') sortEvent$ = new EventEmitter<Sort>();
 
   ngAfterContentInit() {
     this.headers.forEach(header => {
-      header.sortEvent$.subscribe((sortEvent: SortEvent) => {
+      header.sortEvent$.subscribe((sortEvent: Sort) => {
         this.onSort(sortEvent);
       });
     });
   }
 
-  onSort(sortEvent: SortEvent) {
+  onSort(sortEvent: Sort) {
     // clear the sort direction on the other headers
     this.headers
       .filter(header => header.column !== sortEvent.column)

@@ -20,43 +20,42 @@
  * SOFTWARE.
  */
 
-package adhoc.user.request_response;
+package adhoc.faction;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
-import org.hibernate.validator.constraints.Length;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
-/**
- * User joins server. This will either verify an existing user (if {@link #userId} is not null)
- * or register a new user (if {@link #userId} is null).
- */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class ServerUserJoinRequest {
+@Transactional
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class FactionAdminService {
 
-    //@NotNull
-    @Min(1)
-    private Long userId;
+    private final FactionRepository factionRepository;
 
-    @Min(1)
-    private Long factionId;
+    private final FactionService factionService;
 
-    @NotNull
-    private Boolean human;
+    public List<FactionDto> getServerFactions(Long serverId) {
+        return factionRepository.findAll().stream().map(factionService::toDto).toList();
+    }
 
-    @NotNull
-    @Min(1)
-    private Long serverId;
+    public FactionDto updateFaction(FactionDto factionDto) {
+        Faction faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
 
-    @Length(min = 1)
-    private String token;
+        return factionService.toDto(faction);
+    }
+
+    Faction toEntity(FactionDto factionDto, Faction faction) {
+        faction.setId(faction.getId());
+        faction.setIndex(faction.getIndex());
+        faction.setName(factionDto.getName());
+        faction.setColor(factionDto.getColor());
+        faction.setScore(factionDto.getScore());
+
+        return faction;
+    }
 }

@@ -25,7 +25,7 @@ import {StructureService} from './structure.service';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
-import {HeaderSortComponent, SortEvent} from '../shared/table-sort/header-sort.component';
+import {HeaderSortComponent} from '../shared/table-sort/header-sort.component';
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
@@ -82,7 +82,7 @@ export class StructuresComponent implements OnInit {
     this.refreshStructures();
   }
 
-  onSort(sort: SortEvent) {
+  onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
     this.refreshStructures();
   }

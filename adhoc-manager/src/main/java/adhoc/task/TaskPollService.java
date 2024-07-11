@@ -45,7 +45,7 @@ import java.util.Objects;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TaskManagerService {
+public class TaskPollService {
 
     private final TaskRepository taskRepository;
 
@@ -53,8 +53,8 @@ public class TaskManagerService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageTasks() {
-        log.trace("Manage tasks...");
+    public void pollTasks() {
+        log.trace("Polling tasks...");
 
         // get state of running containers
         List<HostedTask> hostedTasks = hostingService.poll();

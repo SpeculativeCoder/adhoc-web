@@ -38,14 +38,14 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class FactionManagerController {
 
-    private final FactionManagerService factionManagerService;
+    private final FactionAdminService factionAdminService;
 
     @GetMapping("/servers/{serverId}/factions")
     @PreAuthorize("hasRole('SERVER')")
     public List<FactionDto> getServerFactions(
             @PathVariable Long serverId) {
 
-        return factionManagerService.getServerFactions(serverId);
+        return factionAdminService.getServerFactions(serverId);
     }
 
     @PutMapping("/factions/{factionId}")
@@ -56,6 +56,6 @@ public class FactionManagerController {
         Preconditions.checkArgument(Objects.equals(factionId, factionDto.getId()),
                 "Faction ID mismatch: %s != %s", factionId, factionDto.getId());
 
-        return factionManagerService.updateFaction(factionDto);
+        return factionAdminService.updateFaction(factionDto);
     }
 }

@@ -26,7 +26,7 @@ import {Pawn} from './pawn';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
-import {HeaderSortComponent, SortEvent} from '../shared/table-sort/header-sort.component';
+import {HeaderSortComponent} from '../shared/table-sort/header-sort.component';
 import {Page} from "../shared/paging/page";
 import {Paging} from "../shared/paging/paging";
 import {Sort} from "../shared/paging/sort";
@@ -82,7 +82,7 @@ export class PawnsComponent implements OnInit {
     this.refreshPawns();
   }
 
-  onSort(sort: SortEvent) {
+  onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
     this.refreshPawns();
   }

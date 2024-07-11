@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ObjectiveManagerService {
+public class ObjectiveAdminService {
 
     private final ObjectiveRepository objectiveRepository;
     private final RegionRepository regionRepository;

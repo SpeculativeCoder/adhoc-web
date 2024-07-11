@@ -20,39 +20,39 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.area;
 
-import adhoc.pawn.PawnRepository;
+import adhoc.region.RegionRepository;
+import adhoc.server.ServerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserManagerService {
+public class AreaAdminService {
 
-    private final UserRepository userRepository;
-    private final PawnRepository pawnRepository;
+    private final RegionRepository regionRepository;
+    private final ServerRepository serverRepository;
 
-    private final UserService userService;
+    Area toEntity(AreaDto areaDto, Area area) {
+        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
+        area.setIndex(areaDto.getIndex());
+        area.setName(areaDto.getName());
+        area.setX(areaDto.getX());
+        area.setY(areaDto.getY());
+        area.setZ(areaDto.getZ());
+        area.setSizeX(areaDto.getSizeX());
+        area.setSizeY(areaDto.getSizeY());
+        area.setSizeZ(areaDto.getSizeZ());
+        //noinspection OptionalAssignedToNull
+        if (areaDto.getServerId() != null) {
+            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
+        }
 
-    public UserDto updateUser(UserDto userDto) {
-        return userService.toDto(
-                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
-    }
-
-    User toEntity(UserDto userDto, User user) {
-        // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
+        return area;
     }
 }

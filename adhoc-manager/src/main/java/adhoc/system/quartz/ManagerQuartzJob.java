@@ -24,11 +24,11 @@ package adhoc.system.quartz;
 
 import adhoc.faction.FactionScoreService;
 import adhoc.pawn.PawnPurgeService;
-import adhoc.server.ServerManagerJobService;
+import adhoc.server.ServerManagerService;
 import adhoc.server.ServerPurgeService;
 import adhoc.system.event.Event;
 import adhoc.task.TaskDomainService;
-import adhoc.task.TaskManagerService;
+import adhoc.task.TaskPollService;
 import adhoc.task.server.ServerTaskManagerService;
 import adhoc.user.UserLeaveService;
 import adhoc.user.UserPawnService;
@@ -54,9 +54,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagerQuartzJob implements Job {
 
-    private final ServerManagerJobService serverManagerJobService;
+    private final ServerManagerService serverManagerService;
     private final ServerPurgeService serverPurgeService;
-    private final TaskManagerService taskManagerService;
+    private final TaskPollService taskPollService;
     private final TaskDomainService taskDomainService;
     private final ServerTaskManagerService serverTaskManagerService;
     private final FactionScoreService factionScoreService;
@@ -78,10 +78,10 @@ public class ManagerQuartzJob implements Job {
             //log.info("jobName={}", jobName);
             switch (jobName) {
             case ManagerQuartzConfiguration.MANAGE_SERVERS:
-                events = serverManagerJobService.manageServers();
+                events = serverManagerService.manageServers();
                 break;
-            case ManagerQuartzConfiguration.MANAGE_TASKS:
-                taskManagerService.manageTasks();
+            case ManagerQuartzConfiguration.POLL_TASKS:
+                taskPollService.pollTasks();
                 break;
             case ManagerQuartzConfiguration.MANAGE_TASK_DOMAINS:
                 events = taskDomainService.manageTaskDomains();
@@ -99,7 +99,7 @@ public class ManagerQuartzJob implements Job {
                 userPawnService.manageUserPawns();
                 break;
             case ManagerQuartzConfiguration.LEAVE_USERS:
-                userLeaveService.leavingUsers();
+                userLeaveService.leaveUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_USERS:
                 userPurgeService.purgeOldUsers();

@@ -26,8 +26,8 @@ import adhoc.area.Area;
 import adhoc.area.AreaRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import adhoc.user.request_response.ServerUserNavigateRequest;
-import adhoc.user.request_response.ServerUserNavigateResponse;
+import adhoc.user.request_response.UserAutoNavigateRequest;
+import adhoc.user.request_response.UserAutoNavigateResponse;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,11 +41,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/** Automatic navigation is when the user walks from an area in one server to an area in another server. */
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserNavigateManagerService {
+public class UserAutoNavigateService {
 
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
@@ -53,42 +54,42 @@ public class UserNavigateManagerService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public ResponseEntity<ServerUserNavigateResponse> serverUserNavigate(ServerUserNavigateRequest serverUserNavigateRequest) {
-        User user = userRepository.getReferenceById(serverUserNavigateRequest.getUserId());
-        Server sourceServer = serverRepository.getReferenceById(serverUserNavigateRequest.getSourceServerId());
-        Area destinationArea = areaRepository.getReferenceById(serverUserNavigateRequest.getDestinationAreaId());
+    public ResponseEntity<UserAutoNavigateResponse> userAutoNavigate(UserAutoNavigateRequest userAutoNavigateRequest) {
+        User user = userRepository.getReferenceById(userAutoNavigateRequest.getUserId());
+        Server sourceServer = serverRepository.getReferenceById(userAutoNavigateRequest.getSourceServerId());
+        Area destinationArea = areaRepository.getReferenceById(userAutoNavigateRequest.getDestinationAreaId());
 
         Preconditions.checkArgument(user.getServer() == sourceServer);
 
         Server destinationServer = destinationArea.getServer();
 
         if (destinationServer == null) {
-            log.warn("User {} tried to navigate to area {} which does not have a server!", user.getId(), destinationArea.getId());
+            log.warn("User {} tried to auto-navigate to area {} which does not have a server!", user.getId(), destinationArea.getId());
             return ResponseEntity.unprocessableEntity().build();
         }
 
         if (!destinationServer.isEnabled()) {
-            log.warn("User {} tried to navigate to server {} which is not enabled!", user.getId(), destinationServer.getId());
+            log.warn("User {} tried to auto-navigate to server {} which is not enabled!", user.getId(), destinationServer.getId());
             return ResponseEntity.unprocessableEntity().build();
         }
 
         if (!destinationServer.isActive()) {
-            log.warn("User {} tried to navigate to server {} which is not active!", user.getId(), destinationServer.getId());
+            log.warn("User {} tried to auto-navigate to server {} which is not active!", user.getId(), destinationServer.getId());
             return ResponseEntity.unprocessableEntity().build();
         }
 
-        user.setX(serverUserNavigateRequest.getX());
-        user.setY(serverUserNavigateRequest.getY());
-        user.setZ(serverUserNavigateRequest.getZ());
+        user.setX(userAutoNavigateRequest.getX());
+        user.setY(userAutoNavigateRequest.getY());
+        user.setZ(userAutoNavigateRequest.getZ());
 
-        user.setYaw(serverUserNavigateRequest.getYaw());
-        user.setPitch(serverUserNavigateRequest.getPitch());
+        user.setYaw(userAutoNavigateRequest.getYaw());
+        user.setPitch(userAutoNavigateRequest.getPitch());
 
         user.setNavigated(LocalDateTime.now());
 
         user.setDestinationServer(destinationServer);
 
-        return ResponseEntity.ok(new ServerUserNavigateResponse(destinationServer.getId(),
+        return ResponseEntity.ok(new UserAutoNavigateResponse(destinationServer.getId(),
                 //adhocProperties.getServerDomain(),
                 destinationServer.getPublicIp(),
                 destinationServer.getPublicWebSocketPort(),

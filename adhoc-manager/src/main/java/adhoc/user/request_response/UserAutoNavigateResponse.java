@@ -23,6 +23,7 @@
 package adhoc.user.request_response;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,38 +31,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
-/**
- * User is navigating from one server to another.
- * We want their last location so the receiving server can position them appropriately when they join.
- */
+
+/** Navigation response indicating which server the user should be sent to. */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerUserNavigateRequest {
+public class UserAutoNavigateResponse {
 
     @NotNull
     @Min(1)
-    private Long userId;
+    private Long destinationServerId;
+
+    @NotEmpty
+    private String ip;
 
     @NotNull
-    @Min(1)
-    private Long sourceServerId;
+    @Min(0)
+    private Integer port;
 
-    @NotNull
-    @Min(1)
-    private Long destinationAreaId;
-
-    @NotNull
-    private Double x;
-    @NotNull
-    private Double y;
-    @NotNull
-    private Double z;
-
-    @NotNull
-    private Double yaw;
-    @NotNull
-    private Double pitch;
+    @NotEmpty
+    private String webSocketUrl;
 }

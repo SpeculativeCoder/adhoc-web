@@ -20,12 +20,12 @@
  * SOFTWARE.
  */
 
-import {SortDirection} from "../table-sort/header-sort.component";
+import {SortDirection} from "./sort-direction";
 
 export class Sort {
 
   constructor(
-    public sort: string,
+    public column: string,
     public direction?: SortDirection) {
   }
 }

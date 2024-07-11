@@ -23,7 +23,7 @@
 import {Component, OnInit} from '@angular/core';
 import {forkJoin} from "rxjs";
 import {AreaService} from "./area.service";
-import {HeaderSortComponent, SortEvent} from "../shared/table-sort/header-sort.component";
+import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
@@ -72,7 +72,7 @@ export class AreasComponent implements OnInit {
     this.refreshAreas();
   }
 
-  onSort(sort: SortEvent) {
+  onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
     this.refreshAreas();
   }

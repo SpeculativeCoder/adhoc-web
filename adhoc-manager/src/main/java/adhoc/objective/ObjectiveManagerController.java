@@ -42,7 +42,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ObjectiveManagerController {
 
-    private final ObjectiveManagerService objectiveManagerService;
+    private final ObjectiveAdminService objectiveAdminService;
     private final ObjectiveReconcileService objectiveReconcileService;
     private final ObjectiveEventService objectiveEventService;
 
@@ -54,7 +54,7 @@ public class ObjectiveManagerController {
         Preconditions.checkArgument(Objects.equals(objectiveId, objectiveDto.getId()),
                 "Objective ID mismatch: %s != %s", objectiveId, objectiveDto.getId());
 
-        return objectiveManagerService.updateObjective(objectiveDto);
+        return objectiveAdminService.updateObjective(objectiveDto);
     }
 
     @PostMapping("/servers/{serverId}/objectives")

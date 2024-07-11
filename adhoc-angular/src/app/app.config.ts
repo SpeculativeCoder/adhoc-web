@@ -24,17 +24,19 @@ import {ApplicationConfig, provideZoneChangeDetection} from '@angular/core';
 import {provideRouter, TitleStrategy} from '@angular/router';
 
 import {routes} from './app.routes';
-import {httpInterceptorProviders} from "./core/http-interceptor";
 import {environment} from "../environments/environment";
 import {AppTitleStrategy} from "./app-title-strategy";
-import {provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
+import {CsrfInterceptor} from "./core/http-interceptor/csrf-interceptor";
+import {ErrorInterceptor} from "./core/http-interceptor/error-interceptor";
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes),
     provideHttpClient(withInterceptorsFromDi()), // TODO
-    httpInterceptorProviders,
+    {provide: HTTP_INTERCEPTORS, useExisting: CsrfInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useExisting: ErrorInterceptor, multi: true},
     {provide: 'BASE_URL', useValue: environment.baseUrl},
     {provide: TitleStrategy, useClass: AppTitleStrategy}
   ]

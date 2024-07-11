@@ -24,9 +24,9 @@ package adhoc.user;
 
 import adhoc.user.event.ServerUserDefeatedUserEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
-import adhoc.user.request_response.ServerUserJoinRequest;
-import adhoc.user.request_response.ServerUserNavigateRequest;
-import adhoc.user.request_response.ServerUserNavigateResponse;
+import adhoc.user.request_response.UserAutoNavigateRequest;
+import adhoc.user.request_response.UserAutoNavigateResponse;
+import adhoc.user.request_response.UserJoinRequest;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +45,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserManagerController {
 
-    private final UserManagerService userManagerService;
+    private final UserAdminService userAdminService;
     private final UserJoinService userJoinService;
-    private final UserNavigateManagerService userNavigateManagerService;
+    private final UserAutoNavigateService userAutoNavigateService;
     private final UserEventService userEventService;
 
     @PutMapping("/users/{userId}")
@@ -58,31 +58,31 @@ public class UserManagerController {
         Preconditions.checkArgument(Objects.equals(userId, userDto.getId()),
                 "User ID mismatch: %s != %s", userId, userDto.getId());
 
-        return userManagerService.updateUser(userDto);
+        return userAdminService.updateUser(userDto);
     }
 
     @PostMapping("/servers/{serverId}/userJoin")
     @PreAuthorize("hasRole('SERVER')")
     public ResponseEntity<UserDetailDto> postServerUserJoin(
             @PathVariable("serverId") Long serverId,
-            @Valid @RequestBody ServerUserJoinRequest serverUserJoinRequest) {
-        Preconditions.checkArgument(Objects.equals(serverId, serverUserJoinRequest.getServerId()),
-                "Server ID mismatch: %s != %s", serverId, serverUserJoinRequest.getServerId());
+            @Valid @RequestBody UserJoinRequest userJoinRequest) {
+        Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()),
+                "Server ID mismatch: %s != %s", serverId, userJoinRequest.getServerId());
 
-        return ResponseEntity.ok(userJoinService.serverUserJoin(serverUserJoinRequest));
+        return ResponseEntity.ok(userJoinService.userJoin(userJoinRequest));
     }
 
-    @PostMapping("/servers/{serverId}/userNavigate")
+    @PostMapping("/servers/{serverId}/userAutoNavigate")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<ServerUserNavigateResponse> postServerUserNavigate(
+    public ResponseEntity<UserAutoNavigateResponse> postUserAutoNavigate(
             @PathVariable("serverId") Long serverId,
-            @Valid @RequestBody ServerUserNavigateRequest serverUserNavigateRequest) {
-        Preconditions.checkArgument(Objects.equals(serverId, serverUserNavigateRequest.getSourceServerId()),
-                "Server ID mismatch: %s != %s", serverId, serverUserNavigateRequest.getSourceServerId());
+            @Valid @RequestBody UserAutoNavigateRequest userAutoNavigateRequest) {
+        Preconditions.checkArgument(Objects.equals(serverId, userAutoNavigateRequest.getSourceServerId()),
+                "Server ID mismatch: %s != %s", serverId, userAutoNavigateRequest.getSourceServerId());
 
-        //log.info("Server user navigate: request={}", serverUserNavigateRequest);
+        //log.info("User auto-navigate: request={}", serverUserNavigateRequest);
 
-        return userNavigateManagerService.serverUserNavigate(serverUserNavigateRequest);
+        return userAutoNavigateService.userAutoNavigate(userAutoNavigateRequest);
     }
 
     @MessageMapping("UserDefeatedUser")

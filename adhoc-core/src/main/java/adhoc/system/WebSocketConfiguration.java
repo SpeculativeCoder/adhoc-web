@@ -35,10 +35,12 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.session.Session;
 import org.springframework.session.web.socket.config.annotation.AbstractSessionWebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 @Configuration
+@EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfiguration {
 
@@ -48,7 +50,7 @@ public class WebSocketConfiguration {
     private TaskScheduler taskScheduler;
 
     @Bean
-    public AbstractSessionWebSocketMessageBrokerConfigurer<Session> adhocWebSocketMessageBrokerConfigurer() {
+    public AbstractSessionWebSocketMessageBrokerConfigurer<Session> webSocketMessageBrokerConfigurer() {
         return new AbstractSessionWebSocketMessageBrokerConfigurer<>() {
 
             @Override

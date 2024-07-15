@@ -65,10 +65,11 @@ public class UserJoinService {
         // existing user? verify token
         if (userJoinRequest.getUserId() != null) {
             user = userRepository.getReferenceById(userJoinRequest.getUserId());
-            Preconditions.checkArgument(Objects.equals(user.getFaction().getId(), userJoinRequest.getFactionId()));
+            Preconditions.checkArgument(Objects.equals(user.getFaction().getId(), userJoinRequest.getFactionId()),
+                    "Faction ID mismatch: %s != %s", user.getFaction().getId(), userJoinRequest.getFactionId());
 
-            Preconditions.checkArgument(userJoinRequest.getToken() != null);
-            Verify.verifyNotNull(user.getToken());
+            Preconditions.checkArgument(userJoinRequest.getToken() != null, "Token missing");
+            Verify.verifyNotNull(user.getToken(), "User has no token");
 
             // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
             if (!Objects.equals(user.getToken().toString(), userJoinRequest.getToken())) {

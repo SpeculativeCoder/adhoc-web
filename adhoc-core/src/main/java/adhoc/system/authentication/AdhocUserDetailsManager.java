@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 /**
- * Consults the ADHOC_USER table for user info.
+ * Consults the {@link adhoc.user.User} table for user info.
  * Also has support for the "server" user (used by Unreal server when talking to the web server) which is set via properties.
  */
 @Component

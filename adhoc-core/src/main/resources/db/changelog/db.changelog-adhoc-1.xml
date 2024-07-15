@@ -132,7 +132,7 @@
         </createIndex>
 
         <createTable tableName="adhoc_user_roles">
-            <column name="adhoc_user_id"
+            <column name="user_id"
                     type="BIGINT">
                 <constraints nullable="false"/>
             </column>
@@ -140,7 +140,7 @@
                     type="VARCHAR(255)"/>
         </createTable>
 
-        <addForeignKeyConstraint baseColumnNames="adhoc_user_id"
+        <addForeignKeyConstraint baseColumnNames="user_id"
                                  baseTableName="adhoc_user_roles"
                                  constraintName="fk_adhocuserroles_on_adhocuser"
                                  referencedColumnNames="id"

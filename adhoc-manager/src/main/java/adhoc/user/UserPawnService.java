@@ -52,8 +52,8 @@ public class UserPawnService {
         LocalDateTime now = LocalDateTime.now();
         log.trace("Managing user pawns... now={}", now);
 
-        // manage users who we think are connected to a server
-        try (Stream<User> users = userRepository.streamByServerNotNull()) {
+        // manage users who we think are connected to their desired server
+        try (Stream<User> users = userRepository.streamByServerEqualsDestinationServer()) {
             users.forEach(user -> {
 
                 // see if there is a pawn for the user

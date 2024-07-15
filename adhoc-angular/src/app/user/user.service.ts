@@ -39,7 +39,7 @@ export class UserService {
   private readonly usersUrl: string;
   private readonly loginUrl: string;
 
-  private currentUser$: BehaviorSubject<User> = new BehaviorSubject(null);
+  private currentUser$: BehaviorSubject<User>;
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient,
@@ -71,7 +71,7 @@ export class UserService {
   }
 
   getCurrentUser$(): Observable<User> {
-    if (this.currentUser$.value) {
+    if (this.currentUser$) {
       return this.currentUser$;
     }
     return this.refreshCurrentUser$();
@@ -84,7 +84,11 @@ export class UserService {
   refreshCurrentUser$() {
     return this.http.get<User>(`${this.usersUrl}/current`).pipe(
       mergeMap(user => {
-        this.currentUser$.next(user);
+        if (this.currentUser$) {
+          this.currentUser$.next(user);
+        } else {
+          this.currentUser$ = new BehaviorSubject(user);
+        }
         this.csrfService.clearCsrf();
         return this.currentUser$;
       }));
@@ -97,20 +101,25 @@ export class UserService {
       }
     }).pipe(
       mergeMap(user => {
-        this.currentUser$.next(user);
+        if (this.currentUser$) {
+          this.currentUser$.next(user);
+        } else {
+          this.currentUser$ = new BehaviorSubject(user);
+        }
         this.csrfService.clearCsrf();
-        return of(this.currentUser$.value);
+        return this.currentUser$;
       }));
   }
 
   getCurrentUserOrRegister(): Observable<User> {
-    return this.currentUser$.value
-      ? of(this.currentUser$.value)
-      : this.register({
-        human: true,
-        // regionId: regionId,
-        // serverId: serverId,
-      });
+    return this.getCurrentUser().pipe(
+      mergeMap(currentUser => {
+        return currentUser ? of(currentUser) : this.register({
+          human: true,
+          // regionId: regionId,
+          // serverId: serverId,
+        });
+      }));
   }
 
   login(usernameOrEmail: string, password: string, rememberMe: boolean) {
@@ -132,24 +141,31 @@ export class UserService {
     return this.http.post(`${this.usersUrl}/current/navigate`,
       {...userNavigateRequest}).pipe(
       mergeMap(user => {
-        this.currentUser$.next(user);
+        if (this.currentUser$) {
+          this.currentUser$.next(user);
+        } else {
+          this.currentUser$ = new BehaviorSubject(user);
+        }
         this.csrfService.clearCsrf();
-        return of(this.currentUser$.value);
+        return this.currentUser$;
       }));
   }
 
   navigateCurrentUserOrRegister(regionId: number, serverId: number): Observable<User> {
-    return this.currentUser$.value
-      ? this.navigateCurrentUser({
-        regionId: regionId,
-        serverId: serverId
-      })
-      : this.register({
-        human: true,
-        regionId: regionId,
-        serverId: serverId
-      });
-    ;
+    return this.getCurrentUser().pipe(mergeMap(currentUser => {
+      if (currentUser) {
+        return this.navigateCurrentUser({
+          regionId: regionId,
+          serverId: serverId
+        })
+      } else {
+        return this.register({
+          human: true,
+          regionId: regionId,
+          serverId: serverId
+        });
+      }
+    }));
   }
 
   userDefeatedUser(user: User, defeatedUser: User) {

@@ -45,15 +45,15 @@ import java.util.stream.Collectors;
  * A user account can be created by registering via the web application. This allows the user to login again later to
  * the same account. A user is also automatically created on joining an Unreal server if there was no logged-in user.
  */
-@Entity(name = "AdhocUser")
-@Table(indexes = {
-        @Index(name = "idx_adhoc_user_name", columnList = "name"),
-        @Index(name = "idx_adhoc_user_email", columnList = "email"),
-        @Index(name = "idx_adhoc_user_faction_id", columnList = "faction_id"),
-        @Index(name = "idx_adhoc_user_region_id", columnList = "region_id"),
-        @Index(name = "idx_adhoc_user_created", columnList = "created"),
-        @Index(name = "idx_adhoc_user_seen", columnList = "seen"),
-        @Index(name = "idx_adhoc_user_server_id", columnList = "server_id")
+@Entity
+@Table(name = "adhoc_user", indexes = {
+        @Index(name = "idx_user_name", columnList = "name"),
+        @Index(name = "idx_user_email", columnList = "email"),
+        @Index(name = "idx_user_faction_id", columnList = "faction_id"),
+        @Index(name = "idx_user_region_id", columnList = "region_id"),
+        @Index(name = "idx_user_created", columnList = "created"),
+        @Index(name = "idx_user_seen", columnList = "seen"),
+        @Index(name = "idx_user_server_id", columnList = "server_id")
 })
 // TODO: unique constraint(s)
 //@DynamicInsert
@@ -120,6 +120,7 @@ public class User {
     private LocalDateTime seen;
 
     @ElementCollection(fetch = FetchType.EAGER) // TODO: can we make the login success handler transactional?
+    @CollectionTable(name = "adhoc_user_roles")
     @Enumerated(EnumType.STRING)
     private Set<UserRole> roles;
 

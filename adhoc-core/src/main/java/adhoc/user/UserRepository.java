@@ -43,35 +43,40 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Stream<User> streamByServerNotNull();
 
+    // NOTE: any nulls will always be false
+    @Query("from User u " +
+            "where u.server = u.destinationServer")
+    Stream<User> streamByServerEqualsDestinationServer();
+
     Stream<User> streamByServerNotNullAndSeenBefore(LocalDateTime seenBefore);
 
-    @Query("select u.id from AdhocUser u where u.created < ?1 and u.seen is null and u.password is null and u.pawns is empty")
+    @Query("select u.id from User u where u.created < ?1 and u.seen is null and u.password is null and u.pawns is empty")
     List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
 
-    @Query("select u.id from AdhocUser u where u.seen < ?1 and u.password is null and u.pawns is empty")
+    @Query("select u.id from User u where u.seen < ?1 and u.password is null and u.pawns is empty")
     List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime seenBefore);
 
     @Query("select cast(count(1) as boolean) " +
-            "from AdhocUser u " +
+            "from User u " +
             "where u.human and ((u.destinationServer = ?1 and u.navigated > ?2) or (u.server = ?1))")
     boolean existsByHumanTrueAnd_DestinationServerAndNavigatedAfterOrServer_(Server server, LocalDateTime navigatedAfter);
 
     //@Modifying
-    //@Query("update AdhocUser u set u.version = u.version + 1, u.server = ?1, u.seen = ?2 where u.id in ?3")
+    //@Query("update User u set u.version = u.version + 1, u.server = ?1, u.seen = ?2 where u.id in ?3")
     //void updateServerAndSeenByIdIn(Server server, LocalDateTime seen, Collection<Long> idIn);
 
     @Modifying
-    @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score + ?1 where u.id = ?2")
+    @Query("update User u set u.version = u.version + 1, u.score = u.score + ?1 where u.id = ?2")
     void updateScoreAddById(BigDecimal scoreAdd, Long id);
 
     @Modifying
-    @Query("update AdhocUser u " +
+    @Query("update User u " +
             "set u.version = u.version + 1, " +
             "    u.score = u.score + (case u.human when true then ?1 else ?2 end) " +
             "where u.faction.id = ?3 and u.seen > ?4")
     void updateScoreAddByFactionIdAndSeenAfter(BigDecimal humanScoreAdd, BigDecimal notHumanScoreAdd, Long factionId, LocalDateTime seenAfter);
 
     @Modifying
-    @Query("update AdhocUser u set u.version = u.version + 1, u.score = u.score * ?1")
+    @Query("update User u set u.version = u.version + 1, u.score = u.score * ?1")
     void updateScoreMultiply(BigDecimal scoreMultiply);
 }

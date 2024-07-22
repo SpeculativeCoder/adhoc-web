@@ -10,20 +10,20 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^18.0.0",
-    "@angular/common": "^18.0.0",
-    "@angular/compiler": "^18.0.0",
-    "@angular/core": "^18.0.0",
-    "@angular/forms": "^18.0.0",
-    "@angular/localize": "^18.0.0",
-    "@angular/platform-browser": "^18.0.0",
-    "@angular/platform-browser-dynamic": "^18.0.0",
-    "@angular/router": "^18.0.0",
+    "@angular/animations": "^18.1.0",
+    "@angular/common": "^18.1.0",
+    "@angular/compiler": "^18.1.0",
+    "@angular/core": "^18.1.0",
+    "@angular/forms": "^18.1.0",
+    "@angular/localize": "^18.1.0",
+    "@angular/platform-browser": "^18.1.0",
+    "@angular/platform-browser-dynamic": "^18.1.0",
+    "@angular/router": "^18.1.0",
     "@ng-bootstrap/ng-bootstrap": "^17.0.0",
     "@popperjs/core": "^2.11.8",
     "angular-in-memory-web-api": "^0.18.0",
     "bootstrap": "^5.3.3",
-    "fabric": "^5.3.0",
+    "fabric": "^6.0.2",
     "open-iconic": "^1.1.1",
     "rxjs": "~7.8.0",
     "sockjs-client": "^1.6.1",
@@ -32,10 +32,9 @@
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.0.5",
-    "@angular/cli": "^18.0.5",
-    "@angular/compiler-cli": "^18.0.0",
-    "@types/fabric": "^5.3.7",
+    "@angular-devkit/build-angular": "^18.1.1",
+    "@angular/cli": "^18.1.1",
+    "@angular/compiler-cli": "^18.1.0",
     "@types/jasmine": "~5.1.0",
     "@types/sockjs-client": "^1.5.4",
     "jasmine-core": "~5.1.0",
@@ -44,6 +43,6 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.4.2"
+    "typescript": "~5.5.2"
   }
 }

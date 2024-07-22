@@ -33,7 +33,6 @@ import {Region} from "../region/region";
 import {Area} from "../area/area";
 import {RegionService} from "../region/region.service";
 import {AreaService} from "../area/area.service";
-import {fabric} from 'fabric';
 import {Pawn} from "../pawn/pawn";
 import {PawnService} from "../pawn/pawn.service";
 import {PropertiesService} from "../properties/properties.service";
@@ -45,6 +44,7 @@ import {MapComponentExtraInterface} from "./map-component-extra-interface";
 import {Page} from "../shared/paging/page";
 import {Paging} from "../shared/paging/paging";
 import {customization} from "../customization";
+import * as fabric from "fabric";
 
 @Component({
   selector: 'app-map',
@@ -200,9 +200,9 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     }
 
     // TODO
-    if (refresh) {
-      this.refreshMap();
-    }
+    // if (refresh) {
+    //   this.refreshMap();
+    // }
   }
 
   refreshMap(): void {
@@ -421,14 +421,16 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       //if (event.e.altKey === true) {
       this.isDragging = true;
       this.canvas.selection = false;
-      this.lastPosX = event.e.clientX;
-      this.lastPosY = event.e.clientY;
+      let mouseEvent = event.e as MouseEvent;
+      this.lastPosX = mouseEvent.clientX;
+      this.lastPosY = mouseEvent.clientY;
       //}
     });
     this.canvas.on('mouse:move', (event) => {
       if (this.isDragging) {
-        const diffX = (event.e.clientX - this.lastPosX);
-        const diffY = (event.e.clientY - this.lastPosY);
+        let mouseEvent = event.e as MouseEvent;
+        const diffX = (mouseEvent.clientX - this.lastPosX);
+        const diffY = (mouseEvent.clientY - this.lastPosY);
         //console.log("diffX=" + diffX + " diffY=" + diffY);
 
         let vpt = this.canvas.viewportTransform;
@@ -439,8 +441,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         this.mapLeft -= diffX * (1 / this.mapScale);
         this.mapTop -= diffY * (1 / this.mapScale);
 
-        this.lastPosX = event.e.clientX;
-        this.lastPosY = event.e.clientY;
+        this.lastPosX = mouseEvent.clientX;
+        this.lastPosY = mouseEvent.clientY;
       }
     });
     this.canvas.on('mouse:up', (event) => {
@@ -480,17 +482,16 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       editable: false,
       selectable: false,
     });
-    //[objectiveRect, objectiveText]
-    let objectiveGroup = new fabric.Group([objectiveRect], {
+    let objectiveGroup = new fabric.Group([objectiveRect, objectiveText], {
       originX: 'center',
       originY: 'center',
       left: objective.x,
-      top: -objective.y,
+      top: -objective.y - 10 * (1 / this.mapScale), // TODO
       hoverCursor: 'default',
       selectable: false,
-      subTargetCheck: true
+      subTargetCheck: true,
+      //layoutManager: new fabric.LayoutManager(new fabric.FixedLayout())
     });
-    objectiveGroup.add(objectiveText);
     this.canvas.add(objectiveGroup);
     this.objectiveGroups[objective.id] = objectiveGroup;
   }
@@ -499,21 +500,17 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     let pawnCircle = new fabric.Circle({
       originX: 'center',
       originY: 'center',
-      left: 0,
-      top: 0,
       radius: 5 * (1 / this.mapScale),
       stroke: 'black',
       strokeWidth: 0.1 * (1 / this.mapScale),
       fill: this.getFaction(pawn.factionId)?.color || 'lightgray',
-      opacity: 0,
       hoverCursor: 'default',
       selectable: false,
     });
     let pawnText = new fabric.IText(pawn.name, {
-      originX: 'left',
+      originX: 'center',
       originY: 'center',
-      left: 10 * (1 / this.mapScale),
-      top: 0,
+      top: -10 * (1 / this.mapScale),
       fontFamily: 'sans-serif',
       fontSize: 10 * (1 / this.mapScale),
       fill: '#000000',
@@ -523,15 +520,16 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       selectable: false,
       visible: !!pawn.human, // bot name only visible on mouseover
     });
-    //[pawnCircle, pawnText]
-    let pawnGroup = new fabric.Group([pawnCircle], {
+    let pawnGroup = new fabric.Group([pawnCircle, pawnText], {
       originX: 'center',
       originY: 'center',
       left: pawn.x,
-      top: -pawn.y,
+      top: -pawn.y - 5 * (1 / this.mapScale), // TODO
+      opacity: 0,
       hoverCursor: 'default',
       selectable: false,
-      subTargetCheck: true
+      subTargetCheck: true,
+      //layoutManager: new fabric.LayoutManager(new fabric.FixedLayout())
     });
     pawnCircle.on('mouseover', () => {
       pawnText.set('visible', true);
@@ -541,13 +539,14 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       pawnText.set('visible', !!pawn.human);
       this.canvas.requestRenderAll();
     });
-    pawnGroup.add(pawnText);
     this.canvas.add(pawnGroup);
     this.pawnGroups[pawn.id] = pawnGroup;
-    pawnCircle.animate({'opacity': 100}, {
+    pawnGroup.animate({
+      opacity: 1
+    }, {
       duration: 500,
-      easing: fabric.util.ease.easeInExpo,
-      onChange: this.canvas.requestRenderAll.bind(this.canvas)
+      easing: fabric.util.ease.easeInSine,
+      onChange: () => this.canvas.requestRenderAll()
     });
   }
 
@@ -597,10 +596,13 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     for (let pawn of pawns) {
       let pawnGroup = this.pawnGroups[pawn.id];
       if (pawnGroup) {
-        pawnGroup.animate({'left': pawn.x, 'top': -pawn.y}, {
+        pawnGroup.animate({
+          left: pawn.x,
+          top: -pawn.y - 5 * (1 / this.mapScale) // TODO
+        }, {
           duration: 1000,
-          easing: fabric.util.ease.easeOutExpo,
-          onChange: this.canvas.requestRenderAll.bind(this.canvas),
+          easing: fabric.util.ease.easeInSine,
+          onChange: () => this.canvas.requestRenderAll()
         });
       } else {
         this.createPawnGroup(pawn);
@@ -611,10 +613,12 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     for (const oldPawnId of oldPawnIds) {
       let pawnGroup = this.pawnGroups[oldPawnId];
       if (pawnGroup) {
-        pawnGroup.item(0).animate({'opacity': 0}, {
-          duration: 500,
-          easing: fabric.util.ease.easeOutExpo,
-          onChange: this.canvas.requestRenderAll.bind(this.canvas),
+        pawnGroup.animate({
+          opacity: 0
+        }, {
+          duration: 1000,
+          easing: fabric.util.ease.easeInSine,
+          onChange: () => this.canvas.requestRenderAll(),
           onComplete: () => {
             this.canvas.remove(pawnGroup);
             this.canvas.requestRenderAll();

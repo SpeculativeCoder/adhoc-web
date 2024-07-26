@@ -24,6 +24,7 @@ package adhoc.faction;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +41,7 @@ public class FactionAdminService {
     private final FactionService factionService;
 
     public List<FactionDto> getServerFactions(Long serverId) {
-        return factionRepository.findAll().stream().map(factionService::toDto).toList();
+        return factionRepository.findAll(Sort.by("index")).stream().map(factionService::toDto).toList();
     }
 
     public FactionDto updateFaction(FactionDto factionDto) {

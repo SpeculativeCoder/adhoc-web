@@ -82,8 +82,9 @@ public class ServerManagerService {
                     // TODO: prefer searching by area(s) that have human(s) in them
                     Area firstArea = areaGroup.iterator().next();
 
-                    // try to use an existing server for this area group, otherwise we will need to create a new server
-                    Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea).orElseGet(Server::new);
+                    // try to use an existing server for this area group, otherwise take an existing unused server or create a new server
+                    Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea)
+                            .orElseGet(() -> serverRepository.findFirstByRegionAndAreasEmpty(region).orElseGet(Server::new));
 
                     // adjust server as necessary to ensure it is representing this region and area group
                     boolean emitEvent = updateServerWithRegionAndAreaGroup(server, region, areaGroup);

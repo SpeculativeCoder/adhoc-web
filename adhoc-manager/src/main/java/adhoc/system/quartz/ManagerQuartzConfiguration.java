@@ -58,100 +58,144 @@ public class ManagerQuartzConfiguration {
     @Bean
     public Trigger manageServersTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_SERVERS).withIdentity(MANAGE_SERVERS)
+                .forJob(MANAGE_SERVERS)
+                .withIdentity(MANAGE_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean
     public Trigger pollTasksTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(POLL_TASKS).withIdentity(POLL_TASKS)
+                .forJob(POLL_TASKS)
+                .withIdentity(POLL_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean
     public Trigger manageTaskDomainsTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_TASK_DOMAINS).withIdentity(MANAGE_TASK_DOMAINS)
+                .forJob(MANAGE_TASK_DOMAINS)
+                .withIdentity(MANAGE_TASK_DOMAINS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean
     public Trigger manageServerTasksTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_SERVER_TASKS).withIdentity(MANAGE_SERVER_TASKS)
+                .forJob(MANAGE_SERVER_TASKS)
+                .withIdentity(MANAGE_SERVER_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean
     public Trigger awardAndDecayFactionScoresTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(AWARD_AND_DECAY_FACTION_SCORES).withIdentity(AWARD_AND_DECAY_FACTION_SCORES)
+                .forJob(AWARD_AND_DECAY_FACTION_SCORES)
+                .withIdentity(AWARD_AND_DECAY_FACTION_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean
-    public Trigger manageUserScoresTrigger() {
+    public Trigger awardAndDecayUserScoresTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(AWARD_AND_DECAY_USER_SCORES).withIdentity(AWARD_AND_DECAY_USER_SCORES)
+                .forJob(AWARD_AND_DECAY_USER_SCORES)
+                .withIdentity(AWARD_AND_DECAY_USER_SCORES)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean
     public Trigger manageUserPawnsTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_USER_PAWNS).withIdentity(MANAGE_USER_PAWNS)
+                .forJob(MANAGE_USER_PAWNS)
+                .withIdentity(MANAGE_USER_PAWNS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean
     public Trigger leaveUsersTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(LEAVE_USERS).withIdentity(LEAVE_USERS)
+                .forJob(LEAVE_USERS)
+                .withIdentity(LEAVE_USERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean
     public Trigger purgeOldUsersTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(PURGE_OLD_USERS).withIdentity(PURGE_OLD_USERS)
+                .forJob(PURGE_OLD_USERS)
+                .withIdentity(PURGE_OLD_USERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean
     public Trigger purgeOldServers() {
         return TriggerBuilder.newTrigger()
-                .forJob(PURGE_OLD_SERVERS).withIdentity(PURGE_OLD_SERVERS)
+                .forJob(PURGE_OLD_SERVERS)
+                .withIdentity(PURGE_OLD_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean
     public Trigger purgeOldPawnsTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(PURGE_OLD_PAWNS).withIdentity(PURGE_OLD_PAWNS)
+                .forJob(PURGE_OLD_PAWNS)
+                .withIdentity(PURGE_OLD_PAWNS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever().withIntervalInSeconds(10).withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200))).build();
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .build();
     }
 
     @Bean

@@ -29,6 +29,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+
 @Component
 @Slf4j
 @Getter
@@ -65,6 +67,9 @@ public class ManagerProperties {
     @Value("${adhoc.max-bots}")
     private Integer maxBots;
 
+    @Value("${adhoc.purge-old.servers.seen-before}")
+    private Duration purgeOldServersSeenBefore;
+
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
         log.info("serverBasicAuthUsername={} serverBasicAuthPassword={}", serverBasicAuthUsername, serverBasicAuthPassword == null ? null : "***");
@@ -72,5 +77,6 @@ public class ManagerProperties {
         log.info("managerDomain={} kioskDomain={} serverDomain={}", managerDomain, kioskDomain, serverDomain);
         log.info("managerImage={} kioskImage={} serverImage={}", managerImage, kioskImage, serverImage);
         log.info("maxPawns={} maxPlayers={} maxBots={}", maxPawns, maxPlayers, maxBots);
+        log.info("purgeOldServersSeenBefore={}", purgeOldServersSeenBefore);
     }
 }

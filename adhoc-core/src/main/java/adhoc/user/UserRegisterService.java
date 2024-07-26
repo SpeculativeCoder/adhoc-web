@@ -127,8 +127,11 @@ public class UserRegisterService {
 
         if (userRegisterRequest.getDestinationServerId() == null) {
             // TODO
-            Server server = region.getServers().get(ThreadLocalRandom.current().nextInt(region.getServers().size()));
-            builder.destinationServerId(server.getId());
+            List<Server> candidateServers = region.getServers().stream()
+                    .filter(server -> server.isEnabled() && server.isActive())
+                    .toList();
+            Server destinationServer = candidateServers.get(ThreadLocalRandom.current().nextInt(candidateServers.size()));
+            builder.destinationServerId(destinationServer.getId());
         }
 
         userRegisterRequest = builder.build();

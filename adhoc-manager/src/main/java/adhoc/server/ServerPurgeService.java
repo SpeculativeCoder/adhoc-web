@@ -22,6 +22,7 @@
 
 package adhoc.server;
 
+import adhoc.properties.ManagerProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,10 +37,12 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ServerPurgeService {
 
+    private final ManagerProperties managerProperties;
+
     private final ServerRepository serverRepository;
 
     public void purgeOldServers() {
-        LocalDateTime seenBefore = LocalDateTime.now().minusMinutes(5);
+        LocalDateTime seenBefore = LocalDateTime.now().minus(managerProperties.getPurgeOldServersSeenBefore());
 
         try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
             oldServers.forEach(oldServer -> {

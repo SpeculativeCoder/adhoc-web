@@ -26,6 +26,7 @@ import adhoc.area.AreaRepository;
 import adhoc.region.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +46,7 @@ public class ServerAdminService {
     private final ServerService serverService;
 
     public List<ServerDto> getServerServers(Long serverId) {
-        return serverRepository.findAll().stream().map(serverService::toDto).toList();
+        return serverRepository.findAll(Sort.by("id")).stream().map(serverService::toDto).toList();
     }
 
     public ServerDto updateServer(ServerDto serverDto) {

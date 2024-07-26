@@ -149,7 +149,7 @@
 
         <createSequence sequenceName="server_id_sequence"
                         startValue="1"
-                        incrementBy="50"/>
+                        incrementBy="1"/>
 
         <createTable tableName="server">
             <column name="id"

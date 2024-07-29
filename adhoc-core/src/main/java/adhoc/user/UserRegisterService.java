@@ -35,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.event.Level;
 import org.springframework.dao.TransientDataAccessException;
+import org.springframework.lang.Nullable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.core.Authentication;
@@ -156,12 +157,13 @@ public class UserRegisterService {
         return userService.toDetailDto(user);
     }
 
-    private String determineRemoteAddr() {
+    private @Nullable String determineRemoteAddr() {
         return httpServletRequest.getRemoteAddr();
     }
 
-    private String determineUserAgent() {
-        return httpServletRequest.getHeader("user-agent").replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?");
+    private @Nullable String determineUserAgent() {
+        String userAgent = httpServletRequest.getHeader("user-agent");
+        return userAgent == null ? null : userAgent.replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?");
     }
 
     private static boolean isAuthenticatedAsServer() {

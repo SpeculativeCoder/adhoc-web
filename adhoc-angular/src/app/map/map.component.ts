@@ -117,7 +117,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
 
     this.canvas = new fabric.Canvas('map-canvas', {
       preserveObjectStacking: true,
-      containerClass: 'map-container',
+      containerClass: 'map-container', // TODO
       // width: this.canvasWidth,
       // height: this.canvasHeight,
       imageSmoothingEnabled: false,
@@ -472,7 +472,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     let objectiveText = new fabric.IText(objective.name, {
       originX: 'center',
       originY: 'center',
-      top: -20 * (1 / this.mapScale),
+      top: -objectiveRect.get('height'),
       fontFamily: 'sans-serif',
       fontSize: 16 * (1 / this.mapScale),
       fill: '#222222',
@@ -484,15 +484,16 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     });
     let objectiveGroup = new fabric.Group([objectiveRect, objectiveText], {
       originX: 'center',
-      originY: 'center',
+      originY: 'bottom',
       left: objective.x,
-      top: -objective.y - 10 * (1 / this.mapScale), // TODO
+      top: -objective.y + 0.5 * objectiveRect.get('height'),
       hoverCursor: 'default',
       selectable: false,
       subTargetCheck: true,
-      //layoutManager: new fabric.LayoutManager(new fabric.FixedLayout())
+      // layoutManager: new fabric.LayoutManager(new fabric.FixedLayout())
     });
     this.canvas.add(objectiveGroup);
+    this.canvas.requestRenderAll();
     this.objectiveGroups[objective.id] = objectiveGroup;
   }
 
@@ -510,7 +511,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     let pawnText = new fabric.IText(pawn.name, {
       originX: 'center',
       originY: 'center',
-      top: -10 * (1 / this.mapScale),
+      top: -pawnCircle.get('height'),
       fontFamily: 'sans-serif',
       fontSize: 10 * (1 / this.mapScale),
       fill: '#000000',
@@ -522,9 +523,9 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     });
     let pawnGroup = new fabric.Group([pawnCircle, pawnText], {
       originX: 'center',
-      originY: 'center',
+      originY: 'bottom',
       left: pawn.x,
-      top: -pawn.y - 5 * (1 / this.mapScale), // TODO
+      top: -pawn.y + 0.5 * pawnCircle.get('height'),
       opacity: 0,
       hoverCursor: 'default',
       selectable: false,
@@ -540,6 +541,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       this.canvas.requestRenderAll();
     });
     this.canvas.add(pawnGroup);
+    this.canvas.requestRenderAll();
     this.pawnGroups[pawn.id] = pawnGroup;
     pawnGroup.animate({
       opacity: 1

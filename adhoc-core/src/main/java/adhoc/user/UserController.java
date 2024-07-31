@@ -48,20 +48,16 @@ public class UserController {
 
     @GetMapping("/users")
     public Page<UserDto> getUsers(@SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
-
         return userService.getUsers(pageable);
     }
 
     @GetMapping("/users/{userId}")
-    public UserDto getUser(
-            @PathVariable("userId") Long userId) {
-
+    public UserDto getUser(@PathVariable("userId") Long userId) {
         return userService.getUser(userId);
     }
 
     @GetMapping("/users/current")
-    public ResponseEntity<UserDetailDto> getCurrentUser(
-            Authentication authentication) {
+    public ResponseEntity<UserDetailDto> getCurrentUser(Authentication authentication) {
 
         if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails userDetails)) {
             return ResponseEntity.noContent().build();
@@ -71,16 +67,13 @@ public class UserController {
     }
 
     @PostMapping("/users/register")
-    public ResponseEntity<UserDetailDto> postRegisterUser(
-            @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
-
+    public ResponseEntity<UserDetailDto> postRegisterUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
         return ResponseEntity.ok(userRegisterService.registerUser(userRegisterRequest));
     }
 
     @PostMapping("/users/current/navigate")
-    public ResponseEntity<UserDetailDto> postNavigateCurrentUser(
-            @Valid @RequestBody UserNavigateRequest userNavigateRequest,
-            Authentication authentication) {
+    public ResponseEntity<UserDetailDto> postNavigateCurrentUser(@Valid @RequestBody UserNavigateRequest userNavigateRequest,
+                                                                 Authentication authentication) {
 
         if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails userDetails)) {
             return ResponseEntity.noContent().build();

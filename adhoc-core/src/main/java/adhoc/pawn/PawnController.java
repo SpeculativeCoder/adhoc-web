@@ -42,14 +42,11 @@ public class PawnController {
 
     @GetMapping("/pawns")
     public Page<PawnDto> getPawns(@SortDefault("serverId") @SortDefault("index") Pageable pageable) {
-
         return pawnService.getPawns(pageable);
     }
 
     @GetMapping("/pawns/{pawnId}")
-    public PawnDto getPawn(
-            @PathVariable("pawnId") Long pawnId) {
-
+    public PawnDto getPawn(@PathVariable("pawnId") Long pawnId) {
         return pawnService.getPawn(pawnId);
     }
 }

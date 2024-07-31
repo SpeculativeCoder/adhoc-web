@@ -30,7 +30,7 @@ import lombok.*;
 import java.util.List;
 
 /**
- * A region corresponds to a map in the Unreal project.
+ * Region is a map/level in the Unreal project.
  * Users connecting via HTML5 client will only have the content for one region available,
  * but can move freely from area to area within the region (which may sometimes mean joining different servers)
  * without having to download the HTML5 client again.
@@ -57,7 +57,7 @@ public class Region {
     @Column(nullable = false)
     private String name;
 
-    /** Name of map/level in Unreal project. */
+    /** Name of map/level in the Unreal project. */
     @Column(nullable = false)
     private String mapName;
 

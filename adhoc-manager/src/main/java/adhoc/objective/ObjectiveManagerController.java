@@ -48,9 +48,8 @@ public class ObjectiveManagerController {
 
     @PutMapping("/objectives/{objectiveId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ObjectiveDto putObjective(
-            @PathVariable("objectiveId") Long objectiveId,
-            @Valid @RequestBody ObjectiveDto objectiveDto) {
+    public ObjectiveDto putObjective(@PathVariable("objectiveId") Long objectiveId,
+                                     @Valid @RequestBody ObjectiveDto objectiveDto) {
         Preconditions.checkArgument(Objects.equals(objectiveId, objectiveDto.getId()),
                 "Objective ID mismatch: %s != %s", objectiveId, objectiveDto.getId());
 
@@ -59,20 +58,16 @@ public class ObjectiveManagerController {
 
     @PostMapping("/servers/{serverId}/objectives")
     @PreAuthorize("hasRole('SERVER')")
-    public List<ObjectiveDto> postServerObjectives(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
-
+    public List<ObjectiveDto> postServerObjectives(@PathVariable Long serverId,
+                                                   @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
         return objectiveReconcileService.reconcileServerObjectives(serverId, objectiveDtos);
     }
 
     @MessageMapping("ObjectiveTaken")
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public ObjectiveTakenEvent handleObjectiveTaken(
-            @Valid @RequestBody ServerObjectiveTakenEvent event) {
+    public ObjectiveTakenEvent handleObjectiveTaken(@Valid @RequestBody ServerObjectiveTakenEvent event) {
         log.debug("Handling: {}", event);
-
         return objectiveEventService.handleObjectiveTaken(event);
     }
 

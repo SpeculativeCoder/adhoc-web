@@ -33,7 +33,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * This represents a running Unreal server (usually in the cloud) representing one of more areas of a region.
+ * Server represents one or more areas of a region.
+ * When enabled, it should trigger creation of an Unreal server task (typically in the cloud).
  */
 @Entity
 //@DynamicInsert

@@ -42,15 +42,12 @@ public class TaskController {
 
     @GetMapping("/tasks")
     public Page<TaskDto> getTasks(@SortDefault("id") Pageable pageable) {
-
         // TODO: sorting
         return taskService.getTasks(pageable);
     }
 
     @GetMapping("/tasks/{taskId}")
-    public TaskDto getTask(
-            @PathVariable("taskId") Long taskId) {
-
+    public TaskDto getTask(@PathVariable("taskId") Long taskId) {
         return taskService.getTask(taskId);
     }
 }

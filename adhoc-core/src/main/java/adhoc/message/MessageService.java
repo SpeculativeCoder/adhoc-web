@@ -52,7 +52,6 @@ public class MessageService {
         return toDto(messageRepository.findByIdAnd_UserNullOrUserId_(id, optionalUserId.orElse(null)));
     }
 
-    @Transactional
     public void addGlobalMessage(String text) {
         LocalDateTime now = LocalDateTime.now();
 

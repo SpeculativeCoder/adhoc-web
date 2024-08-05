@@ -119,14 +119,16 @@ public class UserService {
 
         user.setName(userRegisterRequest.getName());
         user.setEmail(userRegisterRequest.getEmail());
-        user.setPassword(userRegisterRequest.getPassword() == null ? null : passwordEncoder.encode(userRegisterRequest.getPassword()));
+        user.setPassword(userRegisterRequest.getPassword() == null ? null
+                : passwordEncoder.encode(userRegisterRequest.getPassword()));
         user.setHuman(userRegisterRequest.getHuman());
         user.setFaction(factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
         user.setScore(BigDecimal.valueOf(0.0));
         user.setRegion(regionRepository.getReferenceById(userRegisterRequest.getRegionId()));
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());
-        user.setDestinationServer(serverRepository.getReferenceById(userRegisterRequest.getDestinationServerId()));
+        user.setDestinationServer(userRegisterRequest.getDestinationServerId() == null ? null
+                : serverRepository.getReferenceById(userRegisterRequest.getDestinationServerId()));
         user.setNavigated(LocalDateTime.now());
 
         return user;

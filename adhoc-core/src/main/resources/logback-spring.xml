@@ -30,40 +30,40 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
         <!-- quick/handy way to only show mutating SQL if chasing something down when org.hibernate.SQL logging set to debug -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
-                    ("org.hibernate.SQL".equals(logger) &amp;&amp;
+                    return ("org.hibernate.SQL".equals(logger) &amp;&amp;
                     !message.startsWith("update") &amp;&amp;
                     !message.startsWith("insert") &amp;&amp;
-                    !message.startsWith("delete"))
+                    !message.startsWith("delete"));
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <!-- !message.endsWith("for update") -->
 
         <!-- suppress some artemis errors - TODO -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
-                    ("org.apache.activemq.artemis.core.server".equals(logger)
-                    &amp;&amp; message.startsWith("AMQ224037: cluster connection Failed to handle message"))
+                    return ("org.apache.activemq.artemis.core.server".equals(logger)
+                    &amp;&amp; message.startsWith("AMQ224037: cluster connection Failed to handle message"));
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <!-- suppress some artemis errors - TODO -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
-                    ("org.apache.activemq.artemis.core.server".equals(logger)
+                    return ("org.apache.activemq.artemis.core.server".equals(logger)
                     &amp;&amp; message.startsWith("AMQ224091: Bridge ClusterConnectionBridge")
-                    &amp;&amp; message.endsWith("is unable to connect to destination. Retrying"))
+                    &amp;&amp; message.endsWith("is unable to connect to destination. Retrying"));
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
@@ -74,8 +74,8 @@
         <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
-                    ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
-                    &amp;&amp; (message.equals("SQL Warning Code: -1100, SQLState: 02000") || message.equals("no data")))
+                    return ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
+                    &amp;&amp; (message.equals("SQL Warning Code: -1100, SQLState: 02000") || message.equals("no data")));
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
@@ -86,49 +86,49 @@
         <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
-                    ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
-                    &amp;&amp; (message.equals("SQL Error: -4861, SQLState: 40001") || message.equals("transaction rollback: serialization failure")))
+                    return ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
+                    &amp;&amp; (message.equals("SQL Error: -4861, SQLState: 40001") || message.equals("transaction rollback: serialization failure")));
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
         </filter>-->
 
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
-                    ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
-                    &amp;&amp; (message.equals("SQL Error: 40001, SQLState: 40001") || message.startsWith("Deadlock detected. The current transaction was rolled back. Details: ")))
+                    return ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
+                    &amp;&amp; (message.equals("SQL Error: 40001, SQLState: 40001") || message.startsWith("Deadlock detected. The current transaction was rolled back. Details: ")));
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <!-- batch insert failures due to concurrency -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
-                    ("org.hibernate.orm.jdbc.batch".equals(logger)
+                    return ("org.hibernate.orm.jdbc.batch".equals(logger)
                     &amp;&amp; (message.equals("HHH100503: On release of batch it still contained JDBC statements")
-                    || message.startsWith("HHH100501: Exception executing batch [org.hibernate.StaleStateException: ")))
+                    || message.startsWith("HHH100501: Exception executing batch [org.hibernate.StaleStateException: ")));
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <!-- web browser stomp disconnection failures -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
-                    ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(logger)
-                    &amp;&amp; (message.startsWith("Failed to forward DISCONNECT ")))
+                    return ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(logger)
+                    &amp;&amp; (message.startsWith("Failed to forward DISCONNECT ")));
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->

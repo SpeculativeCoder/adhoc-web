@@ -23,25 +23,28 @@
 package adhoc.system;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
+import org.springframework.core.log.LogFormatUtils;
+import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /** Extension of default Spring MVC exception handler to gracefully handle some additional exceptions. */
+@Slf4j
 @ControllerAdvice
 public class AdhocResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     @Nullable
     public ResponseEntity<Object> handleEntityNotFoundException(Exception exception, WebRequest webRequest) {
+        EntityNotFoundException entityNotFoundException = (EntityNotFoundException) exception;
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
+        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, entityNotFoundException.getMessage(), null, null, webRequest);
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
     }
 
@@ -51,5 +54,12 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+        Level level = (ex instanceof NoResourceFoundException) ? Level.DEBUG : Level.WARN;
+        log.atLevel(level).log("{}", LogFormatUtils.formatValue(ex, -1, true));
+        return super.handleExceptionInternal(ex, body, headers, statusCode, request);
     }
 }

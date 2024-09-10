@@ -27,7 +27,6 @@ import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -69,10 +68,10 @@ public class IndexController {
         return null;
     }
 
-    // cut down on log spam a bit for all attempts which are trying to POST to /
-    @PostMapping("/")
-    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    public Void postIndex() {
-        return null;
-    }
+    //// cut down on log spam a bit for all attempts which are trying to POST to /
+    //@PostMapping("/")
+    //@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    //public Void postIndex() {
+    //    return null;
+    //}
 }

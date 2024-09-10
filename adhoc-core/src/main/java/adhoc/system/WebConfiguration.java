@@ -39,7 +39,7 @@ public class WebConfiguration {
     private final CoreProperties coreProperties;
 
     @Bean
-    PageableHandlerMethodArgumentResolverCustomizer pageableHandlerMethodArgumentResolverCustomizer() {
+    public PageableHandlerMethodArgumentResolverCustomizer pageableHandlerMethodArgumentResolverCustomizer() {
         return pc -> {
             pc.setMaxPageSize(100);
         };

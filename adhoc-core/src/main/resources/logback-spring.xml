@@ -46,7 +46,7 @@
         <!-- !message.endsWith("for update") -->
 
         <!-- suppress some artemis errors - TODO -->
-        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.apache.activemq.artemis.core.server".equals(logger)
@@ -55,7 +55,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>-->
+        </filter>
 
         <!-- suppress some artemis errors - TODO -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -71,7 +71,7 @@
         </filter>
 
         <!-- suppress no data warnings from hsqldb UPDATEs etc. which don't update any columns (HSQLDB) -->
-        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
@@ -80,7 +80,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>-->
+        </filter>
 
         <!-- pessimistic locking failure messages (HSQLDB) -->
         <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -106,7 +106,7 @@
         </filter>-->
 
         <!-- batch insert failures due to concurrency -->
-        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.hibernate.orm.jdbc.batch".equals(logger)
@@ -116,10 +116,10 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>-->
+        </filter>
 
         <!-- web browser stomp disconnection failures -->
-        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(logger)
@@ -128,7 +128,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>-->
+        </filter>
 
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->

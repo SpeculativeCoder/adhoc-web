@@ -110,7 +110,7 @@
                         <artifactId>build-helper-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>add-source</id>
+                                <id>add extra manager sources</id>
                                 <phase>generate-sources</phase>
                                 <goals>
                                     <goal>add-source</goal>
@@ -122,7 +122,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>add-resource</id>
+                                <id>add extra manager resources</id>
                                 <phase>generate-resources</phase>
                                 <goals>
                                     <goal>add-resource</goal>
@@ -138,8 +138,8 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>add-test-source</id>
-                                <phase>generate-sources</phase>
+                                <id>add extra manager test sources</id>
+                                <phase>generate-test-sources</phase>
                                 <goals>
                                     <goal>add-test-source</goal>
                                 </goals>
@@ -150,8 +150,8 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>add-test-resource</id>
-                                <phase>generate-resources</phase>
+                                <id>add extra manager test resources</id>
+                                <phase>generate-test-resources</phase>
                                 <goals>
                                     <goal>add-test-resource</goal>
                                 </goals>

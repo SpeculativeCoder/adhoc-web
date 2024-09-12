@@ -256,35 +256,57 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>../customization</directory>
-                <includes>
-                    <include>adhoc-customization.properties</include>
-                </includes>
-                <filtering>false</filtering>
-            </resource>
-            <!--
-            <resource>
-                <directory>certs</directory>
-                <includes>
-                    <include>adhoc.cer</include>
-                    <include>adhoc.key</include>
-                    <include>adhoc-ca.cer</include>
-                </includes>
-                <targetPath>certs</targetPath>
-                <filtering>false</filtering>
-            </resource>
-            -->
-            <resource>
-                <directory>../Package/${unreal.configuration}/HTML5Client</directory>
-                <targetPath>HTML5Client</targetPath>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
+
+        <!--
+        <resource>
+            <directory>../customization</directory>
+            <includes>
+                <include>adhoc-customization.properties</include>
+            </includes>
+            <filtering>false</filtering>
+        </resource>
+        -->
+
+        <!--
+        <resource>
+            <directory>certs</directory>
+            <includes>
+                <include>adhoc.cer</include>
+                <include>adhoc.key</include>
+                <include>adhoc-ca.cer</include>
+            </includes>
+            <targetPath>certs</targetPath>
+            <filtering>false</filtering>
+        </resource>
+        -->
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add client resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>
+                                        ../Package/${unreal.configuration}/HTML5Client
+                                    </directory>
+                                    <targetPath>HTML5Client</targetPath>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
     </build>
 
     <profiles>
@@ -302,7 +324,7 @@
                         <artifactId>build-helper-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>add-source</id>
+                                <id>add extra sources</id>
                                 <phase>generate-sources</phase>
                                 <goals>
                                     <goal>add-source</goal>
@@ -314,7 +336,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>add-resource</id>
+                                <id>add extra resources</id>
                                 <phase>generate-resources</phase>
                                 <goals>
                                     <goal>add-resource</goal>
@@ -330,8 +352,8 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>add-test-source</id>
-                                <phase>generate-sources</phase>
+                                <id>add extra test sources</id>
+                                <phase>generate-test-sources</phase>
                                 <goals>
                                     <goal>add-test-source</goal>
                                 </goals>
@@ -342,8 +364,8 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>add-test-resource</id>
-                                <phase>generate-resources</phase>
+                                <id>add extra test resources</id>
+                                <phase>generate-test-resources</phase>
                                 <goals>
                                     <goal>add-test-resource</goal>
                                 </goals>

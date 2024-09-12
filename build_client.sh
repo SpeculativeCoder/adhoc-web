@@ -52,4 +52,6 @@ do
    -ArchiveDirectory=${package_dir} \
    -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
    -NoP4 -UTF8Output -NoDebugInfo
+
+  touch ${package_dir}
 done

@@ -28,6 +28,7 @@ import org.slf4j.event.Level;
 import org.springframework.core.log.LogFormatUtils;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -53,13 +54,16 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
     public ResponseEntity<Object> handleThrowable(Exception exception, WebRequest webRequest) {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
-        return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
+        HttpHeaders httpHeaders = (exception instanceof ErrorResponse errorResponse)
+                ? errorResponse.getHeaders()
+                : new HttpHeaders();
+        return handleExceptionInternal(exception, problemDetail, httpHeaders, httpStatus, webRequest);
     }
 
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
-        Level level = (ex instanceof NoResourceFoundException) ? Level.DEBUG : Level.WARN;
-        log.atLevel(level).log("{}", LogFormatUtils.formatValue(ex, -1, true));
-        return super.handleExceptionInternal(ex, body, headers, statusCode, request);
+    protected ResponseEntity<Object> handleExceptionInternal(Exception exception, Object body, HttpHeaders httpHeaders, HttpStatusCode statusCode, WebRequest webRequest) {
+        Level level = (exception instanceof NoResourceFoundException) ? Level.DEBUG : Level.WARN;
+        log.atLevel(level).log("{}", LogFormatUtils.formatValue(exception, -1, true));
+        return super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
     }
 }

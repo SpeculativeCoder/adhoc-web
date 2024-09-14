@@ -53,7 +53,7 @@ public class UserPawnService {
         log.trace("Managing user pawns... now={}", now);
 
         // manage users who we think are connected to their desired server
-        try (Stream<User> users = userRepository.streamByServerEqualsDestinationServer()) {
+        try (Stream<User> users = userRepository.streamForWriteByServerEqualsDestinationServer()) {
             users.forEach(user -> {
 
                 // see if there is a pawn for the user

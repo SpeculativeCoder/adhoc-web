@@ -23,7 +23,9 @@
 package adhoc.user;
 
 import adhoc.server.Server;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
@@ -46,7 +48,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // NOTE: any nulls will always be false
     @Query("from User u " +
             "where u.server = u.destinationServer")
-    Stream<User> streamByServerEqualsDestinationServer();
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Stream<User> streamForWriteByServerEqualsDestinationServer();
 
     Stream<User> streamByServerNotNullAndSeenBefore(LocalDateTime seenBefore);
 

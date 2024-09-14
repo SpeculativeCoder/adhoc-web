@@ -64,7 +64,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 
@@ -77,7 +77,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 
@@ -90,7 +90,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 
@@ -103,7 +103,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 
@@ -116,7 +116,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 
@@ -129,7 +129,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 
@@ -142,7 +142,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 
@@ -155,7 +155,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 
@@ -168,7 +168,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 
@@ -181,7 +181,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 
@@ -194,7 +194,7 @@ public class ManagerQuartzConfiguration {
                         .repeatForever()
                         .withIntervalInSeconds(10)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant.plusMillis(startOffset += 200)))
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
     }
 

@@ -94,16 +94,19 @@
             <onMismatch>NEUTRAL</onMismatch>
         </filter>-->
 
-        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
-                    &amp;&amp; (message.equals("SQL Error: 40001, SQLState: 40001") || message.startsWith("Deadlock detected. The current transaction was rolled back. Details: ")));
+                    &amp;&amp; (message.equals("SQL Error: 40001, SQLState: 40001")
+                    || message.startsWith("Deadlock detected. The current transaction was rolled back. Details: ")
+                    || message.equals("SQL Error: 0, SQLState: 40P01")
+                    || message.startsWith("ERROR: deadlock detected")));
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>-->
+        </filter>
 
         <!-- batch insert failures due to concurrency -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">

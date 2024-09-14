@@ -34,6 +34,6 @@ public class AdhocLoggingRetryListener extends MethodInvocationRetryListenerSupp
 
     @Override
     protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
-        log.debug("doOnError: label={} context={}", callback.getLabel(), context);
+        log.debug("{}: {}", callback.getLabel(), context);
     }
 }

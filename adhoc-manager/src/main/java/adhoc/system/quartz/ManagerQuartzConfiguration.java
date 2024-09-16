@@ -46,8 +46,7 @@ public class ManagerQuartzConfiguration {
     public static final String MANAGE_TASK_DOMAINS = "manageTaskDomains";
     public static final String AWARD_AND_DECAY_FACTION_SCORES = "awardAndDecayFactionScores";
     public static final String AWARD_AND_DECAY_USER_SCORES = "awardAndDecayUserScores";
-    public static final String MANAGE_USER_PAWNS = "manageUserPawns";
-    public static final String LEAVE_USERS = "leaveUsers";
+    public static final String MANAGE_SEEN_USERS = "manageSeenUsers";
     public static final String PURGE_OLD_USERS = "purgeOldUsers";
     public static final String PURGE_OLD_SERVERS = "purgeOldServers";
     public static final String PURGE_OLD_PAWNS = "purgeOldPawns";
@@ -134,23 +133,10 @@ public class ManagerQuartzConfiguration {
     }
 
     @Bean
-    public Trigger manageUserPawnsTrigger() {
+    public Trigger manageSeenUsersTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_USER_PAWNS)
-                .withIdentity(MANAGE_USER_PAWNS)
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .repeatForever()
-                        .withIntervalInSeconds(10)
-                        .withMisfireHandlingInstructionNextWithRemainingCount())
-                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
-                .build();
-    }
-
-    @Bean
-    public Trigger leaveUsersTrigger() {
-        return TriggerBuilder.newTrigger()
-                .forJob(LEAVE_USERS)
-                .withIdentity(LEAVE_USERS)
+                .forJob(MANAGE_SEEN_USERS)
+                .withIdentity(MANAGE_SEEN_USERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever()
                         .withIntervalInSeconds(10)
@@ -230,12 +216,7 @@ public class ManagerQuartzConfiguration {
 
     @Bean
     public JobDetail manageUserPawnsJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_USER_PAWNS).storeDurably().build();
-    }
-
-    @Bean
-    public JobDetail leaveUsersJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(LEAVE_USERS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_SEEN_USERS).storeDurably().build();
     }
 
     @Bean

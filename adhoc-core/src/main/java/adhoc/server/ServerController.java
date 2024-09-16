@@ -41,12 +41,16 @@ public class ServerController {
     private final ServerService serverService;
 
     @GetMapping("/servers")
-    public Page<ServerDto> getServers(@SortDefault("id") Pageable pageable) {
+    public Page<ServerDto> getServers(
+            @SortDefault("id") Pageable pageable) {
+
         return serverService.getServers(pageable);
     }
 
     @GetMapping("/servers/{serverId}")
-    public ServerDto getServer(@PathVariable("serverId") Long serverId) {
+    public ServerDto getServer(
+            @PathVariable("serverId") Long serverId) {
+
         return serverService.getServer(serverId);
     }
 }

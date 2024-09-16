@@ -53,5 +53,6 @@ do
    -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
    -NoP4 -UTF8Output -NoDebugInfo
 
-  touch ${package_dir}
+  find ${package_dir} -exec touch {} +
+
 done

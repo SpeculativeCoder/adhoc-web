@@ -43,7 +43,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findFirstByHumanFalseAndFactionIdAndSeenBefore(Long factionId, LocalDateTime seenBefore);
 
-    Stream<User> streamByServerNotNull();
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Stream<User> streamForWriteByServerNotNull();
 
     // NOTE: any nulls will always be false
     @Query("from User u " +

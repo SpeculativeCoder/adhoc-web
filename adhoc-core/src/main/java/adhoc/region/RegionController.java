@@ -41,12 +41,16 @@ public class RegionController {
     private final RegionService regionService;
 
     @GetMapping("/regions")
-    public Page<RegionDto> getRegions(@SortDefault("id") Pageable pageable) {
+    public Page<RegionDto> getRegions(
+            @SortDefault("id") Pageable pageable) {
+
         return regionService.getRegions(pageable);
     }
 
     @GetMapping("/regions/{regionId}")
-    public RegionDto getRegion(@PathVariable("regionId") Long regionId) {
+    public RegionDto getRegion(
+            @PathVariable("regionId") Long regionId) {
+
         return regionService.getRegion(regionId);
     }
 }

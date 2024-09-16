@@ -52,8 +52,10 @@ public class UserManagerController {
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public UserDto putUser(@PathVariable("userId") Long userId,
-                           @Valid @RequestBody UserDto userDto) {
+    public UserDto putUser(
+            @PathVariable("userId") Long userId,
+            @Valid @RequestBody UserDto userDto) {
+
         Preconditions.checkArgument(Objects.equals(userId, userDto.getId()),
                 "User ID mismatch: %s != %s", userId, userDto.getId());
 
@@ -62,8 +64,10 @@ public class UserManagerController {
 
     @PostMapping("/servers/{serverId}/userJoin")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserDetailDto> postServerUserJoin(@PathVariable("serverId") Long serverId,
-                                                            @Valid @RequestBody UserJoinRequest userJoinRequest) {
+    public ResponseEntity<UserDetailDto> postServerUserJoin(
+            @PathVariable("serverId") Long serverId,
+            @Valid @RequestBody UserJoinRequest userJoinRequest) {
+
         Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()),
                 "Server ID mismatch: %s != %s", serverId, userJoinRequest.getServerId());
 
@@ -72,8 +76,10 @@ public class UserManagerController {
 
     @PostMapping("/servers/{serverId}/userAutoNavigate")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserAutoNavigateResponse> postUserAutoNavigate(@PathVariable("serverId") Long serverId,
-                                                                         @Valid @RequestBody UserAutoNavigateRequest userAutoNavigateRequest) {
+    public ResponseEntity<UserAutoNavigateResponse> postUserAutoNavigate(
+            @PathVariable("serverId") Long serverId,
+            @Valid @RequestBody UserAutoNavigateRequest userAutoNavigateRequest) {
+
         Preconditions.checkArgument(Objects.equals(serverId, userAutoNavigateRequest.getSourceServerId()),
                 "Server ID mismatch: %s != %s", serverId, userAutoNavigateRequest.getSourceServerId());
 
@@ -83,7 +89,9 @@ public class UserManagerController {
     @MessageMapping("UserDefeatedUser")
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public UserDefeatedUserEvent handleServerUserDefeatedUser(@Valid @RequestBody ServerUserDefeatedUserEvent event) {
+    public UserDefeatedUserEvent handleServerUserDefeatedUser(
+            @Valid @RequestBody ServerUserDefeatedUserEvent event) {
+
         log.debug("Handling: {}", event);
 
         UserDefeatedUserEvent userDefeatedUserEvent = userEventService.handleUserDefeatedUser(event);

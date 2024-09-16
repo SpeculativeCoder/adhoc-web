@@ -41,12 +41,16 @@ public class AreaController {
     private final AreaService areaService;
 
     @GetMapping("/areas")
-    public Page<AreaDto> getAreas(@SortDefault("region.id") @SortDefault("index") Pageable pageable) {
+    public Page<AreaDto> getAreas(
+            @SortDefault("region.id") @SortDefault("index") Pageable pageable) {
+
         return areaService.getAreas(pageable);
     }
 
     @GetMapping("/areas/{areaId}")
-    public AreaDto getArea(@PathVariable("areaId") Long areaId) {
+    public AreaDto getArea(
+            @PathVariable("areaId") Long areaId) {
+
         return areaService.getArea(areaId);
     }
 }

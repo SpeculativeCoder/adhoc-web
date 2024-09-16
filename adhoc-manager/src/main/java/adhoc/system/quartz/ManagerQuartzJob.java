@@ -30,10 +30,9 @@ import adhoc.system.event.Event;
 import adhoc.task.TaskDomainService;
 import adhoc.task.TaskPollService;
 import adhoc.task.server.ServerTaskManagerService;
-import adhoc.user.UserLeaveService;
-import adhoc.user.UserPawnService;
 import adhoc.user.UserPurgeService;
 import adhoc.user.UserScoreService;
+import adhoc.user.UserSeenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
@@ -60,8 +59,7 @@ public class ManagerQuartzJob implements Job {
     private final TaskDomainService taskDomainService;
     private final ServerTaskManagerService serverTaskManagerService;
     private final FactionScoreService factionScoreService;
-    private final UserPawnService userPawnService;
-    private final UserLeaveService userLeaveService;
+    private final UserSeenService userSeenService;
     private final UserScoreService userScoreService;
     private final UserPurgeService userPurgeService;
     private final PawnPurgeService pawnPurgeService;
@@ -95,11 +93,8 @@ public class ManagerQuartzJob implements Job {
             case ManagerQuartzConfiguration.AWARD_AND_DECAY_USER_SCORES:
                 userScoreService.awardAndDecayUserScores();
                 break;
-            case ManagerQuartzConfiguration.MANAGE_USER_PAWNS:
-                userPawnService.manageUserPawns();
-                break;
-            case ManagerQuartzConfiguration.LEAVE_USERS:
-                userLeaveService.leaveUsers();
+            case ManagerQuartzConfiguration.MANAGE_SEEN_USERS:
+                userSeenService.manageSeenUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_USERS:
                 userPurgeService.purgeOldUsers();

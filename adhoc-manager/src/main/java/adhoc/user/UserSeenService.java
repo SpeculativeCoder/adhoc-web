@@ -27,6 +27,7 @@ import adhoc.pawn.PawnRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
+import org.slf4j.event.Level;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -34,37 +35,45 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserPawnService {
+public class UserSeenService {
 
     private final UserRepository userRepository;
     private final PawnRepository pawnRepository;
 
+    /**
+     * Update information about users which are seen in their desired server (we look for a pawn the user is controlling).
+     * Also, if they have not been seen in the server for a while, they must have left so should be unlinked from the server.
+     */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void manageUserPawns() {
+    public void manageSeenUsers() {
         LocalDateTime now = LocalDateTime.now();
-        log.trace("Managing user pawns... now={}", now);
+        LocalDateTime leaveUsersSeenBefore = now.minusMinutes(1);
+        log.trace("Managing seen users... now={} leaveUsersSeenBefore={}", now, leaveUsersSeenBefore);
 
-        // manage users who we think are connected to their desired server
-        try (Stream<User> users = userRepository.streamForWriteByServerEqualsDestinationServer()) {
+        // manage users who we think are currently connected to a server
+        try (Stream<User> users = userRepository.streamForWriteByServerNotNull()) {
             users.forEach(user -> {
+                // users may be moving from one server to another so we are only interested after they have arrived at their desired server
+                if (user.getServer() == user.getDestinationServer()) {
 
-                // see if there is a pawn for the user
-                Optional<Pawn> optionalPawn = pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user);
+                    //user.getPawns().stream()
+                    //.filter(pawn -> pawn.getServer() == user.getServer())
+                    //.max(Comparator.comparing(Pawn::getSeen));
 
-                //user.getPawns().stream()
-                //.filter(pawn -> pawn.getServer() == user.getServer())
-                //.max(Comparator.comparing(Pawn::getSeen));
+                    // see if there is a pawn for the user
+                    pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user)
+                            .ifPresent(pawn -> updateUserForPawn(user, pawn, now));
+                }
 
-                if (optionalPawn.isPresent()) {
-                    updateUserForPawn(user, optionalPawn.get(), now);
+                if (user.getSeen() != null && user.getSeen().isBefore(leaveUsersSeenBefore)) {
+                    leaveUser(user);
                 }
             });
         }
@@ -78,5 +87,19 @@ public class UserPawnService {
         user.setYaw(pawn.getYaw());
 
         user.setSeen(now);
+    }
+
+    private static void leaveUser(User user) {
+        log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
+                .log("User left: id={} name={} password?={} human={} factionIndex={} serverId={}",
+                        user.getId(),
+                        user.getName(),
+                        user.getPassword() != null,
+                        user.isHuman(),
+                        user.getFaction().getIndex(),
+                        user.getServer().getId());
+
+        // TODO: common path?
+        user.setServer(null);
     }
 }

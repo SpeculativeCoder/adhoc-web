@@ -38,5 +38,6 @@ public abstract class AbstractAdhocApplication {
 
     static {
         Security.setProperty("networkaddress.cache.ttl", "60");
+        //log.info("networkaddress.cache.ttl={}", Security.getProperty("networkaddress.cache.ttl"));
     }
 }

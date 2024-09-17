@@ -37,8 +37,6 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
 
     Optional<Server> findFirstByRegionAndAreasEmpty(Region region);
 
-    Stream<Server> streamBy();
-
     Stream<Server> streamByEnabledTrue();
 
     Stream<Server> streamByRegionAndIdNotIn(Region region, Collection<Long> ids);

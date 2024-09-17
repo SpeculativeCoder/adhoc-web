@@ -46,14 +46,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Stream<User> streamForWriteByServerNotNull();
 
-    // NOTE: any nulls will always be false
-    @Query("from User u " +
-            "where u.server = u.destinationServer")
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<User> streamForWriteByServerEqualsDestinationServer();
-
-    Stream<User> streamByServerNotNullAndSeenBefore(LocalDateTime seenBefore);
-
     @Query("select u.id from User u where u.created < ?1 and u.seen is null and u.password is null and u.pawns is empty")
     List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
 
@@ -64,10 +56,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "from User u " +
             "where u.human and ((u.destinationServer = ?1 and u.navigated > ?2) or (u.server = ?1))")
     boolean existsByHumanTrueAnd_DestinationServerAndNavigatedAfterOrServer_(Server server, LocalDateTime navigatedAfter);
-
-    //@Modifying
-    //@Query("update User u set u.version = u.version + 1, u.server = ?1, u.seen = ?2 where u.id in ?3")
-    //void updateServerAndSeenByIdIn(Server server, LocalDateTime seen, Collection<Long> idIn);
 
     @Modifying
     @Query("update User u set u.version = u.version + 1, u.score = u.score + ?1 where u.id = ?2")

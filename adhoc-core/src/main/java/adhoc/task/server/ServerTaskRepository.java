@@ -32,11 +32,7 @@ import java.util.stream.Stream;
 // TODO: common
 public interface ServerTaskRepository extends JpaRepository<ServerTask, Long> {
 
-    Optional<ServerTask> findByTaskIdentifier(String taskIdentifier);
-
     Stream<ServerTask> streamByTaskIdentifierNotInAndInitiatedBefore(Collection<String> taskIdentifiers, LocalDateTime initiatedBefore);
-
-    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
 
     Optional<ServerTask> findFirstByServerId(Long serverId);
 }

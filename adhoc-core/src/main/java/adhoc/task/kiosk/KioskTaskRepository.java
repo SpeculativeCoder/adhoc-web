@@ -23,18 +23,7 @@
 package adhoc.task.kiosk;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-
-import java.util.Collection;
-import java.util.Optional;
 
 // TODO: common
 public interface KioskTaskRepository extends JpaRepository<KioskTask, Long> {
-
-    Optional<KioskTask> findByTaskIdentifier(String taskIdentifier);
-
-    @Modifying
-    @Query("delete from KioskTask st where st.taskIdentifier not in ?1")
-    void deleteByTaskIdentifierNotIn(Collection<String> taskIdentifiers);
 }

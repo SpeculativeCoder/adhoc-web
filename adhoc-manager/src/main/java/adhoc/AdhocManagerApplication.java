@@ -27,6 +27,8 @@ import adhoc.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.retry.annotation.EnableRetry;
 
 /**
  * When running as a manager, this application talks to a {@link adhoc.hosting.HostingService}
@@ -38,6 +40,11 @@ import org.springframework.boot.SpringApplication;
  * <p>
  * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the manager.
  */
+@SpringBootApplication
+//@EnableConfigurationProperties
+//@EnableScheduling
+//@EnableCaching
+@EnableRetry
 @Slf4j
 @RequiredArgsConstructor
 public class AdhocManagerApplication extends AbstractAdhocApplication {

@@ -26,6 +26,8 @@ import adhoc.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.retry.annotation.EnableRetry;
 
 /**
  * When running as a kiosk this application is for access by users (i.e. the "public" facing variant of the application).
@@ -35,6 +37,11 @@ import org.springframework.boot.SpringApplication;
  * <p>
  * Most of the access to the kiosk will be users with {@link UserRole#USER} role.
  */
+@SpringBootApplication
+//@EnableConfigurationProperties
+//@EnableScheduling
+//@EnableCaching
+@EnableRetry
 @Slf4j
 @RequiredArgsConstructor
 public class AdhocKioskApplication extends AbstractAdhocApplication {

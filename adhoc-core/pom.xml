@@ -37,13 +37,11 @@
     <name>adhoc-core</name>
     <description>adhoc-core</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>adhoc</groupId>
-            <artifactId>adhoc-angular</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+    <properties>
+        <adhoc-angular-customization/>
+    </properties>
 
+    <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -283,8 +281,80 @@
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>npm install</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>../adhoc-angular</workingDirectory>
+                            <arguments>
+                                <argument>install</argument>
+                                <!-- this is sometimes needed e.g. if using older version of ng-boostrap -->
+                                <!--<argument>&#45;&#45;legacy-peer-deps</argument>-->
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>../adhoc-angular</workingDirectory>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>build</argument>
+                                <argument>--</argument>
+                                <!-- TODO: remove jsdom_fix when no longer needed -->
+                                <argument>--configuration=jsdom_fix,${angular.configuration}${adhoc-angular-customization},en-US</argument>
+                            </arguments>
+                            <environmentVariables>
+                                <!-- TODO: figure out a way to have analytics on -->
+                                <NG_CLI_ANALYTICS>false</NG_CLI_ANALYTICS>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>add angular app resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>../adhoc-angular/dist/adhoc-angular/browser/en-US</directory>
+                                    <includes>
+                                        <include>index.html</include>
+                                    </includes>
+                                    <targetPath>templates</targetPath>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>../adhoc-angular/dist/adhoc-angular/browser/en-US</directory>
+                                    <excludes>
+                                        <exclude>index.html</exclude>
+                                    </excludes>
+                                    <targetPath>static</targetPath>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>add client resources</id>
                         <phase>generate-resources</phase>
@@ -310,6 +380,18 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>adhoc-angular-customization</id>
+            <activation>
+                <file>
+                    <exists>../adhoc-angular/src/customization/customization.ts</exists>
+                </file>
+            </activation>
+            <properties>
+                <adhoc-angular-customization>,customization</adhoc-angular-customization>
+            </properties>
+        </profile>
+
         <profile>
             <id>adhoc-core-extra</id>
             <activation>

@@ -43,15 +43,15 @@ import java.sql.SQLException;
 public class ManagerH2PostgresConfiguration {
 
     private final DataSourceProperties dataSourceProperties;
-    private Path h2Dir;
+    private Path h2PostgresDir;
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    Server h2Server() throws SQLException, IOException {
-        h2Dir = Files.createTempDirectory("adhoc_h2");
-        log.info("h2Dir={}", h2Dir);
+    Server h2PostgresServer() throws SQLException, IOException {
+        h2PostgresDir = Files.createTempDirectory("adhoc_h2postgres_");
+        log.info("h2PostgresDir={}", h2PostgresDir);
 
         Server server = Server.createTcpServer(
-                "-baseDir", h2Dir.toString(),
+                "-baseDir", h2PostgresDir.toString(),
                 //"-ifNotExists",
                 "-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
 
@@ -59,14 +59,14 @@ public class ManagerH2PostgresConfiguration {
     }
 
     @Bean
-    public JdbcConnectionDetails dataSourceProperties(Server h2Server) {
+    public JdbcConnectionDetails dataSourceProperties(Server h2PostgresServer) {
         return new JdbcConnectionDetails() {
 
             @Override
             public String getJdbcUrl() {
                 return !dataSourceProperties.getUrl().isEmpty() ?
                         // TODO
-                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2Dir.toString() + "/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
+                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2PostgresDir.toString() + "/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
             }
 
             @Override

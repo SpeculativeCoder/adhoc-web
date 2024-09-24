@@ -40,7 +40,6 @@
     <description>adhoc-web</description>
 
     <modules>
-        <module>adhoc-angular</module>
         <module>adhoc-core</module>
         <module>adhoc-kiosk</module>
         <module>adhoc-manager</module>

@@ -350,55 +350,63 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       this.createObjectiveGroup(objective);
     }
 
-    for (const area of this.areas) {
-      for (const server of this.servers) {
-        if (server.areaIds.includes(area.id) && server.webSocketUrl) {
-          let label = `Area ${area.name}\n(click to join)`;
-          let serverText = new fabric.IText(label, {
-            originX: 'center',
-            originY: 'center',
-            fontFamily: 'sans-serif',
-            fontSize: 14 * (1 / this.mapScale),
-            textAlign: 'center',
-            fill: '#DDDDDD',
-            editable: false,
-            selectable: false,
-            padding: 5,
-          });
-          let serverRect = new fabric.Rect({
-            originX: 'center',
-            originY: 'center',
-            width: serverText.get('width') + 20 * (1 / this.mapScale),
-            height: serverText.get('height') + 20 * (1 / this.mapScale),
-            stroke: '#888888',
-            strokeWidth: 2 * (1 / this.mapScale),
-            fill: '#444444DD',
-            selectable: false,
-            hasControls: false,
-          });
-          let serverGroup = new fabric.Group([serverRect, serverText], {
-            originX: 'center',
-            originY: 'center',
-            left: area.x,
-            top: -area.y,
-            selectable: true,
-            lockMovementX: true,
-            lockMovementY: true,
-            lockRotation: true,
-            hasControls: false,
-            hoverCursor: 'pointer',
-          });
-          serverGroup.on('selected', () => {
-            this.userService.navigateCurrentUserOrRegister(server.regionId, server.id).subscribe(user => {
-              this.router.navigate(['client'], {
-                // queryParams: {
-                //   areaId: area.id
-                // }
-              });
+    for (const server of this.servers) {
+      if (server.webSocketUrl && server.areaIds) {
+        let areasText = '';
+        for (const area of this.areas) {
+          if (server.areaIds.includes(area.id)) {
+            if (areasText) {
+              areasText += ', ';
+            }
+            areasText += area.name;
+          }
+        }
+        let label = `Server ${server.id} [${areasText}]\n(click to join)`;
+
+        let serverText = new fabric.IText(label, {
+          originX: 'center',
+          originY: 'center',
+          fontFamily: 'sans-serif',
+          fontSize: 14 * (1 / this.mapScale),
+          textAlign: 'center',
+          fill: '#DDDDDD',
+          editable: false,
+          selectable: false,
+          padding: 5,
+        });
+        let serverRect = new fabric.Rect({
+          originX: 'center',
+          originY: 'center',
+          width: serverText.get('width') + 20 * (1 / this.mapScale),
+          height: serverText.get('height') + 20 * (1 / this.mapScale),
+          stroke: '#888888',
+          strokeWidth: 2 * (1 / this.mapScale),
+          fill: '#444444DD',
+          selectable: false,
+          hasControls: false,
+        });
+        let serverGroup = new fabric.Group([serverRect, serverText], {
+          originX: 'center',
+          originY: 'center',
+          left: server.x,
+          top: -server.y,
+          selectable: true,
+          lockMovementX: true,
+          lockMovementY: true,
+          lockRotation: true,
+          hasControls: false,
+          hoverCursor: 'pointer',
+        });
+        serverGroup.on('selected', () => {
+          this.userService.navigateCurrentUserOrRegister(server.regionId, server.id).subscribe(user => {
+            this.router.navigate(['client'], {
+              // queryParams: {
+              //   areaId: area.id
+              // }
             });
           });
-          this.canvas.add(serverGroup);
-        }
+        });
+        this.canvas.add(serverGroup);
       }
     }
 

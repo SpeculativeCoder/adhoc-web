@@ -169,19 +169,6 @@ public class ClientController {
         return resource;
     }
 
-    // worker js for multithreading builds only
-    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".worker.js.gz", produces = "text/javascript")
-    public ClassPathResource getClientClientWorkerJsGz(
-            @PathVariable(value = "mapName") String mapName,
-            @PathVariable(value = "variant") String variant,
-            HttpServletResponse response) {
-
-        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%sClient%s.worker.js.gz", mapName, coreProperties.getUnrealProjectName(), variant));
-        response.setHeader("Content-Encoding", "gzip");
-
-        return resource;
-    }
-
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/Utility.js.gz", produces = "text/javascript")
     public ClassPathResource getUtilityJsGz(
             @PathVariable(value = "mapName") String mapName,

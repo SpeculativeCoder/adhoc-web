@@ -70,7 +70,7 @@
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
 
-        <!-- suppress no data warnings from hsqldb UPDATEs etc. which don't update any columns (HSQLDB) -->
+        <!-- suppress no data warnings from UPDATEs etc. which don't update any columns -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
@@ -82,7 +82,7 @@
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
 
-        <!-- pessimistic locking failure messages (HSQLDB) -->
+        <!-- pessimistic locking failure messages -->
         <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>

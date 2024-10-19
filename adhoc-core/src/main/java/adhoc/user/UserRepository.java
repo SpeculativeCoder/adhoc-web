@@ -66,7 +66,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "set u.version = u.version + 1, " +
             "    u.score = u.score + (case u.human when true then ?1 else ?2 end) " +
             "where u.faction.id = ?3 and u.seen > ?4")
-    void updateScoreAddByFactionIdAndSeenAfter(BigDecimal humanScoreAdd, BigDecimal notHumanScoreAdd, Long factionId, LocalDateTime seenAfter);
+    void updateScoreAddByFactionIdAndSeenAfter(BigDecimal scoreToAddForHumans, BigDecimal scoreToAddForNonHumans, Long factionId, LocalDateTime seenAfter);
 
     @Modifying
     @Query("update User u set u.version = u.version + 1, u.score = u.score * ?1")

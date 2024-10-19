@@ -53,21 +53,20 @@ public class UserScoreService {
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void awardAndDecayUserScores() {
-        log.trace("Awarding and decaying user scores...");
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime forUsersSeenAfter = now.minusHours(48);
+        log.trace("Awarding and decaying user scores... now={} forUsersSeenAfter={}", now, forUsersSeenAfter);
 
-        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
-                objectiveRepository.getFactionObjectiveCounts();
-
-        LocalDateTime seenAfter = LocalDateTime.now().minusHours(48);
+        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts = objectiveRepository.getFactionObjectiveCounts();
 
         for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
             Faction faction = factionObjectiveCount.getFaction();
             Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
-            BigDecimal humanScoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
-            BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
+            BigDecimal scoreToAddForHumans = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
+            BigDecimal scoreToAddForNonHumans = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
 
-            userRepository.updateScoreAddByFactionIdAndSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
+            userRepository.updateScoreAddByFactionIdAndSeenAfter(scoreToAddForHumans, scoreToAddForNonHumans, faction.getId(), forUsersSeenAfter);
         }
 
         // TODO: multiplier property

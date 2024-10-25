@@ -63,7 +63,7 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception exception, Object body, HttpHeaders httpHeaders, HttpStatusCode statusCode, WebRequest webRequest) {
         Level level = (exception instanceof NoResourceFoundException) ? Level.DEBUG : Level.WARN;
-        log.atLevel(level).log("{}", LogFormatUtils.formatValue(exception, -1, true));
+        log.atLevel(level).log("Handling: {}", LogFormatUtils.formatValue(exception, 100, true), exception);
         return super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
     }
 }

@@ -25,11 +25,17 @@ package adhoc.system.logging.logback;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.CompositeConverter;
 
-public class AdhocNewlinesConverter extends CompositeConverter<ILoggingEvent> {
+import java.util.regex.Pattern;
+
+public class AdhocSpecialCharsLogbackConverter extends CompositeConverter<ILoggingEvent> {
+
+    private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
 
     @Override
     protected String transform(ILoggingEvent event, String in) {
-        // TODO
-        return in.replace("\r", "\\r").replace("\n", "\\n");
+        in = in.replace("\r", "\\r");
+        in = in.replace("\n", "\\n");
+        in = in.replace("\t", "\\t");
+        return NON_PRINTABLE.matcher(in).replaceAll("?");
     }
 }

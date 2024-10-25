@@ -24,7 +24,7 @@
 <configuration>
 
     <conversionRule conversionWord="color" converterClass="adhoc.system.logging.logback.AdhocColorConverter"/>
-    <conversionRule conversionWord="newlines" converterClass="adhoc.system.logging.logback.AdhocNewlinesConverter"/>
+    <conversionRule conversionWord="specialChars" converterClass="adhoc.system.logging.logback.AdhocSpecialCharsLogbackConverter"/>
     <!--<conversionRule conversionWord="ewtpc" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />-->
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -136,7 +136,7 @@
         <encoder>
             <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger: %msg%n</pattern>-->
             <!--<pattern>%color(%d{HH:mm:ss.SSS}){bright_black} %color(%-5p){bright_black} %color([%15.15t]){bright_black} %color(%40.40logger{39}){cyan}: %color(%m%n%ewtpc)</pattern>-->
-            <pattern>%color(%level){bright_black} %color(%mdc){bright_black} %color([%thread]){bright_black} %color(%logger){cyan}: %color(%newlines(%message)){}%n%color(%rootException)
+            <pattern>%color(%level){bright_black} %color(%mdc){bright_black} %color([%thread]){bright_black} %color(%logger){cyan}: %color(%specialChars(%message)){}%n%color(%rootException)
             </pattern>
             <charset>UTF-8</charset>
         </encoder>

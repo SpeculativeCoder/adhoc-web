@@ -43,6 +43,7 @@ import java.sql.SQLException;
 public class ManagerH2PostgresConfiguration {
 
     private final DataSourceProperties dataSourceProperties;
+
     private Path h2PostgresDir;
 
     @Bean(initMethod = "start", destroyMethod = "stop")
@@ -64,9 +65,7 @@ public class ManagerH2PostgresConfiguration {
 
             @Override
             public String getJdbcUrl() {
-                return !dataSourceProperties.getUrl().isEmpty() ?
-                        // TODO
-                        dataSourceProperties.getUrl() : "jdbc:h2:file:" + h2PostgresDir.toString() + "/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
+                return "jdbc:h2:file:" + h2PostgresDir.toString() + "/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
             }
 
             @Override

@@ -48,7 +48,7 @@
     <properties>
         <java.version>21</java.version>
         <guava.version>33.3.1-jre</guava.version>
-        <awssdk.version>2.29.1</awssdk.version>
+        <awssdk.version>2.29.5</awssdk.version>
         <docker-java.version>3.4.0</docker-java.version>
         <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
 

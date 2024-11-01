@@ -76,8 +76,7 @@ public class ManagerHsqldbConfiguration {
 
             @Override
             public String getJdbcUrl() {
-                return !dataSourceProperties.getUrl().isEmpty() ?
-                        dataSourceProperties.getUrl() : "jdbc:hsqldb:hsql://localhost:9001/adhoc";
+                return "jdbc:hsqldb:hsql://localhost:9001/adhoc";
             }
 
             @Override

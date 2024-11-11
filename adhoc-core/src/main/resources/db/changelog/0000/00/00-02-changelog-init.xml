@@ -24,26 +24,11 @@
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
 
-    <!-- until the schema / architecture settles down we are nuking all tables/data (except user information) on every run -->
-    <changeSet author="adhoc" id="3" runOnChange="true">
+    <changeSet id="0000000000000-2" author="adhoc" runOnChange="true">
 
-        <sql dbms="postgresql">
-            truncate
-                qrtz_simple_triggers,
-                qrtz_cron_triggers,
-                qrtz_simprop_triggers,
-                qrtz_blob_triggers,
-                qrtz_triggers,
-                qrtz_job_details,
-                qrtz_calendars,
-                qrtz_paused_trigger_grps,
-                qrtz_fired_triggers,
-                qrtz_scheduler_state,
-                qrtz_locks;
-        </sql>
-
+        <!-- TODO: until the schema / architecture settles down we are nuking all tables/data (except user information) on every run -->
         <sql dbms="postgresql">
             drop table if exists world;
             drop table if exists objective_linked_objectives;

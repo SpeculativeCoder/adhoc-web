@@ -37,7 +37,7 @@ import org.hibernate.sql.exec.spi.JdbcOperation;
 public class H2PostgresSQLDialect extends PostgreSQLDialect {
 
     // TODO
-    public static final DatabaseVersion PRETEND_POSTGRES_VERSION = DatabaseVersion.make(16, 4, 0);
+    public static final DatabaseVersion PRETEND_POSTGRES_VERSION = DatabaseVersion.make(17, 0, 0);
 
     public H2PostgresSQLDialect() {
         super();

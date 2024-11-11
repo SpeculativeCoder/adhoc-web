@@ -15,7 +15,7 @@
     limitations under the License.
 
 
-    This file contains SQL from Quartz Scheduler (https://www.quartz-scheduler.org) - subject to Apache License, Version 2.0 (see adjacent *-LICENSE file)
+    This file contains SQL from Quartz Scheduler (https://www.quartz-scheduler.org) - subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
     https://www.quartz-scheduler.org/overview/license.html
 
     Quartz License and Copyright
@@ -32,12 +32,12 @@
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
 
-    <changeSet author="adhoc" id="2">
+    <changeSet id="0000000000000-3" author="adhoc">
 
         <!--
-        from Quartz Scheduler tables_h2.sql - subject to Apache License, Version 2.0 (see adjacent *-LICENSE file)
+        from Quartz Scheduler tables_h2.sql - subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
         https://www.quartz-scheduler.org/overview/license.html
         it was noted at top of tables_h2.sql: "Thanks to Amir Kibbar and Peter Rietzler for contributing the schema for H2 database"
         -->
@@ -308,7 +308,7 @@
         </sql>
 
         <!--
-        from Quartz Scheduler tables_hsqldb.sql - subject to Apache License, Version 2.0 (see adjacent *-LICENSE file)
+        from Quartz Scheduler tables_hsqldb.sql - subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
         https://www.quartz-scheduler.org/overview/license.html
         -->
         <sql dbms="hsqldb">
@@ -470,7 +470,7 @@
         </sql>
 
         <!--
-        from Quartz Scheduler tables_postgres.sql - subject to Apache License, Version 2.0 (see adjacent *-LICENSE file)
+        from Quartz Scheduler tables_postgres.sql - subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
         https://www.quartz-scheduler.org/overview/license.html
         it was noted at top of tables_postgres.sql: "Thanks to Patrick Lightbody for submitting this..."
         -->

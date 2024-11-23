@@ -29,7 +29,6 @@ import {PropertiesService} from "../properties/properties.service";
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
 import {Router, RouterLink} from "@angular/router";
 import {CommonModule} from "@angular/common";
-import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 import {Page} from "../shared/paging/page";
 import {Paging} from "../shared/paging/paging";
@@ -42,7 +41,6 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
   imports: [
     CommonModule,
     RouterLink,
-    SimpleDatePipe,
     TableSortDirective,
     HeaderSortComponent,
     NgbPagination

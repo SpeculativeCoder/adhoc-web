@@ -295,7 +295,7 @@
                             <arguments>
                                 <argument>install</argument>
                                 <!-- this is sometimes needed e.g. if using older version of ng-boostrap -->
-                                <!--<argument>&#45;&#45;legacy-peer-deps</argument>-->
+                                <argument>&#45;&#45;legacy-peer-deps</argument>
                             </arguments>
                         </configuration>
                     </execution>

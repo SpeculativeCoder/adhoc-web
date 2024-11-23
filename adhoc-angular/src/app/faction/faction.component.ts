@@ -26,15 +26,13 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {FactionService} from './faction.service';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 
 @Component({
   selector: 'app-faction',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    SimpleDatePipe
+    FormsModule
   ],
   templateUrl: './faction.component.html'
 })

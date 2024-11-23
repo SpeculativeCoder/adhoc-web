@@ -28,7 +28,6 @@ import {forkJoin} from 'rxjs';
 import {HeaderSortComponent} from '../shared/table-sort/header-sort.component';
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
-import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 import {Page} from "../shared/paging/page";
 import {Paging} from "../shared/paging/paging";
@@ -42,7 +41,6 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
   imports: [
     CommonModule,
     RouterLink,
-    SimpleDatePipe,
     TableSortDirective,
     HeaderSortComponent,
     NgbPagination

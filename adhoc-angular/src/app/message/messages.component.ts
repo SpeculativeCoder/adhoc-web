@@ -25,7 +25,7 @@ import {MessageService} from './message.service';
 import {CommonModule} from "@angular/common";
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
-import {Router, RouterLink} from "@angular/router";
+import {Router} from "@angular/router";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {Page} from "../shared/paging/page";
@@ -39,7 +39,6 @@ import {Sort} from "../shared/paging/sort";
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
     SimpleDatePipe,
     TableSortDirective,
     HeaderSortComponent,

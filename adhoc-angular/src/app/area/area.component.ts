@@ -26,15 +26,13 @@ import {Area} from "./area";
 import {AreaService} from "./area.service";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 
 @Component({
   selector: 'app-area',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    SimpleDatePipe
+    FormsModule
   ],
   templateUrl: './area.component.html'
 })

@@ -29,15 +29,13 @@ import {Faction} from '../faction/faction';
 import {forkJoin} from 'rxjs';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 
 @Component({
   selector: 'app-objective',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    SimpleDatePipe
+    FormsModule
   ],
   templateUrl: './objective.component.html'
 })

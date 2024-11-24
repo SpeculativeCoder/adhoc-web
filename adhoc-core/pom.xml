@@ -250,10 +250,37 @@
             <artifactId>spring-batch-test</artifactId>
             <scope>test</scope>
         </dependency>-->
-
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+
+            <resource>
+                <directory>../adhoc-angular/dist/adhoc-angular/browser/en-US</directory>
+                <includes>
+                    <include>index.html</include>
+                </includes>
+                <targetPath>templates</targetPath>
+            </resource>
+
+            <resource>
+                <directory>../adhoc-angular/dist/adhoc-angular/browser/en-US</directory>
+                <excludes>
+                    <exclude>index.html</exclude>
+                </excludes>
+                <targetPath>static</targetPath>
+            </resource>
+
+            <resource>
+                <directory>
+                    ../Package/${unreal.configuration}/HTML5Client
+                </directory>
+                <targetPath>HTML5Client</targetPath>
+            </resource>
+        </resources>
 
         <!--
         <resource>
@@ -323,60 +350,7 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add angular app resources</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>add-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>../adhoc-angular/dist/adhoc-angular/browser/en-US</directory>
-                                    <includes>
-                                        <include>index.html</include>
-                                    </includes>
-                                    <targetPath>templates</targetPath>
-                                    <filtering>false</filtering>
-                                </resource>
-                                <resource>
-                                    <directory>../adhoc-angular/dist/adhoc-angular/browser/en-US</directory>
-                                    <excludes>
-                                        <exclude>index.html</exclude>
-                                    </excludes>
-                                    <targetPath>static</targetPath>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add client resources</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>add-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>
-                                        ../Package/${unreal.configuration}/HTML5Client
-                                    </directory>
-                                    <targetPath>HTML5Client</targetPath>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
-
     </build>
 
     <profiles>

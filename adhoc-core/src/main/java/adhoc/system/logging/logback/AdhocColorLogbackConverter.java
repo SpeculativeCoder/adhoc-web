@@ -39,9 +39,9 @@ import java.util.Map;
  * to add more coloring options and highlight any log messages from our loggers.
  *
  * @author Phillip Webb (original {@link org.springframework.boot.logging.logback.ColorConverter})
- * @author <a href="https://github.com/SpeculativeCoder">SpeculativeCoder</a> (modified {@link AdhocColorConverter})
+ * @author <a href="https://github.com/SpeculativeCoder">SpeculativeCoder</a> (modified {@link AdhocColorLogbackConverter})
  */
-public class AdhocColorConverter extends CompositeConverter<ILoggingEvent> {
+public class AdhocColorLogbackConverter extends CompositeConverter<ILoggingEvent> {
 
     private static final Map<String, AnsiElement> ELEMENTS;
     private static final Map<String, AnsiElement> BRIGHT_ELEMENTS;
@@ -59,7 +59,7 @@ public class AdhocColorConverter extends CompositeConverter<ILoggingEvent> {
         ansiElements.put("magenta", AnsiColor.MAGENTA);
         ansiElements.put("cyan", AnsiColor.CYAN);
         ansiElements.put("white", AnsiColor.WHITE);
-        ansiElements.put("bright_black", AnsiColor.BRIGHT_BLACK);
+        ansiElements.put("gray", AnsiColor.BRIGHT_BLACK);
         ELEMENTS = Collections.unmodifiableMap(ansiElements);
 
         Map<String, AnsiElement> brightAnsiElements = new HashMap<>();
@@ -71,7 +71,7 @@ public class AdhocColorConverter extends CompositeConverter<ILoggingEvent> {
         brightAnsiElements.put("magenta", AnsiColor.BRIGHT_MAGENTA);
         brightAnsiElements.put("cyan", AnsiColor.BRIGHT_CYAN);
         brightAnsiElements.put("white", AnsiColor.BRIGHT_WHITE);
-        brightAnsiElements.put("bright_black", AnsiColor.DEFAULT);
+        brightAnsiElements.put("gray", AnsiColor.DEFAULT);
         BRIGHT_ELEMENTS = Collections.unmodifiableMap(brightAnsiElements);
 
         Map<Integer, AnsiElement> ansiLevels = new HashMap<>();
@@ -96,10 +96,8 @@ public class AdhocColorConverter extends CompositeConverter<ILoggingEvent> {
         boolean adhocLog = event.getLoggerName().contains("adhoc.");
 
         AnsiElement element = adhocLog ? BRIGHT_ELEMENTS.get(getFirstOption()) : ELEMENTS.get(getFirstOption());
-        //AnsiElement element = ELEMENTS.get(getFirstOption());
         if (element == null) {
             element = adhocLog ? BRIGHT_LEVELS.get(event.getLevel().toInteger()) : LEVELS.get(event.getLevel().toInteger());
-            // element = LEVELS.get(event.getLevel().toInteger());
             element = (element != null) ? element : AnsiColor.GREEN;
         }
         return toAnsiString(in, element);
@@ -108,6 +106,4 @@ public class AdhocColorConverter extends CompositeConverter<ILoggingEvent> {
     protected String toAnsiString(String in, AnsiElement element) {
         return AnsiOutput.toString(element, in);
     }
-
-
 }

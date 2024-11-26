@@ -1,11 +1,10 @@
 /*
  * Copyright 2022-2024 SpeculativeCoder (https://github.com/SpeculativeCoder)
  *
- * Modification of code from Spring Boot (https://spring.io/projects/spring-boot) - subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
- * https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/logging/logback/ColorConverter.java
- * https://github.com/spring-projects/spring-boot/blob/main/LICENSE.txt
+ * Modification of code from Spring Boot (https://spring.io/projects/spring-boot)
+ * which is subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
  *
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

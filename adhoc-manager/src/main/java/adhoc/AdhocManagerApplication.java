@@ -49,6 +49,17 @@ import org.springframework.retry.annotation.EnableRetry;
 @RequiredArgsConstructor
 public class AdhocManagerApplication extends AbstractAdhocApplication {
 
+    /**
+     * Some valid combinations of Spring profiles for the manager are:
+     * <ul>
+     * <li><tt>db-h2postgres,hosting-local,dns-local</tt> - this is the default, used for local testing where you can also run the Unreal server in the editor</li>
+     * <li><tt>db-h2postgres,hosting-docker,dns-local</tt> - this will use Docker to run the Unreal servers for local testing</li>
+     * <li><tt>db-h2,hosting-docker,dns-local</tt> - as above but uses H2 database without postgres dialect</li>
+     * <li><tt>db-hsqldb,hosting-docker,dns-local</tt> - as above but uses HSQLDB database</li>
+     * <li><tt>db-postgres,hosting-docker,dns-local</tt> - as above but uses a real persistent Postgres database on the local machine (good for testing DB changelog)</li>
+     * <li><tt>db-h2postgres,hosting-ecs,dns-route53</tt> - this is what runs in AWS and makes use of ECS to run unreal servers, and Route53 to manage DNS entries</li>
+     * </ul>
+     */
     public static void main(String[] args) {
         SpringApplication.run(AdhocManagerApplication.class, args); //.start();
     }

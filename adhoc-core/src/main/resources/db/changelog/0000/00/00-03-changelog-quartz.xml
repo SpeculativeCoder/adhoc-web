@@ -2,6 +2,11 @@
 <!--
     Copyright 2022-2024 SpeculativeCoder (https://github.com/SpeculativeCoder)
 
+    This file contains SQL from Quartz Scheduler (https://www.quartz-scheduler.org)
+    which is subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
+
+    Quartz Scheduler source code and documentation are Copyright (c) Terracotta, Inc.
+
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
@@ -14,8 +19,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 
-
-    This file contains SQL from Quartz Scheduler (https://www.quartz-scheduler.org) - subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
     https://www.quartz-scheduler.org/overview/license.html
 
     Quartz License and Copyright
@@ -37,9 +40,7 @@
     <changeSet id="0000000000000-3" author="adhoc">
 
         <!--
-        from Quartz Scheduler tables_h2.sql - subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
-        https://www.quartz-scheduler.org/overview/license.html
-        it was noted at top of tables_h2.sql: "Thanks to Amir Kibbar and Peter Rietzler for contributing the schema for H2 database"
+        from Quartz Scheduler tables_h2.sql (it was noted at the top of the file: "Thanks to Amir Kibbar and Peter Rietzler for contributing the schema for H2 database")
         -->
         <sql dbms="h2">
             CREATE TABLE QRTZ_CALENDARS
@@ -308,8 +309,7 @@
         </sql>
 
         <!--
-        from Quartz Scheduler tables_hsqldb.sql - subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
-        https://www.quartz-scheduler.org/overview/license.html
+        from Quartz Scheduler tables_hsqldb.sql
         -->
         <sql dbms="hsqldb">
             DROP TABLE qrtz_locks IF EXISTS;
@@ -470,9 +470,7 @@
         </sql>
 
         <!--
-        from Quartz Scheduler tables_postgres.sql - subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
-        https://www.quartz-scheduler.org/overview/license.html
-        it was noted at top of tables_postgres.sql: "Thanks to Patrick Lightbody for submitting this..."
+        from Quartz Scheduler tables_postgres.sql (it was noted at the top of the file: "Thanks to Patrick Lightbody for submitting this...")
         -->
         <sql dbms="postgresql">
             DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;

@@ -28,7 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 @Disabled
-@SpringBootTest(classes = AdhocKioskApplication.class)
+@SpringBootTest
 @TestPropertySource("classpath:application-test.properties")
 public class AdhocKioskApplicationTest {
 

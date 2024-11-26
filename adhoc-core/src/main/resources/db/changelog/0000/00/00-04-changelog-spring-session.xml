@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2022-2024 SpeculativeCoder (https://github.com/SpeculativeCoder)
+
+    This file contains SQL from Spring Session (https://spring.io/projects/spring-session)
+    which is subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)
+
+    Copyright 2014-2024 the original author or authors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       https://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="0000000000000-4" author="adhoc">
+
+        <!--
+        from Spring Session schema_h2.sql
+        -->
+        <sql dbms="h2">
+            CREATE TABLE SPRING_SESSION
+            (
+                PRIMARY_ID            CHAR(36) NOT NULL,
+                SESSION_ID            CHAR(36) NOT NULL,
+                CREATION_TIME         BIGINT   NOT NULL,
+                LAST_ACCESS_TIME      BIGINT   NOT NULL,
+                MAX_INACTIVE_INTERVAL INT      NOT NULL,
+                EXPIRY_TIME           BIGINT   NOT NULL,
+                PRINCIPAL_NAME        VARCHAR(100),
+                CONSTRAINT SPRING_SESSION_PK PRIMARY KEY (PRIMARY_ID)
+            );
+
+            CREATE UNIQUE INDEX SPRING_SESSION_IX1 ON SPRING_SESSION (SESSION_ID);
+            CREATE INDEX SPRING_SESSION_IX2 ON SPRING_SESSION (EXPIRY_TIME);
+            CREATE INDEX SPRING_SESSION_IX3 ON SPRING_SESSION (PRINCIPAL_NAME);
+
+            CREATE TABLE SPRING_SESSION_ATTRIBUTES
+            (
+                SESSION_PRIMARY_ID CHAR(36)      NOT NULL,
+                ATTRIBUTE_NAME     VARCHAR(200)  NOT NULL,
+                ATTRIBUTE_BYTES    LONGVARBINARY NOT NULL,
+                CONSTRAINT SPRING_SESSION_ATTRIBUTES_PK PRIMARY KEY (SESSION_PRIMARY_ID, ATTRIBUTE_NAME),
+                CONSTRAINT SPRING_SESSION_ATTRIBUTES_FK FOREIGN KEY (SESSION_PRIMARY_ID) REFERENCES SPRING_SESSION (PRIMARY_ID) ON DELETE CASCADE
+            );
+        </sql>
+
+        <!--
+        from Spring Session schema_hsqldb.sql
+        -->
+        <sql dbms="hsqldb">
+            CREATE TABLE SPRING_SESSION
+            (
+                PRIMARY_ID            CHAR(36) NOT NULL,
+                SESSION_ID            CHAR(36) NOT NULL,
+                CREATION_TIME         BIGINT   NOT NULL,
+                LAST_ACCESS_TIME      BIGINT   NOT NULL,
+                MAX_INACTIVE_INTERVAL INT      NOT NULL,
+                EXPIRY_TIME           BIGINT   NOT NULL,
+                PRINCIPAL_NAME        VARCHAR(100),
+                CONSTRAINT SPRING_SESSION_PK PRIMARY KEY (PRIMARY_ID)
+            );
+
+            CREATE UNIQUE INDEX SPRING_SESSION_IX1 ON SPRING_SESSION (SESSION_ID);
+            CREATE INDEX SPRING_SESSION_IX2 ON SPRING_SESSION (EXPIRY_TIME);
+            CREATE INDEX SPRING_SESSION_IX3 ON SPRING_SESSION (PRINCIPAL_NAME);
+
+            CREATE TABLE SPRING_SESSION_ATTRIBUTES
+            (
+                SESSION_PRIMARY_ID CHAR(36)      NOT NULL,
+                ATTRIBUTE_NAME     VARCHAR(200)  NOT NULL,
+                ATTRIBUTE_BYTES    LONGVARBINARY NOT NULL,
+                CONSTRAINT SPRING_SESSION_ATTRIBUTES_PK PRIMARY KEY (SESSION_PRIMARY_ID, ATTRIBUTE_NAME),
+                CONSTRAINT SPRING_SESSION_ATTRIBUTES_FK FOREIGN KEY (SESSION_PRIMARY_ID) REFERENCES SPRING_SESSION (PRIMARY_ID) ON DELETE CASCADE
+            );
+        </sql>
+
+        <!--
+        from Spring Session schema_postgresql.sql
+        -->
+        <sql dbms="postgresql">
+            CREATE TABLE SPRING_SESSION
+            (
+                PRIMARY_ID            CHAR(36) NOT NULL,
+                SESSION_ID            CHAR(36) NOT NULL,
+                CREATION_TIME         BIGINT   NOT NULL,
+                LAST_ACCESS_TIME      BIGINT   NOT NULL,
+                MAX_INACTIVE_INTERVAL INT      NOT NULL,
+                EXPIRY_TIME           BIGINT   NOT NULL,
+                PRINCIPAL_NAME        VARCHAR(100),
+                CONSTRAINT SPRING_SESSION_PK PRIMARY KEY (PRIMARY_ID)
+            );
+
+            CREATE UNIQUE INDEX SPRING_SESSION_IX1 ON SPRING_SESSION (SESSION_ID);
+            CREATE INDEX SPRING_SESSION_IX2 ON SPRING_SESSION (EXPIRY_TIME);
+            CREATE INDEX SPRING_SESSION_IX3 ON SPRING_SESSION (PRINCIPAL_NAME);
+
+            CREATE TABLE SPRING_SESSION_ATTRIBUTES
+            (
+                SESSION_PRIMARY_ID CHAR(36)     NOT NULL,
+                ATTRIBUTE_NAME     VARCHAR(200) NOT NULL,
+                ATTRIBUTE_BYTES    BYTEA        NOT NULL,
+                CONSTRAINT SPRING_SESSION_ATTRIBUTES_PK PRIMARY KEY (SESSION_PRIMARY_ID, ATTRIBUTE_NAME),
+                CONSTRAINT SPRING_SESSION_ATTRIBUTES_FK FOREIGN KEY (SESSION_PRIMARY_ID) REFERENCES SPRING_SESSION (PRIMARY_ID) ON DELETE CASCADE
+            );
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>

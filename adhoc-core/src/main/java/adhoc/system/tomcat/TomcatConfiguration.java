@@ -22,7 +22,7 @@
 
 package adhoc.system.tomcat;
 
-import adhoc.properties.CoreProperties;
+import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Connector;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;

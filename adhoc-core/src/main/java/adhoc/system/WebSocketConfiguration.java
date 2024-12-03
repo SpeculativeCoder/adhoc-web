@@ -22,8 +22,8 @@
 
 package adhoc.system;
 
-import adhoc.properties.CoreProperties;
 import adhoc.system.logging.AdhocMdcExecutorChannelInterceptor;
+import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;

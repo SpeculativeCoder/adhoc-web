@@ -22,7 +22,7 @@
 
 package adhoc.system;
 
-import adhoc.properties.CoreProperties;
+import adhoc.system.properties.CoreProperties;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;

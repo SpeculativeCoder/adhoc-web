@@ -22,7 +22,6 @@
 
 package adhoc.user;
 
-import adhoc.system.authentication.AdhocAuthenticationSuccessHandler;
 import adhoc.user.request_response.UserRegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -62,7 +61,7 @@ public class UserLoginService {
     private final PasswordEncoder passwordEncoder;
     private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
     private final RememberMeServices rememberMeServices;
-    private final AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
+    private final UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
 
     private final HttpServletRequest httpServletRequest;
     private final HttpServletResponse httpServletResponse;
@@ -72,7 +71,7 @@ public class UserLoginService {
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
     /**
-     * Called by {@link AdhocAuthenticationSuccessHandler}. Sets a new "token" every time a user logs in.
+     * Called by {@link UserAuthenticationSuccessHandler}. Sets a new "token" every time a user logs in.
      * The "token" is used when logging into an Unreal server to make sure the user is who they say they are.
      */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
@@ -120,7 +119,7 @@ public class UserLoginService {
 
         rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
 
-        adhocAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
+        userAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
     }
 
 }

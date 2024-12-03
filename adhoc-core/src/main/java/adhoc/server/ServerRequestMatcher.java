@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.authentication;
+package adhoc.server;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,11 +34,11 @@ import java.util.Optional;
 
 /**
  * This matcher provides a way to identify server requests.
- * Can be used, for instance, to ignore CSRF checking on web requests from Unreal server.
+ * Used by {@link adhoc.system.WebSecurityConfiguration#securityFilterChain} to ignore CSRF checking on web requests from Unreal server.
  */
 @Component
 @Slf4j
-public class AdhocServerRequestMatcher implements RequestMatcher {
+public class ServerRequestMatcher implements RequestMatcher {
 
     @Value("${adhoc.server.basic-auth.username:#{null}}")
     private Optional<String> serverBasicAuthUsername;

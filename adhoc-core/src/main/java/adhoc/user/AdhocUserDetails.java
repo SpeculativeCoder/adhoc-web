@@ -20,13 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.system.util;
+package adhoc.user;
 
-import java.util.UUID;
+import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
 
-public class RandomUUIDGenerator {
+import java.util.Collection;
 
-    public static void main(String[] args) {
-        System.err.println(UUID.randomUUID());
+public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {
+
+    @Getter
+    private final Long userId;
+
+    public AdhocUserDetails(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long userId) {
+        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+        this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " userId=" + userId;
     }
 }

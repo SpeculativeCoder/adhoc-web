@@ -22,7 +22,7 @@
 
 package adhoc.system.artemis;
 
-import adhoc.properties.CoreProperties;
+import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;

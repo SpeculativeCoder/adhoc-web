@@ -22,17 +22,17 @@
 
 package adhoc.system;
 
-import adhoc.system.authentication.AdhocAuthenticationSuccessHandler;
-import adhoc.system.authentication.AdhocServerRequestMatcher;
+import adhoc.server.ServerRequestMatcher;
+import adhoc.user.UserAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -51,6 +51,8 @@ import org.springframework.session.security.web.authentication.SpringSessionReme
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -63,8 +65,8 @@ public class WebSecurityConfiguration<S extends Session> {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   AdhocServerRequestMatcher adhocServerRequestMatcher,
-                                                   AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler,
+                                                   ServerRequestMatcher serverRequestMatcher,
+                                                   UserAuthenticationSuccessHandler userAuthenticationSuccessHandler,
                                                    RememberMeServices rememberMeServices,
                                                    SpringSessionBackedSessionRegistry<S> sessionRegistry) throws Exception {
         return http
@@ -82,35 +84,44 @@ public class WebSecurityConfiguration<S extends Session> {
                         .requestMatchers("*.ico").permitAll() // TODO
                         .requestMatchers("/**").permitAll() // TODO
                         .anyRequest().denyAll())
-                .headers(headers ->
+
+                .headers(headers -> headers
                         // for sockjs
-                        headers.frameOptions(frameOptions ->
-                                frameOptions.sameOrigin()))
+                        .frameOptions(frameOptions -> frameOptions
+                                .sameOrigin()))
+
                 .csrf(csrf -> csrf
                         // ignore CSRF for sockjs as protected by Stomp headers
                         .ignoringRequestMatchers("/ws/stomp/user_sockjs/**")
                         //.ignoringRequestMatchers("/ws/stomp/user/**")
                         //.ignoringRequestMatchers("/ws/stomp/server/**")
                         // we don't want CSRF on requests from Unreal server
-                        .ignoringRequestMatchers(adhocServerRequestMatcher))
-                .cors(cors -> Customizer.withDefaults())
+                        .ignoringRequestMatchers(serverRequestMatcher))
+
+                .cors(withDefaults())
+
                 .sessionManagement(session -> session
                         .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
                         .sessionConcurrency(concurrency -> concurrency
                                 //.maximumSessions(1)
                                 .sessionRegistry(sessionRegistry)))
+
                 // allow form login - used by users
                 .formLogin(form -> form
                         .loginPage("/login")
                         .failureHandler((request, response, exception) ->
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
-                        .successHandler(adhocAuthenticationSuccessHandler))
+                        .successHandler(userAuthenticationSuccessHandler))
+
                 // allow basic auth (Authorization header) - used by the server
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(withDefaults())
+
                 .rememberMe(remember -> remember
                         .rememberMeServices(rememberMeServices))
-                .anonymous(anonymous ->
-                        anonymous.authorities(anonymousAuthorities().toArray(new String[0])))
+
+                .anonymous(anonymous -> anonymous
+                        .authorities(anonymousAuthorities().toArray(new String[0])))
+
                 .build();
     }
 
@@ -124,13 +135,16 @@ public class WebSecurityConfiguration<S extends Session> {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder);
+        return authenticationProvider;
+    }
 
-        ProviderManager providerManager = new ProviderManager(authenticationProvider);
-        return providerManager;
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationProvider authenticationProvider) {
+        return new ProviderManager(authenticationProvider);
     }
 
     @Bean

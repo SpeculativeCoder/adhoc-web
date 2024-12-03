@@ -24,8 +24,8 @@ package adhoc.task;
 
 import adhoc.dns.DnsService;
 import adhoc.message.MessageService;
-import adhoc.properties.ManagerProperties;
 import adhoc.system.event.Event;
+import adhoc.system.properties.ManagerProperties;
 import adhoc.task.kiosk.KioskTask;
 import adhoc.task.manager.ManagerTask;
 import adhoc.task.server.ServerTask;

@@ -20,25 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.system.authentication;
+package adhoc.system.logging;
 
-import lombok.Getter;
-import org.springframework.security.core.GrantedAuthority;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.util.Collection;
+import java.io.IOException;
 
-public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {
-
-    @Getter
-    private final Long userId;
-
-    public AdhocUserDetails(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long userId) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.userId = userId;
-    }
+@Component
+public class AdhocMdcRequestFilter extends OncePerRequestFilter {
 
     @Override
-    public String toString() {
-        return super.toString() + " userId=" + userId;
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            MDC.put("uri", request.getRequestURI());
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove("uri");
+        }
     }
 }

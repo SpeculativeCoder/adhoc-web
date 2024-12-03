@@ -20,37 +20,20 @@
  * SOFTWARE.
  */
 
-package adhoc.system.authentication;
+package adhoc.system.logging;
 
-import adhoc.user.UserLoginService;
-import com.google.common.base.Verify;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.interceptor.MethodInvocationRetryCallback;
+import org.springframework.retry.listener.MethodInvocationRetryListenerSupport;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
-public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private UserLoginService userLoginService;
+public class AdhocLogRetryListener extends MethodInvocationRetryListenerSupport {
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        Verify.verify(principal instanceof AdhocUserDetails);
-        AdhocUserDetails userDetails = (AdhocUserDetails) principal;
-
-        log.debug("onAuthenticationSuccess: userDetails={}", userDetails);
-
-        userLoginService.onAuthenticationSuccess(userDetails.getUserId());
+    protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
+        log.debug("{}: {}", callback.getLabel(), context);
     }
 }

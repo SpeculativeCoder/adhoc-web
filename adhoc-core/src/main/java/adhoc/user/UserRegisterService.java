@@ -23,10 +23,10 @@
 package adhoc.user;
 
 import adhoc.faction.FactionRepository;
-import adhoc.properties.CoreProperties;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
+import adhoc.system.properties.CoreProperties;
 import adhoc.user.request_response.UserRegisterRequest;
 import com.google.common.base.Preconditions;
 import jakarta.servlet.http.HttpServletRequest;

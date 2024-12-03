@@ -20,28 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging;
+package adhoc.util;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.MDC;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import java.util.UUID;
 
-import java.io.IOException;
+public class RandomUUIDGenerator {
 
-@Component
-public class AdhocMdcFilter extends OncePerRequestFilter {
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try {
-            MDC.put("uri", request.getRequestURI());
-            filterChain.doFilter(request, response);
-        } finally {
-            MDC.remove("uri");
-        }
+    public static void main(String[] args) {
+        System.err.println(UUID.randomUUID());
     }
 }

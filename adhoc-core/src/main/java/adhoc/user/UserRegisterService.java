@@ -60,7 +60,7 @@ public class UserRegisterService {
     private final RegionRepository regionRepository;
 
     private final UserService userService;
-    private final UserLoginService userLoginService;
+    private final UserProgrammaticLoginService userProgrammaticLoginService;
 
     private final HttpServletRequest httpServletRequest;
 
@@ -143,7 +143,7 @@ public class UserRegisterService {
 
         // if not an auto-register from server - log them in too
         if (!authenticatedAsServer) {
-            userLoginService.autoLogin(userRegisterRequest, user);
+            userProgrammaticLoginService.login(user.getId(), userRegisterRequest.getName(), userRegisterRequest.getPassword());
         }
 
         log.atLevel(Optional.ofNullable(userRegisterRequest.getHuman()).orElse(false) ? Level.INFO : Level.DEBUG)

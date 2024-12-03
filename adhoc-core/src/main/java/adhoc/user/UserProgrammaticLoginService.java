@@ -22,15 +22,10 @@
 
 package adhoc.user;
 
-import adhoc.user.request_response.UserRegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,14 +41,13 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserLoginService {
+public class UserProgrammaticLoginService {
 
     private final UserRepository userRepository;
 
@@ -70,25 +64,10 @@ public class UserLoginService {
     private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
-    /**
-     * Called by {@link UserAuthenticationSuccessHandler}. Sets a new "token" every time a user logs in.
-     * The "token" is used when logging into an Unreal server to make sure the user is who they say they are.
-     */
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void onAuthenticationSuccess(Long userId) {
+    /** Login the user (invoking necessary Spring Security actions etc.), given the correct username and password (if needed). */
+    void login(Long userId, String username, String password) {
         User user = userRepository.getReferenceById(userId);
 
-        UUID newToken = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.now();
-
-        user.setToken(newToken);
-        user.setLastLogin(now);
-
-        log.debug("onAuthenticationSuccess: id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getToken());
-    }
-
-    void autoLogin(UserRegisterRequest userRegisterRequest, User user) {
         String tempPassword = null;
         if (user.getPassword() == null) {
             tempPassword = UUID.randomUUID().toString();
@@ -96,8 +75,8 @@ public class UserLoginService {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 UsernamePasswordAuthenticationToken.unauthenticated(
-                        userRegisterRequest.getName(),
-                        tempPassword != null ? tempPassword : userRegisterRequest.getPassword());
+                        username,
+                        tempPassword != null ? tempPassword : password);
         authenticationToken.setDetails(authenticationDetailsSource.buildDetails(httpServletRequest));
 
         if (tempPassword != null) {

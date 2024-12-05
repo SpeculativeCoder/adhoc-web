@@ -22,12 +22,14 @@
 
 package adhoc.user;
 
+import adhoc.system.WebSecurityConfiguration;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,7 +37,6 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
@@ -51,9 +52,10 @@ public class UserProgrammaticLoginService {
 
     private final UserRepository userRepository;
 
-    private final AuthenticationManager authenticationManager;
+    private final WebSecurityConfiguration<?> webSecurityConfiguration;
+
+    private final AuthenticationConfiguration authenticationConfiguration;
     private final PasswordEncoder passwordEncoder;
-    private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
     private final RememberMeServices rememberMeServices;
     private final UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
 
@@ -83,13 +85,13 @@ public class UserProgrammaticLoginService {
             user.setPassword(passwordEncoder.encode(tempPassword));
         }
 
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        Authentication authentication = getAuthenticationManager().authenticate(authenticationToken);
 
         if (tempPassword != null) {
             user.setPassword(null);
         }
 
-        sessionAuthenticationStrategy.onAuthentication(authentication, httpServletRequest, httpServletResponse);
+        webSecurityConfiguration.getSessionAuthenticationStrategy().onAuthentication(authentication, httpServletRequest, httpServletResponse);
 
         SecurityContext securityContext = securityContextHolderStrategy.createEmptyContext();
         securityContext.setAuthentication(authentication);
@@ -101,4 +103,11 @@ public class UserProgrammaticLoginService {
         userAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
     }
 
+    private AuthenticationManager getAuthenticationManager() {
+        try {
+            return authenticationConfiguration.getAuthenticationManager();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

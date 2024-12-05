@@ -25,23 +25,19 @@ package adhoc.system;
 import adhoc.server.ServerRequestMatcher;
 import adhoc.user.UserAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
@@ -60,8 +56,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class WebSecurityConfiguration<S extends Session> {
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    private final FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository;
+    @Getter
+    private SessionAuthenticationStrategy sessionAuthenticationStrategy;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -101,7 +97,9 @@ public class WebSecurityConfiguration<S extends Session> {
                 .cors(withDefaults())
 
                 .sessionManagement(session -> session
-                        .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
+                        .sessionFixation(fixation -> fixation
+                                .changeSessionId()
+                                .withObjectPostProcessor(sessionAuthenticationStrategyPostProcessor()))
                         .sessionConcurrency(concurrency -> concurrency
                                 //.maximumSessions(1)
                                 .sessionRegistry(sessionRegistry)))
@@ -125,35 +123,8 @@ public class WebSecurityConfiguration<S extends Session> {
                 .build();
     }
 
-    private Set<String> anonymousAuthorities() {
-        Set<String> anonymousAuthorities = new LinkedHashSet<>();
-        anonymousAuthorities.add("ROLE_ANONYMOUS");
-        //if (coreProperties.getFeatureFlags().contains("development")) {
-        //    anonymousAuthorities.add("ROLE_" + UserRole.DEBUG.name());
-        //}
-        return anonymousAuthorities;
-    }
-
     @Bean
-    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder);
-        return authenticationProvider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationProvider authenticationProvider) {
-        return new ProviderManager(authenticationProvider);
-    }
-
-    @Bean
-    public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-        return new ChangeSessionIdAuthenticationStrategy();
-    }
-
-    @Bean
-    public SpringSessionBackedSessionRegistry<S> sessionRegistry() {
+    public SpringSessionBackedSessionRegistry<S> sessionRegistry(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository) {
         return new SpringSessionBackedSessionRegistry<>(jdbcIndexedSessionRepository);
     }
 
@@ -167,6 +138,27 @@ public class WebSecurityConfiguration<S extends Session> {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    private Set<String> anonymousAuthorities() {
+        Set<String> anonymousAuthorities = new LinkedHashSet<>();
+        anonymousAuthorities.add("ROLE_ANONYMOUS");
+        //if (coreProperties.getFeatureFlags().contains("development")) {
+        //    anonymousAuthorities.add("ROLE_" + UserRole.DEBUG.name());
+        //}
+        return anonymousAuthorities;
+    }
+
+    private ObjectPostProcessor<SessionAuthenticationStrategy> sessionAuthenticationStrategyPostProcessor() {
+        return new ObjectPostProcessor<>() {
+            @Override
+            public <O extends SessionAuthenticationStrategy> O postProcess(O sessionAuthenticationStrategy) {
+                // keep a reference to this so we can use it for our programmatic login code
+                // TODO: would prefer it as a bean in the context
+                WebSecurityConfiguration.this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
+                return sessionAuthenticationStrategy;
+            }
+        };
     }
 
     //@Bean

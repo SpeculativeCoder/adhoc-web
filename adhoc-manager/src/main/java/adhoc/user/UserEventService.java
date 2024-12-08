@@ -35,8 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserEventService {
@@ -45,7 +45,7 @@ public class UserEventService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserDefeatedUserEvent handleUserDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
+    public UserDefeatedUserEvent userDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
         User user = userRepository.getReferenceById(serverUserDefeatedUserEvent.getUserId());
         User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
 

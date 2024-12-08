@@ -35,8 +35,8 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.TreeSet;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserPurgeService {

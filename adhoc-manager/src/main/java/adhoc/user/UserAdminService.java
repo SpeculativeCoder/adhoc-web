@@ -22,7 +22,6 @@
 
 package adhoc.user;
 
-import adhoc.pawn.PawnRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,14 +29,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserAdminService {
 
     private final UserRepository userRepository;
-    private final PawnRepository pawnRepository;
 
     private final UserService userService;
 

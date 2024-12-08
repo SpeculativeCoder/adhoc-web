@@ -37,8 +37,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserScoreService {

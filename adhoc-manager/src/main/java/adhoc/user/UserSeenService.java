@@ -37,8 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserSeenService {

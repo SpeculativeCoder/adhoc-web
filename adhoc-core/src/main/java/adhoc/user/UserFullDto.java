@@ -39,7 +39,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class UserDetailDto {
+public class UserFullDto {
 
     @NotNull
     @Min(1)

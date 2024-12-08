@@ -41,9 +41,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-/** Automatic navigation is when the user walks from an area in one server to an area in another server. */
-@Transactional
+/** When the user walks from an area in one server to an area in another server, the user can be auto-navigated to the other server. */
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserAutoNavigateService {

@@ -31,7 +31,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -39,7 +40,8 @@ import java.util.*;
  * Consults the {@link adhoc.user.User} table for user info.
  * Also has support for the "server" user (used by Unreal server when talking to the web server) which is set via properties.
  */
-@Component
+@Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class AdhocUserDetailsManager implements UserDetailsManager {
@@ -52,7 +54,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
     private final PasswordEncoder passwordEncoder;
 
     //@Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -71,7 +73,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
 
         log.debug("loadUserByUsername: username={}", username);
 
-        User user = userService.findUserByNameOrEmail(username).orElseThrow(() ->
+        User user = userRepository.findByNameOrEmail(username, username).orElseThrow(() ->
                 new UsernameNotFoundException("Failed to find user with name or email: " + username));
 
         log.debug("loadUserByUsername: user={} token={}", user, user.getToken());

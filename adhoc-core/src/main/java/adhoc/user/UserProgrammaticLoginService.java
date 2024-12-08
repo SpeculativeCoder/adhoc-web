@@ -44,8 +44,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserProgrammaticLoginService {
@@ -66,8 +66,11 @@ public class UserProgrammaticLoginService {
     private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
-    /** Login the user (invoking necessary Spring Security actions etc.), given the correct username and password (if needed). */
-    void login(Long userId, String username, String password) {
+    /**
+     * Login the user programmatically (i.e. by invoking necessary Spring Security actions etc.), given a username and password.
+     * Used after registering a user (we want them to be automatically logged in).
+     */
+    public void userProgrammaticLogin(Long userId, String username, String password) {
         User user = userRepository.getReferenceById(userId);
 
         String tempPassword = null;

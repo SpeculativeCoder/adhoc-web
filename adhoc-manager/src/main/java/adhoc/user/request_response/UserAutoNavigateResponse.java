@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
 
-/** Navigation response indicating which server the user should be sent to. */
+/** Navigation response indicating how a server can send the user to a destination server. */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

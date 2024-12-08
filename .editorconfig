@@ -14,6 +14,10 @@ ij_java_continuation_indent_size = 8
 ij_java_doc_do_not_wrap_if_one_line = true
 ij_java_line_comment_at_first_column = false
 ij_any_indent_case_from_switch = false
+ij_java_record_components_wrap = split_into_lines
+ij_java_new_line_after_lparen_in_record_header = true
+ij_java_rparen_on_new_line_in_record_header = true
+#ij_java_align_multiline_records = true
 
 [*.properties]
 ij_properties_keep_blank_lines = true

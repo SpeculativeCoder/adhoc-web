@@ -64,7 +64,7 @@ public class UserManagerController {
 
     @PostMapping("/servers/{serverId}/userJoin")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserDetailDto> postServerUserJoin(
+    public ResponseEntity<UserFullDto> postServerUserJoin(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody UserJoinRequest userJoinRequest) {
 
@@ -76,7 +76,7 @@ public class UserManagerController {
 
     @PostMapping("/servers/{serverId}/userAutoNavigate")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserAutoNavigateResponse> postUserAutoNavigate(
+    public ResponseEntity<UserAutoNavigateResponse> postServerUserAutoNavigate(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody UserAutoNavigateRequest userAutoNavigateRequest) {
 
@@ -89,12 +89,12 @@ public class UserManagerController {
     @MessageMapping("UserDefeatedUser")
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public UserDefeatedUserEvent handleServerUserDefeatedUser(
-            @Valid @RequestBody ServerUserDefeatedUserEvent event) {
+    public UserDefeatedUserEvent handleUserDefeatedUser(
+            @Valid @RequestBody ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
 
-        log.debug("Handling: {}", event);
+        log.debug("Handling: {}", serverUserDefeatedUserEvent);
 
-        UserDefeatedUserEvent userDefeatedUserEvent = userEventService.handleUserDefeatedUser(event);
+        UserDefeatedUserEvent userDefeatedUserEvent = userEventService.userDefeatedUser(serverUserDefeatedUserEvent);
 
         log.debug("Sending: {}", userDefeatedUserEvent);
         return userDefeatedUserEvent;

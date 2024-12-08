@@ -31,8 +31,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
 /**
- * User is navigating from one server to another.
- * We want their last location so the receiving server can position them appropriately when they join.
+ * When a server is trying to navigate a user to another server
+ * it needs to provide the last location of the user so the receiving server can position them appropriately when they join.
  */
 @Data
 @NoArgsConstructor

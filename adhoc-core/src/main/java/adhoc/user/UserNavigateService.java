@@ -40,9 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 
-/** (Manual) navigation is when the user chooses a server they wish to be connected to. */
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserNavigateService {
@@ -53,9 +52,10 @@ public class UserNavigateService {
 
     private final UserService userService;
 
+    /** User chooses a region or specific server they wish to be connected to when they load the client. */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserDetailDto navigateUser(Long userId, UserNavigateRequest userNavigateRequest) {
+    public UserFullDto userNavigate(Long userId, UserNavigateRequest userNavigateRequest) {
         Preconditions.checkArgument(userNavigateRequest.getRegionId() != null,
                 "User navigation must specify a region");
 
@@ -89,6 +89,6 @@ public class UserNavigateService {
 
         user.setNavigated(LocalDateTime.now());
 
-        return userService.toDetailDto(user);
+        return userService.toFullDto(user);
     }
 }

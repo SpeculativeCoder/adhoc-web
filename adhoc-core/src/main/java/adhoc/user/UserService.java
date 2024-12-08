@@ -41,12 +41,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
@@ -69,13 +68,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> findUserByNameOrEmail(String usernameOrEmail) {
-        return userRepository.findByNameOrEmail(usernameOrEmail, usernameOrEmail);
-    }
-
-    @Transactional(readOnly = true)
-    public UserDetailDto getUserDetail(Long userId) {
-        return toDetailDto(userRepository.getReferenceById(userId));
+    public UserFullDto getUserFull(Long userId) {
+        return toFullDto(userRepository.getReferenceById(userId));
     }
 
     /**
@@ -110,8 +104,8 @@ public class UserService {
                 user.getServer() == null ? null : user.getServer().getId());
     }
 
-    UserDetailDto toDetailDto(User user) {
-        return new UserDetailDto(
+    UserFullDto toFullDto(User user) {
+        return new UserFullDto(
                 user.getId(),
                 user.getVersion(),
                 user.getName(),

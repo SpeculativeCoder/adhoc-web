@@ -41,8 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserJoinService {
@@ -55,7 +55,7 @@ public class UserJoinService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserDetailDto userJoin(UserJoinRequest userJoinRequest) {
+    public UserFullDto userJoin(UserJoinRequest userJoinRequest) {
         log.debug("userJoin: userId={} human={} factionId={} serverId={}",
                 userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
 
@@ -89,7 +89,7 @@ public class UserJoinService {
                 .log("User joined: userId={} userName={} userHuman={} factionId={} serverId={} regionId={} x={} y={} z={} pitch={} yaw={}",
                         user.getId(), user.getName(), user.isHuman(), user.getFaction().getIndex(), server.getId(), server.getRegion().getId(), user.getX(), user.getY(), user.getZ(), user.getPitch(), user.getYaw());
 
-        return userService.toDetailDto(user);
+        return userService.toFullDto(user);
     }
 
     private User autoRegister(UserJoinRequest userJoinRequest) {
@@ -110,9 +110,9 @@ public class UserJoinService {
                     .destinationServerId(userJoinRequest.getServerId())
                     .build();
 
-            UserDetailDto userDetailDto = userRegisterService.registerUser(userRegisterRequest);
+            UserFullDto userFullDto = userRegisterService.userRegister(userRegisterRequest);
 
-            user = userRepository.getReferenceById(userDetailDto.getId());
+            user = userRepository.getReferenceById(userFullDto.getId());
         }
 
         return user;

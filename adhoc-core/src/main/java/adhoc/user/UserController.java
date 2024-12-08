@@ -60,25 +60,25 @@ public class UserController {
     }
 
     @GetMapping("/users/current")
-    public ResponseEntity<UserDetailDto> getCurrentUser(
+    public ResponseEntity<UserFullDto> getCurrentUser(
             Authentication authentication) {
 
         if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails userDetails)) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(userService.getUserDetail(userDetails.getUserId()));
+        return ResponseEntity.ok(userService.getUserFull(userDetails.getUserId()));
     }
 
     @PostMapping("/users/register")
-    public ResponseEntity<UserDetailDto> postRegisterUser(
+    public ResponseEntity<UserFullDto> postUserRegister(
             @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
 
-        return ResponseEntity.ok(userRegisterService.registerUser(userRegisterRequest));
+        return ResponseEntity.ok(userRegisterService.userRegister(userRegisterRequest));
     }
 
     @PostMapping("/users/current/navigate")
-    public ResponseEntity<UserDetailDto> postNavigateCurrentUser(
+    public ResponseEntity<UserFullDto> postCurrentUserNavigate(
             @Valid @RequestBody UserNavigateRequest userNavigateRequest,
             Authentication authentication) {
 
@@ -86,6 +86,6 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(userNavigateService.navigateUser(userDetails.getUserId(), userNavigateRequest));
+        return ResponseEntity.ok(userNavigateService.userNavigate(userDetails.getUserId(), userNavigateRequest));
     }
 }

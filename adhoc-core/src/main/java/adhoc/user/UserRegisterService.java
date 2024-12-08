@@ -47,8 +47,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserRegisterService {
@@ -66,11 +66,11 @@ public class UserRegisterService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserDetailDto registerUser(UserRegisterRequest userRegisterRequest) {
+    public UserFullDto userRegister(UserRegisterRequest userRegisterRequest) {
         String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();
 
-        log.debug("registerUser: name={} password?={} human={} factionId={} remoteAddr={} userAgent={}",
+        log.debug("userRegister: name={} password?={} human={} factionId={} remoteAddr={} userAgent={}",
                 userRegisterRequest.getName(),
                 userRegisterRequest.getPassword() != null,
                 userRegisterRequest.getHuman(),
@@ -143,7 +143,7 @@ public class UserRegisterService {
 
         // if not an auto-register from server - log them in too
         if (!authenticatedAsServer) {
-            userProgrammaticLoginService.login(user.getId(), userRegisterRequest.getName(), userRegisterRequest.getPassword());
+            userProgrammaticLoginService.userProgrammaticLogin(user.getId(), userRegisterRequest.getName(), userRegisterRequest.getPassword());
         }
 
         log.atLevel(Optional.ofNullable(userRegisterRequest.getHuman()).orElse(false) ? Level.INFO : Level.DEBUG)
@@ -156,7 +156,7 @@ public class UserRegisterService {
                         remoteAddr,
                         userAgent);
 
-        return userService.toDetailDto(user);
+        return userService.toFullDto(user);
     }
 
     private @Nullable String determineRemoteAddr() {

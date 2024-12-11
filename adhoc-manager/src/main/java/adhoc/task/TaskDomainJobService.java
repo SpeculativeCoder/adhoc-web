@@ -47,11 +47,11 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.*;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class TaskDomainService {
+public class TaskDomainJobService {
 
     private final ManagerProperties managerProperties;
 
@@ -61,7 +61,7 @@ public class TaskDomainService {
     private final MessageService messageService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private TaskDomainService self;
+    private TaskDomainJobService self;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))

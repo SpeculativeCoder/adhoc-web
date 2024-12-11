@@ -20,36 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.system.logging;
 
-import adhoc.system.properties.ManagerProperties;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.MDC;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ExecutorChannelInterceptor;
 
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
-
-@Transactional
-@Service
 @Slf4j
-@RequiredArgsConstructor
-public class ServerPurgeService {
+public class MdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
 
-    private final ManagerProperties managerProperties;
+    @Override
+    public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        MDC.put("dest", accessor.getDestination());
+        return message;
+    }
 
-    private final ServerRepository serverRepository;
-
-    public void purgeOldServers() {
-        LocalDateTime seenBefore = LocalDateTime.now().minus(managerProperties.getPurgeOldServersSeenBefore());
-
-        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
-            oldServers.forEach(oldServer -> {
-                log.debug("Deleting old server {}", oldServer.getId());
-
-                serverRepository.delete(oldServer);
-            });
-        }
+    @Override
+    public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
+        MDC.remove("dest");
     }
 }

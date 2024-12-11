@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserSeenService {
+public class UserSeenJobService {
 
     private final UserRepository userRepository;
     private final PawnRepository pawnRepository;

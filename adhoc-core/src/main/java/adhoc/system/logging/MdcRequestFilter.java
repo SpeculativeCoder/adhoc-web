@@ -20,37 +20,28 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.system.logging;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
 
-@Service
-@Transactional
-@Slf4j
-@RequiredArgsConstructor
-public class UserAdminService {
+@Component
+public class MdcRequestFilter extends OncePerRequestFilter {
 
-    private final UserRepository userRepository;
-
-    private final UserService userService;
-
-    public UserDto updateUser(UserDto userDto) {
-        return userService.toDto(
-                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
-    }
-
-    User toEntity(UserDto userDto, User user) {
-        // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            MDC.put("uri", request.getRequestURI());
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove("uri");
+        }
     }
 }

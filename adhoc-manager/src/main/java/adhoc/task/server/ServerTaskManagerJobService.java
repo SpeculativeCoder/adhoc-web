@@ -22,8 +22,8 @@
 
 package adhoc.task.server;
 
-import adhoc.hosting.HostedServerTask;
 import adhoc.hosting.HostingService;
+import adhoc.hosting.ServerHostingTask;
 import adhoc.message.MessageService;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
@@ -46,11 +46,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ServerTaskManagerService {
+public class ServerTaskManagerJobService {
 
     private final ServerRepository serverRepository;
     private final ServerTaskRepository serverTaskRepository;
@@ -59,7 +59,7 @@ public class ServerTaskManagerService {
     private final MessageService messageService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private ServerTaskManagerService self;
+    private ServerTaskManagerJobService self;
 
     /**
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.
@@ -76,10 +76,10 @@ public class ServerTaskManagerService {
                     taskIdentifiers.add(optionalServerTask.get().getTaskIdentifier());
 
                 } else {
-                    HostedServerTask hostedServerTask = startHostedServerTask(server);
-                    taskIdentifiers.add(hostedServerTask.getTaskIdentifier());
+                    ServerHostingTask serverHostingTask = startHostedServerTask(server);
+                    taskIdentifiers.add(serverHostingTask.getTaskIdentifier());
 
-                    self.createServerTaskInNewTransaction(server, hostedServerTask);
+                    self.createServerTaskInNewTransaction(server, serverHostingTask);
                 }
             });
         }
@@ -96,7 +96,7 @@ public class ServerTaskManagerService {
         }
     }
 
-    private HostedServerTask startHostedServerTask(Server server) {
+    private ServerHostingTask startHostedServerTask(Server server) {
         try {
             log.debug("Starting server task for server {}", server.getId());
             return hostingService.startServerTask(server);
@@ -121,10 +121,10 @@ public class ServerTaskManagerService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    void createServerTaskInNewTransaction(Server server, HostedServerTask hostedServerTask) {
+    void createServerTaskInNewTransaction(Server server, ServerHostingTask serverHostingTask) {
         ServerTask serverTask = new ServerTask();
 
-        serverTask.setTaskIdentifier(hostedServerTask.getTaskIdentifier());
+        serverTask.setTaskIdentifier(serverHostingTask.getTaskIdentifier());
         serverTask.setInitiated(LocalDateTime.now()); // TODO
         serverTask.setServerId(server.getId());
 

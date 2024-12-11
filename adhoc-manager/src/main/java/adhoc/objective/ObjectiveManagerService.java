@@ -22,7 +22,10 @@
 
 package adhoc.objective;
 
+import adhoc.area.AreaRepository;
+import adhoc.faction.FactionRepository;
 import adhoc.region.Region;
+import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import com.google.common.base.Preconditions;
@@ -36,23 +39,35 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ObjectiveReconcileService {
+public class ObjectiveManagerService {
 
     private final ObjectiveRepository objectiveRepository;
+    private final RegionRepository regionRepository;
+    private final AreaRepository areaRepository;
+    private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
 
     private final ObjectiveService objectiveService;
-    private final ObjectiveAdminService objectiveAdminService;
+
+    public ObjectiveDto updateObjective(ObjectiveDto objectiveDto) {
+        // NOTE: this is a two stage save to allow linked objectives to be set too
+        Objective objective = toEntityStage1(objectiveDto, objectiveRepository.getReferenceById(objectiveDto.getId()));
+
+        objective = toEntityStage2(objectiveDto, objective);
+
+        return objectiveService.toDto(objective);
+    }
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public List<ObjectiveDto> reconcileServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
+    public List<ObjectiveDto> updateServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
 
@@ -85,7 +100,7 @@ public class ObjectiveReconcileService {
 
         // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveDtos.stream().map(objectiveDto -> {
-            Objective objective = objectiveAdminService.toEntityStage1(objectiveDto,
+            Objective objective = toEntityStage1(objectiveDto,
                     objectiveRepository.findByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new));
 
             // set faction to be initial faction if this is a new entity
@@ -95,9 +110,53 @@ public class ObjectiveReconcileService {
 
             return new AbstractMap.SimpleEntry<>(objectiveDto, objectiveRepository.save(objective));
         }).toList().stream().map(entry -> {
-            Objective objective = objectiveAdminService.toEntityStage2(entry.getKey(), entry.getValue());
+            Objective objective = toEntityStage2(entry.getKey(), entry.getValue());
 
             return objectiveService.toDto(objective);
         }).toList();
+    }
+
+    Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
+        Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
+
+        objective.setRegion(region);
+        objective.setIndex(objectiveDto.getIndex());
+
+        objective.setName(objectiveDto.getName());
+
+        objective.setX(objectiveDto.getX());
+        objective.setY(objectiveDto.getY());
+        objective.setZ(objectiveDto.getZ());
+
+        objective.setInitialFaction(objectiveDto.getInitialFactionIndex() == null ? null
+                : factionRepository.getByIndex(objectiveDto.getInitialFactionIndex()));
+
+        //noinspection OptionalAssignedToNull
+        if (objectiveDto.getFactionIndex() != null) {
+            objective.setFaction(objectiveDto.getFactionIndex().map(factionRepository::getByIndex).orElse(null));
+        }
+
+        // NOTE: linked objectives will be set in stage 2
+        if (objective.getLinkedObjectives() == null) {
+            objective.setLinkedObjectives(new LinkedHashSet<>());
+        }
+
+        objective.setArea(areaRepository.getByRegionAndIndex(region, objectiveDto.getAreaIndex()));
+
+        return objective;
+    }
+
+    Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
+        Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
+
+        Set<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
+                .map(linkedObjectiveIndex ->
+                        objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        objective.getLinkedObjectives().retainAll(linkedObjectives);
+        objective.getLinkedObjectives().addAll(linkedObjectives);
+
+        return objective;
     }
 }

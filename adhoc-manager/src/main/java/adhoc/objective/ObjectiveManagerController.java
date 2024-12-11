@@ -42,8 +42,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ObjectiveManagerController {
 
-    private final ObjectiveAdminService objectiveAdminService;
-    private final ObjectiveReconcileService objectiveReconcileService;
+    private final ObjectiveManagerService objectiveManagerService;
     private final ObjectiveEventService objectiveEventService;
 
     @PutMapping("/objectives/{objectiveId}")
@@ -55,7 +54,7 @@ public class ObjectiveManagerController {
         Preconditions.checkArgument(Objects.equals(objectiveId, objectiveDto.getId()),
                 "Objective ID mismatch: %s != %s", objectiveId, objectiveDto.getId());
 
-        return objectiveAdminService.updateObjective(objectiveDto);
+        return objectiveManagerService.updateObjective(objectiveDto);
     }
 
     @PostMapping("/servers/{serverId}/objectives")
@@ -64,7 +63,7 @@ public class ObjectiveManagerController {
             @PathVariable Long serverId,
             @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
 
-        return objectiveReconcileService.reconcileServerObjectives(serverId, objectiveDtos);
+        return objectiveManagerService.updateServerObjectives(serverId, objectiveDtos);
     }
 
     @MessageMapping("ObjectiveTaken")

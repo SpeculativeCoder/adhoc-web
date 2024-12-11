@@ -45,7 +45,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserManagerController {
 
-    private final UserAdminService userAdminService;
+    private final UserManagerService userManagerService;
     private final UserJoinService userJoinService;
     private final UserAutoNavigateService userAutoNavigateService;
     private final UserEventService userEventService;
@@ -59,7 +59,7 @@ public class UserManagerController {
         Preconditions.checkArgument(Objects.equals(userId, userDto.getId()),
                 "User ID mismatch: %s != %s", userId, userDto.getId());
 
-        return userAdminService.updateUser(userDto);
+        return userManagerService.updateUser(userDto);
     }
 
     @PostMapping("/servers/{serverId}/userJoin")

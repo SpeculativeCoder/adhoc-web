@@ -41,7 +41,7 @@ import java.util.List;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserScoreService {
+public class UserScoreJobService {
 
     private final UserRepository userRepository;
     private final ObjectiveRepository objectiveRepository;

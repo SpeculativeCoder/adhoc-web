@@ -20,9 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.faction;
+package adhoc.pawn;
 
-import adhoc.objective.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -32,42 +31,21 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDateTime;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class FactionScoreService {
+public class PawnPurgeJobService {
 
-    private final FactionRepository factionRepository;
-    private final ObjectiveRepository objectiveRepository;
+    private final PawnRepository pawnRepository;
 
-    /**
-     * Award faction score according to how many objectives the faction currently owns.
-     * Also decay all faction scores.
-     */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void awardAndDecayFactionScores() {
-        log.trace("Awarding and decaying faction scores...");
+    public void purgeOldPawns() {
+        log.trace("Purging old pawns...");
 
-        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
-                objectiveRepository.getFactionObjectiveCounts();
-
-        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
-            Faction faction = factionObjectiveCount.getFaction();
-            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
-
-            BigDecimal scoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
-
-            factionRepository.updateScoreAddById(scoreAdd, faction.getId());
-        }
-
-        // TODO: multiplier property
-        BigDecimal scoreMultiply = BigDecimal.valueOf(0.999);
-
-        factionRepository.updateScoreMultiply(scoreMultiply);
+        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
     }
 }

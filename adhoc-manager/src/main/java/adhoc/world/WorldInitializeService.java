@@ -54,8 +54,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class WorldInitializeService {

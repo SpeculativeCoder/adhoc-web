@@ -44,7 +44,7 @@ import java.io.IOException;
 @Component
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
-public class AdhocLogRequestFilter extends AbstractRequestLoggingFilter {
+public class LoggingRequestFilter extends AbstractRequestLoggingFilter {
 
     //@Value("${adhoc.server.basic-auth.username:#{null}}")
     //private Optional<String> serverBasicAuthUsername;
@@ -54,7 +54,7 @@ public class AdhocLogRequestFilter extends AbstractRequestLoggingFilter {
 
     //private String encodedServerBasicAuth;
 
-    public AdhocLogRequestFilter() {
+    public LoggingRequestFilter() {
         setIncludeQueryString(true);
         setIncludeHeaders(true);
         setIncludePayload(true);

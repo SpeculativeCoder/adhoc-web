@@ -20,13 +20,36 @@
  * SOFTWARE.
  */
 
-package adhoc.hosting;
+package adhoc.server;
 
-public interface HostedTask {
+import adhoc.system.properties.ManagerProperties;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-    String getTaskIdentifier();
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
-    String getPrivateIp();
+@Service
+@Transactional
+@Slf4j
+@RequiredArgsConstructor
+public class ServerPurgeJobService {
 
-    String getPublicIp();
+    private final ManagerProperties managerProperties;
+
+    private final ServerRepository serverRepository;
+
+    public void purgeOldServers() {
+        LocalDateTime seenBefore = LocalDateTime.now().minus(managerProperties.getPurgeOldServersSeenBefore());
+
+        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
+            oldServers.forEach(oldServer -> {
+                log.debug("Deleting old server {}", oldServer.getId());
+
+                serverRepository.delete(oldServer);
+            });
+        }
+    }
 }

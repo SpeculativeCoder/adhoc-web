@@ -24,6 +24,7 @@ package adhoc.area;
 
 import adhoc.objective.Objective;
 import adhoc.region.Region;
+import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import com.google.common.base.Preconditions;
@@ -42,21 +43,21 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class AreaReconcileService {
+public class AreaManagerService {
 
     private final AreaRepository areaRepository;
+    private final RegionRepository regionRepository;
     private final ServerRepository serverRepository;
 
     private final AreaService areaService;
-    private final AreaAdminService areaAdminService;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public List<AreaDto> reconcileServerAreas(Long serverId, List<AreaDto> areaDtos) {
+    public List<AreaDto> updateServerAreas(Long serverId, List<AreaDto> areaDtos) {
         Server server = serverRepository.getReferenceById(serverId);
         Region region = server.getRegion();
 
@@ -81,10 +82,28 @@ public class AreaReconcileService {
         }
 
         return areaDtos.stream()
-                .map(areaDto -> areaAdminService.toEntity(areaDto,
+                .map(areaDto -> toEntity(areaDto,
                         areaRepository.findByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
                 .map(areaRepository::save)
                 .map(areaService::toDto)
                 .toList();
+    }
+
+    Area toEntity(AreaDto areaDto, Area area) {
+        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
+        area.setIndex(areaDto.getIndex());
+        area.setName(areaDto.getName());
+        area.setX(areaDto.getX());
+        area.setY(areaDto.getY());
+        area.setZ(areaDto.getZ());
+        area.setSizeX(areaDto.getSizeX());
+        area.setSizeY(areaDto.getSizeY());
+        area.setSizeZ(areaDto.getSizeZ());
+        //noinspection OptionalAssignedToNull
+        if (areaDto.getServerId() != null) {
+            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
+        }
+
+        return area;
     }
 }

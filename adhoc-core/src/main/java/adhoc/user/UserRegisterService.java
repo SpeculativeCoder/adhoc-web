@@ -27,6 +27,7 @@ import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
 import adhoc.system.properties.CoreProperties;
+import adhoc.user.programmatic_login.ProgrammaticLoginService;
 import adhoc.user.request_response.UserRegisterRequest;
 import com.google.common.base.Preconditions;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,7 +61,7 @@ public class UserRegisterService {
     private final RegionRepository regionRepository;
 
     private final UserService userService;
-    private final UserProgrammaticLoginService userProgrammaticLoginService;
+    private final ProgrammaticLoginService programmaticLoginService;
 
     private final HttpServletRequest httpServletRequest;
 
@@ -143,7 +144,7 @@ public class UserRegisterService {
 
         // if not an auto-register from server - log them in too
         if (!authenticatedAsServer) {
-            userProgrammaticLoginService.userProgrammaticLogin(user.getId(), userRegisterRequest.getName(), userRegisterRequest.getPassword());
+            programmaticLoginService.programmaticLogin(user.getId(), userRegisterRequest.getName(), userRegisterRequest.getPassword());
         }
 
         log.atLevel(Optional.ofNullable(userRegisterRequest.getHuman()).orElse(false) ? Level.INFO : Level.DEBUG)

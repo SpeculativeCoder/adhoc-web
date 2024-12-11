@@ -41,7 +41,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ServerManagerController {
 
-    private final ServerAdminService serverAdminService;
+    private final ServerManagerService serverManagerService;
     private final ServerEventService serverEventService;
 
     @PutMapping("/servers/{serverId}")
@@ -53,7 +53,7 @@ public class ServerManagerController {
         Preconditions.checkArgument(Objects.equals(serverId, serverDto.getId()),
                 "Server ID mismatch: %s != %s", serverId, serverDto.getId());
 
-        return serverAdminService.updateServer(serverDto);
+        return serverManagerService.updateServer(serverDto);
     }
 
     @GetMapping("/servers/{serverId}/servers")
@@ -61,7 +61,7 @@ public class ServerManagerController {
     public List<ServerDto> getServerServers(
             @PathVariable Long serverId) {
 
-        return serverAdminService.getServerServers(serverId);
+        return serverManagerService.getServerServers(serverId);
     }
 
     @MessageMapping("ServerStarted")

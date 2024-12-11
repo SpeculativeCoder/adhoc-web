@@ -41,11 +41,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class TaskPollService {
+public class TaskManagerJobService {
 
     private final TaskRepository taskRepository;
 
@@ -53,47 +53,47 @@ public class TaskPollService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void pollTasks() {
-        log.trace("Polling tasks...");
+    public void manageTasks() {
+        log.trace("Managing tasks...");
 
         // get state of running containers
-        List<HostedTask> hostedTasks = hostingService.poll();
-        log.debug("hostedTasks={}", hostedTasks);
-        Verify.verifyNotNull(hostedTasks, "hostedTasks is null after polling hosting service!");
+        List<HostingTask> hostingTasks = hostingService.poll();
+        log.debug("hostingTasks={}", hostingTasks);
+        Verify.verifyNotNull(hostingTasks, "hostingTasks is null after polling hosting service!");
 
         LocalDateTime seen = LocalDateTime.now();
 
         List<String> taskIdentifiers = new ArrayList<>();
 
-        for (HostedTask hostedTask : hostedTasks) {
-            Task task = taskRepository.findByTaskIdentifier(hostedTask.getTaskIdentifier())
+        for (HostingTask hostingTask : hostingTasks) {
+            Task task = taskRepository.findByTaskIdentifier(hostingTask.getTaskIdentifier())
                     // TODO
-                    .orElseGet(() -> switch (hostedTask) {
-                        case HostedManagerTask hostedManagerTask -> new ManagerTask();
-                        case HostedKioskTask hostedKioskTask -> new KioskTask();
-                        case HostedServerTask hostedServerTask -> new ServerTask();
-                        default -> throw new IllegalStateException("Unknown hosted task type: " + hostedTask.getClass());
+                    .orElseGet(() -> switch (hostingTask) {
+                        case ManagerHostingTask hostedManagerTask -> new ManagerTask();
+                        case KioskHostingTask hostedKioskTask -> new KioskTask();
+                        case ServerHostingTask hostedServerTask -> new ServerTask();
+                        default -> throw new IllegalStateException("Unknown hosting task type: " + hostingTask.getClass());
                     });
 
-            if (!Objects.equals(task.getTaskIdentifier(), hostedTask.getTaskIdentifier())) {
-                task.setTaskIdentifier(hostedTask.getTaskIdentifier());
+            if (!Objects.equals(task.getTaskIdentifier(), hostingTask.getTaskIdentifier())) {
+                task.setTaskIdentifier(hostingTask.getTaskIdentifier());
             }
-            if (!Objects.equals(task.getPrivateIp(), hostedTask.getPrivateIp())) {
-                task.setPrivateIp(hostedTask.getPrivateIp());
+            if (!Objects.equals(task.getPrivateIp(), hostingTask.getPrivateIp())) {
+                task.setPrivateIp(hostingTask.getPrivateIp());
             }
-            if (!Objects.equals(task.getPublicIp(), hostedTask.getPublicIp())) {
-                task.setPublicIp(hostedTask.getPublicIp());
+            if (!Objects.equals(task.getPublicIp(), hostingTask.getPublicIp())) {
+                task.setPublicIp(hostingTask.getPublicIp());
             }
 
             // TODO
-            if (hostedTask instanceof HostedServerTask hostedServerTask) {
+            if (hostingTask instanceof ServerHostingTask serverHostingTask) {
                 ServerTask serverTask = (ServerTask) task;
 
-                if (!Objects.equals(serverTask.getPublicWebSocketPort(), hostedServerTask.getPublicWebSocketPort())) {
-                    serverTask.setPublicWebSocketPort(hostedServerTask.getPublicWebSocketPort());
+                if (!Objects.equals(serverTask.getPublicWebSocketPort(), serverHostingTask.getPublicWebSocketPort())) {
+                    serverTask.setPublicWebSocketPort(serverHostingTask.getPublicWebSocketPort());
                 }
-                if (!Objects.equals(serverTask.getServerId(), hostedServerTask.getServerId())) {
-                    serverTask.setServerId(hostedServerTask.getServerId());
+                if (!Objects.equals(serverTask.getServerId(), serverHostingTask.getServerId())) {
+                    serverTask.setServerId(serverHostingTask.getServerId());
                 }
             }
 

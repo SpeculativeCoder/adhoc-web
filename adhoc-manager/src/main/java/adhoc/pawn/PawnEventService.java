@@ -41,8 +41,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class PawnEventService {
@@ -51,7 +51,7 @@ public class PawnEventService {
     private final ServerRepository serverRepository;
 
     private final PawnService pawnService;
-    private final PawnAdminService pawnAdminService;
+    private final PawnManagerService pawnManagerService;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
@@ -67,7 +67,7 @@ public class PawnEventService {
         for (PawnDto dto : serverPawnsEvent.getPawns()) {
             Preconditions.checkArgument(Objects.equals(server.getId(), dto.getServerId()));
 
-            Pawn pawn = pawnAdminService.toEntity(dto,
+            Pawn pawn = pawnManagerService.toEntity(dto,
                     pawnRepository.findByUuid(dto.getUuid()).orElseGet(Pawn::new));
 
             pawn.setSeen(seen);

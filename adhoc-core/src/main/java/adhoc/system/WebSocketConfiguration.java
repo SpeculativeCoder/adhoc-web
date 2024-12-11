@@ -22,7 +22,7 @@
 
 package adhoc.system;
 
-import adhoc.system.logging.AdhocMdcExecutorChannelInterceptor;
+import adhoc.system.logging.MdcExecutorChannelInterceptor;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -94,7 +94,7 @@ public class WebSocketConfiguration {
             @Override
             public void configureClientInboundChannel(ChannelRegistration registration) {
                 registration
-                        .interceptors(new AdhocMdcExecutorChannelInterceptor());
+                        .interceptors(new MdcExecutorChannelInterceptor());
             }
         };
     }

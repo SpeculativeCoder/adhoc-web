@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class AdhocLogRetryListener extends MethodInvocationRetryListenerSupport {
+public class LoggingRetryListener extends MethodInvocationRetryListenerSupport {
 
     @Override
     protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {

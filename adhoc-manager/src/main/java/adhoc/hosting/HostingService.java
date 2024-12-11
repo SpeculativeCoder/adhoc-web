@@ -31,9 +31,9 @@ import java.util.List;
  */
 public interface HostingService {
 
-    List<HostedTask> poll();
+    List<HostingTask> poll();
 
-    HostedServerTask startServerTask(Server server);
+    ServerHostingTask startServerTask(Server server);
 
     void stopServerTask(String taskIdentifier);
 }

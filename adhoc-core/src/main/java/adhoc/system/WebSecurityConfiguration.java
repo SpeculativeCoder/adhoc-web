@@ -22,7 +22,7 @@
 
 package adhoc.system;
 
-import adhoc.server.ServerRequestMatcher;
+import adhoc.server.ServerBasicAuthRequestMatcher;
 import adhoc.user.UserAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
@@ -61,7 +61,7 @@ public class WebSecurityConfiguration<S extends Session> {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   ServerRequestMatcher serverRequestMatcher,
+                                                   ServerBasicAuthRequestMatcher serverBasicAuthRequestMatcher,
                                                    UserAuthenticationSuccessHandler userAuthenticationSuccessHandler,
                                                    RememberMeServices rememberMeServices,
                                                    SpringSessionBackedSessionRegistry<S> sessionRegistry) throws Exception {
@@ -92,7 +92,7 @@ public class WebSecurityConfiguration<S extends Session> {
                         //.ignoringRequestMatchers("/ws/stomp/user/**")
                         //.ignoringRequestMatchers("/ws/stomp/server/**")
                         // we don't want CSRF on requests from Unreal server
-                        .ignoringRequestMatchers(serverRequestMatcher))
+                        .ignoringRequestMatchers(serverBasicAuthRequestMatcher))
 
                 .cors(withDefaults())
 

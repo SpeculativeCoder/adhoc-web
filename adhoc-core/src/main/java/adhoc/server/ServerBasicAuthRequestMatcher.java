@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 @Component
 @Slf4j
-public class ServerRequestMatcher implements RequestMatcher {
+public class ServerBasicAuthRequestMatcher implements RequestMatcher {
 
     @Value("${adhoc.server.basic-auth.username:#{null}}")
     private Optional<String> serverBasicAuthUsername;

@@ -36,7 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AreaManagerController {
 
-    private final AreaReconcileService areaReconcileService;
+    private final AreaManagerService areaManagerService;
 
     @PostMapping("/servers/{serverId}/areas")
     @PreAuthorize("hasRole('SERVER')")
@@ -44,6 +44,6 @@ public class AreaManagerController {
             @PathVariable Long serverId,
             @Valid @RequestBody List<AreaDto> areaDtos) {
 
-        return areaReconcileService.reconcileServerAreas(serverId, areaDtos);
+        return areaManagerService.updateServerAreas(serverId, areaDtos);
     }
 }

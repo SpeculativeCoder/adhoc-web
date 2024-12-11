@@ -20,9 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.user.programmatic_login;
 
 import adhoc.system.WebSecurityConfiguration;
+import adhoc.user.User;
+import adhoc.user.UserAuthenticationSuccessHandler;
+import adhoc.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +51,7 @@ import java.util.UUID;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserProgrammaticLoginService {
+public class ProgrammaticLoginService {
 
     private final UserRepository userRepository;
 
@@ -70,7 +73,7 @@ public class UserProgrammaticLoginService {
      * Login the user programmatically (i.e. by invoking necessary Spring Security actions etc.), given a username and password.
      * Used after registering a user (we want them to be automatically logged in).
      */
-    public void userProgrammaticLogin(Long userId, String username, String password) {
+    public void programmaticLogin(Long userId, String username, String password) {
         User user = userRepository.getReferenceById(userId);
 
         String tempPassword = null;

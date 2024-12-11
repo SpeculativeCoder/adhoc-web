@@ -20,44 +20,43 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.faction;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.List;
 
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserPurgeService {
+public class FactionManagerService {
 
-    private final UserRepository userRepository;
+    private final FactionRepository factionRepository;
 
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void purgeOldUsers() {
-        log.trace("Purging old users...");
-        Set<Long> oldUserIds = new TreeSet<>();
+    private final FactionService factionService;
 
-        // regular cleanup of anon users who had a temp account created but never were seen in a server
-        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
-        // regular cleanup of anon users who were last seen in a server a long time ago
-        oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
+    public List<FactionDto> getServerFactions(Long serverId) {
+        return factionRepository.findAll(Sort.by("index")).stream().map(factionService::toDto).toList();
+    }
 
-        if (!oldUserIds.isEmpty()) {
-            log.debug("Purging old users: {}", oldUserIds);
+    public FactionDto updateFaction(FactionDto factionDto) {
+        Faction faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
 
-            userRepository.deleteAllByIdInBatch(oldUserIds);
-        }
+        return factionService.toDto(faction);
+    }
+
+    Faction toEntity(FactionDto factionDto, Faction faction) {
+        faction.setId(faction.getId());
+        faction.setIndex(faction.getIndex());
+        faction.setName(factionDto.getName());
+        faction.setColor(factionDto.getColor());
+        faction.setScore(factionDto.getScore());
+
+        return faction;
     }
 }

@@ -50,17 +50,17 @@ public class LocalHostingService implements HostingService {
     private final Set<Long> serverIds = new ConcurrentHashSet<>();
 
     @Override
-    public List<HostedTask> poll() {
+    public List<HostingTask> poll() {
 
-        List<HostedTask> tasks = new ArrayList<>();
+        List<HostingTask> tasks = new ArrayList<>();
 
-        HostedManagerTask managerTask = new HostedManagerTask();
+        ManagerHostingTask managerTask = new ManagerHostingTask();
         managerTask.setTaskIdentifier("local manager task");
         managerTask.setPrivateIp("127.0.0.1");
         managerTask.setPublicIp("127.0.0.1");
         tasks.add(managerTask);
 
-        HostedKioskTask kioskTask = new HostedKioskTask();
+        KioskHostingTask kioskTask = new KioskHostingTask();
         kioskTask.setTaskIdentifier("local kiosk task");
         kioskTask.setPrivateIp("127.0.0.1");
         kioskTask.setPublicIp("127.0.0.1");
@@ -71,7 +71,7 @@ public class LocalHostingService implements HostingService {
         for (Server server : servers) {
             if (serverIds.contains(server.getId())) {
 
-                HostedServerTask serverTask = new HostedServerTask();
+                ServerHostingTask serverTask = new ServerHostingTask();
                 serverTask.setTaskIdentifier(server.getId().toString());
                 serverTask.setPrivateIp("127.0.0.1");
                 serverTask.setPublicIp("127.0.0.1");
@@ -86,11 +86,11 @@ public class LocalHostingService implements HostingService {
     }
 
     @Override
-    public HostedServerTask startServerTask(Server server) {
+    public ServerHostingTask startServerTask(Server server) {
         log.debug("Assuming local task for server {}", server);
         serverIds.add(server.getId());
 
-        HostedServerTask serverTask = new HostedServerTask();
+        ServerHostingTask serverTask = new ServerHostingTask();
         serverTask.setTaskIdentifier(server.getId().toString());
         serverTask.setPublicWebSocketPort(8889);
         serverTask.setServerId(server.getId());

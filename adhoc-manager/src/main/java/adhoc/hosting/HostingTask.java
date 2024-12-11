@@ -22,14 +22,11 @@
 
 package adhoc.hosting;
 
-import lombok.Data;
+public interface HostingTask {
 
-@Data
-public class HostedManagerTask implements HostedTask {
+    String getTaskIdentifier();
 
-    String taskIdentifier;
+    String getPrivateIp();
 
-    String privateIp;
-
-    String publicIp;
+    String getPublicIp();
 }

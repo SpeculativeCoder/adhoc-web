@@ -33,7 +33,7 @@ import java.io.IOException;
  */
 // TODO: this is only needed if UE is built for multithreaded
 //@Component
-public class CoopCoepFilter implements Filter {
+public class CoopCoepRequestFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

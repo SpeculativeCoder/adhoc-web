@@ -20,55 +20,44 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.user;
 
-import adhoc.area.AreaRepository;
-import adhoc.region.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.TreeSet;
 
-@Transactional
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ServerAdminService {
+public class UserPurgeJobService {
 
-    private final ServerRepository serverRepository;
-    private final RegionRepository regionRepository;
-    private final AreaRepository areaRepository;
+    private final UserRepository userRepository;
 
-    private final ServerService serverService;
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public void purgeOldUsers() {
+        log.trace("Purging old users...");
+        Set<Long> oldUserIds = new TreeSet<>();
 
-    public List<ServerDto> getServerServers(Long serverId) {
-        return serverRepository.findAll(Sort.by("id")).stream().map(serverService::toDto).toList();
-    }
+        // regular cleanup of anon users who had a temp account created but never were seen in a server
+        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
+        // regular cleanup of anon users who were last seen in a server a long time ago
+        oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
 
-    public ServerDto updateServer(ServerDto serverDto) {
-        Server server = toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));
+        if (!oldUserIds.isEmpty()) {
+            log.debug("Purging old users: {}", oldUserIds);
 
-        return serverService.toDto(server);
-    }
-
-    Server toEntity(ServerDto serverDto, Server server) {
-        server.setRegion(regionRepository.getReferenceById(serverDto.getRegionId()));
-        server.setAreas(serverDto.getAreaIds().stream().map(areaRepository::getReferenceById).collect(Collectors.toList())); // TODO
-
-        server.setMapName(serverDto.getMapName());
-
-        server.setX(server.getX());
-        server.setY(server.getY());
-        server.setZ(server.getZ());
-
-        server.setPublicIp(server.getPublicIp());
-
-        server.setWebSocketUrl(server.getWebSocketUrl());
-
-        return server;
+            userRepository.deleteAllByIdInBatch(oldUserIds);
+        }
     }
 }

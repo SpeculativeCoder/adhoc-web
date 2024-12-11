@@ -98,7 +98,7 @@ public class DockerHostingService implements HostingService {
     }
 
     @Override
-    public List<HostedTask> poll() {
+    public List<HostingTask> poll() {
         log.debug("Polling Docker...");
 
         DockerClient dockerClient = dockerClient();
@@ -106,16 +106,16 @@ public class DockerHostingService implements HostingService {
         List<Container> containers = dockerClient.listContainersCmd().exec();
         log.trace("containers: {}", containers);
 
-        List<HostedTask> tasks = new ArrayList<>();
+        List<HostingTask> tasks = new ArrayList<>();
 
         // assume manager running on Docker host (unless we find an adhoc_manager container in Docker)
-        HostedManagerTask defaultManagerTask = new HostedManagerTask();
+        ManagerHostingTask defaultManagerTask = new ManagerHostingTask();
         defaultManagerTask.setTaskIdentifier("host manager task");
         defaultManagerTask.setPrivateIp("host.docker.internal");
         defaultManagerTask.setPublicIp("127.0.0.1");
         tasks.add(defaultManagerTask);
         // assume kiosk running on Docker host (unless we find an adhoc_kiosk container in Docker)
-        HostedKioskTask defaultKioskTask = new HostedKioskTask();
+        KioskHostingTask defaultKioskTask = new KioskHostingTask();
         defaultKioskTask.setTaskIdentifier("host kiosk task");
         defaultKioskTask.setPrivateIp("host.docker.internal");
         defaultKioskTask.setPublicIp("127.0.0.1");
@@ -143,7 +143,7 @@ public class DockerHostingService implements HostingService {
                 // as we have found a manager - remove the default assumption that the manager is the docker host
                 tasks.remove(defaultManagerTask);
 
-                HostedManagerTask managerTask = new HostedManagerTask();
+                ManagerHostingTask managerTask = new ManagerHostingTask();
                 managerTask.setTaskIdentifier(inspectedContainer.getId());
                 managerTask.setPrivateIp(privateIp);
                 managerTask.setPublicIp("127.0.0.1");
@@ -153,7 +153,7 @@ public class DockerHostingService implements HostingService {
                 // as we have found a kiosk - remove the default assumption that the kiosk is the docker host
                 tasks.remove(defaultKioskTask);
 
-                HostedKioskTask kioskTask = new HostedKioskTask();
+                KioskHostingTask kioskTask = new KioskHostingTask();
                 kioskTask.setTaskIdentifier(inspectedContainer.getId());
                 kioskTask.setPrivateIp(privateIp);
                 kioskTask.setPublicIp("127.0.0.1");
@@ -165,7 +165,7 @@ public class DockerHostingService implements HostingService {
                     if (serverIdMatcher.matches()) {
                         Long serverId = parseServerId(serverIdMatcher.group(1));
 
-                        HostedServerTask task = new HostedServerTask();
+                        ServerHostingTask task = new ServerHostingTask();
                         task.setTaskIdentifier(inspectedContainer.getId());
                         task.setPrivateIp(privateIp);
                         task.setPublicIp("127.0.0.1");
@@ -183,7 +183,7 @@ public class DockerHostingService implements HostingService {
     }
 
     @Override
-    public HostedServerTask startServerTask(Server server) {
+    public ServerHostingTask startServerTask(Server server) {
         log.debug("Starting Docker container for {}", server); // linked to managers {}", managerHosts);
         int publicWebSocketPort = calculatePublicWebSocketPort(server.getId());
 
@@ -230,7 +230,7 @@ public class DockerHostingService implements HostingService {
 
         //InspectContainerResponse inspectedContainer = dockerClient.inspectContainerCmd(createdContainer.getId()).exec();
 
-        HostedServerTask serverTask = new HostedServerTask();
+        ServerHostingTask serverTask = new ServerHostingTask();
         serverTask.setTaskIdentifier(createdContainer.getId());
         serverTask.setPublicWebSocketPort(publicWebSocketPort);
         serverTask.setServerId(server.getId());

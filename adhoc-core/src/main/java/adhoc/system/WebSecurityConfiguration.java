@@ -28,8 +28,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -138,6 +140,13 @@ public class WebSecurityConfiguration<S extends Session> {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    // as of Spring Boot 3.4.1 / Spring Security 6.4.2, try to ignore processor from WebSocketObservationConfiguration for now
+    @Bean
+    @Primary
+    public ObjectPostProcessor<Object> primaryObjectPostProcessor(@Qualifier("objectPostProcessor") ObjectPostProcessor<Object> objectPostProcessor) {
+        return objectPostProcessor;
     }
 
     private Set<String> anonymousAuthorities() {

@@ -20,10 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.world.event;
+package adhoc.universe;
 
-import adhoc.system.event.Event;
-import adhoc.world.WorldDto;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,8 +33,12 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class WorldUpdatedEvent implements Event {
+public class UniverseDto {
 
     @NotNull
-    WorldDto world;
+    Long id;
+
+    @NotNull
+    @Min(0)
+    Long version;
 }

@@ -20,24 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.world;
+package adhoc.universe;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Service
-@Transactional
-@Slf4j
-@RequiredArgsConstructor
-public class WorldService {
-
-    public static final long WORLD_ID = 1L;
-
-    WorldDto toDto(World world) {
-        return new WorldDto(
-                world.getId(),
-                world.getVersion());
-    }
+public interface UniverseRepository extends JpaRepository<Universe, Long> {
 }

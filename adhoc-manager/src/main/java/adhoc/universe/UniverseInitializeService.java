@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.world;
+package adhoc.universe;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
@@ -34,10 +34,10 @@ import adhoc.region.RegionRepository;
 import adhoc.server.ServerRepository;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
+import adhoc.universe.event.UniverseUpdatedEvent;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
-import adhoc.world.event.WorldUpdatedEvent;
 import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -58,12 +58,12 @@ import java.util.stream.Collectors;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class WorldInitializeService {
+public class UniverseInitializeService {
 
     private final CoreProperties coreProperties;
     private final ManagerProperties managerProperties;
 
-    private final WorldRepository worldRepository;
+    private final UniverseRepository universeRepository;
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
     private final RegionRepository regionRepository;
@@ -71,25 +71,25 @@ public class WorldInitializeService {
     private final ObjectiveRepository objectiveRepository;
     private final ServerRepository serverRepository;
 
-    private final WorldService worldService;
+    private final UniverseService universeService;
     private final MessageService messageService;
 
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * Inserts some initial data to set up the world e.g. factions.
+     * Inserts some initial data to set up the universe e.g. factions.
      */
     @EventListener(ApplicationStartedEvent.class)
-    public void initializeDefaultWorld() {
+    public void initializeDefaultUniverse() {
 
-        if (worldRepository.existsById(WorldService.WORLD_ID)) {
-            return; // already initialised the world - no need to do anything
+        if (universeRepository.existsById(UniverseService.UNIVERSE_ID)) {
+            return; // already initialised the universe - no need to do anything
         }
 
-        World world = new World();
-        world = worldRepository.save(world);
+        Universe universe = new Universe();
+        universe = universeRepository.save(universe);
 
-        Verify.verify(world.getId().equals(WorldService.WORLD_ID)); // TODO
+        Verify.verify(universe.getId().equals(UniverseService.UNIVERSE_ID)); // TODO
 
         // insert factions
 
@@ -346,10 +346,10 @@ public class WorldInitializeService {
         //pawn1.setUser(alphaUser);
         //pawn1 = pawnRepository.save(pawn1);
 
-        messageService.addGlobalMessage(String.format("World %d initialized", world.getId()));
+        messageService.addGlobalMessage(String.format("Universe %d initialized", universe.getId()));
     }
 
-    WorldUpdatedEvent toWorldUpdatedEvent(World world) {
-        return new WorldUpdatedEvent(worldService.toDto(world));
+    UniverseUpdatedEvent toUniverseUpdatedEvent(Universe universe) {
+        return new UniverseUpdatedEvent(universeService.toDto(universe));
     }
 }

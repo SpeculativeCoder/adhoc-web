@@ -59,8 +59,8 @@ export class ClientComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (window.navigator.userAgent.indexOf('Windows') == -1
-      && window.navigator.userAgent.indexOf('Intel Mac OS') == -1) {
+    if (window.navigator.userAgent.indexOf('Windows') == -1) {
+      //&& window.navigator.userAgent.indexOf('Intel Mac OS') == -1) {
       this.showCompatibilityWarning = true;
       return;
     }

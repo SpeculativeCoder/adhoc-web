@@ -20,25 +20,24 @@
  * SOFTWARE.
  */
 
-package adhoc.world;
+package adhoc.universe;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Value
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class WorldDto {
+@Service
+@Transactional
+@Slf4j
+@RequiredArgsConstructor
+public class UniverseService {
 
-    @NotNull
-    Long id;
+    public static final long UNIVERSE_ID = 1L;
 
-    @NotNull
-    @Min(0)
-    Long version;
+    UniverseDto toDto(Universe universe) {
+        return new UniverseDto(
+                universe.getId(),
+                universe.getVersion());
+    }
 }

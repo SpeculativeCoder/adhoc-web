@@ -20,14 +20,14 @@
  * SOFTWARE.
  */
 
-package adhoc.world;
+package adhoc.universe;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 /**
- * Any details about the world e.g. settings can go here.
- * Currently, we can only have one world per database.
+ * Any details about the universe e.g. settings can go here.
+ * Currently, we can only have one universe per database.
  */
 @Entity
 //@DynamicInsert
@@ -37,11 +37,11 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class World {
+public class Universe {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "WorldIdSequence")
-    @SequenceGenerator(name = "WorldIdSequence", initialValue = 1, allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UniverseIdSequence")
+    @SequenceGenerator(name = "UniverseIdSequence", initialValue = 1, allocationSize = 50)
     private Long id;
 
     @Version

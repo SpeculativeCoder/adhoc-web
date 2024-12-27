@@ -208,7 +208,7 @@ public class AdhocArtemisConfiguration {
 //        props.put("multicastPrefix", "/topic/");
 
 //        List<String> managerConnectorNames = new ArrayList<>();
-//        Optional<Set<String>> optionalManagerHosts = worldService.findManagerHosts();
+//        Optional<Set<String>> optionalManagerHosts = universeService.findManagerHosts();
 //        if (optionalManagerHosts.isPresent()) {
 //            int index = 0;
 //            for (String managerHost : optionalManagerHosts.get()) {

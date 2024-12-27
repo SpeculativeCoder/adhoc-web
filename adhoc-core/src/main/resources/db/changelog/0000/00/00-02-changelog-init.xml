@@ -30,7 +30,7 @@
 
         <!-- TODO: until the schema / architecture settles down we are nuking all tables/data (except user information) on every run -->
         <sql dbms="postgresql">
-            drop table if exists world;
+            drop table if exists universe;
             drop table if exists objective_linked_objectives;
             drop table if exists objective;
             drop table if exists area;
@@ -44,16 +44,16 @@
             drop table if exists server_task;
         </sql>
 
-        <createSequence sequenceName="world_id_sequence"
+        <createSequence sequenceName="universe_id_sequence"
                         startValue="1"
                         incrementBy="50"/>
 
-        <createTable tableName="world">
+        <createTable tableName="universe">
             <column name="id"
                     type="BIGINT">
                 <constraints nullable="false"
                              primaryKey="true"
-                             primaryKeyName="pk_world"/>
+                             primaryKeyName="pk_universe"/>
             </column>
             <column name="version" type="BIGINT">
                 <constraints nullable="false"/>

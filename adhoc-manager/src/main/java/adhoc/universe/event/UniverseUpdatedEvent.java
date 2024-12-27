@@ -20,9 +20,22 @@
  * SOFTWARE.
  */
 
-package adhoc.world;
+package adhoc.universe.event;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import adhoc.system.event.Event;
+import adhoc.universe.UniverseDto;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-public interface WorldRepository extends JpaRepository<World, Long> {
+@Value
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class UniverseUpdatedEvent implements Event {
+
+    @NotNull
+    UniverseDto universe;
 }

@@ -168,8 +168,8 @@ export class UserService {
     }));
   }
 
-  userDefeatedUser(user: User, defeatedUser: User) {
-    this.stomp.send('UserDefeatedUser', {userId: user.id, defeatedUserId: defeatedUser.id});
+  userDefeatedUser(user: User, defeatedUser?: User) {
+    this.stomp.send('UserDefeatedUser', {userId: null /*user.id*/, defeatedUserId: defeatedUser?.id || null});
   }
 
   handleUserDefeatedUser(userId: number, defeatedUserId: number) {

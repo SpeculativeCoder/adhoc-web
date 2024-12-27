@@ -49,6 +49,9 @@ public class WebSocketConfiguration {
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
     private TaskScheduler taskScheduler;
 
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private AdhocStompSubProtocolErrorHandler adhocStompSubProtocolErrorHandler;
+
     @Bean
     public AbstractSessionWebSocketMessageBrokerConfigurer<Session> webSocketMessageBrokerConfigurer() {
         return new AbstractSessionWebSocketMessageBrokerConfigurer<>() {
@@ -71,6 +74,8 @@ public class WebSocketConfiguration {
                         .withSockJS()
                         //.setHeartbeatTime(Duration.ofSeconds(30).toMillis())
                         .setTaskScheduler(taskScheduler);
+
+                registry.setErrorHandler(adhocStompSubProtocolErrorHandler);
             }
 
             @Override

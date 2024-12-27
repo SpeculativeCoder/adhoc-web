@@ -96,7 +96,7 @@ public class UserManagerController {
 
         UserDefeatedUserEvent userDefeatedUserEvent = userEventService.userDefeatedUser(serverUserDefeatedUserEvent);
 
-        log.debug("Sending: {}", userDefeatedUserEvent);
+        log.info("Sending: {}", userDefeatedUserEvent);
         return userDefeatedUserEvent;
     }
 }

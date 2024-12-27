@@ -30,7 +30,9 @@
       <!--    <caption>{{users.length}} users</caption>-->
       <thead>
       <tr>
-        <!--<th scope="col"></th>-->
+        <!--
+        <th scope="col"></th>
+        -->
         <th scope="col" sortable="id">ID</th>
         <th scope="col" sortable="name">Name</th>
         <th scope="col" sortable="human">Human</th>
@@ -47,10 +49,13 @@
       </thead>
       <tbody>
       <tr *ngFor="let user of users.content">
-        <!--<td style="width: 2em"><input type="checkbox" class="p-relative"
-            #userCheckbox [checked]="isUserSelected(users)"
-            (change)="userCheckboxChanged(users, userCheckbox.checked)" value="" />
-        </td>-->
+        <!--
+        <td style="width: 2em">
+          <input type="checkbox" class="p-relative"
+                 #userCheckbox [checked]="isUserSelected(user)"
+                 (change)="userCheckboxChanged(user, userCheckbox.checked)" value=""/>
+        </td>
+        -->
         <th scope="row"><a routerLink="/users/{{ user.id }}">{{ user.id }}</a></th>
         <td>{{ user.name }}</td>
         <td>{{ user.human }}</td>
@@ -75,22 +80,17 @@
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>
   </div>
-  <div class="container">
-    <div class="row">
-      <!--
-  <button type="button" id="userRegister" class="btn btn-primary" (click)="defeatedUser()"
-    [disabled]="selectedUsers.length < 2">
+  <!--
+  <button type="button" id="userDefeatedUser" class="btn btn-danger" (click)="userDefeatedUser()"
+          [disabled]="selectedUsers.length != 2">
     Send
-    DefeatedUser({{ selectedUsers[0]?.userId?.toString() || 'users' }},{{ selectedUsers[1]?.userId?.toString() || 'defeatedUser' }})
+    UserDefeatedUser({{ selectedUsers[0]?.id?.toString() || 'user' }},{{ selectedUsers[1]?.id?.toString() || 'defeatedUser' }})
   </button>
   &nbsp;
-  <button type="button" id="userRegister" class="btn btn-primary" (click)="defeatedBot()"
-    [disabled]="selectedUsers.length < 1">
+  <button type="button" id="userRegister" class="btn btn-danger" (click)="userDefeatedUser()"
+          [disabled]="selectedUsers.length != 1">
     Send
-    DefeatedBot({{ selectedUsers[0]?.userId?.toString() || 'users' }})
+    UserDefeatedUser({{ selectedUsers[0]?.id?.toString() || 'user' }},null)
   </button>
   -->
-    </div>
-    <div class="row"></div>
-  </div>
 </div>

@@ -38,7 +38,7 @@ Further functionality requires setup. See: [https://github.com/SpeculativeCoder/
 
 ## Copyright / License(s)
 
-Copyright (c) 2022-2024 SpeculativeCoder (https://github.com/SpeculativeCoder)
+Copyright (c) 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
 
 [LICENSE](LICENSE) (**MIT License**) applies to the files in this repository unless otherwise indicated.
 

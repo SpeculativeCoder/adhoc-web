@@ -22,19 +22,23 @@
 
 package adhoc;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-@Disabled
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:/application-test.properties")
+@AutoConfigureMockMvc
 public class AdhocKioskApplicationTest {
 
     // TODO
     @Test
-    public void testContext() {
-        //
+    public void testIndex(@Autowired MockMvcTester mvc) {
+        assertThat(mvc.get().uri("/")).hasStatusOk().bodyText().contains("<app-root>");
     }
 }

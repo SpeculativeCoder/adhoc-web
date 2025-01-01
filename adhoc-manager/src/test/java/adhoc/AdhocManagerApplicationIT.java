@@ -22,15 +22,21 @@
 
 package adhoc;
 
-import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-import java.security.Security;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@Slf4j
-public abstract class AbstractAdhocApplication {
+@SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@AutoConfigureMockMvc
+public class AdhocManagerApplicationIT {
 
-    static {
-        Security.setProperty("networkaddress.cache.ttl", "60");
-        //log.info("networkaddress.cache.ttl={}", Security.getProperty("networkaddress.cache.ttl"));
+    // TODO
+    @Test
+    public void testIndex(@Autowired MockMvcTester mvc) {
+        assertThat(mvc.get().uri("/")).hasStatusOk().bodyText().contains("<app-root>");
     }
 }

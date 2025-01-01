@@ -40,6 +40,7 @@
     <description>adhoc-web</description>
 
     <modules>
+        <module>adhoc-angular</module>
         <module>adhoc-core</module>
         <module>adhoc-kiosk</module>
         <module>adhoc-manager</module>
@@ -56,6 +57,8 @@
         <angular.configuration>development</angular.configuration>
         <unreal.configuration>Development</unreal.configuration>
         <liquibase.propertyFile>liquibase.properties</liquibase.propertyFile>
+
+        <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
     </properties>
 
     <dependencyManagement>

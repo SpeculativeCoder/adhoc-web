@@ -27,6 +27,8 @@ import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jms.artemis.ArtemisMode;
+import org.springframework.boot.autoconfigure.jms.artemis.ArtemisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -45,6 +47,7 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 public class WebSocketConfiguration {
 
     private final CoreProperties coreProperties;
+    private final ArtemisProperties artemisProperties;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
     private TaskScheduler taskScheduler;
@@ -87,13 +90,18 @@ public class WebSocketConfiguration {
                 config.configureBrokerChannel()
                         .taskExecutor();
 
-                //config.enableSimpleBroker("/queue", "/topic");
-                config.enableStompBrokerRelay("/queue", "/topic")
-                        .setRelayHost(coreProperties.getMessageBrokerHost())
-                        .setRelayPort(coreProperties.getMessageBrokerStompPort())
-                        //.setSystemHeartbeatReceiveInterval(Duration.ofSeconds(30).toMillis())
-                        //.setSystemHeartbeatSendInterval(Duration.ofSeconds(30).toMillis())
-                        .setTaskScheduler(taskScheduler);
+                if (artemisProperties.getMode() == ArtemisMode.EMBEDDED && !artemisProperties.getEmbedded().isEnabled()) {
+                    config.enableSimpleBroker("/queue", "/topic")
+                            .setTaskScheduler(taskScheduler);
+
+                } else {
+                    config.enableStompBrokerRelay("/queue", "/topic")
+                            .setRelayHost(coreProperties.getMessageBrokerHost())
+                            .setRelayPort(coreProperties.getMessageBrokerStompPort())
+                            //.setSystemHeartbeatReceiveInterval(Duration.ofSeconds(30).toMillis())
+                            //.setSystemHeartbeatSendInterval(Duration.ofSeconds(30).toMillis())
+                            .setTaskScheduler(taskScheduler);
+                }
             }
 
             @Override

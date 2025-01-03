@@ -28,7 +28,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/adhoc-angular",
+            "outputPath": "dist/production/adhoc-angular",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -74,6 +74,7 @@
               "outputHashing": "all"
             },
             "development": {
+              "outputPath": "dist/development/adhoc-angular",
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true

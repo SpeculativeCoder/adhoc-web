@@ -22,21 +22,58 @@
 
 package adhoc;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@AutoConfigureMockMvc
+@Slf4j
 public class AdhocManagerApplicationIT {
+
+    @Value("${server.port-2}")
+    private Integer serverPort2;
+
+    //@Value("${adhoc.manager-domain}")
+    //private String managerDomain;
+
+    private String baseUrl;
+
+    private WebDriver webDriver;
+
+    @BeforeEach
+    public void beforeEach() {
+        baseUrl = "http://localhost:" + serverPort2;
+        //baseUrl = "https://" + managerDomain;
+        log.info("baseUrl={}", baseUrl);
+
+        //ChromeOptions options = new ChromeOptions();
+        //options.addArguments("--headless=new");
+        //webDriver = new ChromeDriver(options);
+
+        FirefoxOptions options = new FirefoxOptions();
+        options.addArguments("--headless");
+        webDriver = new FirefoxDriver(options);
+    }
+
+    @AfterEach
+    public void afterEach() {
+        webDriver.quit();
+    }
 
     // TODO
     @Test
-    public void testIndex(@Autowired MockMvcTester mvc) {
-        assertThat(mvc.get().uri("/")).hasStatusOk().bodyText().contains("<app-root>");
+    public void testIndex() {
+        webDriver.get(baseUrl + "/");
+
+        assertThat(webDriver.findElement(By.tagName("app-root"))).isNotNull();
     }
 }

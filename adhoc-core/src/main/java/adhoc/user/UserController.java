@@ -35,6 +35,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/api")
 @Slf4j
@@ -74,7 +76,9 @@ public class UserController {
     public ResponseEntity<UserFullDto> postUserRegister(
             @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
 
-        return ResponseEntity.ok(userRegisterService.userRegister(userRegisterRequest));
+        UserFullDto response = userRegisterService.userRegister(userRegisterRequest);
+
+        return ResponseEntity.created(URI.create("/api/users/current")).body(response);
     }
 
     @PostMapping("/users/current/navigate")

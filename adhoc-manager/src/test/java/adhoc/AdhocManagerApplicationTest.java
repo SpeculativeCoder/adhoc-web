@@ -22,23 +22,59 @@
 
 package adhoc;
 
+import adhoc.user.UserRepository;
+import adhoc.user.request_response.UserRegisterRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @SpringBootTest
 @TestPropertySource("classpath:/application-test.properties")
 @AutoConfigureMockMvc
+@Transactional
 public class AdhocManagerApplicationTest {
+
+    @Autowired
+    private MockMvcTester mvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // TODO
     @Test
-    public void testIndex(@Autowired MockMvcTester mvc) {
+    public void testIndex() {
         assertThat(mvc.get().uri("/")).hasStatusOk().bodyText().contains("<app-root>");
+    }
+
+    // TODO
+    @Test
+    public void testRegister() throws Exception {
+        UserRegisterRequest request = UserRegisterRequest.builder()
+                .human(true)
+                .build();
+
+        MvcTestResult result = mvc.post().uri("/api/users/register")
+                .contentType(MediaType.APPLICATION_JSON).with(csrf())
+                .content(objectMapper.writeValueAsBytes(request))
+                .exchange();
+
+        assertThat(result)
+                .hasStatus(HttpStatus.CREATED)
+                .hasContentTypeCompatibleWith(MediaType.APPLICATION_JSON)
+                .bodyJson().extractingPath("$.id").convertTo(Long.class);
     }
 }

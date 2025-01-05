@@ -24,7 +24,6 @@ package adhoc.system;
 
 import adhoc.server.ServerBasicAuthRequestMatcher;
 import adhoc.user.UserAuthenticationSuccessHandler;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +65,9 @@ public class WebSecurityConfiguration<S extends Session> {
                                                    ServerBasicAuthRequestMatcher serverBasicAuthRequestMatcher,
                                                    UserAuthenticationSuccessHandler userAuthenticationSuccessHandler,
                                                    RememberMeServices rememberMeServices,
-                                                   SpringSessionBackedSessionRegistry<S> sessionRegistry) throws Exception {
+                                                   SpringSessionBackedSessionRegistry<S> sessionRegistry,
+                                                   AdhocAuthenticationFailureHandler adhocAuthenticationFailureHandler,
+                                                   AdhocAccessDeniedHandler adhocAccessDeniedHandler) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
                         // TODO: ideally have a separate one for anonymous?
@@ -109,8 +110,7 @@ public class WebSecurityConfiguration<S extends Session> {
                 // allow form login - used by users
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .failureHandler((request, response, exception) ->
-                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
+                        .failureHandler(adhocAuthenticationFailureHandler)
                         .successHandler(userAuthenticationSuccessHandler))
 
                 // allow basic auth (Authorization header) - used by the server
@@ -121,6 +121,9 @@ public class WebSecurityConfiguration<S extends Session> {
 
                 .anonymous(anonymous -> anonymous
                         .authorities(anonymousAuthorities().toArray(new String[0])))
+
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(adhocAccessDeniedHandler))
 
                 .build();
     }

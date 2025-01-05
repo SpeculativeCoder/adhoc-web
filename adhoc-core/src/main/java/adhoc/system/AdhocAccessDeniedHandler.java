@@ -22,25 +22,25 @@
 
 package adhoc.system;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
+
+import java.io.IOException;
 
 @Component
 @Slf4j
-public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHandler {
+public class AdhocAccessDeniedHandler extends AccessDeniedHandlerImpl {
 
     @Override
-    protected Message<byte[]> handleInternal(StompHeaderAccessor errorHeaderAccessor, byte[] errorPayload, Throwable cause, StompHeaderAccessor clientHeaderAccessor) {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-        Message<byte[]> message = super.handleInternal(errorHeaderAccessor, errorPayload, cause, clientHeaderAccessor);
+        super.handle(request, response, accessDeniedException);
 
-        if (cause != null) {
-            log.warn("Stomp sub-protocol exception handled", cause);
-        }
-
-        return message;
+        log.warn("Handled access denied: status={}", response.getStatus(), accessDeniedException);
     }
 }

@@ -25,7 +25,6 @@ package adhoc.system;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
-import org.springframework.core.log.LogFormatUtils;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.ErrorResponse;
@@ -62,8 +61,13 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception exception, Object body, HttpHeaders httpHeaders, HttpStatusCode statusCode, WebRequest webRequest) {
+
+        ResponseEntity<Object> responseEntity = super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
+
         Level level = (exception instanceof NoResourceFoundException) ? Level.DEBUG : Level.WARN;
-        log.atLevel(level).log("Handling: {}", LogFormatUtils.formatValue(exception, 100, true), exception);
-        return super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
+        log.atLevel(level).log("Handled exception: statusCode={}", responseEntity.getStatusCode(), exception);
+        //LogFormatUtils.formatValue(exception, 500, true)
+
+        return responseEntity;
     }
 }

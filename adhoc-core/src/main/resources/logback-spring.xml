@@ -22,12 +22,15 @@
   -->
 
 <configuration>
-
     <conversionRule conversionWord="color" converterClass="adhoc.system.logging.logback.AdhocColorLogbackConverter"/>
     <conversionRule conversionWord="specialChars" converterClass="adhoc.system.logging.logback.AdhocSpecialCharsLogbackConverter"/>
-    <!--<conversionRule conversionWord="ewtpc" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />-->
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%color(%level){gray} %color(%mdc){gray} %color([%thread]){gray} %color(%logger){cyan}%color(:){} %color(%specialChars(%message)){}%n%color(%rootException{short}){}
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
 
         <!-- quick/handy way to only show mutating SQL if chasing something down when org.hibernate.SQL logging set to debug -->
         <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -132,17 +135,9 @@
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
-
-        <encoder>
-            <pattern>%color(%level){gray} %color(%mdc){gray} %color([%thread]){gray} %color(%logger){cyan}%color(:){} %color(%specialChars(%message)){}%n%color(%rootException){}
-            </pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-
     </appender>
 
     <root level="trace">
         <appender-ref ref="STDOUT"/>
     </root>
-
 </configuration>

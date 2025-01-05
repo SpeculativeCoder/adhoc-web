@@ -6,6 +6,8 @@ env/
 /adhoc-web-extra/
 /customization/
 
+/httpRequests/
+
 .idea/
 .jpb/
 *.iml

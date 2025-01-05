@@ -25,8 +25,6 @@ package adhoc.system;
 import adhoc.system.logging.MdcExecutorChannelInterceptor;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisMode;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisProperties;
 import org.springframework.context.annotation.Bean;
@@ -47,16 +45,14 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 public class WebSocketConfiguration {
 
     private final CoreProperties coreProperties;
+
     private final ArtemisProperties artemisProperties;
 
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private TaskScheduler taskScheduler;
-
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private AdhocStompSubProtocolErrorHandler adhocStompSubProtocolErrorHandler;
-
     @Bean
-    public AbstractSessionWebSocketMessageBrokerConfigurer<Session> webSocketMessageBrokerConfigurer() {
+    public AbstractSessionWebSocketMessageBrokerConfigurer<Session> webSocketMessageBrokerConfigurer(
+            AdhocStompSubProtocolErrorHandler adhocStompSubProtocolErrorHandler,
+            @Lazy TaskScheduler taskScheduler) {
+
         return new AbstractSessionWebSocketMessageBrokerConfigurer<>() {
 
             @Override
@@ -83,6 +79,7 @@ public class WebSocketConfiguration {
 
             @Override
             public void configureMessageBroker(MessageBrokerRegistry config) {
+
                 config.setApplicationDestinationPrefixes("/app");
 
                 config.setPreservePublishOrder(true);

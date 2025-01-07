@@ -28,8 +28,8 @@ import {StompService} from '../core/stomp.service';
 import {UserRegisterRequest} from "./request-response/user-register-request";
 import {Paging} from "../shared/paging/paging";
 import {Page} from "../shared/paging/page";
-import {UserNavigateRequest} from "./request-response/user-navigate-request";
 import {CsrfService} from "../core/csrf.service";
+import {UserNavigateResponse} from "./request-response/user-navigate-response";
 
 @Injectable({
   providedIn: 'root'
@@ -115,9 +115,7 @@ export class UserService {
     return this.getCurrentUser().pipe(
       mergeMap(currentUser => {
         return currentUser ? of(currentUser) : this.register({
-          human: true,
-          // regionId: regionId,
-          // serverId: serverId,
+          human: true
         });
       }));
   }
@@ -137,35 +135,8 @@ export class UserService {
       mergeMap(_ => this.refreshCurrentUser()));
   }
 
-  navigateCurrentUser(userNavigateRequest: UserNavigateRequest): Observable<User> {
-    return this.http.post(`${this.usersUrl}/current/navigate`,
-      {...userNavigateRequest}).pipe(
-      mergeMap(user => {
-        if (this.currentUser$) {
-          this.currentUser$.next(user);
-        } else {
-          this.currentUser$ = new BehaviorSubject(user);
-        }
-        this.csrfService.clearCsrf();
-        return this.currentUser$;
-      }));
-  }
-
-  navigateCurrentUserOrRegister(regionId: number, serverId: number): Observable<User> {
-    return this.getCurrentUser().pipe(mergeMap(currentUser => {
-      if (currentUser) {
-        return this.navigateCurrentUser({
-          regionId: regionId,
-          serverId: serverId
-        })
-      } else {
-        return this.register({
-          human: true,
-          regionId: regionId,
-          serverId: serverId
-        });
-      }
-    }));
+  navigateCurrentUser(destinationServerId?: number): Observable<UserNavigateResponse> {
+    return this.http.post(`${this.usersUrl}/current/navigate`, {destinationServerId: destinationServerId});
   }
 
   userDefeatedUser(user: User, defeatedUser?: User) {

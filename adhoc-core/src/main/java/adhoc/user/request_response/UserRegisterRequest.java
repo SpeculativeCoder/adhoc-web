@@ -53,10 +53,4 @@ public class UserRegisterRequest {
 
     @NotNull
     Boolean human;
-
-    @Min(1)
-    Long regionId;
-
-    @Min(1)
-    Long destinationServerId;
 }

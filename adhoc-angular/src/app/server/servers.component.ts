@@ -78,11 +78,13 @@ export class ServersComponent implements OnInit {
     // let randomServerAreaId = server.areaIds[randomServerAreaIdsIndex];
     // console.log(`randomServerAreaId: ${randomServerAreaId}`);
 
-    this.userService.navigateCurrentUserOrRegister(server.regionId, server.id).subscribe(user => {
-      this.router.navigate(['client'], {
-        // queryParams: {
-        //   areaId: randomServerAreaId
-        // }
+    this.userService.getCurrentUserOrRegister().subscribe(user => {
+      this.userService.navigateCurrentUser(server.id).subscribe(navigation => {
+        this.router.navigate(['client'], {
+          // queryParams: {
+          //   areaId: randomServerAreaId
+          // }
+        });
       });
     });
   }

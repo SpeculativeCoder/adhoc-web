@@ -85,37 +85,28 @@ export class ClientComponent implements OnInit {
     // if (Number.isNaN(this.areaId)) {
     //   throw new Error(`areaId is not a number: ${areaIdString}`);
     // }
-    //
-    // this.areaService.getArea(this.areaId).subscribe(area => {
-    //   if (!area.serverId) {
-    //     throw new Error(`area ${this.areaId} has no server`);
-    //   }
-    //
-    //   this.serverService.getServer(area.serverId).subscribe(server => {
 
+    // TODO: allow user and navigation information to be passed into this component?
     this.userService.getCurrentUserOrRegister().subscribe(user => {
-      if (!user.destinationServerId) {
-        throw new Error(`User ${user.id} has no assigned server`);
-      }
-
-      this.serverService.getServer(user.destinationServerId).subscribe(destinationServer => {
-        // TODO: url or ip
-        if (!destinationServer.webSocketUrl) {
-          throw new Error(`Server ${user.destinationServerId} has no websocket URL`);
+      this.userService.navigateCurrentUser().subscribe(navigation => {
+        if (!navigation.ip) {
+          throw new Error(`Navigation response has no IP`);
         }
-        if (!(typeof destinationServer.publicWebSocketPort)) {
-          throw new Error(`Server ${user.destinationServerId} has no websocket port`);
+        if ((typeof navigation.port) !== 'number') {
+          throw new Error(`Navigation response has no port`);
+        }
+        if (!navigation.webSocketUrl) {
+          throw new Error(`Navigation response has no websocket URL`);
         }
 
-        let unrealEngineCommandLine = destinationServer.publicIp + ":" + destinationServer.publicWebSocketPort;
+        let unrealEngineCommandLine = navigation.ip + ":" + navigation.port;
         if (user && (typeof user.id) === 'number' && (typeof user.factionId) === 'number' && user.token) {
           unrealEngineCommandLine += '?UserID=' + user.id + '?FactionID=' + user.factionId + '?Token=' + user.token;
         }
         // if user is joining region they were last in, try to start their initial location where they may be spawned at
-        if (user && user.regionId === destinationServer.regionId
-          && (typeof user.x) === 'number' && (typeof user.y) === 'number' && (typeof user.z) === 'number'
-          && (typeof user.pitch) === 'number' && (typeof user.yaw) === 'number') {
-          unrealEngineCommandLine += '?X=' + user.x + '?Y=' + user.y + '?Z=' + user.z + '?Pitch=' + user.pitch + '?Yaw=' + user.yaw;
+        if ((typeof navigation.x) === 'number' && (typeof navigation.y) === 'number' && (typeof navigation.z) === 'number'
+          && (typeof navigation.pitch) === 'number' && (typeof navigation.yaw) === 'number') {
+          unrealEngineCommandLine += '?X=' + navigation.x + '?Y=' + navigation.y + '?Z=' + navigation.z + '?Pitch=' + navigation.pitch + '?Yaw=' + navigation.yaw;
         }
         if (this.configService.featureFlags) {
           unrealEngineCommandLine += ' FeatureFlags=' + this.configService.featureFlags;
@@ -125,18 +116,18 @@ export class ClientComponent implements OnInit {
 
         window.sessionStorage.setItem('UnrealEngine_CommandLine', unrealEngineCommandLine);
 
-        if (destinationServer.webSocketUrl) {
-          console.log(`webSocketUrl: ${destinationServer.webSocketUrl}`);
-          window.sessionStorage.setItem('UnrealEngine_WebSocketUrl', destinationServer.webSocketUrl);
+        if (navigation.webSocketUrl) {
+          console.log(`webSocketUrl: ${navigation.webSocketUrl}`);
+          window.sessionStorage.setItem('UnrealEngine_WebSocketUrl', navigation.webSocketUrl);
         } else {
           window.sessionStorage.removeItem('UnrealEngine_WebSocketUrl');
         }
 
-        if (!destinationServer.mapName || !destinationServer.mapName.match("^[A-Za-z0-9_]{1,50}$")) {
-          throw new Error(`invalid map name: ${destinationServer.mapName}`);
+        if (!navigation.mapName || !navigation.mapName.match("^[A-Za-z0-9_]{1,50}$")) {
+          throw new Error(`invalid map name: ${navigation.mapName}`);
         }
 
-        const clientUrl = location.protocol + '//' + location.host + '/HTML5Client/' + destinationServer.mapName + '/HTML5Client.html';
+        const clientUrl = location.protocol + '//' + location.host + '/HTML5Client/' + navigation.mapName + '/HTML5Client.html';
         console.log(`clientUrl: ${clientUrl}`);
 
         // uncomment this if we prefer to send to the client directly rather than iframe

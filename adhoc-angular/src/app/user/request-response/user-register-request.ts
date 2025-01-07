@@ -27,6 +27,4 @@ export class UserRegisterRequest {
   factionId?: number;
   rememberMe?: boolean;
   human?: boolean;
-  regionId?: number;
-  serverId?: number;
 }

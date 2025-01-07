@@ -112,7 +112,7 @@ public class UserService {
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
-                user.getRegion().getId(),
+                user.getRegion() == null ? null : user.getRegion().getId(),
                 user.getX(),
                 user.getY(),
                 user.getZ(),
@@ -140,11 +140,8 @@ public class UserService {
         user.setHuman(userRegisterRequest.getHuman());
         user.setFaction(factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
         user.setScore(BigDecimal.valueOf(0.0));
-        user.setRegion(regionRepository.getReferenceById(userRegisterRequest.getRegionId()));
         user.setRoles(Sets.newHashSet(UserRole.USER));
         user.setToken(UUID.randomUUID());
-        user.setDestinationServer(userRegisterRequest.getDestinationServerId() == null ? null
-                : serverRepository.getReferenceById(userRegisterRequest.getDestinationServerId()));
         user.setNavigated(LocalDateTime.now());
 
         return user;

@@ -23,14 +23,15 @@
 package adhoc.user.request_response;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 /**
- * Navigation request from user via web interface to move themselves to a region or specific server.
+ * Navigation request either from user via web interface to move themselves to a region or specific server,
+ * or from the server to navigate a user to another server (which also provides the last location of the user
+ * so the destination server can position the user appropriately when they join).
  */
 @Value
 @AllArgsConstructor
@@ -38,10 +39,19 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class UserNavigateRequest {
 
-    @NotNull
     @Min(1)
-    Long regionId;
+    Long userId;
+
+    @Min(1)
+    Long destinationAreaId;
 
     @Min(1)
     Long destinationServerId;
+
+    Double x;
+    Double y;
+    Double z;
+
+    Double yaw;
+    Double pitch;
 }

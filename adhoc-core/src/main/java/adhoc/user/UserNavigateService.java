@@ -22,22 +22,27 @@
 
 package adhoc.user;
 
-import adhoc.region.Region;
-import adhoc.region.RegionRepository;
+import adhoc.area.Area;
+import adhoc.area.AreaRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.request_response.UserNavigateRequest;
+import adhoc.user.request_response.UserNavigateResponse;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -48,47 +53,85 @@ public class UserNavigateService {
 
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
-    private final RegionRepository regionRepository;
+    private final AreaRepository areaRepository;
 
     private final UserService userService;
 
-    /** User chooses a region or specific server they wish to be connected to when they load the client. */
+    /**
+     * User navigation should be called some time prior to the client being launched.
+     * It will provide connection details for an appropriate destination server.
+     * <p>
+     * You can choose a specific destination server, or an area (the server for the area will be chosen).
+     * If you do not specify a server or area, a random enabled and active will be chosen.
+     * <p>
+     * A server can also call this to try to automatically navigate the user to another server
+     * when the user's pawn has moved into an area represented by the other server.
+     */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserFullDto userNavigate(Long userId, UserNavigateRequest userNavigateRequest) {
-        Preconditions.checkArgument(userNavigateRequest.getRegionId() != null,
-                "User navigation must specify a region");
+    public UserNavigateResponse userNavigate(UserNavigateRequest userNavigateRequest) {
 
-        User user = userRepository.getReferenceById(userId);
-
-        Server oldDestinationServer = user.getDestinationServer();
-
-        if (userNavigateRequest.getDestinationServerId() != null) {
-            Server destinationServer = serverRepository.getReferenceById(userNavigateRequest.getDestinationServerId());
-            Region region = destinationServer.getRegion();
-
-            user.setRegion(region);
-            user.setDestinationServer(destinationServer);
-
-        } else {
-            Region region = regionRepository.getReferenceById(userNavigateRequest.getRegionId());
-
-            user.setRegion(region);
-            // TODO
-            user.setDestinationServer(region.getServers().get(ThreadLocalRandom.current().nextInt(region.getServers().size())));
+        // for now, only server may specify location update
+        if (!isAuthenticatedAsServer()) {
+            Preconditions.checkArgument(userNavigateRequest.getX() == null);
+            Preconditions.checkArgument(userNavigateRequest.getY() == null);
+            Preconditions.checkArgument(userNavigateRequest.getZ() == null);
+            Preconditions.checkArgument(userNavigateRequest.getYaw() == null);
+            Preconditions.checkArgument(userNavigateRequest.getPitch() == null);
         }
 
-        // when user manually navigates to another server they will need to spawn again
-        if (user.getDestinationServer() != oldDestinationServer) {
-            user.setX(null);
-            user.setY(null);
-            user.setZ(null);
-            user.setPitch(null);
-            user.setYaw(null);
+        User user = userRepository.getReferenceById(userNavigateRequest.getUserId());
+
+        Server destinationServer = userNavigateRequest.getDestinationServerId() != null ?
+                serverRepository.getReferenceById(userNavigateRequest.getDestinationServerId()) : null;
+
+        Area destinationArea = userNavigateRequest.getDestinationAreaId() != null ?
+                areaRepository.getReferenceById(userNavigateRequest.getDestinationAreaId()) : null;
+
+        // if no server provided, use server from area if that was provided
+        if (destinationServer == null && destinationArea != null) {
+            destinationServer = destinationArea.getServer();
         }
 
+        if (destinationServer != null) {
+            Preconditions.checkState(destinationServer.isEnabled(),
+                    "User {} tried to navigate to server {} which is not enabled!", user.getId(), destinationServer.getId());
+            Preconditions.checkState(destinationServer.isActive(),
+                    "User {} tried to navigate to server {} which is not active!", user.getId(), destinationServer.getId());
+        }
+
+        // if no server specified (or server from area above) then just pick a random active/enabled server
+        if (destinationServer == null) {
+            List<Server> servers = serverRepository.findAll().stream()
+                    .filter(server -> server.isEnabled() && server.isActive()).toList();
+            Verify.verify(!servers.isEmpty());
+
+            destinationServer = servers.get(ThreadLocalRandom.current().nextInt(servers.size()));
+        }
+
+        // when moving servers, update the position to ensure they can spawn at the right location
+        if (destinationServer != user.getDestinationServer()) {
+            user.setX(userNavigateRequest.getX());
+            user.setY(userNavigateRequest.getY());
+            user.setZ(userNavigateRequest.getZ());
+            user.setYaw(userNavigateRequest.getYaw());
+            user.setPitch(userNavigateRequest.getPitch());
+        }
+
+        user.setDestinationServer(destinationServer);
         user.setNavigated(LocalDateTime.now());
 
-        return userService.toFullDto(user);
+        return new UserNavigateResponse(
+                user.getDestinationServer().getPublicIp(),
+                user.getDestinationServer().getPublicWebSocketPort(),
+                user.getDestinationServer().getWebSocketUrl(),
+                user.getDestinationServer().getRegion().getMapName(),
+                user.getX(), user.getY(), user.getZ(), user.getYaw(), user.getPitch());
+    }
+
+    private static boolean isAuthenticatedAsServer() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null
+                && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
     }
 }

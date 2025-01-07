@@ -78,10 +78,12 @@ public class UserJoinService {
             }
 
         } else {
-            user = autoRegister(userJoinRequest);
+            user = autoRegister(userJoinRequest.getHuman(), userJoinRequest.getFactionId());
         }
 
+        user.setRegion(server.getRegion());
         user.setServer(server);
+        user.setDestinationServer(server);
         user.setLastJoin(LocalDateTime.now());
         user.setSeen(user.getLastJoin());
 
@@ -92,22 +94,21 @@ public class UserJoinService {
         return userService.toFullDto(user);
     }
 
-    private User autoRegister(UserJoinRequest userJoinRequest) {
+    private User autoRegister(Boolean human, Long factionId) {
         User user = null;
 
-        Verify.verifyNotNull(userJoinRequest.getHuman());
-        if (!userJoinRequest.getHuman()) {
+        Verify.verifyNotNull(human);
+        if (!human) {
             // bots should try to use existing bot account
             // TODO: avoid using seen (should use serverId)
             user = userRepository.findFirstByHumanFalseAndFactionIdAndSeenBefore(
-                    userJoinRequest.getFactionId(), LocalDateTime.now().minusMinutes(1)).orElse(null);
+                    factionId, LocalDateTime.now().minusMinutes(1)).orElse(null);
         }
 
         if (user == null) {
             UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder()
-                    .factionId(userJoinRequest.getFactionId())
-                    .human(userJoinRequest.getHuman())
-                    .destinationServerId(userJoinRequest.getServerId())
+                    .factionId(factionId)
+                    .human(human)
                     .build();
 
             UserFullDto userFullDto = userRegisterService.userRegister(userRegisterRequest);

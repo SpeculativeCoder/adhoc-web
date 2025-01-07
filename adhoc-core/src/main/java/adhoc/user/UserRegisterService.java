@@ -23,9 +23,7 @@
 package adhoc.user;
 
 import adhoc.faction.FactionRepository;
-import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.server.Server;
 import adhoc.system.properties.CoreProperties;
 import adhoc.user.programmatic_login.ProgrammaticLoginService;
 import adhoc.user.request_response.UserRegisterRequest;
@@ -44,9 +42,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @Transactional
@@ -115,27 +111,6 @@ public class UserRegisterService {
 
         if (userRegisterRequest.getFactionId() == null) {
             builder.factionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
-        }
-
-        Region region;
-        if (userRegisterRequest.getRegionId() == null) {
-            List<Region> regions = regionRepository.findAll();
-            // TODO
-            region = regions.get(ThreadLocalRandom.current().nextInt(regions.size()));
-            builder.regionId(region.getId());
-        } else {
-            region = regionRepository.getReferenceById(userRegisterRequest.getRegionId());
-        }
-
-        if (userRegisterRequest.getDestinationServerId() == null) {
-            // TODO
-            List<Server> candidateServers = region.getServers().stream()
-                    .filter(server -> server.isEnabled() && server.isActive())
-                    .toList();
-            if (!candidateServers.isEmpty()) {
-                Server destinationServer = candidateServers.get(ThreadLocalRandom.current().nextInt(candidateServers.size()));
-                builder.destinationServerId(destinationServer.getId());
-            }
         }
 
         userRegisterRequest = builder.build();

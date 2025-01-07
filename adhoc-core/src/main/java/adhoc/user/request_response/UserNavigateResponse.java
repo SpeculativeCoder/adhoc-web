@@ -20,7 +20,43 @@
  * SOFTWARE.
  */
 
-export class UserNavigateRequest {
-  regionId?: number;
-  serverId?: number;
+package adhoc.user.request_response;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
+
+
+/** Navigation response indicating how a user can be connected to a destination server. */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class UserNavigateResponse {
+
+    @NotEmpty
+    String ip;
+
+    @NotNull
+    @Min(0)
+    Integer port;
+
+    @NotEmpty
+    String webSocketUrl;
+
+    @NotEmpty
+    String mapName;
+
+    Double x;
+    Double y;
+    Double z;
+
+    Double yaw;
+    Double pitch;
 }

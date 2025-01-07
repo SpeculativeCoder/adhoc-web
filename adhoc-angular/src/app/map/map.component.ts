@@ -398,11 +398,13 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
           hoverCursor: 'pointer',
         });
         serverGroup.on('selected', () => {
-          this.userService.navigateCurrentUserOrRegister(server.regionId, server.id).subscribe(user => {
-            this.router.navigate(['client'], {
-              // queryParams: {
-              //   areaId: area.id
-              // }
+          this.userService.getCurrentUserOrRegister().subscribe(user => {
+            this.userService.navigateCurrentUser(server.id).subscribe(navigation => {
+              this.router.navigate(['client'], {
+                // queryParams: {
+                //   areaId: area.id
+                // }
+              });
             });
           });
         });

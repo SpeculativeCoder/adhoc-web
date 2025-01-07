@@ -46,6 +46,13 @@
             "styles": [
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "sass": {
+                "silenceDeprecations": [
+                  "import"
+                ]
+              }
+            },
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.js"
             ],

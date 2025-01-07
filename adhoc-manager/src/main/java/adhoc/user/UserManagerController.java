@@ -24,9 +24,9 @@ package adhoc.user;
 
 import adhoc.user.event.ServerUserDefeatedUserEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
-import adhoc.user.request_response.UserAutoNavigateRequest;
-import adhoc.user.request_response.UserAutoNavigateResponse;
 import adhoc.user.request_response.UserJoinRequest;
+import adhoc.user.request_response.UserNavigateRequest;
+import adhoc.user.request_response.UserNavigateResponse;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class UserManagerController {
 
     private final UserManagerService userManagerService;
     private final UserJoinService userJoinService;
-    private final UserAutoNavigateService userAutoNavigateService;
+    private final UserNavigateService userNavigateService;
     private final UserEventService userEventService;
 
     @PutMapping("/users/{userId}")
@@ -74,16 +74,13 @@ public class UserManagerController {
         return ResponseEntity.ok(userJoinService.userJoin(userJoinRequest));
     }
 
-    @PostMapping("/servers/{serverId}/userAutoNavigate")
+    @PostMapping("/servers/{serverId}/userNavigate")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserAutoNavigateResponse> postServerUserAutoNavigate(
+    public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
             @PathVariable("serverId") Long serverId,
-            @Valid @RequestBody UserAutoNavigateRequest userAutoNavigateRequest) {
+            @Valid @RequestBody UserNavigateRequest userNavigateRequest) {
 
-        Preconditions.checkArgument(Objects.equals(serverId, userAutoNavigateRequest.getSourceServerId()),
-                "Server ID mismatch: %s != %s", serverId, userAutoNavigateRequest.getSourceServerId());
-
-        return userAutoNavigateService.userAutoNavigate(userAutoNavigateRequest);
+        return ResponseEntity.ok(userNavigateService.userNavigate(userNavigateRequest));
     }
 
     @MessageMapping("UserDefeatedUser")

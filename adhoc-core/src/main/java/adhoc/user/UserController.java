@@ -23,7 +23,9 @@
 package adhoc.user;
 
 import adhoc.user.request_response.UserNavigateRequest;
+import adhoc.user.request_response.UserNavigateResponse;
 import adhoc.user.request_response.UserRegisterRequest;
+import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,14 +84,17 @@ public class UserController {
     }
 
     @PostMapping("/users/current/navigate")
-    public ResponseEntity<UserFullDto> postCurrentUserNavigate(
+    public ResponseEntity<UserNavigateResponse> postCurrentUserNavigate(
             @Valid @RequestBody UserNavigateRequest userNavigateRequest,
             Authentication authentication) {
 
-        if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails userDetails)) {
-            return ResponseEntity.noContent().build();
-        }
+        Preconditions.checkState(authentication != null);
+        Preconditions.checkState(authentication.getPrincipal() instanceof AdhocUserDetails);
 
-        return ResponseEntity.ok(userNavigateService.userNavigate(userDetails.getUserId(), userNavigateRequest));
+        AdhocUserDetails adhocUserDetails = (AdhocUserDetails) authentication.getPrincipal();
+
+        userNavigateRequest = userNavigateRequest.toBuilder().userId(adhocUserDetails.getUserId()).build();
+
+        return ResponseEntity.ok(userNavigateService.userNavigate(userNavigateRequest));
     }
 }

@@ -20,37 +20,14 @@
  * SOFTWARE.
  */
 
-package adhoc.user.request_response;
-
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
-
-
-/** Navigation response indicating how a server can send the user to a destination server. */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class UserAutoNavigateResponse {
-
-    @NotNull
-    @Min(1)
-    private Long destinationServerId;
-
-    @NotEmpty
-    private String ip;
-
-    @NotNull
-    @Min(0)
-    private Integer port;
-
-    @NotEmpty
-    private String webSocketUrl;
+export class UserNavigateResponse {
+  ip?: string;
+  port?: number;
+  webSocketUrl?: string;
+  mapName?: string;
+  x?: number;
+  y?: number;
+  z?: number;
+  pitch?: number;
+  yaw?: number;
 }

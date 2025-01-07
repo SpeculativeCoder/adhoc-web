@@ -33,8 +33,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Server represents one or more areas of a region.
- * When enabled, it should trigger creation of an Unreal server task (typically in the cloud).
+ * A server is assigned to represent one or more areas of a region.
+ * When a server is enabled, a server task (typically in the cloud) should be launched.
+ * Once the server task is running, the server is considered active and users can navigate to it.
+ * A server which is not enabled will have any associated task torn down and will be eventually purged.
  */
 @Entity
 //@DynamicInsert

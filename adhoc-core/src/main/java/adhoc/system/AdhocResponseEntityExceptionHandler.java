@@ -23,6 +23,7 @@
 package adhoc.system;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.http.*;
@@ -30,6 +31,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -64,8 +66,19 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
 
         ResponseEntity<Object> responseEntity = super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
 
+        String status = "?";
+        if (responseEntity != null) {
+            status = String.valueOf(responseEntity.getStatusCode());
+        }
+
+        String uri = "?";
+        if (webRequest instanceof ServletWebRequest servletWebRequest) {
+            HttpServletRequest request = servletWebRequest.getRequest();
+            uri = request.getRequestURI();
+        }
+
         Level level = (exception instanceof NoResourceFoundException) ? Level.DEBUG : Level.WARN;
-        log.atLevel(level).log("Handled exception: statusCode={}", responseEntity.getStatusCode(), exception);
+        log.atLevel(level).log("Handled exception: status={} uri={}", status, uri, exception);
         //LogFormatUtils.formatValue(exception, 500, true)
 
         return responseEntity;

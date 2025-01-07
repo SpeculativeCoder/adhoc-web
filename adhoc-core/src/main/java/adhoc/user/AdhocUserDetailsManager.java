@@ -37,8 +37,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 /**
- * Consults the {@link adhoc.user.User} table for user info.
- * Also has support for the "server" user (used by Unreal server when talking to the web server) which is set via properties.
+ * Consults the {@link adhoc.user.User} table for user info as needed by Spring Security.
+ * Also has special support for the "server" user (used by Unreal server when talking to the web server) which is set via properties.
+ * TODO: it would be nice to split the "server" user functionality into another user details service.
  */
 @Service
 @Transactional

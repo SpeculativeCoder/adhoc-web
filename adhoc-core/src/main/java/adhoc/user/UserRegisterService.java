@@ -28,6 +28,7 @@ import adhoc.system.properties.CoreProperties;
 import adhoc.user.programmatic_login.ProgrammaticLoginService;
 import adhoc.user.request_response.UserRegisterRequest;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +40,14 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -60,6 +65,7 @@ public class UserRegisterService {
     private final ProgrammaticLoginService programmaticLoginService;
 
     private final HttpServletRequest httpServletRequest;
+    private final PasswordEncoder passwordEncoder;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
@@ -115,7 +121,7 @@ public class UserRegisterService {
 
         userRegisterRequest = builder.build();
 
-        User user = userRepository.save(userService.toEntity(userRegisterRequest));
+        User user = userRepository.save(toEntity(userRegisterRequest));
 
         // if not an auto-register from server - log them in too
         if (!authenticatedAsServer) {
@@ -148,5 +154,22 @@ public class UserRegisterService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null
                 && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
+    }
+
+    private User toEntity(UserRegisterRequest userRegisterRequest) {
+        User user = new User();
+
+        user.setName(userRegisterRequest.getName());
+        user.setEmail(userRegisterRequest.getEmail());
+        user.setPassword(userRegisterRequest.getPassword() == null ? null
+                : passwordEncoder.encode(userRegisterRequest.getPassword()));
+        user.setHuman(userRegisterRequest.getHuman());
+        user.setFaction(factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
+        user.setScore(BigDecimal.valueOf(0.0));
+        user.setRoles(Sets.newHashSet(UserRole.USER));
+        user.setToken(UUID.randomUUID());
+        user.setNavigated(LocalDateTime.now());
+
+        return user;
     }
 }

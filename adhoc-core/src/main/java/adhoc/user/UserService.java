@@ -22,11 +22,6 @@
 
 package adhoc.user;
 
-import adhoc.faction.FactionRepository;
-import adhoc.region.RegionRepository;
-import adhoc.server.ServerRepository;
-import adhoc.user.request_response.UserRegisterRequest;
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -35,11 +30,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -51,11 +44,6 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final FactionRepository factionRepository;
-    private final ServerRepository serverRepository;
-    private final RegionRepository regionRepository;
-
-    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public Page<UserDto> getUsers(Pageable pageable) {
@@ -128,22 +116,5 @@ public class UserService {
                 user.getToken().toString(),
                 user.getDestinationServer() == null ? null : user.getDestinationServer().getId(),
                 user.getServer() == null ? null : user.getServer().getId());
-    }
-
-    User toEntity(UserRegisterRequest userRegisterRequest) {
-        User user = new User();
-
-        user.setName(userRegisterRequest.getName());
-        user.setEmail(userRegisterRequest.getEmail());
-        user.setPassword(userRegisterRequest.getPassword() == null ? null
-                : passwordEncoder.encode(userRegisterRequest.getPassword()));
-        user.setHuman(userRegisterRequest.getHuman());
-        user.setFaction(factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
-        user.setScore(BigDecimal.valueOf(0.0));
-        user.setRoles(Sets.newHashSet(UserRole.USER));
-        user.setToken(UUID.randomUUID());
-        user.setNavigated(LocalDateTime.now());
-
-        return user;
     }
 }

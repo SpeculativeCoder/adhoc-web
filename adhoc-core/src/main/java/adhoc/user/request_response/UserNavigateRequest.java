@@ -30,8 +30,8 @@ import lombok.extern.jackson.Jacksonized;
 
 /**
  * Navigation request either from user via web interface to move themselves to a region or specific server,
- * or from the server to navigate a user to another server (which also provides the last location of the user
- * so the destination server can position the user appropriately when they join).
+ * or from the server when the user walks into an area associated with another server (in this case, latest
+ * location is also allowed so the destination server can properly position the user once they join).
  */
 @Value
 @AllArgsConstructor

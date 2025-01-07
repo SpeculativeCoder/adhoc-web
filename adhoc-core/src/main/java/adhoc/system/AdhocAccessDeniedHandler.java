@@ -41,6 +41,6 @@ public class AdhocAccessDeniedHandler extends AccessDeniedHandlerImpl {
 
         super.handle(request, response, accessDeniedException);
 
-        log.warn("Handled access denied: status={}", response.getStatus(), accessDeniedException);
+        log.warn("Handled access denied: status={} uri={}", response.getStatus(), request.getRequestURI(), accessDeniedException);
     }
 }

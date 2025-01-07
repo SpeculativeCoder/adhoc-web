@@ -32,6 +32,6 @@ public class AdhocMessageExceptionHandler {
 
     @MessageExceptionHandler
     public void handleThrowable(Throwable exception) {
-        log.warn("handleException", exception);
+        log.warn("Handled message exception", exception);
     }
 }

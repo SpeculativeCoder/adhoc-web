@@ -31,7 +31,6 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 
 /**
- * TODO: WIP
  * Information about a task in the hosting service e.g. a task in an AWS ECS cluster.
  * There will be at least one task for the manager, one or more tasks for the kiosk (to handle load),
  * and then many server tasks to run the Unreal servers (which will be spun up and spun down as needed by population).

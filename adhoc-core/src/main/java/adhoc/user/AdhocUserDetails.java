@@ -27,6 +27,10 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
+/**
+ * Spring Security's view of authenticated user.
+ * We keep track of the authenticated user's database ID so we can easily look up any extra information as needed.
+ */
 public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {
 
     @Getter

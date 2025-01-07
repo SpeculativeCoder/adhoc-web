@@ -33,10 +33,9 @@ import org.hibernate.sql.ast.spi.StandardSqlAstTranslatorFactory;
 import org.hibernate.sql.ast.tree.Statement;
 import org.hibernate.sql.exec.spi.JdbcOperation;
 
-// TODO
+/** Dialect to avoid use of <tt>for no key update</tt> as it is not available in H2's Postgres emulation. */
 public class H2PostgresSQLDialect extends PostgreSQLDialect {
 
-    // TODO
     public static final DatabaseVersion PRETEND_POSTGRES_VERSION = DatabaseVersion.make(17, 0, 0);
 
     public H2PostgresSQLDialect() {
@@ -74,7 +73,6 @@ public class H2PostgresSQLDialect extends PostgreSQLDialect {
             super(sessionFactory, statement);
         }
 
-        // TODO
         @Override
         protected String getForUpdate() {
             return " for update";

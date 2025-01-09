@@ -41,19 +41,19 @@ public class IndexController {
     // TODO: better way than this to catch browser refresh in non-root URLs
     @GetMapping(value = {
             "/",
-            "/login-or-register/**",
-            "/map/**",
+            "/pages/**",
+            "/map",
             "/servers/**",
             "/tasks/**",
             "/regions/**",
             "/areas/**",
             "/objectives/**",
+            "/structures/**",
+            "/pawns/**",
             "/factions/**",
             "/users/**",
-            "/pawns/**",
-            "/structures/**",
             "/messages/**",
-            "/pages/**",
+            "/login-or-register/**",
             "/client/**"
     })
     public ModelAndView getIndex() {

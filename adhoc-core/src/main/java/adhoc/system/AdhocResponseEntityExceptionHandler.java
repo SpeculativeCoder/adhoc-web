@@ -22,6 +22,7 @@
 
 package adhoc.system;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -68,17 +69,20 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
 
         String status = "?";
         if (responseEntity != null) {
-            status = String.valueOf(responseEntity.getStatusCode());
+            @Nonnull HttpStatusCode httpStatusCode = responseEntity.getStatusCode();
+            status = String.valueOf(httpStatusCode.value());
         }
 
+        String method = "?";
         String uri = "?";
         if (webRequest instanceof ServletWebRequest servletWebRequest) {
-            HttpServletRequest request = servletWebRequest.getRequest();
+            @Nonnull HttpServletRequest request = servletWebRequest.getRequest();
+            method = request.getMethod();
             uri = request.getRequestURI();
         }
 
         Level level = (exception instanceof NoResourceFoundException) ? Level.DEBUG : Level.WARN;
-        log.atLevel(level).log("Handled exception: status={} uri={}", status, uri, exception);
+        log.atLevel(level).log("Handled exception: status={} method={} uri={}", status, method, uri, exception);
         //LogFormatUtils.formatValue(exception, 500, true)
 
         return responseEntity;

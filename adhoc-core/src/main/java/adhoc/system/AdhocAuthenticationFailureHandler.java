@@ -42,6 +42,6 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
 
         response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
 
-        log.warn("Authentication failure handled: status={} uri={}", response.getStatus(), request.getRequestURI(), exception);
+        log.warn("Authentication failure handled: status={} method={} uri={}", response.getStatus(), request.getMethod(), request.getRequestURI(), exception);
     }
 }

@@ -42,7 +42,7 @@ public class RobotsController {
         if (coreProperties.getFeatureFlags().contains("development")) {
             return classPathResource("/robots/robots_development.txt");
         } else {
-            return classPathResource("/robots/robots.txt");
+            return classPathResource("/robots/robots_production.txt");
         }
     }
 

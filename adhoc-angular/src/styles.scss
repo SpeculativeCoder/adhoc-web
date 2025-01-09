@@ -42,7 +42,7 @@ $primary: #666;
 //$link-hover-color: $black;
 //$link-hover-color-dark: $white;
 
-$nav-link-padding-x: calc(#{$nav-link-padding-x} * 0.75);
+$nav-link-padding-x: calc(#{$nav-link-padding-x} * 0.5);
 $nav-link-font-weight: $font-weight-semibold;
 
 @import "bootstrap/scss/maps";

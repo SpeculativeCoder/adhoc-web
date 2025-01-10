@@ -36,6 +36,7 @@ public class MdcExecutorChannelInterceptor implements ExecutorChannelInterceptor
     @Override
     public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        //MDC.put("uuid", UUID.randomUUID().toString());
         MDC.put("dest", accessor.getDestination());
         return message;
     }
@@ -43,5 +44,6 @@ public class MdcExecutorChannelInterceptor implements ExecutorChannelInterceptor
     @Override
     public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
         MDC.remove("dest");
+        //MDC.remove("uuid");
     }
 }

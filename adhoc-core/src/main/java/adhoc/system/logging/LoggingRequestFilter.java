@@ -27,32 +27,38 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggingEventBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Logging component to enable logging of POSTs/PUTs etc.
  */
 @Component
-@Order(value = Ordered.HIGHEST_PRECEDENCE)
-@Slf4j
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class LoggingRequestFilter extends AbstractRequestLoggingFilter {
 
-    //@Value("${adhoc.server.basic-auth.username:#{null}}")
-    //private Optional<String> serverBasicAuthUsername;
+    private static final Logger requestLogUser = LoggerFactory.getLogger("REQUEST_LOG.USER");
+    private static final Logger requestLogServer = LoggerFactory.getLogger("REQUEST_LOG.SERVER");
 
-    //@Value("${adhoc.server.basic-auth.password:#{null}}")
-    //private Optional<String> serverBasicAuthPassword;
+    @Value("${adhoc.server.basic-auth.username:#{null}}")
+    private Optional<String> serverBasicAuthUsername;
 
-    //private String encodedServerBasicAuth;
+    @Value("${adhoc.server.basic-auth.password:#{null}}")
+    private Optional<String> serverBasicAuthPassword;
+
+    private String encodedServerBasicAuth;
 
     public LoggingRequestFilter() {
         setIncludeQueryString(true);
@@ -65,9 +71,9 @@ public class LoggingRequestFilter extends AbstractRequestLoggingFilter {
 
     @PostConstruct
     public void postConstruct() {
-        //if (serverBasicAuthUsername.isPresent() && serverBasicAuthPassword.isPresent()) {
-        //    encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(serverBasicAuthUsername.get(), serverBasicAuthPassword.get(), null);
-        //}
+        if (serverBasicAuthUsername.isPresent() && serverBasicAuthPassword.isPresent()) {
+            encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(serverBasicAuthUsername.get(), serverBasicAuthPassword.get(), null);
+        }
     }
 
     @Override
@@ -102,26 +108,28 @@ public class LoggingRequestFilter extends AbstractRequestLoggingFilter {
 
             boolean methodGet = "GET".equals(request.getMethod());
 
-            //boolean userServer = false;
-            //if (encodedServerBasicAuth != null) {
-            //    String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-            //    userServer = encodedServerBasicAuth != null
-            //            && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
-            //}
+            boolean server = false;
+            if (encodedServerBasicAuth != null) {
+                String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+                server = encodedServerBasicAuth != null
+                        && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
+            }
+
+            Logger logger = server ? requestLogServer : requestLogUser;
 
             LoggingEventBuilder loggingEventBuilder = null;
 
-            if (log.isWarnEnabled() && statusError) {
-                loggingEventBuilder = log.atWarn();
+            if (logger.isInfoEnabled() && statusError) {
+                loggingEventBuilder = logger.atInfo();
 
                 //} else if (log.isInfoEnabled() && isRegisterOrLoginRequest(request)) {
                 //    loggingEventBuilder = log.atInfo();
 
-            } else if (log.isDebugEnabled() && !methodGet) { //&& !userServer) {
-                loggingEventBuilder = log.atDebug();
+            } else if (logger.isDebugEnabled() && !methodGet) { //&& !server) {
+                loggingEventBuilder = logger.atDebug();
 
-            } else if (log.isTraceEnabled()) { //&& !userServer) {
-                loggingEventBuilder = log.atTrace();
+            } else if (logger.isTraceEnabled()) { //&& !server) {
+                loggingEventBuilder = logger.atTrace();
             }
 
             if (loggingEventBuilder != null) {

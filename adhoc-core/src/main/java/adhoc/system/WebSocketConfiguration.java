@@ -57,8 +57,6 @@ public class WebSocketConfiguration {
 
             @Override
             public void configureStompEndpoints(StompEndpointRegistry registry) {
-                //registry.addEndpoint("/ws/stomp/user")
-                //        .addInterceptors(new HttpSessionHandshakeInterceptor());
 
                 registry.addEndpoint("/ws/stomp/server")
                         .addInterceptors(new HttpSessionHandshakeInterceptor());

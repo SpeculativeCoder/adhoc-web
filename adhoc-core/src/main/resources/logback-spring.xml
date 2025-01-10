@@ -27,7 +27,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%color(%level){gray} %color(%mdc){gray} %color([%thread]){gray} %color(%logger){cyan}%color(:){} %color(%specialChars(%message)){}%n%color(%rootException){}
+            <pattern>%color(%-5level){gray} %color(%specialChars(%mdc)){green} %color([%thread]){blue} %color(%logger){cyan}%color(:){} %color(%specialChars(%message)){}%n%color(%rootException){}
             </pattern>
             <charset>UTF-8</charset>
         </encoder>
@@ -45,7 +45,6 @@
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
         </filter>-->
-
         <!-- !message.endsWith("for update") -->
 
         <!-- suppress some artemis errors - TODO -->
@@ -61,7 +60,7 @@
         </filter>
 
         <!-- suppress some artemis errors - TODO -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.apache.activemq.artemis.core.server".equals(logger)
@@ -71,7 +70,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <!-- suppress no data warnings from UPDATEs etc. which don't update any columns -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -97,6 +96,7 @@
             <onMismatch>NEUTRAL</onMismatch>
         </filter>-->
 
+        <!-- deadlocks -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
@@ -116,13 +116,13 @@
             <evaluator>
                 <expression>
                     return ("org.hibernate.orm.jdbc.batch".equals(logger)
-                    &amp;&amp; (message.equals("HHH100503: On release of batch it still contained JDBC statements")
-                    || message.startsWith("HHH100501: Exception executing batch [org.hibernate.StaleStateException: ")));
+                    &amp;&amp; (message.equals("HHH100503: On release of batch it still contained JDBC statements")));
                 </expression>
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
+        <!-- || message.startsWith("HHH100501: Exception executing batch [org.hibernate.StaleStateException: ") -->
 
         <!-- web browser stomp disconnection failures -->
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">

@@ -27,7 +27,6 @@ import ch.qos.logback.core.pattern.CompositeConverter;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
-import org.springframework.boot.ansi.AnsiStyle;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +49,7 @@ public class AdhocColorLogbackConverter extends CompositeConverter<ILoggingEvent
 
     static {
         Map<String, AnsiElement> ansiElements = new HashMap<>();
-        ansiElements.put("faint", AnsiStyle.FAINT);
+        //ansiElements.put("faint", AnsiStyle.FAINT);
         ansiElements.put("red", AnsiColor.RED);
         ansiElements.put("green", AnsiColor.GREEN);
         ansiElements.put("yellow", AnsiColor.YELLOW);
@@ -62,7 +61,7 @@ public class AdhocColorLogbackConverter extends CompositeConverter<ILoggingEvent
         ELEMENTS = Collections.unmodifiableMap(ansiElements);
 
         Map<String, AnsiElement> brightAnsiElements = new HashMap<>();
-        brightAnsiElements.put("faint", AnsiStyle.FAINT);
+        //brightAnsiElements.put("faint", AnsiStyle.FAINT);
         brightAnsiElements.put("red", AnsiColor.BRIGHT_RED);
         brightAnsiElements.put("green", AnsiColor.BRIGHT_GREEN);
         brightAnsiElements.put("yellow", AnsiColor.BRIGHT_YELLOW);
@@ -97,7 +96,7 @@ public class AdhocColorLogbackConverter extends CompositeConverter<ILoggingEvent
         AnsiElement element = adhocLog ? BRIGHT_ELEMENTS.get(getFirstOption()) : ELEMENTS.get(getFirstOption());
         if (element == null) {
             element = adhocLog ? BRIGHT_LEVELS.get(event.getLevel().toInteger()) : LEVELS.get(event.getLevel().toInteger());
-            element = (element != null) ? element : AnsiColor.GREEN;
+            element = (element != null) ? element : AnsiColor.DEFAULT;
         }
         return toAnsiString(in, element);
     }

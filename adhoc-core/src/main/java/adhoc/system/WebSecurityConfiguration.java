@@ -92,8 +92,6 @@ public class WebSecurityConfiguration<S extends Session> {
                 .csrf(csrf -> csrf
                         // ignore CSRF for sockjs as protected by Stomp headers
                         .ignoringRequestMatchers("/ws/stomp/user_sockjs/**")
-                        //.ignoringRequestMatchers("/ws/stomp/user/**")
-                        //.ignoringRequestMatchers("/ws/stomp/server/**")
                         // we don't want CSRF on requests from Unreal server
                         .ignoringRequestMatchers(serverBasicAuthRequestMatcher))
 

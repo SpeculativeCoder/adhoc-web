@@ -79,8 +79,9 @@ public class WebSecurityConfiguration<S extends Session> {
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers("/api/**").permitAll() // TODO: some should be for logged in only
-                        .requestMatchers("*.js").permitAll() // TODO
-                        .requestMatchers("*.ico").permitAll() // TODO
+                        .requestMatchers("/*.css").permitAll() // TODO
+                        .requestMatchers("/*.js").permitAll() // TODO
+                        .requestMatchers("/*.ico").permitAll() // TODO
                         .requestMatchers("/**").permitAll() // TODO
                         .anyRequest().denyAll())
 

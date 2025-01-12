@@ -22,7 +22,7 @@
   -->
 
 <configuration packagingData="true">
-    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+    <!--<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>-->
 
     <conversionRule conversionWord="color" converterClass="adhoc.system.logging.logback.AdhocColorLogbackConverter"/>
     <conversionRule conversionWord="specialChars" converterClass="adhoc.system.logging.logback.AdhocSpecialCharsLogbackConverter"/>
@@ -140,7 +140,7 @@
         </filter>
     </appender>
 
-    <root level="trace">
+    <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

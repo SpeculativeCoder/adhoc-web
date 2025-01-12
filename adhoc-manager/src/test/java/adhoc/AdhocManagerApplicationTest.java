@@ -22,7 +22,6 @@
 
 package adhoc;
 
-import adhoc.user.UserRepository;
 import adhoc.user.request_response.UserRegisterRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -42,7 +40,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @SpringBootTest
 @TestPropertySource("classpath:/application-test.properties")
 @AutoConfigureMockMvc
-@Transactional
 public class AdhocManagerApplicationTest {
 
     @Autowired
@@ -50,9 +47,6 @@ public class AdhocManagerApplicationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private UserRepository userRepository;
 
     // TODO
     @Test

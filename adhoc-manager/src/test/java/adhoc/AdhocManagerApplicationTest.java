@@ -22,17 +22,24 @@
 
 package adhoc;
 
+import adhoc.user.User;
+import adhoc.user.UserRepository;
 import adhoc.user.request_response.UserRegisterRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -40,6 +47,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @SpringBootTest
 @TestPropertySource("classpath:/application-test.properties")
 @AutoConfigureMockMvc
+@Slf4j
+@Transactional
 public class AdhocManagerApplicationTest {
 
     @Autowired
@@ -47,6 +56,9 @@ public class AdhocManagerApplicationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // TODO
     @Test
@@ -68,7 +80,18 @@ public class AdhocManagerApplicationTest {
 
         assertThat(result)
                 .hasStatus(HttpStatus.CREATED)
-                .hasContentTypeCompatibleWith(MediaType.APPLICATION_JSON)
-                .bodyJson().extractingPath("$.id").convertTo(Long.class);
+                .hasContentTypeCompatibleWith(MediaType.APPLICATION_JSON);
+
+        assertThat(result).cookies()
+                .containsCookie("SESSION");
+
+        List<User> users = userRepository.findAll(Sort.by(Sort.Order.desc("id")));
+        User user = users.getFirst();
+
+        assertThat(result).bodyJson().satisfies(json -> {
+            //log.info(json.getJson());
+            assertThat(json).extractingPath("$.id").convertTo(Long.class).isEqualTo(user.getId());
+            assertThat(json).extractingPath("$.name").asString().isEqualTo(user.getName());
+        });
     }
 }

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.util;
+package adhoc.system.util;
 
 import java.util.UUID;
 

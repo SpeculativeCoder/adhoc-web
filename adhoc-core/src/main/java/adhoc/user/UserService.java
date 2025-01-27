@@ -61,7 +61,7 @@ public class UserService {
     }
 
     /**
-     * Called by {@link UserAuthenticationSuccessHandler}. Sets a new "token" every time a user logs in.
+     * Called by {@link AdhocAuthenticationSuccessHandler}. Sets a new "token" every time a user logs in.
      * The "token" is used when logging into an Unreal server to make sure the user is who they say they are.
      */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},

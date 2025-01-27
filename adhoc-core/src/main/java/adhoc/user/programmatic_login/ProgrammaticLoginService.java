@@ -23,8 +23,8 @@
 package adhoc.user.programmatic_login;
 
 import adhoc.system.WebSecurityConfiguration;
+import adhoc.user.AdhocAuthenticationSuccessHandler;
 import adhoc.user.User;
-import adhoc.user.UserAuthenticationSuccessHandler;
 import adhoc.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -60,7 +60,7 @@ public class ProgrammaticLoginService {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final PasswordEncoder passwordEncoder;
     private final RememberMeServices rememberMeServices;
-    private final UserAuthenticationSuccessHandler userAuthenticationSuccessHandler;
+    private final AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler;
 
     private final HttpServletRequest httpServletRequest;
     private final HttpServletResponse httpServletResponse;
@@ -106,7 +106,7 @@ public class ProgrammaticLoginService {
 
         rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
 
-        userAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
+        adhocAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
     }
 
     private AuthenticationManager getAuthenticationManager() {

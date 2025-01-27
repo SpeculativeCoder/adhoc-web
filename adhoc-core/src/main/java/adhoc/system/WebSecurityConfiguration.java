@@ -23,7 +23,7 @@
 package adhoc.system;
 
 import adhoc.server.ServerBasicAuthRequestMatcher;
-import adhoc.user.UserAuthenticationSuccessHandler;
+import adhoc.user.AdhocAuthenticationSuccessHandler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,19 +53,23 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 @Slf4j
 @RequiredArgsConstructor
+@SuppressWarnings("LombokGetterMayBeUsed")
 public class WebSecurityConfiguration<S extends Session> {
 
     @Getter
     private SessionAuthenticationStrategy sessionAuthenticationStrategy;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   ServerBasicAuthRequestMatcher serverBasicAuthRequestMatcher,
-                                                   UserAuthenticationSuccessHandler userAuthenticationSuccessHandler,
-                                                   RememberMeServices rememberMeServices,
-                                                   SpringSessionBackedSessionRegistry<S> sessionRegistry,
-                                                   AdhocAuthenticationFailureHandler adhocAuthenticationFailureHandler,
-                                                   AdhocAccessDeniedHandler adhocAccessDeniedHandler) throws Exception {
+    @SuppressWarnings("Convert2MethodRef")
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            RememberMeServices rememberMeServices,
+            SpringSessionBackedSessionRegistry<S> sessionRegistry,
+            ServerBasicAuthRequestMatcher serverBasicAuthRequestMatcher,
+            AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler,
+            AdhocAuthenticationFailureHandler adhocAuthenticationFailureHandler,
+            AdhocAccessDeniedHandler adhocAccessDeniedHandler) throws Exception {
+
         return http
                 .authorizeHttpRequests(auth -> auth
                         // TODO: ideally have a separate one for anonymous?
@@ -99,6 +103,8 @@ public class WebSecurityConfiguration<S extends Session> {
                 .sessionManagement(session -> session
                         .sessionFixation(fixation -> fixation
                                 .changeSessionId()
+                                // post processor to keep a reference to the session authentication strategy
+                                // (used when doing a programmatic login)
                                 .withObjectPostProcessor(sessionAuthenticationStrategyPostProcessor()))
                         .sessionConcurrency(concurrency -> concurrency
                                 //.maximumSessions(1)
@@ -108,7 +114,7 @@ public class WebSecurityConfiguration<S extends Session> {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .failureHandler(adhocAuthenticationFailureHandler)
-                        .successHandler(userAuthenticationSuccessHandler))
+                        .successHandler(adhocAuthenticationSuccessHandler))
 
                 // allow basic auth (Authorization header) - used by the server
                 .httpBasic(withDefaults())
@@ -131,6 +137,7 @@ public class WebSecurityConfiguration<S extends Session> {
     }
 
     @Bean
+    @SuppressWarnings("UnnecessaryLocalVariable")
     public RememberMeServices rememberMeServices() {
         SpringSessionRememberMeServices rememberMeServices = new SpringSessionRememberMeServices();
         //rememberMeServices.setAlwaysRemember(true);

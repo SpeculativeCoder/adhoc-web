@@ -33,15 +33,15 @@ import org.springframework.cglib.proxy.MethodProxy;
 import java.lang.reflect.Method;
 
 // TODO: consider a one-line exception?
-public class SpecialCharsThrowableProxyConverter extends RootCauseFirstThrowableProxyConverter {
+public class AdhocSpecialCharsLogbackThrowableProxyConverter extends RootCauseFirstThrowableProxyConverter {
 
     @Override
+    @SuppressWarnings("CallToPrintStackTrace")
     protected String throwableProxyToString(IThrowableProxy tp) {
         try {
             tp = (IThrowableProxy) Enhancer.create(IThrowableProxy.class, new ThrowableProxyMethodInterceptor(tp));
         } catch (Throwable e) {
             // any enhancer issues just output to stderr before it gets eaten by logback
-            //noinspection CallToPrintStackTrace
             e.printStackTrace();
             throw e;
         }

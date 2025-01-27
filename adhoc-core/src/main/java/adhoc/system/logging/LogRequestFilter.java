@@ -47,7 +47,7 @@ import java.util.Optional;
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
-public class LoggingRequestFilter extends AbstractRequestLoggingFilter {
+public class LogRequestFilter extends AbstractRequestLoggingFilter {
 
     private static final Logger requestLogUser = LoggerFactory.getLogger("REQUEST_LOG.USER");
     private static final Logger requestLogServer = LoggerFactory.getLogger("REQUEST_LOG.SERVER");
@@ -60,7 +60,7 @@ public class LoggingRequestFilter extends AbstractRequestLoggingFilter {
 
     private String encodedServerBasicAuth;
 
-    public LoggingRequestFilter() {
+    public LogRequestFilter() {
         setIncludeQueryString(true);
         setIncludeHeaders(true);
         setIncludePayload(true);

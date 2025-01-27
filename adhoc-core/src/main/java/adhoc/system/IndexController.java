@@ -57,9 +57,10 @@ public class IndexController {
             "/client/**"
     })
     public ModelAndView getIndex() {
-        //noinspection SpringMVCViewInspection
-        return new ModelAndView("index",
+        @SuppressWarnings("SpringMVCViewInspection")
+        ModelAndView index = new ModelAndView("index",
                 ImmutableMap.of("FEATURE_FLAGS", coreProperties.getFeatureFlags()));
+        return index;
     }
 
     @GetMapping("/favicon.ico")

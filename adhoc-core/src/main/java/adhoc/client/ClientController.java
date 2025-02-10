@@ -47,6 +47,7 @@ public class ClientController {
     private static final String MAP_NAME = "{mapName:[A-Za-z0-9_]{1,50}}";
     private static final String PROJECT_NAME = "{unrealProjectName:[A-Za-z0-9_]{1,50}}";
     private static final String VARIANT = "{variant:|-HTML5-Test|-HTML5-Shipping}";
+    private static final String DATA_FLAVOR = "{dataFlavor:|.astc|.etc2}";
 
     private final CoreProperties coreProperties;
 
@@ -109,25 +110,27 @@ public class ClientController {
         return resource;
     }
 
-    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".data.js.gz", produces = "text/javascript")
+    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + DATA_FLAVOR + ".data.js.gz", produces = "text/javascript")
     public ClassPathResource getClientDataJsGz(
             @PathVariable(value = "mapName") String mapName,
             @PathVariable(value = "variant") String variant,
+            @PathVariable(value = "dataFlavor") String dataFlavor,
             HttpServletResponse response) {
 
-        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%s%s.data.js.gz", mapName, coreProperties.getUnrealProjectName(), variant));
+        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%s%s%s.data.js.gz", mapName, coreProperties.getUnrealProjectName(), variant, dataFlavor));
         response.setHeader("Content-Encoding", "gzip");
 
         return resource;
     }
 
-    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".data.gz", produces = MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + DATA_FLAVOR + ".data.gz", produces = MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE)
     public ClassPathResource getClientDataGz(
             @PathVariable(value = "mapName") String mapName,
             @PathVariable(value = "variant") String variant,
+            @PathVariable(value = "dataFlavor") String dataFlavor,
             HttpServletResponse response) {
 
-        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%s%s.data.gz", mapName, coreProperties.getUnrealProjectName(), variant));
+        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%s%s%s.data.gz", mapName, coreProperties.getUnrealProjectName(), variant, dataFlavor));
         response.setHeader("Content-Encoding", "gzip");
 
         return resource;

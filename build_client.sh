@@ -44,6 +44,18 @@ do
 
   mkdir -p ${package_dir}
 
+  # ASTC
+  ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
+   -Project=${UNREAL_PROJECT_DIR}/${UNREAL_PROJECT_NAME}.uproject \
+   -Target=${UNREAL_PROJECT_NAME}Client -TargetPlatform=HTML5 -ClientConfig=${CLIENT_UNREAL_CONFIGURATION} \
+   -CookFlavor=ASTC \
+   -Build -Cook -Stage -Package -Archive \
+   -MapsToCook=${map}+${UNREAL_PROJECT_TRANSITION_MAP} -Map=${UNREAL_PROJECT_TRANSITION_MAP} \
+   -ArchiveDirectory=${package_dir} \
+   -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
+   -NoP4 -UTF8Output -NoDebugInfo
+
+  # DXT (default)
   ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
    -Project=${UNREAL_PROJECT_DIR}/${UNREAL_PROJECT_NAME}.uproject \
    -Target=${UNREAL_PROJECT_NAME}Client -TargetPlatform=HTML5 -ClientConfig=${CLIENT_UNREAL_CONFIGURATION} \

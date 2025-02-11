@@ -92,14 +92,14 @@ $nav-link-font-weight: $font-weight-semibold;
 @import "open-iconic/font/css/open-iconic-bootstrap";
 
 // on desktop / tablet, the nav wraps and is centered
-@include media-breakpoint-up(sm) {
+@include media-breakpoint-up(md) {
   ul.nav {
     justify-content: center;
   }
 }
 
 // on mobile, the nav is scrolled and stays on one line
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
   ul.nav {
     flex-wrap: nowrap;
     overflow-x: auto;

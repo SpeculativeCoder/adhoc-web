@@ -59,13 +59,21 @@ export class ClientComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (window.navigator.userAgent.indexOf('Windows') == -1) {
-      //&& window.navigator.userAgent.indexOf('Intel Mac OS') == -1) {
-      this.showCompatibilityWarning = true;
-      return;
-    }
+    let userAgentCompatible = this.isUserAgentCompatible();
 
-    this.runClient();
+    if (userAgentCompatible) {
+      this.runClient();
+    } else {
+      this.showCompatibilityWarning = true;
+    }
+  }
+
+  private isUserAgentCompatible(): boolean {
+    if (window.navigator.userAgent.indexOf('Windows') != -1) {
+      //|| window.navigator.userAgent.indexOf('Intel Mac OS') != -1) {
+      return true;
+    }
+    return false;
   }
 
   runClientAnyway() {
@@ -130,9 +138,11 @@ export class ClientComponent implements OnInit {
         const clientUrl = location.protocol + '//' + location.host + '/HTML5Client/' + navigation.mapName + '/HTML5Client.html';
         console.log(`clientUrl: ${clientUrl}`);
 
-        // uncomment this if we prefer to send to the client directly rather than iframe
-        //window.location.href = clientUrl;
-        //return;
+        //if (!this.isUserAgentCompatible()) {
+        //  // can prefer to send to the client directly rather than iframe
+        //  window.location.href = clientUrl;
+        //  return;
+        //}
 
         // NOTE: mapName as part of clientUrl was sanitized above via regex to be only alphanumeric/underscores
         this.clientUrl = this.sanitizer.bypassSecurityTrustResourceUrl(clientUrl);

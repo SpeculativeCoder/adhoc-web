@@ -51,21 +51,21 @@ ENV MAX_BOTS=8
 
 EXPOSE 8889
 
-RUN useradd -ms /bin/bash combat
+RUN useradd -ms /bin/bash adhoc
 
 RUN mkdir LinuxServer
 WORKDIR LinuxServer
 
 RUN mkdir certs
-#ADD certs/combat-ca.cer certs/combat-ca.cer
-#ADD certs/combat.cer certs/combat.cer
-#ADD certs/combat.key certs/combat.key
+#ADD certs/adhoc-ca.cer certs/adhoc-ca.cer
+#ADD certs/adhoc.cer certs/adhoc.cer
+#ADD certs/adhoc.key certs/adhoc.key
 ADD docker/adhoc_container_init.sh .
 RUN chmod +x adhoc_container_init.sh
 
 ADD Package/${SERVER_UNREAL_CONFIGURATION}/LinuxServer/ /LinuxServer/
-RUN chown -R combat /LinuxServer
+RUN chown -R adhoc /LinuxServer
 
-USER combat
+USER adhoc
 
 ENTRYPOINT ./adhoc_container_init.sh && cat /etc/hosts && ./${UNREAL_PROJECT_NAME}Server.sh ${MAP_NAME}?MaxPlayers=${MAX_PLAYERS} MaxPawns=${MAX_PAWNS} MaxBots=${MAX_BOTS} ServerID=${SERVER_ID} RegionID=${REGION_ID} InitialAreaIndexes=${INITIAL_AREA_INDEXES} PrivateIP=$(cat /etc/hosts | tail -1 | awk {'print $1'}) ManagerHost=${MANAGER_HOST} FeatureFlags=${FEATURE_FLAGS}

@@ -68,7 +68,7 @@
     <a class="nav-link" routerLink="/login-or-register" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
       <em>Login&nbsp;or&nbsp;Register</em>
     </a>
-    <a class="nav-link disabled" *ngIf="currentUser">
+    <a class="nav-link disabled text-nowrap" *ngIf="currentUser">
       <small>{{ currentUser?.name }} </small>
       <span [ngStyle]="{'color': currentUserFaction?.color}">
         <small><span class="small oi oi-person"></span></small>

@@ -29,6 +29,7 @@ import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -68,12 +69,12 @@ public class Server {
     @Column(nullable = false)
     private String mapName;
 
-    @Column
-    private Double x;
-    @Column
-    private Double y;
-    @Column
-    private Double z;
+    @Column(precision = 128, scale = 64)
+    private BigDecimal x;
+    @Column(precision = 128, scale = 64)
+    private BigDecimal y;
+    @Column(precision = 128, scale = 64)
+    private BigDecimal z;
 
     @Column(nullable = false)
     private boolean enabled;

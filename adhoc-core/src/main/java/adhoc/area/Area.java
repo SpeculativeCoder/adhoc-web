@@ -28,6 +28,7 @@ import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -65,19 +66,19 @@ public class Area {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private Double x;
-    @Column(nullable = false)
-    private Double y;
-    @Column(nullable = false)
-    private Double z;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal x;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal y;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal z;
 
-    @Column(nullable = false)
-    private Double sizeX;
-    @Column(nullable = false)
-    private Double sizeY;
-    @Column(nullable = false)
-    private Double sizeZ;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal sizeX;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal sizeY;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal sizeZ;
 
     @OneToMany(mappedBy = "area")
     @ToString.Exclude

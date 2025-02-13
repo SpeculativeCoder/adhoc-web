@@ -28,6 +28,8 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
+
 /**
  * Navigation request either from user via web interface to move themselves to a region or specific server,
  * or from the server when the user walks into an area associated with another server (in this case, latest
@@ -48,10 +50,10 @@ public class UserNavigateRequest {
     @Min(1)
     Long destinationServerId;
 
-    Double x;
-    Double y;
-    Double z;
+    BigDecimal x;
+    BigDecimal y;
+    BigDecimal z;
 
-    Double yaw;
-    Double pitch;
+    BigDecimal yaw;
+    BigDecimal pitch;
 }

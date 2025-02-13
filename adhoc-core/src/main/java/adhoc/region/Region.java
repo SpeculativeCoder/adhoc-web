@@ -27,6 +27,7 @@ import adhoc.server.Server;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -61,12 +62,12 @@ public class Region {
     @Column(nullable = false)
     private String mapName;
 
-    @Column(nullable = false)
-    private Double x;
-    @Column(nullable = false)
-    private Double y;
-    @Column(nullable = false)
-    private Double z;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal x;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal y;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal z;
 
     @OneToMany(mappedBy = "region")
     @ToString.Exclude

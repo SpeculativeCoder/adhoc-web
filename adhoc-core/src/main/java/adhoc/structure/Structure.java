@@ -28,6 +28,7 @@ import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -65,33 +66,33 @@ public class Structure {
     @ToString.Exclude
     private Region region;
 
-    @Column(nullable = false)
-    private Double x;
-    @Column(nullable = false)
-    private Double y;
-    @Column(nullable = false)
-    private Double z;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal x;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal y;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal z;
 
-    @Column(nullable = false)
-    private Double pitch;
-    @Column(nullable = false)
-    private Double yaw;
-    @Column(nullable = false)
-    private Double roll;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal pitch;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal yaw;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal roll;
 
-    @Column(nullable = false)
-    private Double scaleX;
-    @Column(nullable = false)
-    private Double scaleY;
-    @Column(nullable = false)
-    private Double scaleZ;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal scaleX;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal scaleY;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal scaleZ;
 
-    @Column(nullable = false)
-    private Double sizeX;
-    @Column(nullable = false)
-    private Double sizeY;
-    @Column(nullable = false)
-    private Double sizeZ;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal sizeX;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal sizeY;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal sizeZ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude

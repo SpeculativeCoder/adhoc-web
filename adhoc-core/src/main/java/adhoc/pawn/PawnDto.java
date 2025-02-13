@@ -29,6 +29,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -62,16 +63,16 @@ public class PawnDto {
     String description;
 
     @NotNull
-    Double x;
+    BigDecimal x;
     @NotNull
-    Double y;
+    BigDecimal y;
     @NotNull
-    Double z;
+    BigDecimal z;
 
     @NotNull
-    Double pitch;
+    BigDecimal pitch;
     @NotNull
-    Double yaw;
+    BigDecimal yaw;
 
     @Min(1)
     Long userId;

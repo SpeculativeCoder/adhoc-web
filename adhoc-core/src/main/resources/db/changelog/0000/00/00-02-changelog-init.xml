@@ -119,15 +119,15 @@
                 <constraints nullable="false"/>
             </column>
             <column name="x"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="y"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="z"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -156,11 +156,11 @@
                 <constraints nullable="false"/>
             </column>
             <column name="x"
-                    type="DOUBLE"/>
+                    type="DECIMAL(128,32)"/>
             <column name="y"
-                    type="DOUBLE"/>
+                    type="DECIMAL(128,32)"/>
             <column name="z"
-                    type="DOUBLE"/>
+                    type="DECIMAL(128,32)"/>
             <column name="enabled"
                     type="BOOLEAN">
                 <constraints nullable="false"/>
@@ -225,27 +225,27 @@
                 <constraints nullable="false"/>
             </column>
             <column name="x"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="y"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="z"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="sizex"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="sizey"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="sizez"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="server_id"
@@ -296,15 +296,15 @@
                 <constraints nullable="false"/>
             </column>
             <column name="x"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="y"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="z"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="initial_faction_id"
@@ -408,23 +408,23 @@
                 <constraints nullable="false"/>
             </column>
             <column name="x"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="y"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="z"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="pitch"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="yaw"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="user_id"
@@ -491,51 +491,51 @@
                 <constraints nullable="false"/>
             </column>
             <column name="x"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="y"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="z"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="pitch"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="yaw"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="roll"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="scalex"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="scaley"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="scalez"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="sizex"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="sizey"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="sizez"
-                    type="DOUBLE">
+                    type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
             <column name="faction_id"

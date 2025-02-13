@@ -96,12 +96,17 @@ public class User {
     @ToString.Exclude
     private Region region;
 
-    private Double x;
-    private Double y;
-    private Double z;
+    @Column(precision = 128, scale = 64)
+    private BigDecimal x;
+    @Column(precision = 128, scale = 64)
+    private BigDecimal y;
+    @Column(precision = 128, scale = 64)
+    private BigDecimal z;
 
-    private Double pitch;
-    private Double yaw;
+    @Column(precision = 128, scale = 64)
+    private BigDecimal pitch;
+    @Column(precision = 128, scale = 64)
+    private BigDecimal yaw;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

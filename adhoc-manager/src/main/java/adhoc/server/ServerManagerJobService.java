@@ -40,6 +40,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
@@ -127,9 +128,9 @@ public class ServerManagerJobService {
         Verify.verifyNotNull(region, "region must be not null");
         String mapName = region.getMapName();
 
-        Double areaGroupX = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getX).average().orElseThrow();
-        Double areaGroupY = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getY).average().orElseThrow();
-        Double areaGroupZ = areaGroup.isEmpty() ? null : areaGroup.stream().mapToDouble(Area::getZ).average().orElseThrow();
+        Double areaGroupX = areaGroup.isEmpty() ? null : areaGroup.stream().map(Area::getX).mapToDouble(BigDecimal::doubleValue).average().orElseThrow();
+        Double areaGroupY = areaGroup.isEmpty() ? null : areaGroup.stream().map(Area::getY).mapToDouble(BigDecimal::doubleValue).average().orElseThrow();
+        Double areaGroupZ = areaGroup.isEmpty() ? null : areaGroup.stream().map(Area::getZ).mapToDouble(BigDecimal::doubleValue).average().orElseThrow();
 
         // a server should be enabled if it has one or more areas assigned to it
         // (this will trigger the starting of a server task via the hosting service)
@@ -198,9 +199,9 @@ public class ServerManagerJobService {
         if (!Objects.equals(server.getX(), areaGroupX)
                 || !Objects.equals(server.getY(), areaGroupY)
                 || !Objects.equals(server.getZ(), areaGroupZ)) {
-            server.setX(areaGroupX);
-            server.setY(areaGroupY);
-            server.setZ(areaGroupZ);
+            server.setX(BigDecimal.valueOf(areaGroupX));
+            server.setY(BigDecimal.valueOf(areaGroupY));
+            server.setZ(BigDecimal.valueOf(areaGroupZ));
             emitEvent = true;
         }
 

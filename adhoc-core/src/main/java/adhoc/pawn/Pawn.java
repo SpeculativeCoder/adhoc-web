@@ -28,6 +28,7 @@ import adhoc.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -71,17 +72,17 @@ public class Pawn {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private Double x;
-    @Column(nullable = false)
-    private Double y;
-    @Column(nullable = false)
-    private Double z;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal x;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal y;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal z;
 
-    @Column(nullable = false)
-    private Double pitch;
-    @Column(nullable = false)
-    private Double yaw;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal pitch;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal yaw;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude

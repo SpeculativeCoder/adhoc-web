@@ -28,6 +28,7 @@ import adhoc.region.Region;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 /**
@@ -63,12 +64,12 @@ public class Objective {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private Double x;
-    @Column(nullable = false)
-    private Double y;
-    @Column(nullable = false)
-    private Double z;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal x;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal y;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal z;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude

@@ -30,6 +30,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Value
@@ -56,18 +57,18 @@ public class AreaDto {
     String name;
 
     @NotNull
-    Double x;
+    BigDecimal x;
     @NotNull
-    Double y;
+    BigDecimal y;
     @NotNull
-    Double z;
+    BigDecimal z;
 
     @NotNull
-    Double sizeX;
+    BigDecimal sizeX;
     @NotNull
-    Double sizeY;
+    BigDecimal sizeY;
     @NotNull
-    Double sizeZ;
+    BigDecimal sizeZ;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     Optional<@Min(1) Long> serverId;

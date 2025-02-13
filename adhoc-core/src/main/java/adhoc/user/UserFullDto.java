@@ -66,16 +66,16 @@ public class UserFullDto {
     Long regionId;
 
     @NotNull
-    Double x;
+    BigDecimal x;
     @NotNull
-    Double y;
+    BigDecimal y;
     @NotNull
-    Double z;
+    BigDecimal z;
 
     @NotNull
-    Double pitch;
+    BigDecimal pitch;
     @NotNull
-    Double yaw;
+    BigDecimal yaw;
 
     @NotNull
     LocalDateTime created;

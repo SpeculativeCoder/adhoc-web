@@ -30,6 +30,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,11 +58,11 @@ public class ObjectiveDto {
     String name;
 
     @NotNull
-    Double x;
+    BigDecimal x;
     @NotNull
-    Double y;
+    BigDecimal y;
     @NotNull
-    Double z;
+    BigDecimal z;
 
     @Min(1)
     Long initialFactionId;

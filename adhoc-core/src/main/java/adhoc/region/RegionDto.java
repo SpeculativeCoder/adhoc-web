@@ -30,6 +30,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Value
@@ -51,11 +52,11 @@ public class RegionDto {
     String mapName;
 
     @NotNull
-    Double x;
+    BigDecimal x;
     @NotNull
-    Double y;
+    BigDecimal y;
     @NotNull
-    Double z;
+    BigDecimal z;
 
     @NotNull
     List<Long> areaIds;

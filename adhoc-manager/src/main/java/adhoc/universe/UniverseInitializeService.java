@@ -133,33 +133,33 @@ public class UniverseInitializeService {
         region1.setName("Region 1");
         // TODO: handle multiple regions
         region1.setMapName(coreProperties.getUnrealProjectRegionMaps().get(0));
-        region1.setX(1750.0);
-        region1.setY(1000.0);
-        region1.setZ(50.0);
+        region1.setX(BigDecimal.valueOf(1750.0));
+        region1.setY(BigDecimal.valueOf(1000.0));
+        region1.setZ(BigDecimal.valueOf(50.0));
         region1.setAreas(Collections.emptyList());
         region1 = regionRepository.save(region1);
 
         Area area1 = new Area();
         area1.setIndex(0);
         area1.setName("A");
-        area1.setX(1250.0);
-        area1.setY(1800.0);
-        area1.setZ(0.0);
-        area1.setSizeX(2000.0);
-        area1.setSizeY(750.0);
-        area1.setSizeZ(1000.0);
+        area1.setX(BigDecimal.valueOf(1250.0));
+        area1.setY(BigDecimal.valueOf(1800.0));
+        area1.setZ(BigDecimal.valueOf(0.0));
+        area1.setSizeX(BigDecimal.valueOf(2000.0));
+        area1.setSizeY(BigDecimal.valueOf(750.0));
+        area1.setSizeZ(BigDecimal.valueOf(1000.0));
         area1.setRegion(region1);
         area1 = areaRepository.save(area1);
 
         Area area2 = new Area();
         area2.setIndex(1);
         area2.setName("B");
-        area2.setX(1500.0);
-        area2.setY(750.0);
-        area2.setZ(0.0);
-        area2.setSizeX(1500.0);
-        area2.setSizeY(1250.0);
-        area2.setSizeZ(1000.0);
+        area2.setX(BigDecimal.valueOf(1500.0));
+        area2.setY(BigDecimal.valueOf(750.0));
+        area2.setZ(BigDecimal.valueOf(0.0));
+        area2.setSizeX(BigDecimal.valueOf(1500.0));
+        area2.setSizeY(BigDecimal.valueOf(1250.0));
+        area2.setSizeZ(BigDecimal.valueOf(1000.0));
         area2.setRegion(region1);
         area2 = areaRepository.save(area2);
 
@@ -199,9 +199,9 @@ public class UniverseInitializeService {
         objectiveA1.setRegion(region1);
         objectiveA1.setIndex(0);
         objectiveA1.setName("A1");
-        objectiveA1.setX(1500.0);
-        objectiveA1.setY(1500.0);
-        objectiveA1.setZ(0.0);
+        objectiveA1.setX(BigDecimal.valueOf(1500.0));
+        objectiveA1.setY(BigDecimal.valueOf(1500.0));
+        objectiveA1.setZ(BigDecimal.valueOf(0.0));
         objectiveA1.setFaction(team1);
         objectiveA1.setInitialFaction(team1);
         objectiveA1.setArea(area1);
@@ -211,9 +211,9 @@ public class UniverseInitializeService {
         objectiveA2.setRegion(region1);
         objectiveA2.setIndex(1);
         objectiveA2.setName("A2");
-        objectiveA2.setX(500.0);
-        objectiveA2.setY(2000.0);
-        objectiveA2.setZ(0.0);
+        objectiveA2.setX(BigDecimal.valueOf(500.0));
+        objectiveA2.setY(BigDecimal.valueOf(2000.0));
+        objectiveA2.setZ(BigDecimal.valueOf(0.0));
         objectiveA2.setFaction(team3);
         objectiveA2.setInitialFaction(team3);
         objectiveA2.setArea(area1);
@@ -223,9 +223,9 @@ public class UniverseInitializeService {
         objectiveA3.setRegion(region1);
         objectiveA3.setIndex(2);
         objectiveA3.setName("A3");
-        objectiveA3.setX(2000.0);
-        objectiveA3.setY(1800.0);
-        objectiveA3.setZ(0.0);
+        objectiveA3.setX(BigDecimal.valueOf(2000.0));
+        objectiveA3.setY(BigDecimal.valueOf(1800.0));
+        objectiveA3.setZ(BigDecimal.valueOf(0.0));
         //objectiveA3.setFaction(team4);
         //objectiveA3.setInitialFaction(team4);
         objectiveA3.setArea(area1);
@@ -235,9 +235,9 @@ public class UniverseInitializeService {
         objectiveB1.setRegion(region1);
         objectiveB1.setIndex(3);
         objectiveB1.setName("B1");
-        objectiveB1.setX(1200.0);
-        objectiveB1.setY(1000.0);
-        objectiveB1.setZ(0.0);
+        objectiveB1.setX(BigDecimal.valueOf(1200.0));
+        objectiveB1.setY(BigDecimal.valueOf(1000.0));
+        objectiveB1.setZ(BigDecimal.valueOf(0.0));
         objectiveB1.setFaction(team2);
         objectiveB1.setInitialFaction(team2);
         objectiveB1.setArea(area2);
@@ -247,9 +247,9 @@ public class UniverseInitializeService {
         objectiveB2.setRegion(region1);
         objectiveB2.setIndex(4);
         objectiveB2.setName("B2");
-        objectiveB2.setX(1800.0);
-        objectiveB2.setY(500.0);
-        objectiveB2.setZ(0.0);
+        objectiveB2.setX(BigDecimal.valueOf(1800.0));
+        objectiveB2.setY(BigDecimal.valueOf(500.0));
+        objectiveB2.setZ(BigDecimal.valueOf(0.0));
         objectiveB2.setArea(area2);
         objectiveB2 = objectiveRepository.save(objectiveB2);
 

@@ -31,6 +31,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
+
 
 /** Navigation response indicating how a user can be connected to a destination server. */
 @Data
@@ -53,10 +55,10 @@ public class UserNavigateResponse {
     @NotEmpty
     String mapName;
 
-    Double x;
-    Double y;
-    Double z;
+    BigDecimal x;
+    BigDecimal y;
+    BigDecimal z;
 
-    Double yaw;
-    Double pitch;
+    BigDecimal yaw;
+    BigDecimal pitch;
 }

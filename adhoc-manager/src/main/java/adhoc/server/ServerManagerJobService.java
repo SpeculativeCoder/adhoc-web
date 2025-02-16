@@ -26,6 +26,7 @@ import adhoc.area.Area;
 import adhoc.area.groups.AreaGroupsFactory;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
+import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
 import adhoc.task.server.ServerTask;
 import adhoc.task.server.ServerTaskRepository;
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
@@ -98,7 +100,9 @@ public class ServerManagerJobService {
                     usedServerIds.add(server.getId());
 
                     if (emitEvent) {
-                        events.add(serverEventService.toServerUpdatedEvent(server));
+                        ServerUpdatedEvent event = serverEventService.toServerUpdatedEvent(server);
+                        //log.info("{}", event);
+                        events.add(event);
                     }
                 }
 
@@ -110,7 +114,9 @@ public class ServerManagerJobService {
                         boolean emitEvent = updateServerWithRegionAndAreaGroup(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
-                            events.add(serverEventService.toServerUpdatedEvent(unusedServer));
+                            ServerUpdatedEvent event = serverEventService.toServerUpdatedEvent(unusedServer);
+                            //log.info("{}", event);
+                            events.add(event);
                         }
                     });
                 }
@@ -128,9 +134,13 @@ public class ServerManagerJobService {
         Verify.verifyNotNull(region, "region must be not null");
         String mapName = region.getMapName();
 
-        Double areaGroupX = areaGroup.isEmpty() ? null : areaGroup.stream().map(Area::getX).mapToDouble(BigDecimal::doubleValue).average().orElseThrow();
-        Double areaGroupY = areaGroup.isEmpty() ? null : areaGroup.stream().map(Area::getY).mapToDouble(BigDecimal::doubleValue).average().orElseThrow();
-        Double areaGroupZ = areaGroup.isEmpty() ? null : areaGroup.stream().map(Area::getZ).mapToDouble(BigDecimal::doubleValue).average().orElseThrow();
+        OptionalDouble averageX = areaGroup.stream().map(Area::getX).mapToDouble(BigDecimal::doubleValue).average();
+        OptionalDouble averageY = areaGroup.stream().map(Area::getY).mapToDouble(BigDecimal::doubleValue).average();
+        OptionalDouble averageZ = areaGroup.stream().map(Area::getZ).mapToDouble(BigDecimal::doubleValue).average();
+
+        BigDecimal areaGroupX = averageX.isPresent() ? BigDecimal.valueOf(averageX.getAsDouble()).setScale(32, RoundingMode.HALF_UP) : null;
+        BigDecimal areaGroupY = averageY.isPresent() ? BigDecimal.valueOf(averageY.getAsDouble()).setScale(32, RoundingMode.HALF_UP) : null;
+        BigDecimal areaGroupZ = averageZ.isPresent() ? BigDecimal.valueOf(averageZ.getAsDouble()).setScale(32, RoundingMode.HALF_UP) : null;
 
         // a server should be enabled if it has one or more areas assigned to it
         // (this will trigger the starting of a server task via the hosting service)
@@ -199,9 +209,9 @@ public class ServerManagerJobService {
         if (!Objects.equals(server.getX(), areaGroupX)
                 || !Objects.equals(server.getY(), areaGroupY)
                 || !Objects.equals(server.getZ(), areaGroupZ)) {
-            server.setX(BigDecimal.valueOf(areaGroupX));
-            server.setY(BigDecimal.valueOf(areaGroupY));
-            server.setZ(BigDecimal.valueOf(areaGroupZ));
+            server.setX(areaGroupX);
+            server.setY(areaGroupY);
+            server.setZ(areaGroupZ);
             emitEvent = true;
         }
 

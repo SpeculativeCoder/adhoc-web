@@ -22,6 +22,7 @@
 
 package adhoc.user;
 
+import adhoc.message.MessageService;
 import adhoc.user.event.ServerUserDefeatedUserEvent;
 import adhoc.user.event.UserDefeatedUserEvent;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,8 @@ public class UserEventService {
 
     private final UserRepository userRepository;
 
+    private final MessageService messageService;
+
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public UserDefeatedUserEvent userDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
@@ -51,6 +54,10 @@ public class UserEventService {
 
         BigDecimal scoreAdd = BigDecimal.valueOf(user.isHuman() ? 1.0f : 0.1f);
         userRepository.updateScoreAddById(scoreAdd, user.getId());
+
+        if (user.isHuman() || defeatedUser.isHuman()) {
+            messageService.addGlobalMessage(String.format("%s defeated %s", user.getName(), defeatedUser.getName()));
+        }
 
         // TODO
         return new UserDefeatedUserEvent(

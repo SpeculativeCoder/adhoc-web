@@ -29,11 +29,14 @@
     <conversionRule conversionWord="specialCharsThrowable" converterClass="adhoc.system.logging.logback.AdhocSpecialCharsLogbackThrowableProxyConverter"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+
         <encoder>
             <pattern>%color(%-5level){gray} %color(%specialChars(%mdc)){green} %color([%thread]){blue} %color(%logger){cyan}%color(:){} %color(%specialChars(%message)){}%n%color(%specialCharsThrowable)){}
             </pattern>
             <charset>UTF-8</charset>
         </encoder>
+
+        <filter class="adhoc.system.logging.logback.AdhocEvaluatorFilter"/>
 
         <!-- quick/handy way to only show mutating SQL if chasing something down when org.hibernate.SQL logging set to debug -->
         <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -51,7 +54,7 @@
         <!-- !message.endsWith("for update") -->
 
         <!-- suppress some artemis errors - TODO -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.apache.activemq.artemis.core.server".equals(logger)
@@ -60,7 +63,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <!-- suppress some artemis errors - TODO -->
         <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -76,7 +79,7 @@
         </filter>-->
 
         <!-- suppress no data warnings from UPDATEs etc. which don't update any columns -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
@@ -85,7 +88,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <!-- pessimistic locking failure messages -->
         <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -100,7 +103,7 @@
         </filter>-->
 
         <!-- deadlocks -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(logger)
@@ -112,10 +115,10 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
 
         <!-- batch insert failures due to concurrency -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.hibernate.orm.jdbc.batch".equals(logger)
@@ -124,11 +127,11 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
         <!-- || message.startsWith("HHH100501: Exception executing batch [org.hibernate.StaleStateException: ") -->
 
         <!-- web browser stomp disconnection failures -->
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
                 <expression>
                     return ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(logger)
@@ -137,7 +140,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
-        </filter>
+        </filter>-->
     </appender>
 
     <root level="info">

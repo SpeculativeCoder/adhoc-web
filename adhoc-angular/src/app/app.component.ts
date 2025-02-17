@@ -21,7 +21,7 @@
  */
 
 import {StompService} from './core/stomp.service';
-import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink, RouterOutlet} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {UserService} from './user/user.service';
@@ -45,7 +45,7 @@ import {CommonModule} from "@angular/common";
   ],
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
 
   title = customization.title;
 
@@ -91,6 +91,6 @@ export class AppComponent implements OnInit, OnDestroy {
   //   this.stompService.disconnect();
   // }
 
-  ngOnDestroy() {
-  }
+  // ngOnDestroy() {
+  // }
 }

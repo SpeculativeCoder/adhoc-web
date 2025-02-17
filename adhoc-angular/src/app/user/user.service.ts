@@ -51,7 +51,7 @@ export class UserService {
 
     this.stomp
       .observeEvent('UserDefeatedUser')
-      .subscribe((body: any) => this.handleUserDefeatedUser(body['userId'], body['defeatedUserId']));
+      .subscribe((body: any) => this.handleUserDefeatedUser(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
   }
 
   getUsers(paging: Paging = new Paging()): Observable<Page<User>> {
@@ -143,7 +143,7 @@ export class UserService {
     this.stomp.send('UserDefeatedUser', {userId: null /*user.id*/, defeatedUserId: defeatedUser?.id || null});
   }
 
-  handleUserDefeatedUser(userId: number, defeatedUserId: number) {
+  handleUserDefeatedUser(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
     // let user: User;
     // let defeatedUser: User;
     // this.users.map(user => {
@@ -155,7 +155,10 @@ export class UserService {
     //   }
     // });
     // user.score++;
+
     // TODO
-    console.log(`User ${userId} defeated user ${defeatedUserId}`);
+    if (userHuman || defeatedUserHuman) {
+      console.log(`User ${userId} defeated user ${defeatedUserId}`);
+    }
   }
 }

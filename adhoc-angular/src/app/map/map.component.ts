@@ -68,8 +68,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
 
   mapScaleDiffer: any;
 
-  canvasWidth = 1000;
-  canvasHeight = 1000;
+  canvasWidth = 500;
+  canvasHeight = 500;
 
   canvas: fabric.Canvas = null;
 
@@ -122,7 +122,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       // height: this.canvasHeight,
       imageSmoothingEnabled: false,
       enableRetinaScaling: true,
-      renderOnAddRemove: false
+      renderOnAddRemove: false,
+      selection: false
     });
 
     this.loadData();
@@ -418,31 +419,50 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       }
     }
 
-    this.canvas.on('mouse:wheel', (event) => {
-      let delta = event.e.deltaY * this.initialMapScale * -0.00001;
-      this.mapScale += delta;
-      if (this.mapScale > this.initialMapScale * 2) this.mapScale = this.initialMapScale * 2;
-      if (this.mapScale < this.initialMapScale * 0.5) this.mapScale = this.initialMapScale * 0.5;
-
-      // TODO: zoom via center
-
-      event.e.preventDefault();
-      event.e.stopPropagation();
-    });
+    //this.canvas.on('mouse:wheel', (event) => {
+    //  let delta = event.e.deltaY * this.initialMapScale * -0.00001;
+    //  this.mapScale += delta;
+    //  if (this.mapScale > this.initialMapScale * 2) this.mapScale = this.initialMapScale * 2;
+    //  if (this.mapScale < this.initialMapScale * 0.5) this.mapScale = this.initialMapScale * 0.5;
+    //
+    //  // TODO: zoom via center
+    //
+    //  event.e.preventDefault();
+    //  event.e.stopPropagation();
+    //});
     this.canvas.on('mouse:down', (event) => {
-      //if (event.e.altKey === true) {
       this.isDragging = true;
       this.canvas.selection = false;
-      let mouseEvent = event.e as MouseEvent;
-      this.lastPosX = mouseEvent.clientX;
-      this.lastPosY = mouseEvent.clientY;
-      //}
+      let x = 0;
+      let y = 0;
+      if (event.e instanceof MouseEvent) {
+        let mouseEvent = event.e as MouseEvent;
+        x = mouseEvent.clientX;
+        y = mouseEvent.clientY;
+      } else if (event.e instanceof TouchEvent) {
+        let touchEvent = event.e as TouchEvent;
+        x = touchEvent.touches[0].clientX;
+        y = touchEvent.touches[0].clientY;
+      }
+      this.lastPosX = x;
+      this.lastPosY = y;
     });
     this.canvas.on('mouse:move', (event) => {
       if (this.isDragging) {
-        let mouseEvent = event.e as MouseEvent;
-        const diffX = (mouseEvent.clientX - this.lastPosX);
-        const diffY = (mouseEvent.clientY - this.lastPosY);
+        let x = 0;
+        let y = 0;
+        if (event.e instanceof MouseEvent) {
+          let mouseEvent = event.e as MouseEvent;
+          x = mouseEvent.clientX;
+          y = mouseEvent.clientY;
+        } else if (event.e instanceof TouchEvent) {
+          let touchEvent = event.e as TouchEvent;
+          x = touchEvent.touches[0].clientX;
+          y = touchEvent.touches[0].clientY;
+        }
+
+        const diffX = (x - this.lastPosX);
+        const diffY = (y - this.lastPosY);
         //console.log("diffX=" + diffX + " diffY=" + diffY);
 
         let vpt = this.canvas.viewportTransform;
@@ -453,8 +473,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         this.mapLeft -= diffX * (1 / this.mapScale);
         this.mapTop -= diffY * (1 / this.mapScale);
 
-        this.lastPosX = mouseEvent.clientX;
-        this.lastPosY = mouseEvent.clientY;
+        this.lastPosX = x;
+        this.lastPosY = y;
       }
     });
     this.canvas.on('mouse:up', (event) => {
@@ -473,8 +493,8 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     let objectiveRect = new fabric.Rect({
       originX: 'center',
       originY: 'center',
-      width: 20 * (1 / this.mapScale),
-      height: 20 * (1 / this.mapScale),
+      width: 18 * (1 / this.mapScale),
+      height: 18 * (1 / this.mapScale),
       stroke: '#888888',
       strokeWidth: 1 * (1 / this.mapScale),
       fill: this.getFaction(objective.factionId)?.color || 'lightgray',
@@ -486,7 +506,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       originY: 'center',
       top: -objectiveRect.get('height'),
       fontFamily: 'sans-serif',
-      fontSize: 16 * (1 / this.mapScale),
+      fontSize: 14 * (1 / this.mapScale),
       fill: '#222222',
       textAlign: 'center',
       textBackgroundColor: '#EEEEEEAA',
@@ -513,7 +533,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     let pawnCircle = new fabric.Circle({
       originX: 'center',
       originY: 'center',
-      radius: 5 * (1 / this.mapScale),
+      radius: 4 * (1 / this.mapScale),
       stroke: 'black',
       strokeWidth: 0.1 * (1 / this.mapScale),
       fill: this.getFaction(pawn.factionId)?.color || 'lightgray',

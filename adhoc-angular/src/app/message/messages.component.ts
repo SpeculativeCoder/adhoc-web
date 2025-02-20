@@ -53,6 +53,7 @@ export class MessagesComponent implements OnInit {
 
   constructor(private messageService: MessageService,
               private router: Router) {
+    this.paging.sort = [new Sort('id', 'desc')];
   }
 
   ngOnInit() {

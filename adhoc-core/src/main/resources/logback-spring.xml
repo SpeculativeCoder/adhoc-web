@@ -36,7 +36,7 @@
             <charset>UTF-8</charset>
         </encoder>
 
-        <filter class="adhoc.system.logging.logback.AdhocEvaluatorFilter"/>
+        <filter class="adhoc.system.logging.logback.AdhocLogbackMatcherFilter"/>
 
         <!-- quick/handy way to only show mutating SQL if chasing something down when org.hibernate.SQL logging set to debug -->
         <!--<filter class="ch.qos.logback.core.filter.EvaluatorFilter">

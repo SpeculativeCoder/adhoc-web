@@ -29,7 +29,7 @@ import org.slf4j.event.Level;
 
 import java.util.logging.Logger;
 
-public class AdhocEvaluatorFilter extends AbstractMatcherFilter<ILoggingEvent> {
+public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEvent> {
 
     @Override
     public FilterReply decide(ILoggingEvent event) {

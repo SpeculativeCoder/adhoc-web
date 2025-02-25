@@ -30,9 +30,9 @@
       <thead>
       <tr>
         <th scope="col" sortable="id">ID</th>
-        <th scope="col">Join</th>
         <th scope="col" sortable="region">Region</th>
         <th scope="col" sortable="areas">Areas</th>
+        <th scope="col">Actions</th>
         <th scope="col" sortable="map">Map</th>
         <th scope="col" sortable="x">X</th>
         <th scope="col" sortable="y">Y</th>
@@ -50,19 +50,19 @@
       <tbody>
       <tr *ngFor="let server of servers.content">
         <th scope="row"><a routerLink="/servers/{{ server.id }}">{{ server.id }}</a></th>
-        <td>
-          <button type="button" class="btn btn-primary"
-                  style="--bs-btn-padding-y: 0; --bs-btn-font-size: 0.75rem"
-                  *ngIf="server.webSocketUrl" (click)="joinServer(server)">
-            Join
-          </button>
-        </td>
         <td>{{ server.regionId }}</td>
         <td>
           <ng-container *ngFor="let areaId of server.areaIds; last as isLast">
             <span>{{ areaId }}</span>
             <span *ngIf="!isLast">, </span>
           </ng-container>
+        </td>
+        <td>
+          <button type="button" class="btn btn-primary"
+                  style="--bs-btn-padding-y: 0; --bs-btn-font-size: 0.75rem"
+                  *ngIf="server.webSocketUrl" (click)="joinServer(server)">
+            Join
+          </button>
         </td>
         <td>{{ server.mapName }}</td>
         <td>{{ server.x }}</td>

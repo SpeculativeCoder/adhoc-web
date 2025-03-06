@@ -46,7 +46,7 @@ import {ClientComponent} from "./client/client.component";
 import {MessagesComponent} from "./message/messages.component";
 
 export const routes: Routes = [
-  {path: '', component: MapComponent},
+  {path: '', title: '', component: MapComponent},
   {path: 'map', title: 'Map', component: MapComponent},
   {path: 'servers', title: 'Servers', component: ServersComponent},
   {path: 'servers/:id', title: 'Server', component: ServerComponent},
@@ -68,6 +68,6 @@ export const routes: Routes = [
   {path: 'users/:id', title: 'User', component: UserComponent},
   {path: 'messages', title: 'Messages', component: MessagesComponent},
   {path: 'login-or-register', title: 'Login or Register', component: LoginOrRegisterComponent},
-  {path: 'pages/:page', component: InfoPageComponent},
+  {path: 'pages/:page', title: '', component: InfoPageComponent},
   {path: 'client', title: 'Client', component: ClientComponent},
 ];

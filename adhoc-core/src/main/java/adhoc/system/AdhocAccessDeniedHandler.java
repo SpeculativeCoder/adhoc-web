@@ -27,23 +27,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
-import org.springframework.security.web.csrf.MissingCsrfTokenException;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Component
 @Slf4j
-public class AdhocAccessDeniedHandler extends AccessDeniedHandlerImpl {
+public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-        super.handle(request, response, accessDeniedException);
+        response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
 
-        Level level = (accessDeniedException instanceof MissingCsrfTokenException) ? Level.DEBUG : Level.WARN;
+        //Level level = (accessDeniedException instanceof MissingCsrfTokenException) ? Level.INFO : Level.WARN;
+        Level level = Level.WARN;
         log.atLevel(level).log("Handled access denied: status={} method={} uri={}",
                 response.getStatus(), request.getMethod(), request.getRequestURI(), accessDeniedException);
     }

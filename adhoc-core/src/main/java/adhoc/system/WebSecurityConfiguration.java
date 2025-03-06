@@ -38,6 +38,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
@@ -63,6 +65,7 @@ public class WebSecurityConfiguration<S extends Session> {
     @SuppressWarnings("Convert2MethodRef")
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
+            CsrfTokenRepository csrfTokenRepository,
             RememberMeServices rememberMeServices,
             SpringSessionBackedSessionRegistry<S> sessionRegistry,
             ServerBasicAuthRequestMatcher serverBasicAuthRequestMatcher,
@@ -77,14 +80,22 @@ public class WebSecurityConfiguration<S extends Session> {
                         //.requestMatchers("/ws/stomp/user/**").permitAll()
                         .requestMatchers("/ws/stomp/server/**").hasAnyRole("SERVER")
                         .requestMatchers("/ws/stomp/**").denyAll()
-                        .requestMatchers("/HTML5Client/**").hasAnyRole("USER") // TODO
+
+                        .requestMatchers("/HTML5Client/**").hasAnyRole("USER")
+
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
+                        .requestMatchers("/api/users/current").permitAll()
                         .requestMatchers("/api/**").permitAll() // TODO: some should be for logged in only
+
+                        .requestMatchers("/csrf").permitAll()
+
                         .requestMatchers("/*.css").permitAll() // TODO
                         .requestMatchers("/*.js").permitAll() // TODO
                         .requestMatchers("/*.ico").permitAll() // TODO
+
                         .requestMatchers("/**").permitAll() // TODO
+
                         .anyRequest().denyAll())
 
                 .headers(headers -> headers
@@ -93,6 +104,7 @@ public class WebSecurityConfiguration<S extends Session> {
                                 .sameOrigin()))
 
                 .csrf(csrf -> csrf
+                        .csrfTokenRepository(csrfTokenRepository)
                         // ignore CSRF for sockjs as protected by Stomp headers
                         .ignoringRequestMatchers("/ws/stomp/user_sockjs/**")
                         // we don't want CSRF on requests from Unreal server
@@ -103,8 +115,6 @@ public class WebSecurityConfiguration<S extends Session> {
                 .sessionManagement(session -> session
                         .sessionFixation(fixation -> fixation
                                 .changeSessionId()
-                                // post processor to keep a reference to the session authentication strategy
-                                // (used when doing a programmatic login)
                                 .withObjectPostProcessor(sessionAuthenticationStrategyPostProcessor()))
                         .sessionConcurrency(concurrency -> concurrency
                                 //.maximumSessions(1)
@@ -129,6 +139,11 @@ public class WebSecurityConfiguration<S extends Session> {
                         .accessDeniedHandler(adhocAccessDeniedHandler))
 
                 .build();
+    }
+
+    @Bean
+    public HttpSessionCsrfTokenRepository csrfTokenRepository() {
+        return new HttpSessionCsrfTokenRepository();
     }
 
     @Bean
@@ -165,6 +180,7 @@ public class WebSecurityConfiguration<S extends Session> {
         return anonymousAuthorities;
     }
 
+    /** Post processor to keep a reference to the session authentication strategy (used when doing a programmatic login) */
     private ObjectPostProcessor<SessionAuthenticationStrategy> sessionAuthenticationStrategyPostProcessor() {
         return new ObjectPostProcessor<>() {
             @Override

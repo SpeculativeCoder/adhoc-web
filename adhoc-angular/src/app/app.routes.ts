@@ -40,7 +40,7 @@ import {FactionsComponent} from "./faction/factions.component";
 import {FactionComponent} from "./faction/faction.component";
 import {UsersComponent} from "./user/users.component";
 import {UserComponent} from "./user/user.component";
-import {LoginOrRegisterComponent} from "./user/login-or-register.component";
+import {LoginComponent} from "./user/login.component";
 import {InfoPageComponent} from "./info-page/info-page.component";
 import {ClientComponent} from "./client/client.component";
 import {MessagesComponent} from "./message/messages.component";
@@ -67,7 +67,7 @@ export const routes: Routes = [
   {path: 'users', title: 'Users', component: UsersComponent},
   {path: 'users/:id', title: 'User', component: UserComponent},
   {path: 'messages', title: 'Messages', component: MessagesComponent},
-  {path: 'login-or-register', title: 'Login or Register', component: LoginOrRegisterComponent},
+  {path: 'login', title: 'Login', component: LoginComponent},
   {path: 'pages/:page', title: '', component: InfoPageComponent},
   {path: 'client', title: 'Client', component: ClientComponent},
 ];

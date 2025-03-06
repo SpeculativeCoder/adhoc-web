@@ -39,9 +39,9 @@ import {NgbDropdownModule} from "@ng-bootstrap/ng-bootstrap";
     FormsModule,
     NgbDropdownModule
   ],
-  templateUrl: './login-or-register.component.html'
+  templateUrl: './login.component.html'
 })
-export class LoginOrRegisterComponent implements OnInit, AfterViewInit {
+export class LoginComponent implements OnInit, AfterViewInit {
 
   loginNameOrEmail: string = '';
   loginPassword: string = '';

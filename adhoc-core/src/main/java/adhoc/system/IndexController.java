@@ -53,7 +53,7 @@ public class IndexController {
             "/factions/**",
             "/users/**",
             "/messages/**",
-            "/login-or-register/**",
+            "/login/**",
             "/client/**"
     })
     public ModelAndView getIndex() {

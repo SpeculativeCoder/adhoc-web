@@ -36,6 +36,7 @@ import {Paging} from "../shared/paging/paging";
 import {Sort} from "../shared/paging/sort";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {StompService} from "../system/stomp.service";
+import {UserEventService} from './user-event.service';
 
 @Component({
   selector: 'app-users',
@@ -58,7 +59,10 @@ export class UsersComponent implements OnInit {
   factions: Faction[] = [];
   selectedUsers: User[] = [];
 
-  constructor(private userService: UserService, private factionService: FactionService, private stompService: StompService) {
+  constructor(private userService: UserService,
+              private userEventService: UserEventService,
+              private factionService: FactionService,
+              private stompService: StompService) {
   }
 
   getFaction(factionId: number): Faction {
@@ -97,7 +101,7 @@ export class UsersComponent implements OnInit {
 
   userDefeatedUser() {
     const [user, defeatedUser] = this.selectedUsers;
-    this.userService.userDefeatedUser(user, defeatedUser);
+    this.userEventService.userDefeatedUser(user, defeatedUser);
   }
 
   onPageChange(pageIndex: number) {

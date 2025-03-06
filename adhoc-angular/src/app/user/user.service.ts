@@ -23,13 +23,12 @@
 import {Inject, Injectable} from '@angular/core';
 import {User} from './user';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, mergeMap, Observable, of, take} from 'rxjs';
-import {StompService} from '../system/stomp.service';
+import {mergeMap, Observable, of} from 'rxjs';
 import {UserRegisterRequest} from "./request-response/user-register-request";
 import {Paging} from "../shared/paging/paging";
 import {Page} from "../shared/paging/page";
 import {CsrfService} from "../system/csrf.service";
-import {UserNavigateResponse} from "./request-response/user-navigate-response";
+import {CurrentUserService} from './current-user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -39,19 +38,13 @@ export class UserService {
   private readonly usersUrl: string;
   private readonly loginUrl: string;
 
-  private currentUser$: BehaviorSubject<User>;
-
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient,
-              private csrfService: CsrfService,
-              private stomp: StompService) {
+              private currentUserService: CurrentUserService,
+              private csrfService: CsrfService) {
 
     this.usersUrl = `${baseUrl}/api/users`;
     this.loginUrl = `${baseUrl}/login`;
-
-    this.stomp
-      .observeEvent('UserDefeatedUser')
-      .subscribe((body: any) => this.handleUserDefeatedUser(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
   }
 
   getUsers(paging: Paging = new Paging()): Observable<Page<User>> {
@@ -66,34 +59,6 @@ export class UserService {
     return this.http.put<User>(`${this.usersUrl}/${user.id}`, user);
   }
 
-  getCurrentUser(): Observable<User> {
-    return this.getCurrentUser$().pipe(take(1));
-  }
-
-  getCurrentUser$(): Observable<User> {
-    if (this.currentUser$) {
-      return this.currentUser$;
-    }
-    return this.refreshCurrentUser$();
-  }
-
-  refreshCurrentUser(): Observable<User> {
-    return this.refreshCurrentUser$().pipe(take(1));
-  }
-
-  refreshCurrentUser$() {
-    return this.http.get<User>(`${this.usersUrl}/current`).pipe(
-      mergeMap(user => {
-        if (this.currentUser$) {
-          this.currentUser$.next(user);
-        } else {
-          this.currentUser$ = new BehaviorSubject(user);
-        }
-        this.csrfService.clearCsrf();
-        return this.currentUser$;
-      }));
-  }
-
   register(userRegisterRequest: UserRegisterRequest): Observable<User> {
     return this.http.post(`${this.usersUrl}/register`, {...userRegisterRequest}, {
       params: {
@@ -101,18 +66,14 @@ export class UserService {
       }
     }).pipe(
       mergeMap(user => {
-        if (this.currentUser$) {
-          this.currentUser$.next(user);
-        } else {
-          this.currentUser$ = new BehaviorSubject(user);
-        }
+        this.currentUserService.setCurrentUser(user);
         this.csrfService.clearCsrf();
-        return this.currentUser$;
+        return of(user);
       }));
   }
 
   getCurrentUserOrRegister(): Observable<User> {
-    return this.getCurrentUser().pipe(
+    return this.currentUserService.getCurrentUser().pipe(
       mergeMap(currentUser => {
         return currentUser ? of(currentUser) : this.register({
           human: true
@@ -132,33 +93,6 @@ export class UserService {
         'remember-me': rememberMe
       }
     }).pipe(
-      mergeMap(_ => this.refreshCurrentUser()));
-  }
-
-  navigateCurrentUser(destinationServerId?: number): Observable<UserNavigateResponse> {
-    return this.http.post(`${this.usersUrl}/current/navigate`, {destinationServerId: destinationServerId});
-  }
-
-  userDefeatedUser(user: User, defeatedUser?: User) {
-    this.stomp.send('UserDefeatedUser', {userId: null /*user.id*/, defeatedUserId: defeatedUser?.id || null});
-  }
-
-  handleUserDefeatedUser(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
-    // let user: User;
-    // let defeatedUser: User;
-    // this.users.map(user => {
-    //   if (user.id === userId) {
-    //     user = user;
-    //   }
-    //   if (user.id === defeatedUserId) {
-    //     defeatedUser = user;
-    //   }
-    // });
-    // user.score++;
-
-    // TODO
-    if (userHuman || defeatedUserHuman) {
-      console.log(`User ${userId} defeated user ${defeatedUserId}`);
-    }
+      mergeMap(_ => this.currentUserService.refreshCurrentUser()));
   }
 }

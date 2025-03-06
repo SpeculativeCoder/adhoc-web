@@ -45,6 +45,7 @@ import {Page} from "../shared/paging/page";
 import {Paging} from "../shared/paging/paging";
 import {customization} from "../customization";
 import * as fabric from "fabric";
+import {CurrentUserService} from '../user/current-user.service';
 
 @Component({
   selector: 'app-map',
@@ -99,6 +100,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               private serverService: ServerService,
               private pawnService: PawnService,
               private userService: UserService,
+              private currentUserService: CurrentUserService,
               private configService: PropertiesService,
               private iterableDiffers: IterableDiffers,
               private keyValueDiffers: KeyValueDiffers,
@@ -400,7 +402,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         });
         serverGroup.on('selected', () => {
           this.userService.getCurrentUserOrRegister().subscribe(user => {
-            this.userService.navigateCurrentUser(server.id).subscribe(navigation => {
+            this.currentUserService.navigateCurrentUser(server.id).subscribe(navigation => {
               this.router.navigate(['client'], {
                 // queryParams: {
                 //   areaId: area.id

@@ -33,6 +33,8 @@ import {Faction} from "./faction/faction";
 import {customization} from "./customization";
 import {Meta} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
+import {CurrentUserService} from './user/current-user.service';
+import {UserEventService} from './user/user-event.service';
 
 @Component({
   selector: 'app-root',
@@ -60,6 +62,8 @@ export class AppComponent implements OnInit {
               private factionService: FactionService,
               private controlPointService: ObjectiveService,
               private userService: UserService,
+              private currentUserService: CurrentUserService,
+              private userEventService: UserEventService,
               private elementRef: ElementRef,
               private configService: PropertiesService,
               private route: ActivatedRoute,
@@ -75,7 +79,7 @@ export class AppComponent implements OnInit {
 
     this.meta.addTag({name: 'description', content: customization.description});
 
-    this.userService.getCurrentUser$().subscribe(currentUser => {
+    this.currentUserService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser = currentUser;
       if (this.currentUser) {
         this.factionService.getCachedFaction(currentUser.factionId).subscribe(faction => {

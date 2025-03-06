@@ -20,14 +20,14 @@
  * SOFTWARE.
  */
 
-import {StompService} from './core/stomp.service';
+import {StompService} from './system/stomp.service';
 import {Component, ElementRef, OnInit} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink, RouterOutlet} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {UserService} from './user/user.service';
 import {User} from './user/user';
 import {ObjectiveService} from "./objective/objective.service";
-import {CsrfService} from "./core/csrf.service";
+import {CsrfService} from "./system/csrf.service";
 import {PropertiesService} from "./properties/properties.service";
 import {Faction} from "./faction/faction";
 import {customization} from "./customization";

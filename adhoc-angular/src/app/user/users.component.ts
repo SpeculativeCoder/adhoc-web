@@ -35,7 +35,7 @@ import {Page} from "../shared/paging/page";
 import {Paging} from "../shared/paging/paging";
 import {Sort} from "../shared/paging/sort";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
-import {StompService} from "../core/stomp.service";
+import {StompService} from "../system/stomp.service";
 
 @Component({
   selector: 'app-users',

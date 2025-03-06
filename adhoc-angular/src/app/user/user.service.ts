@@ -24,11 +24,11 @@ import {Inject, Injectable} from '@angular/core';
 import {User} from './user';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, mergeMap, Observable, of, take} from 'rxjs';
-import {StompService} from '../core/stomp.service';
+import {StompService} from '../system/stomp.service';
 import {UserRegisterRequest} from "./request-response/user-register-request";
 import {Paging} from "../shared/paging/paging";
 import {Page} from "../shared/paging/page";
-import {CsrfService} from "../core/csrf.service";
+import {CsrfService} from "../system/csrf.service";
 import {UserNavigateResponse} from "./request-response/user-navigate-response";
 
 @Injectable({

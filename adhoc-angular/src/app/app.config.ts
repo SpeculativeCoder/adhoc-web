@@ -27,8 +27,8 @@ import {routes} from './app.routes';
 import {environment} from "../environments/environment";
 import {AppTitleStrategy} from "./app-title-strategy";
 import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
-import {CsrfInterceptor} from "./core/http-interceptor/csrf-interceptor";
-import {ErrorInterceptor} from "./core/http-interceptor/error-interceptor";
+import {CsrfInterceptor} from "./system/http-interceptor/csrf-interceptor";
+import {ErrorInterceptor} from "./system/http-interceptor/error-interceptor";
 
 export const appConfig: ApplicationConfig = {
   providers: [

@@ -25,7 +25,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {Objective} from './objective';
 import {Faction} from '../faction/faction';
-import {StompService} from '../core/stomp.service';
+import {StompService} from '../system/stomp.service';
 import {map} from 'rxjs/operators';
 import {FactionService} from '../faction/faction.service';
 import {Paging} from "../shared/paging/paging";

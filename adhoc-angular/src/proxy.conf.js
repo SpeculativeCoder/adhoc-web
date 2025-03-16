@@ -25,7 +25,6 @@ const PROXY_CONFIG = [
     context: [
       "/csrf",
       "/api",
-      "/login",
       "/HTML5Client",
       "/fonts",
     ],

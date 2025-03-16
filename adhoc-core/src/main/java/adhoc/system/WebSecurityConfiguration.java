@@ -123,6 +123,7 @@ public class WebSecurityConfiguration<S extends Session> {
                 // allow form login - used by users
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .loginProcessingUrl("/api/login")
                         .failureHandler(adhocAuthenticationFailureHandler)
                         .successHandler(adhocAuthenticationSuccessHandler))
 

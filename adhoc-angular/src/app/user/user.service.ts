@@ -44,7 +44,7 @@ export class UserService {
               private csrfService: CsrfService) {
 
     this.usersUrl = `${baseUrl}/api/users`;
-    this.loginUrl = `${baseUrl}/login`;
+    this.loginUrl = `${baseUrl}/api/login`;
   }
 
   getUsers(paging: Paging = new Paging()): Observable<Page<User>> {

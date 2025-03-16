@@ -38,8 +38,10 @@ public class WebSocketSecurityConfiguration {
             MessageMatcherDelegatingAuthorizationManager.Builder messages) {
 
         messages.nullDestMatcher().permitAll();
+
         messages.simpSubscribeDestMatchers("/topic/events/**").permitAll();
         messages.simpMessageDestMatchers("/app/**").hasAnyRole("SERVER");
+
         messages.anyMessage().denyAll();
 
         return messages.build();

@@ -35,6 +35,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -47,10 +48,10 @@ import java.util.Optional;
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
-public class LogRequestFilter extends AbstractRequestLoggingFilter {
+public class LogFilter extends AbstractRequestLoggingFilter {
 
-    private static final Logger requestLogUser = LoggerFactory.getLogger("REQUEST_LOG.USER");
-    private static final Logger requestLogServer = LoggerFactory.getLogger("REQUEST_LOG.SERVER");
+    private static final Logger userLogger = LoggerFactory.getLogger(LogFilter.class.getName() + ".user");
+    private static final Logger serverLogger = LoggerFactory.getLogger(LogFilter.class.getName() + ".server");
 
     @Value("${adhoc.server.basic-auth.username:#{null}}")
     private Optional<String> serverBasicAuthUsername;
@@ -60,7 +61,7 @@ public class LogRequestFilter extends AbstractRequestLoggingFilter {
 
     private String encodedServerBasicAuth;
 
-    public LogRequestFilter() {
+    public LogFilter() {
         setIncludeQueryString(true);
         setIncludeHeaders(true);
         setIncludePayload(true);
@@ -77,7 +78,7 @@ public class LogRequestFilter extends AbstractRequestLoggingFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request, getMaxPayloadLength());
@@ -115,7 +116,7 @@ public class LogRequestFilter extends AbstractRequestLoggingFilter {
                         && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
             }
 
-            Logger logger = server ? requestLogServer : requestLogUser;
+            Logger logger = server ? serverLogger : userLogger;
 
             LoggingEventBuilder loggingEventBuilder = null;
 
@@ -143,23 +144,23 @@ public class LogRequestFilter extends AbstractRequestLoggingFilter {
     }
 
     @Override
-    protected void beforeRequest(HttpServletRequest request, String message) {
+    protected void beforeRequest(@NonNull HttpServletRequest request, @NonNull String message) {
         // will do our own logging for now
     }
 
     @Override
-    protected void afterRequest(HttpServletRequest request, String message) {
+    protected void afterRequest(@NonNull HttpServletRequest request, @NonNull String message) {
         // will do our own logging for now
     }
 
     @Override
-    protected boolean shouldLog(HttpServletRequest request) {
+    protected boolean shouldLog(@NonNull HttpServletRequest request) {
         // will do our own logging for now
         return false;
     }
 
     @Override
-    protected String getMessagePayload(HttpServletRequest request) {
+    protected String getMessagePayload(@NonNull HttpServletRequest request) {
         if (isRegisterOrLoginRequest(request)) {
             return "***";
         }

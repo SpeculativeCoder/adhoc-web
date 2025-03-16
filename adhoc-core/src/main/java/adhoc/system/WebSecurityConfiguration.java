@@ -164,13 +164,6 @@ public class WebSecurityConfiguration<S extends Session> {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    // as of Spring Boot 3.4.1 / Spring Security 6.4.2, try to ignore processor from WebSocketObservationConfiguration for now
-    //@Bean
-    //@Primary
-    //public ObjectPostProcessor<Object> primaryObjectPostProcessor(@Qualifier("objectPostProcessor") ObjectPostProcessor<Object> objectPostProcessor) {
-    //    return objectPostProcessor;
-    //}
-
     private Set<String> anonymousAuthorities() {
         Set<String> anonymousAuthorities = new LinkedHashSet<>();
         anonymousAuthorities.add("ROLE_ANONYMOUS");
@@ -199,12 +192,21 @@ public class WebSecurityConfiguration<S extends Session> {
     //    //loggerListener.setLogInteractiveAuthenticationSuccessEvents(false);
     //    return loggerListener;
     //}
+
+    // as of Spring Boot 3.4.1 / Spring Security 6.4.2, try to ignore processor from WebSocketObservationConfiguration for now
+    //@Bean
+    //@Primary
+    //public ObjectPostProcessor<Object> primaryObjectPostProcessor(@Qualifier("objectPostProcessor") ObjectPostProcessor<Object> objectPostProcessor) {
+    //    return objectPostProcessor;
+    //}
+
+    //@Bean
+    //public UserDetailsManager userDetailsManager(PasswordEncoder passwordEncoder) {
+    //    return new InMemoryUserDetailsManager(
+    //            User.withUsername("user").password(passwordEncoder.encode("password")).roles("USER").build(),
+    //            User.withUsername("admin").password(passwordEncoder.encode("password")).roles("ADMIN").build()) {
+    //    };
+    //}
 }
 
-//	@Bean
-//	public UserDetailsManager userDetailsManager(PasswordEncoder passwordEncoder) {
-//		return new InMemoryUserDetailsManager(
-//				User.withUsername("user").password(passwordEncoder.encode("password")).roles("USER").build(),
-//				User.withUsername("admin").password(passwordEncoder.encode("password")).roles("ADMIN").build()) {
-//		};
-//	}
+

@@ -30,6 +30,8 @@ import org.slf4j.event.Level;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.csrf.InvalidCsrfTokenException;
+import org.springframework.security.web.csrf.MissingCsrfTokenException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -39,13 +41,19 @@ import java.io.IOException;
 public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
 
         response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
 
-        //Level level = (accessDeniedException instanceof MissingCsrfTokenException) ? Level.INFO : Level.WARN;
         Level level = Level.WARN;
-        log.atLevel(level).log("Handled access denied: status={} method={} uri={}",
-                response.getStatus(), request.getMethod(), request.getRequestURI(), accessDeniedException);
+
+        if ((exception instanceof MissingCsrfTokenException
+                || exception instanceof InvalidCsrfTokenException)
+                && !request.getRequestURI().startsWith("/api/")) {
+            level = Level.DEBUG;
+        }
+
+        log.atLevel(level).log("Handled: exception={} status={} method={} uri={}",
+                exception.getClass().getSimpleName(), response.getStatus(), request.getMethod(), request.getRequestURI(), exception);
     }
 }

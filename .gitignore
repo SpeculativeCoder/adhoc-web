@@ -6,7 +6,7 @@ env/
 /adhoc-web-extra/
 /customization/
 
-/http/
+/httpRequests/
 
 .idea/
 .jpb/

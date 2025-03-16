@@ -40,9 +40,9 @@ public class RobotsController {
     @GetMapping(value = "/robots.txt", produces = "text/plain")
     public ClassPathResource getRobotsTxt() {
         if (coreProperties.getFeatureFlags().contains("development")) {
-            return classPathResource("/robots/robots_development.txt");
+            return classPathResource("/robots/robots_dev.txt");
         } else {
-            return classPathResource("/robots/robots_production.txt");
+            return classPathResource("/robots/robots_prod.txt");
         }
     }
 

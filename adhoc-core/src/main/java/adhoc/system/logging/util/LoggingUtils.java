@@ -27,7 +27,7 @@ import lombok.experimental.UtilityClass;
 import java.util.regex.Pattern;
 
 @UtilityClass
-public final class AdhocLoggingUtils {
+public final class LoggingUtils {
 
     private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
 

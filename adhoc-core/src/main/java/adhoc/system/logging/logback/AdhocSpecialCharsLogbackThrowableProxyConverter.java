@@ -22,7 +22,7 @@
 
 package adhoc.system.logging.logback;
 
-import adhoc.system.logging.util.AdhocLoggingUtils;
+import adhoc.system.logging.util.LoggingUtils;
 import ch.qos.logback.classic.pattern.RootCauseFirstThrowableProxyConverter;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,7 @@ public class AdhocSpecialCharsLogbackThrowableProxyConverter extends RootCauseFi
             Object result = proxy.invoke(throwableProxy, args);
 
             if ("getMessage".equals(method.getName()) && result instanceof String text) {
-                result = AdhocLoggingUtils.replaceSpecialChars(text);
+                result = LoggingUtils.replaceSpecialChars(text);
             }
             return result;
         }

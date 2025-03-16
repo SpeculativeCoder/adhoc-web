@@ -50,9 +50,9 @@ import java.util.Map;
  * In kiosk mode we should allow STOMP connections from the user's web browsers.
  * The manager and kiosk brokers talk to each other via an Artemis cluster to ensure we pass along events.
  */
-@Slf4j
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class AdhocArtemisConfiguration {
 
     private final CoreProperties coreProperties;

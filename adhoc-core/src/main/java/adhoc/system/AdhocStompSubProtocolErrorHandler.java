@@ -23,6 +23,7 @@
 package adhoc.system;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -32,13 +33,14 @@ import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 @Slf4j
 public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHandler {
 
+    @NonNull
     @Override
-    protected Message<byte[]> handleInternal(StompHeaderAccessor errorHeaderAccessor, byte[] errorPayload, Throwable cause, StompHeaderAccessor clientHeaderAccessor) {
+    protected Message<byte[]> handleInternal(@NonNull StompHeaderAccessor errorHeaderAccessor, @NonNull byte[] errorPayload, Throwable exception, StompHeaderAccessor clientHeaderAccessor) {
 
-        Message<byte[]> message = super.handleInternal(errorHeaderAccessor, errorPayload, cause, clientHeaderAccessor);
+        Message<byte[]> message = super.handleInternal(errorHeaderAccessor, errorPayload, exception, clientHeaderAccessor);
 
-        if (cause != null) {
-            log.warn("Stomp sub-protocol exception handled", cause);
+        if (exception != null) {
+            log.warn("Handled: exception={}", exception.getClass().getSimpleName(), exception);
         }
 
         return message;

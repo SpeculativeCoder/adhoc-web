@@ -22,14 +22,13 @@
 
 package adhoc.system;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.http.*;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -40,7 +39,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 /** Extension of default Spring MVC exception handler to gracefully handle some additional exceptions. */
 @Slf4j
 @ControllerAdvice
-public class AdhocResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+public class AdhocExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     @Nullable
@@ -51,38 +50,44 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
     }
 
-    @ExceptionHandler(Throwable.class)
-    @Nullable
-    public ResponseEntity<Object> handleThrowable(Exception exception, WebRequest webRequest) {
-        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
-        HttpHeaders httpHeaders = (exception instanceof ErrorResponse errorResponse)
-                ? errorResponse.getHeaders()
-                : new HttpHeaders();
-        return handleExceptionInternal(exception, problemDetail, httpHeaders, httpStatus, webRequest);
-    }
+    //@ExceptionHandler(Throwable.class)
+    //@Nullable
+    //public ResponseEntity<Object> handleThrowable(Exception exception, WebRequest webRequest) {
+    //    HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+    //    ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
+    //    HttpHeaders httpHeaders = (exception instanceof ErrorResponse errorResponse)
+    //            ? errorResponse.getHeaders()
+    //            : new HttpHeaders();
+    //    return handleExceptionInternal(exception, problemDetail, httpHeaders, httpStatus, webRequest);
+    //}
 
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception exception, Object body, HttpHeaders httpHeaders, HttpStatusCode statusCode, WebRequest webRequest) {
+    protected ResponseEntity<Object> handleExceptionInternal(@NonNull Exception exception, Object body, @NonNull HttpHeaders httpHeaders, @NonNull HttpStatusCode statusCode, @NonNull WebRequest webRequest) {
 
         ResponseEntity<Object> responseEntity = super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
 
         String status = "?";
+        HttpStatusCode httpStatusCode = null;
         if (responseEntity != null) {
-            @Nonnull HttpStatusCode httpStatusCode = responseEntity.getStatusCode();
+            httpStatusCode = responseEntity.getStatusCode();
             status = String.valueOf(httpStatusCode.value());
         }
 
         String method = "?";
         String uri = "?";
         if (webRequest instanceof ServletWebRequest servletWebRequest) {
-            @Nonnull HttpServletRequest request = servletWebRequest.getRequest();
+            HttpServletRequest request = servletWebRequest.getRequest();
             method = request.getMethod();
             uri = request.getRequestURI();
         }
 
-        Level level = (exception instanceof NoResourceFoundException) ? Level.DEBUG : Level.WARN;
-        log.atLevel(level).log("Handled exception: status={} method={} uri={}", status, method, uri, exception);
+        Level level = Level.WARN;
+
+        if (exception instanceof NoResourceFoundException) {
+            level = Level.DEBUG;
+        }
+
+        log.atLevel(level).log("Handled: exception={} status={} method={} uri={}", exception.getClass().getSimpleName(), status, method, uri, exception);
         //LogFormatUtils.formatValue(exception, 500, true)
 
         return responseEntity;

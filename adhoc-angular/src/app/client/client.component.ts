@@ -23,7 +23,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {PropertiesService} from "../properties/properties.service";
+import {MetaService} from "../system/meta.service";
 import {AreaService} from "../area/area.service";
 import {UserService} from "../user/user.service";
 import {ServerService} from "../server/server.service";
@@ -53,7 +53,7 @@ export class ClientComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private router: Router,
               private sanitizer: DomSanitizer,
-              private configService: PropertiesService,
+              private metaService: MetaService,
               private areaService: AreaService,
               private serverService: ServerService,
               private userService: UserService,
@@ -118,8 +118,8 @@ export class ClientComponent implements OnInit {
           && (typeof navigation.pitch) === 'number' && (typeof navigation.yaw) === 'number') {
           unrealEngineCommandLine += '?X=' + navigation.x + '?Y=' + navigation.y + '?Z=' + navigation.z + '?Pitch=' + navigation.pitch + '?Yaw=' + navigation.yaw;
         }
-        if (this.configService.featureFlags) {
-          unrealEngineCommandLine += ' FeatureFlags=' + this.configService.featureFlags;
+        if (this.metaService.featureFlags) {
+          unrealEngineCommandLine += ' FeatureFlags=' + this.metaService.featureFlags;
         }
         unrealEngineCommandLine += ' -stdout';
         console.log(`unrealEngineCommandLine: ${unrealEngineCommandLine}`);

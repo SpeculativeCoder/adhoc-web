@@ -28,7 +28,7 @@ import {UserService} from './user/user.service';
 import {User} from './user/user';
 import {ObjectiveService} from "./objective/objective.service";
 import {CsrfService} from "./system/csrf.service";
-import {PropertiesService} from "./properties/properties.service";
+import {MetaService} from "./system/meta.service";
 import {Faction} from "./faction/faction";
 import {customization} from "./customization";
 import {Meta} from "@angular/platform-browser";
@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
               private currentUserService: CurrentUserService,
               private userEventService: UserEventService,
               private elementRef: ElementRef,
-              private configService: PropertiesService,
+              private metaService: MetaService,
               private route: ActivatedRoute,
               private router: Router,
               private meta: Meta) {
@@ -75,7 +75,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.featureFlags = this.configService.featureFlags;
+    this.featureFlags = this.metaService.featureFlags;
 
     this.meta.addTag({name: 'description', content: customization.description});
 

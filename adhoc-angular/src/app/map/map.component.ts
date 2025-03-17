@@ -35,7 +35,7 @@ import {RegionService} from "../region/region.service";
 import {AreaService} from "../area/area.service";
 import {Pawn} from "../pawn/pawn";
 import {PawnService} from "../pawn/pawn.service";
-import {PropertiesService} from "../properties/properties.service";
+import {MetaService} from "../system/meta.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StompService} from "../system/stomp.service";
 import {CommonModule, DOCUMENT} from "@angular/common";
@@ -101,7 +101,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               private pawnService: PawnService,
               private userService: UserService,
               private currentUserService: CurrentUserService,
-              private configService: PropertiesService,
+              private metaService: MetaService,
               private iterableDiffers: IterableDiffers,
               private keyValueDiffers: KeyValueDiffers,
               private router: Router,

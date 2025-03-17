@@ -25,7 +25,7 @@ import {Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
-import {PropertiesService} from "../properties/properties.service";
+import {MetaService} from "../system/meta.service";
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
 import {Router, RouterLink} from "@angular/router";
 import {CommonModule} from "@angular/common";
@@ -56,7 +56,7 @@ export class ServersComponent implements OnInit {
   constructor(private serverService: ServerService,
               private userService: UserService,
               private currentUserService: CurrentUserService,
-              private configService: PropertiesService,
+              private metaService: MetaService,
               private router: Router) {
   }
 

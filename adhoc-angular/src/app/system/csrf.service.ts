@@ -36,7 +36,7 @@ export class CsrfService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
-    this.csrfUrl = `${baseUrl}/csrf`;
+    this.csrfUrl = `${baseUrl}/api/csrf`;
   }
 
   getCsrf() {

@@ -148,7 +148,9 @@ public class WebSecurityConfiguration<S extends Session> {
     }
 
     @Bean
-    public SpringSessionBackedSessionRegistry<S> sessionRegistry(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository) {
+    public SpringSessionBackedSessionRegistry<S> sessionRegistry(
+            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+            FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository) {
         return new SpringSessionBackedSessionRegistry<>(jdbcIndexedSessionRepository);
     }
 

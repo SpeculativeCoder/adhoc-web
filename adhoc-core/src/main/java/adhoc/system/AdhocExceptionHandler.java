@@ -67,7 +67,7 @@ public class AdhocExceptionHandler extends ResponseEntityExceptionHandler {
         ResponseEntity<Object> responseEntity = super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
 
         String status = "?";
-        HttpStatusCode httpStatusCode = null;
+        HttpStatusCode httpStatusCode;
         if (responseEntity != null) {
             httpStatusCode = responseEntity.getStatusCode();
             status = String.valueOf(httpStatusCode.value());

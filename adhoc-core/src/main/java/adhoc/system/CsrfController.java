@@ -25,10 +25,12 @@ package adhoc.system;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Allows access to CSRF token for the Angular app. */
 @RestController
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class CsrfController {
 

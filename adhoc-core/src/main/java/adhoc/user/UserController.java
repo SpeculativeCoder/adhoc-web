@@ -22,6 +22,7 @@
 
 package adhoc.user;
 
+import adhoc.system.auth.AdhocUserDetails;
 import adhoc.user.request_response.UserNavigateRequest;
 import adhoc.user.request_response.UserNavigateResponse;
 import adhoc.user.request_response.UserRegisterRequest;

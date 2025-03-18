@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.system.auth;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

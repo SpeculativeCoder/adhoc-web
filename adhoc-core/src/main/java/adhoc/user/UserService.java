@@ -22,6 +22,7 @@
 
 package adhoc.user;
 
+import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;

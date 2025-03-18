@@ -20,8 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.system.auth;
 
+import adhoc.user.UserService;
 import com.google.common.base.Verify;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

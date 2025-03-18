@@ -20,29 +20,29 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.auth;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.stereotype.Component;
+import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
 
-import java.io.IOException;
+import java.util.Collection;
 
-@Component
-@Slf4j
-public class AdhocAuthenticationFailureHandler implements AuthenticationFailureHandler {
+/**
+ * Spring Security's view of authenticated user.
+ * We keep track of the authenticated user's database ID so we can easily look up any extra information as needed.
+ */
+public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {
+
+    @Getter
+    private final Long userId;
+
+    public AdhocUserDetails(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long userId) {
+        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+        this.userId = userId;
+    }
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
-
-        log.warn("Handled: exception={} status={} method={} uri={}",
-                exception.getClass().getSimpleName(), response.getStatus(), request.getMethod(), request.getRequestURI(), exception);
+    public String toString() {
+        return super.toString() + " userId=" + userId;
     }
 }

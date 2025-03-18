@@ -23,7 +23,7 @@
 package adhoc.user.programmatic_login;
 
 import adhoc.system.WebSecurityConfiguration;
-import adhoc.user.AdhocAuthenticationSuccessHandler;
+import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;

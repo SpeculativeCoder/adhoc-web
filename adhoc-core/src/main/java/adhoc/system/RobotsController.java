@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.robots;
+package adhoc.system;
 
 import adhoc.system.properties.CoreProperties;
 import com.google.common.base.Verify;

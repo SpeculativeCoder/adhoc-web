@@ -20,22 +20,21 @@
  * SOFTWARE.
  */
 
-package adhoc.system.csrf;
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {InfoComponent} from "./info.component";
+import {AboutComponent} from "./about/about.component";
+import {EulaComponent} from "./eula/eula.component";
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-/** Allows access to CSRF token for the Angular app. */
-@RestController
-@RequestMapping("/api")
-@RequiredArgsConstructor
-public class CsrfController {
-
-    @GetMapping("/csrf")
-    public CsrfToken csrf(CsrfToken token) {
-        return token;
-    }
+@NgModule({
+  declarations: [
+    InfoComponent,
+    AboutComponent,
+    EulaComponent
+  ],
+  imports: [
+    CommonModule
+  ]
+})
+export class InfoModule {
 }

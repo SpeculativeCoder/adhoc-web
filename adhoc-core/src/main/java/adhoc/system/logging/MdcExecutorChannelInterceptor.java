@@ -20,30 +20,32 @@
  * SOFTWARE.
  */
 
-import {Component} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {CommonModule} from "@angular/common";
-import {AboutComponent} from "./about/about.component";
-import {EulaComponent} from "./eula/eula.component";
+package adhoc.system.logging;
 
-@Component({
-  selector: 'info-page',
-  standalone: true,
-  imports: [
-    CommonModule,
-    AboutComponent,
-    EulaComponent
-  ],
-  templateUrl: './info-page.component.html'
-})
-export class InfoPageComponent {
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ExecutorChannelInterceptor;
+import org.springframework.stereotype.Component;
 
-  page: string;
+@Component
+@Slf4j
+public class MdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
 
-  constructor(private route: ActivatedRoute,
-              private router: Router) {
-    this.route.paramMap.subscribe(params => {
-      this.page = params.get('page');
-    });
-  }
+    @Override
+    public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        //MDC.put("uuid", UUID.randomUUID().toString());
+        MDC.put("dest", accessor.getDestination());
+        return message;
+    }
+
+    @Override
+    public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
+        MDC.remove("dest");
+        //MDC.remove("uuid");
+    }
 }

@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logback;
+package adhoc.system.logging.logback;
 
-import adhoc.system.util.LogUtils;
+import adhoc.system.logging.util.LoggingUtils;
 import ch.qos.logback.classic.pattern.RootCauseFirstThrowableProxyConverter;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,7 @@ public class AdhocSpecialCharsLogbackThrowableProxyConverter extends RootCauseFi
             Object result = proxy.invoke(throwableProxy, args);
 
             if ("getMessage".equals(method.getName()) && result instanceof String text) {
-                result = LogUtils.replaceSpecialChars(text);
+                result = LoggingUtils.replaceSpecialChars(text);
             }
             return result;
         }

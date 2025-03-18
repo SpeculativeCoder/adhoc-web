@@ -20,35 +20,30 @@
  * SOFTWARE.
  */
 
-package adhoc.system.mdc;
+import {Component} from '@angular/core';
+import {ActivatedRoute, Router} from "@angular/router";
+import {CommonModule} from "@angular/common";
+import {AboutComponent} from "./about/about.component";
+import {EulaComponent} from "./eula/eula.component";
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.MDC;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+@Component({
+  selector: 'info-page',
+  standalone: true,
+  imports: [
+    CommonModule,
+    AboutComponent,
+    EulaComponent
+  ],
+  templateUrl: './info.component.html'
+})
+export class InfoComponent {
 
-import java.io.IOException;
+  page: string;
 
-@Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
-public class MdcFilter extends OncePerRequestFilter {
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try {
-            //MDC.put("uuid", UUID.randomUUID().toString());
-            //MDC.put("method", request.getMethod());
-            MDC.put("uri", request.getRequestURI());
-            filterChain.doFilter(request, response);
-        } finally {
-            MDC.remove("uri");
-            //MDC.remove("method");
-            //MDC.remove("uuid");
-        }
-    }
+  constructor(private route: ActivatedRoute,
+              private router: Router) {
+    this.route.paramMap.subscribe(params => {
+      this.page = params.get('page');
+    });
+  }
 }

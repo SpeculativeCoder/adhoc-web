@@ -41,7 +41,7 @@ public class IndexController {
     // TODO: better way than this to catch browser refresh in non-root URLs
     @GetMapping(value = {
             "/",
-            "/pages/**",
+            "/info/**",
             "/map",
             "/servers/**",
             "/tasks/**",

@@ -20,21 +20,23 @@
  * SOFTWARE.
  */
 
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {InfoPageComponent} from "./info-page.component";
-import {AboutComponent} from "./about/about.component";
-import {EulaComponent} from "./eula/eula.component";
+package adhoc.system.logging.util;
 
-@NgModule({
-  declarations: [
-    InfoPageComponent,
-    AboutComponent,
-    EulaComponent
-  ],
-  imports: [
-    CommonModule
-  ]
-})
-export class InfoPageModule {
+import lombok.experimental.UtilityClass;
+
+import java.util.regex.Pattern;
+
+@UtilityClass
+public final class LoggingUtils {
+
+    private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
+
+    public String replaceSpecialChars(String text) {
+
+        text = text.replace("\r", "\\r");
+        text = text.replace("\n", "\\n");
+        text = text.replace("\t", "\\t");
+
+        return NON_PRINTABLE.matcher(text).replaceAll("?");
+    }
 }

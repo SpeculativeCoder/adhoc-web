@@ -20,32 +20,22 @@
  * SOFTWARE.
  */
 
-package adhoc.system.mdc;
+package adhoc.system;
 
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ExecutorChannelInterceptor;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Component
-@Slf4j
-public class MdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
+/** Allows access to CSRF token for the Angular app. */
+@RestController
+@RequestMapping("/api")
+@RequiredArgsConstructor
+public class CsrfController {
 
-    @Override
-    public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        //MDC.put("uuid", UUID.randomUUID().toString());
-        MDC.put("dest", accessor.getDestination());
-        return message;
-    }
-
-    @Override
-    public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
-        MDC.remove("dest");
-        //MDC.remove("uuid");
+    @GetMapping("/csrf")
+    public CsrfToken csrf(CsrfToken token) {
+        return token;
     }
 }

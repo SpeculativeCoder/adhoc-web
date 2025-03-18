@@ -20,23 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.system.util;
+package adhoc.system.logging.logback;
 
-import lombok.experimental.UtilityClass;
+import adhoc.system.logging.util.LoggingUtils;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.pattern.CompositeConverter;
 
-import java.util.regex.Pattern;
+public class AdhocSpecialCharsLogbackConverter extends CompositeConverter<ILoggingEvent> {
 
-@UtilityClass
-public final class LogUtils {
-
-    private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
-
-    public String replaceSpecialChars(String text) {
-
-        text = text.replace("\r", "\\r");
-        text = text.replace("\n", "\\n");
-        text = text.replace("\t", "\\t");
-
-        return NON_PRINTABLE.matcher(text).replaceAll("?");
+    @Override
+    protected String transform(ILoggingEvent event, String in) {
+        return LoggingUtils.replaceSpecialChars(in);
     }
 }

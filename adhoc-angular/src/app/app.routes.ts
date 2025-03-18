@@ -41,7 +41,7 @@ import {FactionComponent} from "./faction/faction.component";
 import {UsersComponent} from "./user/users.component";
 import {UserComponent} from "./user/user.component";
 import {LoginComponent} from "./user/login.component";
-import {InfoPageComponent} from "./info-page/info-page.component";
+import {InfoComponent} from "./info/info.component";
 import {ClientComponent} from "./client/client.component";
 import {MessagesComponent} from "./message/messages.component";
 
@@ -68,6 +68,6 @@ export const routes: Routes = [
   {path: 'users/:id', title: 'User', component: UserComponent},
   {path: 'messages', title: 'Messages', component: MessagesComponent},
   {path: 'login', title: 'Login', component: LoginComponent},
-  {path: 'pages/:page', title: '', component: InfoPageComponent},
+  {path: 'info/:page', title: '', component: InfoComponent},
   {path: 'client', title: 'Client', component: ClientComponent},
 ];

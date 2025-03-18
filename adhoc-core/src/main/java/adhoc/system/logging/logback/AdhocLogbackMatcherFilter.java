@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logback;
+package adhoc.system.logging.logback;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.AbstractMatcherFilter;

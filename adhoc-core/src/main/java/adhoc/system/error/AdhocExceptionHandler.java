@@ -37,8 +37,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /** Extension of default Spring MVC exception handler to gracefully handle some additional exceptions. */
-@Slf4j
 @ControllerAdvice
+@Slf4j
 public class AdhocExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)

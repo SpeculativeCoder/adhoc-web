@@ -30,7 +30,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.retry.annotation.EnableRetry;
 
 import java.util.List;
 
@@ -43,10 +42,6 @@ import java.util.List;
  * Most of the access to the kiosk will be users with {@link UserRole#USER} role.
  */
 @SpringBootApplication
-//@EnableConfigurationProperties
-//@EnableScheduling
-//@EnableCaching
-@EnableRetry
 @Slf4j
 @RequiredArgsConstructor
 public class AdhocKioskApplication extends AbstractAdhocApplication {

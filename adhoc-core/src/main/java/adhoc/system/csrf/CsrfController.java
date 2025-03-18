@@ -20,35 +20,22 @@
  * SOFTWARE.
  */
 
-package adhoc.system.coop_coep;
+package adhoc.system.csrf;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
+/** Allows access to CSRF token for the Angular app. */
+@RestController
+@RequestMapping("/api")
+@RequiredArgsConstructor
+public class CsrfController {
 
-/**
- * Add some headers required by the browser to allow execution of the UnrealEngine HTML5 client in multithreaded mode.
- */
-// TODO: this is only needed if UE is built for multithreaded
-//@Component
-public class CoopCoepFilter implements Filter {
-
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-
-        if ("GET".equals(httpRequest.getMethod())) {
-            //System.err.println(httpRequest.getMethod() + " " + httpRequest.getRequestURI());
-
-            httpResponse.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-            httpResponse.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-        }
-
-        chain.doFilter(request, response);
+    @GetMapping("/csrf")
+    public CsrfToken csrf(CsrfToken token) {
+        return token;
     }
 }

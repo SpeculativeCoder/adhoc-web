@@ -20,23 +20,37 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging.util;
+package adhoc.system.robots;
 
-import lombok.experimental.UtilityClass;
+import adhoc.system.properties.CoreProperties;
+import com.google.common.base.Verify;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.regex.Pattern;
+import java.util.Objects;
 
-@UtilityClass
-public final class LoggingUtils {
+@RestController
+@RequiredArgsConstructor
+public class RobotsController {
 
-    private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
+    private final CoreProperties coreProperties;
 
-    public String replaceSpecialChars(String text) {
+    @GetMapping(value = "/robots.txt", produces = "text/plain")
+    public ClassPathResource getRobotsTxt() {
+        if (coreProperties.getFeatureFlags().contains("development")) {
+            return classPathResource("/robots/robots_dev.txt");
+        } else {
+            return classPathResource("/robots/robots_prod.txt");
+        }
+    }
 
-        text = text.replace("\r", "\\r");
-        text = text.replace("\n", "\\n");
-        text = text.replace("\t", "\\t");
-
-        return NON_PRINTABLE.matcher(text).replaceAll("?");
+    private ClassPathResource classPathResource(String path) {
+        ClassPathResource resource = new ClassPathResource(path);
+        // ensure nothing unexpected due to path normalization etc.
+        Verify.verify(Objects.equals("/" + resource.getPath(), path));
+        Verify.verify(resource.getPath().startsWith("robots/"));
+        return resource;
     }
 }

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.csrf;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 @Component("csrfChannelInterceptor")
 @Slf4j
 @RequiredArgsConstructor
-public class AdhocCsrfChannelInterceptor implements ChannelInterceptor {
+public class IgnoreServerCsrfChannelInterceptor implements ChannelInterceptor {
 
     private final XorCsrfChannelInterceptor xorCsrfChannelInterceptor = new XorCsrfChannelInterceptor();
 

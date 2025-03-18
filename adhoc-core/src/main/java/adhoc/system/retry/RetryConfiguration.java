@@ -20,18 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.retry;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.annotation.EnableRetry;
 
-@ControllerAdvice
-@Slf4j
-public class AdhocMessageExceptionHandler {
-
-    @MessageExceptionHandler
-    public void handleThrowable(Throwable exception) {
-        log.warn("Handled: exception={}", exception.getClass().getSimpleName(), exception);
-    }
+@Configuration
+@EnableRetry
+public class RetryConfiguration {
 }

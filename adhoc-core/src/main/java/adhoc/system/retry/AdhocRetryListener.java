@@ -20,22 +20,20 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.retry;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.interceptor.MethodInvocationRetryCallback;
+import org.springframework.retry.listener.MethodInvocationRetryListenerSupport;
+import org.springframework.stereotype.Component;
 
-/** Allows access to CSRF token for the Angular app. */
-@RestController
-@RequestMapping("/api")
-@RequiredArgsConstructor
-public class CsrfController {
+@Component
+@Slf4j
+public class AdhocRetryListener extends MethodInvocationRetryListenerSupport {
 
-    @GetMapping("/csrf")
-    public CsrfToken csrf(CsrfToken token) {
-        return token;
+    @Override
+    protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
+        log.debug("{}: {}", callback.getLabel(), context);
     }
 }

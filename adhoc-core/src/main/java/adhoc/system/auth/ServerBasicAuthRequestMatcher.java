@@ -34,6 +34,7 @@ import java.util.Optional;
 
 /**
  * This matcher provides a way to identify server requests.
+ * <p>
  * Used by {@link adhoc.system.WebSecurityConfiguration#securityFilterChain} to ignore CSRF checking on web requests from Unreal server.
  */
 @Component

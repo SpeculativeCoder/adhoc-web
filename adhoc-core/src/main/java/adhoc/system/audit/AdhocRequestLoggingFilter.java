@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging;
+package adhoc.system.audit;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
@@ -48,10 +48,10 @@ import java.util.Optional;
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
-public class LogFilter extends AbstractRequestLoggingFilter {
+public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
-    private static final Logger userLogger = LoggerFactory.getLogger(LogFilter.class.getName() + ".user");
-    private static final Logger serverLogger = LoggerFactory.getLogger(LogFilter.class.getName() + ".server");
+    private static final Logger userLogger = LoggerFactory.getLogger(AdhocRequestLoggingFilter.class.getName() + ".user");
+    private static final Logger serverLogger = LoggerFactory.getLogger(AdhocRequestLoggingFilter.class.getName() + ".server");
 
     @Value("${adhoc.server.basic-auth.username:#{null}}")
     private Optional<String> serverBasicAuthUsername;
@@ -61,7 +61,7 @@ public class LogFilter extends AbstractRequestLoggingFilter {
 
     private String encodedServerBasicAuth;
 
-    public LogFilter() {
+    public AdhocRequestLoggingFilter() {
         setIncludeQueryString(true);
         setIncludeHeaders(true);
         setIncludePayload(true);

@@ -20,20 +20,35 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging;
+package adhoc.system.mdc;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.retry.RetryContext;
-import org.springframework.retry.interceptor.MethodInvocationRetryCallback;
-import org.springframework.retry.listener.MethodInvocationRetryListenerSupport;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @Component
-@Slf4j
-public class LogRetryListener extends MethodInvocationRetryListenerSupport {
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class MdcFilter extends OncePerRequestFilter {
 
     @Override
-    protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
-        log.debug("{}: {}", callback.getLabel(), context);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            //MDC.put("uuid", UUID.randomUUID().toString());
+            //MDC.put("method", request.getMethod());
+            MDC.put("uri", request.getRequestURI());
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove("uri");
+            //MDC.remove("method");
+            //MDC.remove("uuid");
+        }
     }
 }

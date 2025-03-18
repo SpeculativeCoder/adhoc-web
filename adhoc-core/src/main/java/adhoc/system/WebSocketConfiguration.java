@@ -22,14 +22,16 @@
 
 package adhoc.system;
 
-import adhoc.system.logging.MdcExecutorChannelInterceptor;
+import adhoc.system.mdc.MdcExecutorChannelInterceptor;
 import adhoc.system.properties.CoreProperties;
+import adhoc.system.error.AdhocStompSubProtocolErrorHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisMode;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.TaskScheduler;
@@ -51,6 +53,7 @@ public class WebSocketConfiguration {
     @Bean
     public AbstractSessionWebSocketMessageBrokerConfigurer<Session> webSocketMessageBrokerConfigurer(
             AdhocStompSubProtocolErrorHandler adhocStompSubProtocolErrorHandler,
+            MdcExecutorChannelInterceptor mdcExecutorChannelInterceptor,
             @Lazy TaskScheduler taskScheduler) {
 
         return new AbstractSessionWebSocketMessageBrokerConfigurer<>() {
@@ -76,7 +79,7 @@ public class WebSocketConfiguration {
             }
 
             @Override
-            public void configureMessageBroker(MessageBrokerRegistry config) {
+            public void configureMessageBroker(@NonNull MessageBrokerRegistry config) {
 
                 config.setApplicationDestinationPrefixes("/app");
 
@@ -102,7 +105,7 @@ public class WebSocketConfiguration {
             @Override
             public void configureClientInboundChannel(ChannelRegistration registration) {
                 registration
-                        .interceptors(new MdcExecutorChannelInterceptor());
+                        .interceptors(mdcExecutorChannelInterceptor);
             }
         };
     }

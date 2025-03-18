@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.error;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -20,37 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.logback;
 
-import adhoc.system.properties.CoreProperties;
-import com.google.common.base.Verify;
-import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import adhoc.system.util.LogUtils;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.pattern.CompositeConverter;
 
-import java.util.Objects;
+public class AdhocSpecialCharsLogbackConverter extends CompositeConverter<ILoggingEvent> {
 
-@RestController
-@RequiredArgsConstructor
-public class RobotsController {
-
-    private final CoreProperties coreProperties;
-
-    @GetMapping(value = "/robots.txt", produces = "text/plain")
-    public ClassPathResource getRobotsTxt() {
-        if (coreProperties.getFeatureFlags().contains("development")) {
-            return classPathResource("/robots/robots_dev.txt");
-        } else {
-            return classPathResource("/robots/robots_prod.txt");
-        }
-    }
-
-    private ClassPathResource classPathResource(String path) {
-        ClassPathResource resource = new ClassPathResource(path);
-        // ensure nothing unexpected due to path normalization etc.
-        Verify.verify(Objects.equals("/" + resource.getPath(), path));
-        Verify.verify(resource.getPath().startsWith("robots/"));
-        return resource;
+    @Override
+    protected String transform(ILoggingEvent event, String in) {
+        return LogUtils.replaceSpecialChars(in);
     }
 }

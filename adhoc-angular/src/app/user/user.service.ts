@@ -66,8 +66,8 @@ export class UserService {
       }
     }).pipe(
       mergeMap(user => {
-        this.currentUserService.setCurrentUser(user);
         this.csrfService.clearCsrf();
+        this.currentUserService.setCurrentUser(user);
         return of(user);
       }));
   }
@@ -93,6 +93,9 @@ export class UserService {
         'remember-me': rememberMe
       }
     }).pipe(
-      mergeMap(_ => this.currentUserService.refreshCurrentUser()));
+      mergeMap(_ => {
+        this.csrfService.clearCsrf();
+        return this.currentUserService.refreshCurrentUser();
+      }));
   }
 }

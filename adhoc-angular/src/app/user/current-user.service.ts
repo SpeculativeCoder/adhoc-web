@@ -54,7 +54,6 @@ export class CurrentUserService {
     return this.http.get<User>(this.currentUserUrl).pipe(
       mergeMap(currentUser => {
         this.setCurrentUser(currentUser);
-        this.csrfService.clearCsrf();
         return this.currentUser$;
       }));
   }

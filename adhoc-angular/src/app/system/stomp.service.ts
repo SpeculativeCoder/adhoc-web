@@ -46,11 +46,10 @@ export class StompService {
     //     protocols: ['v12.stomp']
     // });
 
-    this.client = webstomp.over(new SockJS(window.location.protocol + '//' + location.host + '/ws/stomp/user_sockjs', {}), {
-      debug: false,
-    });
-
     this.csrfService.getCsrf().subscribe(csrf => {
+      this.client = webstomp.over(new SockJS(window.location.protocol + '//' + location.host + '/ws/stomp/user_sockjs', {}), {
+        debug: false,
+      });
       let headers = {};
       headers[csrf.headerName] = csrf.token;
       this.client.connect(headers, () => this.onConnect(), () => this.onError());

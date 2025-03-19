@@ -22,7 +22,7 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable, shareReplay} from "rxjs";
+import {Observable, of} from "rxjs";
 import {Csrf} from "./csrf";
 
 @Injectable({
@@ -45,12 +45,18 @@ export class CsrfService {
 
   /** Force refresh the CSRF token information. */
   refreshCsrf() {
-    return this.csrf$ = this.http.get<Csrf>(`${this.csrfUrl}`).pipe(
-      shareReplay(1));
+    return this.csrf$ = new Observable(observer => {
+      this.http.get<Csrf>(`${this.csrfUrl}`).subscribe(csrf => {
+        this.csrf$ = of(csrf);
+        observer.next(csrf);
+      });
+    });
   }
 
-  /** Clear CSRF token information, forcing it to be obtained again when next needed.
-   * Typically, this is called when the current user changes due to register/login etc. */
+  /**
+   * Clear CSRF token information, forcing it to be obtained again when next needed.
+   * Typically, this is called when the current user changes due to register/login etc.
+   */
   clearCsrf() {
     this.csrf$ = null;
   }

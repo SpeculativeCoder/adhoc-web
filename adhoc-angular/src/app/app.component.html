@@ -66,7 +66,7 @@
   </li>
   <li class="nav-item">
     <a class="nav-link" routerLink="/login" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
-      <em>Login&nbsp;or&nbsp;Register</em>
+      <em>Login/Register</em>
     </a>
     <a class="nav-link disabled text-nowrap" *ngIf="currentUser">
       <small>{{ currentUser?.name }} </small>

@@ -402,7 +402,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         });
         serverGroup.on('selected', () => {
           this.userService.getCurrentUserOrRegister().subscribe(user => {
-            this.currentUserService.navigateCurrentUser(server.id).subscribe(navigation => {
+            this.currentUserService.navigate(server.id).subscribe(navigation => {
               this.router.navigate(['client'], {
                 // queryParams: {
                 //   areaId: area.id

@@ -24,7 +24,6 @@ import {Inject, Injectable} from '@angular/core';
 import {User} from './user';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, mergeMap, Observable, take} from 'rxjs';
-import {CsrfService} from "../system/csrf.service";
 import {UserNavigateResponse} from "./request-response/user-navigate-response";
 
 @Injectable({
@@ -34,20 +33,16 @@ export class CurrentUserService {
 
   private readonly currentUserUrl: string;
 
-  private currentUser$: BehaviorSubject<User>;
+  private currentUser$: BehaviorSubject<User> = null;
 
   constructor(@Inject('BASE_URL') baseUrl: string,
-              private http: HttpClient,
-              private csrfService: CsrfService) {
+              private http: HttpClient) {
 
     this.currentUserUrl = `${baseUrl}/api/users/current`;
   }
 
   getCurrentUser$(): Observable<User> {
-    if (this.currentUser$) {
-      return this.currentUser$;
-    }
-    return this.refreshCurrentUser$();
+    return this.currentUser$ || this.refreshCurrentUser$();
   }
 
   refreshCurrentUser$() {
@@ -67,14 +62,14 @@ export class CurrentUserService {
   }
 
   setCurrentUser(currentUser: User) {
-    if (this.currentUser$) {
-      this.currentUser$.next(currentUser);
+    if (!this.currentUser$) {
+      this.currentUser$ = new BehaviorSubject<User>(currentUser);
     } else {
-      this.currentUser$ = new BehaviorSubject(currentUser);
+      this.currentUser$.next(currentUser);
     }
   }
 
-  navigateCurrentUser(destinationServerId?: number): Observable<UserNavigateResponse> {
+  navigate(destinationServerId?: number): Observable<UserNavigateResponse> {
     return this.http.post(`${this.currentUserUrl}/navigate`, {destinationServerId: destinationServerId});
   }
 }

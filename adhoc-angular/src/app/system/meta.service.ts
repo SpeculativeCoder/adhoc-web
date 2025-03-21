@@ -21,21 +21,26 @@
  */
 
 import {Injectable} from '@angular/core';
+import {Meta} from '@angular/platform-browser';
+import {customization} from '../customization';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MetaService {
 
-  featureFlags: string = '';
+  private readonly featureFlags: string = '';
 
-  constructor() {
-    let featureFlagsMetaElement = document.head.querySelector('meta[name=FEATURE_FLAGS]');
+  constructor(private meta: Meta) {
+    this.meta.addTag({name: 'description', content: customization.description});
+
+    //let featureFlagsMetaElement = document.head.querySelector('meta[name=FEATURE_FLAGS]');
+    let featureFlagsMetaElement = this.meta.getTag('name="FEATURE_FLAGS"');
     this.featureFlags = featureFlagsMetaElement['content'] || 'development';
     console.log("featureFlags=" + this.featureFlags);
   }
 
-  // getFeatureFlags() {
-  //   return this.featureFlags;
-  // }
+  getFeatureFlags() {
+    return this.featureFlags;
+  }
 }

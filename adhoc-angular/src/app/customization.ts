@@ -20,17 +20,17 @@
  * SOFTWARE.
  */
 
-/** you can create a copy of this in src/customization and tailor it to your needs */
+/** You can create a copy of this in src/customization and tailor it to your needs. */
 export const customization = {
   title: 'WebApp',
   description: 'Web Application',
   developer: 'the developer(s) of this web page / application',
 
-  /** any additional about information (e.g. assets used etc.) can go in here */
+  /** Any additional about information (e.g. assets used etc.) can go in here. */
   aboutPageMoreHtml: `
 <br/>
   `,
 
-  /** if adhoc-angular-extra is available this can be set to <tt>extra</tt> */
+  /** If adhoc-angular-extra is available this can be set to <tt>extra</tt> */
   extra: null
 };

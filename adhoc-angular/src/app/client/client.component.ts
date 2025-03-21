@@ -98,7 +98,7 @@ export class ClientComponent implements OnInit {
 
     // TODO: allow user and navigation information to be passed into this component?
     this.userService.getCurrentUserOrRegister().subscribe(user => {
-      this.currentUserService.navigateCurrentUser().subscribe(navigation => {
+      this.currentUserService.navigate().subscribe(navigation => {
         if (!navigation.ip) {
           throw new Error(`Navigation response has no IP`);
         }
@@ -118,8 +118,8 @@ export class ClientComponent implements OnInit {
           && (typeof navigation.pitch) === 'number' && (typeof navigation.yaw) === 'number') {
           unrealEngineCommandLine += '?X=' + navigation.x + '?Y=' + navigation.y + '?Z=' + navigation.z + '?Pitch=' + navigation.pitch + '?Yaw=' + navigation.yaw;
         }
-        if (this.metaService.featureFlags) {
-          unrealEngineCommandLine += ' FeatureFlags=' + this.metaService.featureFlags;
+        if (this.metaService.getFeatureFlags()) {
+          unrealEngineCommandLine += ' FeatureFlags=' + this.metaService.getFeatureFlags();
         }
         unrealEngineCommandLine += ' -stdout';
         console.log(`unrealEngineCommandLine: ${unrealEngineCommandLine}`);

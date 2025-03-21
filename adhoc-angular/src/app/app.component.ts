@@ -20,21 +20,15 @@
  * SOFTWARE.
  */
 
-import {StompService} from './system/stomp.service';
-import {Component, ElementRef, OnInit} from '@angular/core';
-import {ActivatedRoute, Router, RouterLink, RouterOutlet} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {RouterLink, RouterOutlet} from '@angular/router';
 import {FactionService} from './faction/faction.service';
-import {UserService} from './user/user.service';
 import {User} from './user/user';
-import {ObjectiveService} from "./objective/objective.service";
-import {CsrfService} from "./system/csrf.service";
 import {MetaService} from "./system/meta.service";
 import {Faction} from "./faction/faction";
 import {customization} from "./customization";
-import {Meta} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 import {CurrentUserService} from './user/current-user.service';
-import {UserEventService} from './user/user-event.service';
 
 @Component({
   selector: 'app-root',
@@ -57,31 +51,20 @@ export class AppComponent implements OnInit {
   currentUser: User;
   currentUserFaction: Faction;
 
-  constructor(private csrfService: CsrfService,
-              private stompService: StompService,
-              private factionService: FactionService,
-              private controlPointService: ObjectiveService,
-              private userService: UserService,
+  constructor(private factionService: FactionService,
               private currentUserService: CurrentUserService,
-              private userEventService: UserEventService,
-              private elementRef: ElementRef,
-              private metaService: MetaService,
-              private route: ActivatedRoute,
-              private router: Router,
-              private meta: Meta) {
+              private metaService: MetaService) {
 
     // TODO
     this.extra = !!customization.extra;
   }
 
   ngOnInit() {
-    this.featureFlags = this.metaService.featureFlags;
-
-    this.meta.addTag({name: 'description', content: customization.description});
+    this.featureFlags = this.metaService.getFeatureFlags();
 
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser = currentUser;
-      if (this.currentUser) {
+      if (currentUser) {
         this.factionService.getCachedFaction(currentUser.factionId).subscribe(faction => {
           this.currentUserFaction = faction
         });

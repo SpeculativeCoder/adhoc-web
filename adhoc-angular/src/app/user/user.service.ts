@@ -67,17 +67,7 @@ export class UserService {
     }).pipe(
       mergeMap(user => {
         this.csrfService.clearCsrf();
-        this.currentUserService.setCurrentUser(user);
-        return of(user);
-      }));
-  }
-
-  getCurrentUserOrRegister(): Observable<User> {
-    return this.currentUserService.getCurrentUser().pipe(
-      mergeMap(currentUser => {
-        return currentUser ? of(currentUser) : this.register({
-          human: true
-        });
+        return this.currentUserService.refreshCurrentUser();
       }));
   }
 
@@ -96,6 +86,15 @@ export class UserService {
       mergeMap(_ => {
         this.csrfService.clearCsrf();
         return this.currentUserService.refreshCurrentUser();
+      }));
+  }
+
+  getCurrentUserOrRegister(): Observable<User> {
+    return this.currentUserService.getCurrentUser().pipe(
+      mergeMap(currentUser => {
+        return currentUser ? of(currentUser) : this.register({
+          human: true
+        });
       }));
   }
 }

@@ -23,7 +23,6 @@
 const PROXY_CONFIG = [
   {
     context: [
-      "/csrf",
       "/api",
       "/HTML5Client",
       "/fonts",

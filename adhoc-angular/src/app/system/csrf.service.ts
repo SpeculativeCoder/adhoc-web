@@ -22,8 +22,8 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable, of} from "rxjs";
 import {Csrf} from "./csrf";
+import {mergeMap, ReplaySubject, Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -32,10 +32,11 @@ export class CsrfService {
 
   private readonly csrfUrl: string;
 
-  private csrf$: Observable<Csrf> = null;
+  private csrf$: Subject<Csrf> = null;
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
+
     this.csrfUrl = `${baseUrl}/api/csrf`;
   }
 
@@ -43,14 +44,18 @@ export class CsrfService {
     return this.csrf$ || this.refreshCsrf();
   }
 
-  /** Force refresh the CSRF token information. */
+  /**
+   * Force refresh the CSRF token information.
+   */
   refreshCsrf() {
-    return this.csrf$ = new Observable(observer => {
-      this.http.get<Csrf>(`${this.csrfUrl}`).subscribe(csrf => {
-        this.csrf$ = of(csrf);
-        observer.next(csrf);
-      });
-    });
+    if (!this.csrf$) {
+      this.csrf$ = new ReplaySubject(1);
+    }
+    return this.http.get<Csrf>(this.csrfUrl).pipe(
+      mergeMap(csrf => {
+        this.csrf$.next(csrf);
+        return this.csrf$;
+      }));
   }
 
   /**

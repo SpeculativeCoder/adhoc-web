@@ -21,7 +21,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {RouterLink, RouterOutlet} from '@angular/router';
+import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {User} from './user/user';
 import {MetaService} from "./system/meta.service";
@@ -37,7 +37,8 @@ import {CurrentUserService} from './user/current-user.service';
     //environment.inMemoryDb ? HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService, {dataEncapsulation: false}) : [],
     CommonModule,
     RouterOutlet,
-    RouterLink
+    RouterLink,
+    RouterLinkActive
   ],
   templateUrl: './app.component.html'
 })

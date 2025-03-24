@@ -21,7 +21,7 @@
  */
 
 import {ApplicationConfig, provideZoneChangeDetection} from '@angular/core';
-import {provideRouter, TitleStrategy} from '@angular/router';
+import {provideRouter, TitleStrategy, withComponentInputBinding} from '@angular/router';
 
 import {routes} from './app.routes';
 import {environment} from "../environments/environment";
@@ -33,7 +33,7 @@ import {ErrorInterceptor} from "./system/http-interceptor/error-interceptor";
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({eventCoalescing: true}),
-    provideRouter(routes),
+    provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptorsFromDi()), // TODO
     {provide: HTTP_INTERCEPTORS, useExisting: CsrfInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useExisting: ErrorInterceptor, multi: true},

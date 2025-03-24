@@ -107,6 +107,10 @@ $nav-link-font-weight: $font-weight-semibold;
 //  }
 //}
 
+.nav .active {
+  font-weight: bold;
+}
+
 .map-container {
   margin: 0 auto;
 }

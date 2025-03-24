@@ -22,6 +22,7 @@
 
 package adhoc.objective;
 
+import adhoc.objective.event.ObjectiveEventService;
 import adhoc.objective.event.ObjectiveTakenEvent;
 import adhoc.objective.event.ServerObjectiveTakenEvent;
 import com.google.common.base.Preconditions;

@@ -22,6 +22,8 @@
 
 package adhoc.hosting;
 
+import adhoc.hosting.task.HostingTask;
+import adhoc.hosting.task.server.ServerHostingTask;
 import adhoc.server.Server;
 
 import java.util.List;

@@ -22,6 +22,7 @@
 
 package adhoc.pawn;
 
+import adhoc.pawn.event.PawnEventService;
 import adhoc.pawn.event.ServerPawnsEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

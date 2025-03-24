@@ -22,6 +22,7 @@
 
 package adhoc.server;
 
+import adhoc.server.event.ServerEventService;
 import adhoc.server.event.ServerStartedEvent;
 import adhoc.server.event.ServerUpdatedEvent;
 import com.google.common.base.Preconditions;

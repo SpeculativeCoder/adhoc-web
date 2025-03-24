@@ -22,17 +22,17 @@
 
 package adhoc.system.quartz;
 
-import adhoc.faction.FactionScoreJobService;
-import adhoc.pawn.PawnPurgeJobService;
-import adhoc.server.ServerManagerJobService;
-import adhoc.server.ServerPurgeJobService;
+import adhoc.faction.score.FactionScoreJobService;
+import adhoc.pawn.purge.PawnPurgeJobService;
+import adhoc.server.maintain.ServerMaintainJobService;
+import adhoc.server.purge.ServerPurgeJobService;
 import adhoc.system.event.Event;
-import adhoc.task.TaskDomainJobService;
-import adhoc.task.TaskManagerJobService;
-import adhoc.task.server.ServerTaskManagerJobService;
-import adhoc.user.UserPurgeJobService;
-import adhoc.user.UserScoreJobService;
-import adhoc.user.UserSeenJobService;
+import adhoc.task.domain.TaskDomainJobService;
+import adhoc.task.refresh.TaskRefreshJobService;
+import adhoc.task.server.maintain.ServerTaskMaintainJobService;
+import adhoc.user.maintain.UserMaintainJobService;
+import adhoc.user.purge.UserPurgeJobService;
+import adhoc.user.score.UserScoreJobService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
@@ -53,13 +53,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagerQuartzJob implements Job {
 
-    private final ServerManagerJobService serverManagerJobService;
+    private final ServerMaintainJobService serverMaintainJobService;
     private final ServerPurgeJobService serverPurgeJobService;
-    private final TaskManagerJobService taskManagerJobService;
+    private final TaskRefreshJobService taskRefreshJobService;
     private final TaskDomainJobService taskDomainJobService;
-    private final ServerTaskManagerJobService serverTaskManagerJobService;
+    private final ServerTaskMaintainJobService serverTaskMaintainJobService;
     private final FactionScoreJobService factionScoreJobService;
-    private final UserSeenJobService userSeenJobService;
+    private final UserMaintainJobService userMaintainJobService;
     private final UserScoreJobService userScoreJobService;
     private final UserPurgeJobService userPurgeJobService;
     private final PawnPurgeJobService pawnPurgeJobService;
@@ -76,16 +76,16 @@ public class ManagerQuartzJob implements Job {
             //log.info("jobName={}", jobName);
             switch (jobName) {
             case ManagerQuartzConfiguration.MANAGE_SERVERS:
-                events = serverManagerJobService.manageServers();
+                events = serverMaintainJobService.manageServers();
                 break;
             case ManagerQuartzConfiguration.MANAGE_TASKS:
-                taskManagerJobService.manageTasks();
+                taskRefreshJobService.manageTasks();
                 break;
             case ManagerQuartzConfiguration.MANAGE_TASK_DOMAINS:
                 events = taskDomainJobService.manageTaskDomains();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SERVER_TASKS:
-                serverTaskManagerJobService.manageServerTasks();
+                serverTaskMaintainJobService.manageServerTasks();
                 break;
             case ManagerQuartzConfiguration.AWARD_AND_DECAY_FACTION_SCORES:
                 factionScoreJobService.awardAndDecayFactionScores();
@@ -94,7 +94,7 @@ public class ManagerQuartzJob implements Job {
                 userScoreJobService.awardAndDecayUserScores();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SEEN_USERS:
-                userSeenJobService.manageSeenUsers();
+                userMaintainJobService.manageSeenUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_USERS:
                 userPurgeJobService.purgeOldUsers();

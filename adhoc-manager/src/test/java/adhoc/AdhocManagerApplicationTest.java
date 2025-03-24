@@ -24,7 +24,7 @@ package adhoc;
 
 import adhoc.user.User;
 import adhoc.user.UserRepository;
-import adhoc.user.request_response.UserRegisterRequest;
+import adhoc.user.register.UserRegisterRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;

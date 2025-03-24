@@ -23,7 +23,7 @@
 package adhoc.system;
 
 import adhoc.system.error.AdhocStompSubProtocolErrorHandler;
-import adhoc.system.logging.MdcExecutorChannelInterceptor;
+import adhoc.system.log.MdcExecutorChannelInterceptor;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisMode;

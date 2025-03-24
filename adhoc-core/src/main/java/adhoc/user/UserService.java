@@ -93,7 +93,7 @@ public class UserService {
                 user.getServer() == null ? null : user.getServer().getId());
     }
 
-    UserFullDto toFullDto(User user) {
+    public UserFullDto toFullDto(User user) {
         return new UserFullDto(
                 user.getId(),
                 user.getVersion(),

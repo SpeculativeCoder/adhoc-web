@@ -23,9 +23,11 @@
 package adhoc.user;
 
 import adhoc.system.auth.AdhocUserDetails;
-import adhoc.user.request_response.UserNavigateRequest;
-import adhoc.user.request_response.UserNavigateResponse;
-import adhoc.user.request_response.UserRegisterRequest;
+import adhoc.user.navigate.UserNavigateRequest;
+import adhoc.user.navigate.UserNavigateResponse;
+import adhoc.user.navigate.UserNavigateService;
+import adhoc.user.register.UserRegisterRequest;
+import adhoc.user.register.UserRegisterService;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

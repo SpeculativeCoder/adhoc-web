@@ -23,7 +23,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Csrf} from "./csrf";
-import {mergeMap, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, mergeMap, take} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +32,7 @@ export class CsrfService {
 
   private readonly csrfUrl: string;
 
-  private csrf$: Subject<Csrf> = null;
+  private csrf$: BehaviorSubject<Csrf> = new BehaviorSubject(null);
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
@@ -40,17 +40,11 @@ export class CsrfService {
     this.csrfUrl = `${baseUrl}/api/csrf`;
   }
 
-  getCsrf() {
-    return this.csrf$ || this.refreshCsrf();
+  getCsrf$() {
+    return this.csrf$.value ? this.csrf$ : this.refreshCsrf$();
   }
 
-  /**
-   * Force refresh the CSRF token information.
-   */
-  refreshCsrf() {
-    if (!this.csrf$) {
-      this.csrf$ = new ReplaySubject(1);
-    }
+  refreshCsrf$() {
     return this.http.get<Csrf>(this.csrfUrl).pipe(
       mergeMap(csrf => {
         this.csrf$.next(csrf);
@@ -58,11 +52,19 @@ export class CsrfService {
       }));
   }
 
+  getCsrf() {
+    return this.getCsrf$().pipe(take(1));
+  }
+
+  refreshCsrf() {
+    return this.refreshCsrf$().pipe(take(1));
+  }
+
   /**
    * Clear CSRF token information, forcing it to be obtained again when next needed.
    * Typically, this is called when the current user changes due to register/login etc.
    */
   clearCsrf() {
-    this.csrf$ = null;
+    this.csrf$.next(null)
   }
 }

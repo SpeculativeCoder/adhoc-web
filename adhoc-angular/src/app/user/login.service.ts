@@ -21,38 +21,41 @@
  */
 
 import {Inject, Injectable} from '@angular/core';
-import {User} from './user';
+import {mergeMap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {Paging} from "../shared/paging/paging";
-import {Page} from "../shared/paging/page";
-import {CsrfService} from "../system/csrf.service";
 import {CurrentUserService} from './current-user.service';
+import {CsrfService} from '../system/csrf.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class LoginService {
 
-  private readonly usersUrl: string;
+  private readonly loginUrl: string;
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient,
               private currentUserService: CurrentUserService,
               private csrfService: CsrfService) {
 
-    this.usersUrl = `${baseUrl}/api/users`;
+    this.loginUrl = `${baseUrl}/api/login`;
   }
 
-  getUsers(paging: Paging = new Paging()): Observable<Page<User>> {
-    return this.http.get<Page<User>>(this.usersUrl, {params: paging.toParams()});
-  }
+  login(usernameOrEmail: string, password: string, rememberMe: boolean) {
+    const formData: FormData = new FormData();
+    formData.set('username', usernameOrEmail);
+    formData.set('password', password);
+    formData.set('remember-me', rememberMe.toString());
 
-  getUser(id: number): Observable<User> {
-    return this.http.get<User>(`${this.usersUrl}/${id}`);
-  }
-
-  updateUser(user: User): Observable<User> {
-    return this.http.put<User>(`${this.usersUrl}/${user.id}`, user);
+    return this.http.post(`${this.loginUrl}`, formData, {
+      responseType: 'text',
+      params: {
+        'remember-me': rememberMe
+      }
+    }).pipe(
+      mergeMap(_ => {
+        this.csrfService.clearCsrf();
+        return this.currentUserService.refreshCurrentUser();
+      }));
   }
 }

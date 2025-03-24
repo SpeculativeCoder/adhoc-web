@@ -28,7 +28,6 @@ import {ObjectiveService} from '../objective/objective.service';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
 import {Server} from '../server/server';
-import {UserService} from "../user/user.service";
 import {Region} from "../region/region";
 import {Area} from "../area/area";
 import {RegionService} from "../region/region.service";
@@ -46,6 +45,7 @@ import {Paging} from "../shared/paging/paging";
 import {customization} from "../customization";
 import * as fabric from "fabric";
 import {CurrentUserService} from '../user/current-user.service';
+import {RegisterService} from '../user/register.service';
 
 @Component({
   selector: 'app-map',
@@ -99,7 +99,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               private factionService: FactionService,
               private serverService: ServerService,
               private pawnService: PawnService,
-              private userService: UserService,
+              private registerService: RegisterService,
               private currentUserService: CurrentUserService,
               private metaService: MetaService,
               private iterableDiffers: IterableDiffers,
@@ -401,7 +401,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
           hoverCursor: 'pointer',
         });
         serverGroup.on('selected', () => {
-          this.userService.getCurrentUserOrRegister().subscribe(user => {
+          this.registerService.getCurrentUserOrRegister().subscribe(user => {
             this.currentUserService.navigate(server.id).subscribe(navigation => {
               this.router.navigate(['client'], {
                 // queryParams: {

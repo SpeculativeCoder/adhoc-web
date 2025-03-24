@@ -21,7 +21,6 @@
  */
 
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {UserService} from './user.service';
 import {Router} from '@angular/router';
 import {Faction} from '../faction/faction';
 import {User} from './user';
@@ -30,6 +29,8 @@ import {UserRegisterRequest} from "./request-response/user-register-request";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {NgbDropdownModule} from "@ng-bootstrap/ng-bootstrap";
+import {LoginService} from './login.service';
+import {RegisterService} from './register.service';
 
 @Component({
   selector: 'app-login',
@@ -57,7 +58,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
   @ViewChild('loginNameOrEmailInput')
   loginNameOrEmailInput: ElementRef;
 
-  constructor(private userService: UserService,
+  constructor(private registerService: RegisterService,
+              private loginService: LoginService,
               private factionService: FactionService,
               private router: Router) {
     this.userRegisterRequest.name = null; // 'Anon' + Math.floor(Math.random() * 1000000000);
@@ -84,7 +86,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   login(): void {
-    this.userService.login(this.loginNameOrEmail, this.loginPassword, this.loginRememberMe).subscribe(
+    this.loginService.login(this.loginNameOrEmail, this.loginPassword, this.loginRememberMe).subscribe(
       output => {
         this.router.navigate(['']);
         // window.location.href = '/';
@@ -104,7 +106,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     if (this.userRegisterRequest.password === '') {
       this.userRegisterRequest.password = null;
     }
-    this.userService.register(this.userRegisterRequest).subscribe((user: User) => {
+    this.registerService.register(this.userRegisterRequest).subscribe((user: User) => {
       this.router.navigate(['']);
       //window.location.href = '/';
       //this.router.navigateByUrl(`/users/${users.userId}`)

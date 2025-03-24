@@ -25,11 +25,11 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {MetaService} from "../system/meta.service";
 import {AreaService} from "../area/area.service";
-import {UserService} from "../user/user.service";
 import {ServerService} from "../server/server.service";
 import {customization} from "../customization";
 import {CommonModule} from "@angular/common";
 import {CurrentUserService} from '../user/current-user.service';
+import {RegisterService} from '../user/register.service';
 
 @Component({
   selector: 'app-client',
@@ -56,7 +56,7 @@ export class ClientComponent implements OnInit {
               private metaService: MetaService,
               private areaService: AreaService,
               private serverService: ServerService,
-              private userService: UserService,
+              private registerService: RegisterService,
               private currentUserService: CurrentUserService) {
   }
 
@@ -97,7 +97,7 @@ export class ClientComponent implements OnInit {
     // }
 
     // TODO: allow user and navigation information to be passed into this component?
-    this.userService.getCurrentUserOrRegister().subscribe(user => {
+    this.registerService.getCurrentUserOrRegister().subscribe(user => {
       this.currentUserService.navigate().subscribe(navigation => {
         if (!navigation.ip) {
           throw new Error(`Navigation response has no IP`);

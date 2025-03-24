@@ -20,7 +20,6 @@
  * SOFTWARE.
  */
 
-import {UserService} from '../user/user.service';
 import {Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Server} from './server';
@@ -35,6 +34,7 @@ import {Paging} from "../shared/paging/paging";
 import {Sort} from "../shared/paging/sort";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {CurrentUserService} from '../user/current-user.service';
+import {RegisterService} from '../user/register.service';
 
 @Component({
   selector: 'app-servers',
@@ -54,7 +54,7 @@ export class ServersComponent implements OnInit {
   private paging: Paging = new Paging();
 
   constructor(private serverService: ServerService,
-              private userService: UserService,
+              private registerService: RegisterService,
               private currentUserService: CurrentUserService,
               private metaService: MetaService,
               private router: Router) {
@@ -80,7 +80,7 @@ export class ServersComponent implements OnInit {
     // let randomServerAreaId = server.areaIds[randomServerAreaIdsIndex];
     // console.log(`randomServerAreaId: ${randomServerAreaId}`);
 
-    this.userService.getCurrentUserOrRegister().subscribe(user => {
+    this.registerService.getCurrentUserOrRegister().subscribe(user => {
       this.currentUserService.navigate(server.id).subscribe(navigation => {
         this.router.navigate(['client'], {
           // queryParams: {

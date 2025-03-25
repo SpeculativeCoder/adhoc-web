@@ -64,6 +64,7 @@ public class AdhocManagerApplication extends AbstractAdhocApplication {
         // rather than rely on spring.profiles.default we will just pick default profiles as needed
         ConfigurableEnvironment environment = new StandardEnvironment();
         List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
+
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
             activeProfiles.add("db-h2postgres");
         }
@@ -73,6 +74,7 @@ public class AdhocManagerApplication extends AbstractAdhocApplication {
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("dns-"))) {
             activeProfiles.add("dns-local");
         }
+
         environment.setActiveProfiles(activeProfiles.toArray(new String[activeProfiles.size()]));
 
         SpringApplication application = new SpringApplication(AdhocManagerApplication.class);

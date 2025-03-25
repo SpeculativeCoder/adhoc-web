@@ -22,14 +22,14 @@
 
 package adhoc.user;
 
-import adhoc.user.event.ServerUserDefeatedUserEvent;
-import adhoc.user.event.UserDefeatedUserEvent;
-import adhoc.user.event.UserEventService;
+import adhoc.user.defeated.ServerUserDefeatedUserEvent;
+import adhoc.user.defeated.UserDefeatedService;
+import adhoc.user.defeated.UserDefeatedUserEvent;
+import adhoc.user.join.UserJoinRequest;
 import adhoc.user.join.UserJoinService;
 import adhoc.user.navigate.UserNavigateRequest;
 import adhoc.user.navigate.UserNavigateResponse;
 import adhoc.user.navigate.UserNavigateService;
-import adhoc.user.join.UserJoinRequest;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class UserManagerController {
     private final UserManagerService userManagerService;
     private final UserJoinService userJoinService;
     private final UserNavigateService userNavigateService;
-    private final UserEventService userEventService;
+    private final UserDefeatedService userDefeatedService;
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -94,7 +94,7 @@ public class UserManagerController {
 
         log.debug("Handling: {}", serverUserDefeatedUserEvent);
 
-        UserDefeatedUserEvent userDefeatedUserEvent = userEventService.userDefeatedUser(serverUserDefeatedUserEvent);
+        UserDefeatedUserEvent userDefeatedUserEvent = userDefeatedService.userDefeatedUser(serverUserDefeatedUserEvent);
 
         log.debug("Sending: {}", userDefeatedUserEvent);
         return userDefeatedUserEvent;

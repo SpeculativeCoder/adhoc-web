@@ -24,7 +24,6 @@ import {Inject, Injectable} from '@angular/core';
 import {User} from './user';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, mergeMap, Observable, take} from 'rxjs';
-import {UserNavigateResponse} from "./request-response/user-navigate-response";
 
 @Injectable({
   providedIn: 'root'
@@ -59,9 +58,5 @@ export class CurrentUserService {
 
   refreshCurrentUser(): Observable<User> {
     return this.refreshCurrentUser$().pipe(take(1));
-  }
-
-  navigate(destinationServerId?: number): Observable<UserNavigateResponse> {
-    return this.http.post(`${this.currentUserUrl}/navigate`, {destinationServerId: destinationServerId});
   }
 }

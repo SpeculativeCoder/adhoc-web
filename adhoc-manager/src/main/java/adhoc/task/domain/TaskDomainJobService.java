@@ -24,13 +24,9 @@ package adhoc.task.domain;
 
 import adhoc.dns.DnsService;
 import adhoc.message.MessageService;
-import adhoc.system.event.Event;
+import adhoc.system.AdhocEvent;
 import adhoc.system.properties.ManagerProperties;
-import adhoc.task.Task;
-import adhoc.task.TaskRepository;
-import adhoc.task.kiosk.KioskTask;
-import adhoc.task.manager.ManagerTask;
-import adhoc.task.server.ServerTask;
+import adhoc.task.*;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -67,9 +63,9 @@ public class TaskDomainJobService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public List<? extends Event> manageTaskDomains() {
+    public List<? extends AdhocEvent> manageTaskDomains() {
         log.trace("Managing task domains...");
-        List<Event> events = new ArrayList<>();
+        List<AdhocEvent> events = new ArrayList<>();
 
         Map<Task, String> tasksDomains = new LinkedHashMap<>();
         MultiValueMap<Task, String> tasksPublicIps = new LinkedMultiValueMap<>();

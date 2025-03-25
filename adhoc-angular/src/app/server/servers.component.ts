@@ -24,7 +24,7 @@ import {Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
-import {MetaService} from "../system/meta.service";
+import {MetaService} from "../core/meta.service";
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
 import {Router, RouterLink} from "@angular/router";
 import {CommonModule} from "@angular/common";
@@ -33,8 +33,8 @@ import {Page} from "../shared/paging/page";
 import {Paging} from "../shared/paging/paging";
 import {Sort} from "../shared/paging/sort";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
-import {CurrentUserService} from '../user/current-user.service';
-import {RegisterService} from '../user/register.service';
+import {RegisterService} from '../user/register/register.service';
+import {NavigateService} from '../user/navigate/navigate.service';
 
 @Component({
   selector: 'app-servers',
@@ -55,7 +55,7 @@ export class ServersComponent implements OnInit {
 
   constructor(private serverService: ServerService,
               private registerService: RegisterService,
-              private currentUserService: CurrentUserService,
+              private navigateService: NavigateService,
               private metaService: MetaService,
               private router: Router) {
   }
@@ -81,7 +81,7 @@ export class ServersComponent implements OnInit {
     // console.log(`randomServerAreaId: ${randomServerAreaId}`);
 
     this.registerService.getCurrentUserOrRegister().subscribe(user => {
-      this.currentUserService.navigate(server.id).subscribe(navigation => {
+      this.navigateService.navigate(server.id).subscribe(navigation => {
         this.router.navigate(['client'], {
           // queryParams: {
           //   areaId: randomServerAreaId

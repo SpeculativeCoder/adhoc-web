@@ -40,7 +40,7 @@ import {FactionsComponent} from "./faction/factions.component";
 import {FactionComponent} from "./faction/faction.component";
 import {UsersComponent} from "./user/users.component";
 import {UserComponent} from "./user/user.component";
-import {LoginComponent} from "./user/login.component";
+import {LoginComponent} from "./user/login/login.component";
 import {InfoComponent} from "./info/info.component";
 import {ClientComponent} from "./client/client.component";
 import {MessagesComponent} from "./message/messages.component";

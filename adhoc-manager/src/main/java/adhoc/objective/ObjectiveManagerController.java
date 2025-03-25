@@ -22,9 +22,9 @@
 
 package adhoc.objective;
 
-import adhoc.objective.event.ObjectiveEventService;
-import adhoc.objective.event.ObjectiveTakenEvent;
-import adhoc.objective.event.ServerObjectiveTakenEvent;
+import adhoc.objective.taken.ObjectiveTakenEvent;
+import adhoc.objective.taken.ObjectiveTakenEventService;
+import adhoc.objective.taken.ServerObjectiveTakenEvent;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +44,7 @@ import java.util.Objects;
 public class ObjectiveManagerController {
 
     private final ObjectiveManagerService objectiveManagerService;
-    private final ObjectiveEventService objectiveEventService;
+    private final ObjectiveTakenEventService objectiveTakenEventService;
 
     @PutMapping("/objectives/{objectiveId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -70,12 +70,12 @@ public class ObjectiveManagerController {
     @MessageMapping("ObjectiveTaken")
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public ObjectiveTakenEvent handleObjectiveTaken(
+    public ObjectiveTakenEvent handleObjectiveTake(
             @Valid @RequestBody ServerObjectiveTakenEvent event) {
 
         log.debug("Handling: {}", event);
 
-        return objectiveEventService.handleObjectiveTaken(event);
+        return objectiveTakenEventService.handleObjectiveTaken(event);
     }
 
 }

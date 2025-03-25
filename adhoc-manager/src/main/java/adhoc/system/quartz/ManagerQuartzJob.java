@@ -24,15 +24,15 @@ package adhoc.system.quartz;
 
 import adhoc.faction.score.FactionScoreJobService;
 import adhoc.pawn.purge.PawnPurgeJobService;
-import adhoc.server.maintain.ServerMaintainJobService;
+import adhoc.server.orchestrate.ServerOrchestrateJobService;
 import adhoc.server.purge.ServerPurgeJobService;
-import adhoc.system.event.Event;
+import adhoc.system.AdhocEvent;
 import adhoc.task.domain.TaskDomainJobService;
+import adhoc.task.orchestrate.ServerTaskOrchestrateJobService;
 import adhoc.task.refresh.TaskRefreshJobService;
-import adhoc.task.server.maintain.ServerTaskMaintainJobService;
-import adhoc.user.maintain.UserMaintainJobService;
 import adhoc.user.purge.UserPurgeJobService;
 import adhoc.user.score.UserScoreJobService;
+import adhoc.user.seen.UserSeenJobService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
@@ -53,13 +53,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagerQuartzJob implements Job {
 
-    private final ServerMaintainJobService serverMaintainJobService;
+    private final ServerOrchestrateJobService serverOrchestrateJobService;
     private final ServerPurgeJobService serverPurgeJobService;
     private final TaskRefreshJobService taskRefreshJobService;
     private final TaskDomainJobService taskDomainJobService;
-    private final ServerTaskMaintainJobService serverTaskMaintainJobService;
+    private final ServerTaskOrchestrateJobService serverTaskOrchestrateJobService;
     private final FactionScoreJobService factionScoreJobService;
-    private final UserMaintainJobService userMaintainJobService;
+    private final UserSeenJobService userSeenJobService;
     private final UserScoreJobService userScoreJobService;
     private final UserPurgeJobService userPurgeJobService;
     private final PawnPurgeJobService pawnPurgeJobService;
@@ -70,13 +70,13 @@ public class ManagerQuartzJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String jobName = context.getJobDetail().getKey().getName();
 
-        List<? extends Event> events = Collections.emptyList();
+        List<? extends AdhocEvent> events = Collections.emptyList();
 
         try (MDC.MDCCloseable closeable = MDC.putCloseable("job", jobName)) {
             //log.info("jobName={}", jobName);
             switch (jobName) {
             case ManagerQuartzConfiguration.MANAGE_SERVERS:
-                events = serverMaintainJobService.manageServers();
+                events = serverOrchestrateJobService.manageServers();
                 break;
             case ManagerQuartzConfiguration.MANAGE_TASKS:
                 taskRefreshJobService.manageTasks();
@@ -85,7 +85,7 @@ public class ManagerQuartzJob implements Job {
                 events = taskDomainJobService.manageTaskDomains();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SERVER_TASKS:
-                serverTaskMaintainJobService.manageServerTasks();
+                serverTaskOrchestrateJobService.manageServerTasks();
                 break;
             case ManagerQuartzConfiguration.AWARD_AND_DECAY_FACTION_SCORES:
                 factionScoreJobService.awardAndDecayFactionScores();
@@ -94,7 +94,7 @@ public class ManagerQuartzJob implements Job {
                 userScoreJobService.awardAndDecayUserScores();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SEEN_USERS:
-                userMaintainJobService.manageSeenUsers();
+                userSeenJobService.manageSeenUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_USERS:
                 userPurgeJobService.purgeOldUsers();
@@ -110,7 +110,7 @@ public class ManagerQuartzJob implements Job {
                 break;
             }
 
-            for (Event event : events) {
+            for (AdhocEvent event : events) {
                 log.debug("Sending: {}", event);
                 stomp.convertAndSend("/topic/events", event);
             }

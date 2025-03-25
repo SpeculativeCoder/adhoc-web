@@ -24,7 +24,7 @@ import {Component, OnInit} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {User} from './user/user';
-import {MetaService} from "./system/meta.service";
+import {MetaService} from "./core/meta.service";
 import {Faction} from "./faction/faction";
 import {customization} from "./customization";
 import {CommonModule} from "@angular/common";

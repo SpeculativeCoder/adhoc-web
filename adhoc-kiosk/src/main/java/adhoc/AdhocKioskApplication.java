@@ -50,9 +50,11 @@ public class AdhocKioskApplication extends AbstractAdhocApplication {
         // rather than rely on spring.profiles.default we will just pick some extra default profiles as needed
         ConfigurableEnvironment environment = new StandardEnvironment();
         List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
+
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
             activeProfiles.add("db-h2postgres");
         }
+
         environment.setActiveProfiles(activeProfiles.toArray(new String[activeProfiles.size()]));
 
         SpringApplication application = new SpringApplication(AdhocKioskApplication.class);

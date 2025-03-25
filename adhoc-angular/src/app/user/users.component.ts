@@ -35,8 +35,8 @@ import {Page} from "../shared/paging/page";
 import {Paging} from "../shared/paging/paging";
 import {Sort} from "../shared/paging/sort";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
-import {StompService} from "../system/stomp.service";
-import {UserEventService} from './user-event.service';
+import {StompService} from "../core/stomp.service";
+import {UserDefeatedEventService} from './defeated/user-defeated-event.service';
 
 @Component({
   selector: 'app-users',
@@ -60,7 +60,7 @@ export class UsersComponent implements OnInit {
   selectedUsers: User[] = [];
 
   constructor(private userService: UserService,
-              private userEventService: UserEventService,
+              private userEventService: UserDefeatedEventService,
               private factionService: FactionService,
               private stompService: StompService) {
   }

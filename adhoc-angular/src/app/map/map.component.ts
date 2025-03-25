@@ -34,18 +34,18 @@ import {RegionService} from "../region/region.service";
 import {AreaService} from "../area/area.service";
 import {Pawn} from "../pawn/pawn";
 import {PawnService} from "../pawn/pawn.service";
-import {MetaService} from "../system/meta.service";
+import {MetaService} from "../core/meta.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {StompService} from "../system/stomp.service";
+import {StompService} from "../core/stomp.service";
 import {CommonModule, DOCUMENT} from "@angular/common";
-import {CsrfService} from "../system/csrf.service";
+import {CsrfService} from "../core/csrf.service";
 import {MapComponentExtraInterface} from "./map-component-extra-interface";
 import {Page} from "../shared/paging/page";
 import {Paging} from "../shared/paging/paging";
 import {customization} from "../customization";
 import * as fabric from "fabric";
-import {CurrentUserService} from '../user/current-user.service';
-import {RegisterService} from '../user/register.service';
+import {RegisterService} from '../user/register/register.service';
+import {NavigateService} from '../user/navigate/navigate.service';
 
 @Component({
   selector: 'app-map',
@@ -100,7 +100,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               private serverService: ServerService,
               private pawnService: PawnService,
               private registerService: RegisterService,
-              private currentUserService: CurrentUserService,
+              private navigateService: NavigateService,
               private metaService: MetaService,
               private iterableDiffers: IterableDiffers,
               private keyValueDiffers: KeyValueDiffers,
@@ -402,7 +402,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         });
         serverGroup.on('selected', () => {
           this.registerService.getCurrentUserOrRegister().subscribe(user => {
-            this.currentUserService.navigate(server.id).subscribe(navigation => {
+            this.navigateService.navigate(server.id).subscribe(navigation => {
               this.router.navigate(['client'], {
                 // queryParams: {
                 //   areaId: area.id

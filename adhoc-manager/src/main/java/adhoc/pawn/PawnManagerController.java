@@ -22,8 +22,8 @@
 
 package adhoc.pawn;
 
-import adhoc.pawn.event.PawnEventService;
-import adhoc.pawn.event.ServerPawnsEvent;
+import adhoc.pawn.pawns.ServerPawnsEventService;
+import adhoc.pawn.pawns.ServerPawnsEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PawnManagerController {
 
-    private final PawnEventService pawnEventService;
+    private final ServerPawnsEventService serverPawnsEventService;
 
     @MessageMapping("ServerPawns")
     @SendTo("/topic/events")
@@ -52,7 +52,7 @@ public class PawnManagerController {
 
         log.debug("Handling: {}", event);
 
-        List<PawnDto> pawnDtos = pawnEventService.handleServerPawns(event);
+        List<PawnDto> pawnDtos = serverPawnsEventService.handleServerPawns(event);
 
         ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
         log.debug("Sending: {}", serverPawnsEvent);

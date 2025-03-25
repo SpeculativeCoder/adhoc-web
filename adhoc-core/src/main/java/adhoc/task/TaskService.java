@@ -22,7 +22,6 @@
 
 package adhoc.task;
 
-import adhoc.task.server.ServerTask;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

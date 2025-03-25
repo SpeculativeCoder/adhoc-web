@@ -48,9 +48,9 @@ public class UserDefeatedService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserDefeatedUserEvent userDefeatedUser(ServerUserDefeatedUserEvent serverUserDefeatedUserEvent) {
-        User user = userRepository.getReferenceById(serverUserDefeatedUserEvent.getUserId());
-        User defeatedUser = userRepository.getReferenceById(serverUserDefeatedUserEvent.getDefeatedUserId());
+    public UserDefeatedEvent userDefeated(ServerUserDefeatedEvent serverUserDefeatedEvent) {
+        User user = userRepository.getReferenceById(serverUserDefeatedEvent.getUserId());
+        User defeatedUser = userRepository.getReferenceById(serverUserDefeatedEvent.getDefeatedUserId());
 
         BigDecimal scoreAdd = BigDecimal.valueOf(user.isHuman() ? 1.0f : 0.1f);
         userRepository.updateScoreAddById(scoreAdd, user.getId());
@@ -60,7 +60,7 @@ public class UserDefeatedService {
         }
 
         // TODO
-        return new UserDefeatedUserEvent(
+        return new UserDefeatedEvent(
                 user.getId(), user.getVersion() + 1, user.getName(), user.isHuman(),
                 defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.isHuman());
     }

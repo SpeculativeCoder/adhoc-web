@@ -32,15 +32,15 @@ export class UserDefeatedEventService {
   constructor(private stomp: StompService) {
 
     this.stomp
-      .observeEvent('UserDefeatedUser')
-      .subscribe((body: any) => this.handleUserDefeatedUser(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
+      .observeEvent('UserDefeated')
+      .subscribe((body: any) => this.handleUserDefeated(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
   }
 
-  userDefeatedUser(user: User, defeatedUser?: User) {
-    this.stomp.send('UserDefeatedUser', {userId: null /*user.id*/, defeatedUserId: defeatedUser?.id || null});
+  userDefeated(user: User, defeatedUser?: User) {
+    this.stomp.send('UserDefeated', {userId: null /*user.id*/, defeatedUserId: defeatedUser?.id || null});
   }
 
-  handleUserDefeatedUser(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
+  handleUserDefeated(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
     // let user: User;
     // let defeatedUser: User;
     // this.users.map(user => {

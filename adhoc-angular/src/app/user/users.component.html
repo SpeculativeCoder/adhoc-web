@@ -81,16 +81,16 @@
                     (pageChange)="onPageChange($event - 1)"/>
   </div>
   <!--
-  <button type="button" id="userDefeatedUser" class="btn btn-danger" (click)="userDefeatedUser()"
+  <button type="button" id="userDefeated" class="btn btn-danger" (click)="userDefeated()"
           [disabled]="selectedUsers.length != 2">
     Send
-    UserDefeatedUser({{ selectedUsers[0]?.id?.toString() || 'user' }},{{ selectedUsers[1]?.id?.toString() || 'defeatedUser' }})
+    UserDefeated({{ selectedUsers[0]?.id?.toString() || 'user' }},{{ selectedUsers[1]?.id?.toString() || 'defeatedUser' }})
   </button>
   &nbsp;
-  <button type="button" id="userRegister" class="btn btn-danger" (click)="userDefeatedUser()"
+  <button type="button" id="userDefeatedSelf" class="btn btn-danger" (click)="userDefeated()"
           [disabled]="selectedUsers.length != 1">
     Send
-    UserDefeatedUser({{ selectedUsers[0]?.id?.toString() || 'user' }},null)
+    UserDefeated({{ selectedUsers[0]?.id?.toString() || 'user' }},null)
   </button>
   -->
 </div>

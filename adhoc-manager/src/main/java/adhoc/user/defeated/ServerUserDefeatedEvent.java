@@ -34,7 +34,7 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerUserDefeatedUserEvent implements AdhocEvent {
+public class ServerUserDefeatedEvent implements AdhocEvent {
 
     @NotNull
     @Min(1)

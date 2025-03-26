@@ -22,9 +22,6 @@
 
 package adhoc.server;
 
-import adhoc.server.updated.ServerStartedEvent;
-import adhoc.server.updated.ServerUpdatedEvent;
-import adhoc.server.updated.ServerUpdatedEventService;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +40,7 @@ import java.util.Objects;
 public class ServerManagerController {
 
     private final ServerManagerService serverManagerService;
-    private final ServerUpdatedEventService serverUpdatedEventService;
+    private final ServerManagerEventService serverManagerEventService;
 
     @PutMapping("/servers/{serverId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -72,6 +69,6 @@ public class ServerManagerController {
 
         log.debug("Handling: {}", serverStartedEvent);
 
-        return serverUpdatedEventService.handleServerStarted(serverStartedEvent);
+        return serverManagerEventService.handleServerStarted(serverStartedEvent);
     }
 }

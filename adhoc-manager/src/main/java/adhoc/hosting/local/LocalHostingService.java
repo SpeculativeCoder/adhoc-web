@@ -23,10 +23,6 @@
 package adhoc.hosting.local;
 
 import adhoc.hosting.*;
-import adhoc.hosting.task.HostingTask;
-import adhoc.hosting.task.KioskHostingTask;
-import adhoc.hosting.task.ManagerHostingTask;
-import adhoc.hosting.task.ServerHostingTask;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import lombok.RequiredArgsConstructor;

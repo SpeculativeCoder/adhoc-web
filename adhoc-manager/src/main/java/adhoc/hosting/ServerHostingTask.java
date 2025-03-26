@@ -20,16 +20,20 @@
  * SOFTWARE.
  */
 
-package adhoc.hosting.task;
+package adhoc.hosting;
 
 import lombok.Data;
 
 @Data
-public class KioskHostingTask implements HostingTask {
+public class ServerHostingTask implements HostingTask {
 
     String taskIdentifier;
 
     String privateIp;
 
     String publicIp;
+
+    Integer publicWebSocketPort;
+
+    Long serverId;
 }

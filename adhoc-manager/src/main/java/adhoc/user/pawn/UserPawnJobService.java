@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.seen;
+package adhoc.user.pawn;
 
 import adhoc.pawn.Pawn;
 import adhoc.pawn.PawnRepository;
@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserSeenJobService {
+public class UserPawnJobService {
 
     private final UserRepository userRepository;
     private final PawnRepository pawnRepository;

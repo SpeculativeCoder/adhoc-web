@@ -20,16 +20,32 @@
  * SOFTWARE.
  */
 
-package adhoc.hosting.task;
+package adhoc.pawn;
 
+import adhoc.system.AdhocEvent;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
+
+import java.util.List;
 
 @Data
-public class ManagerHostingTask implements HostingTask {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class ServerPawnsEvent implements AdhocEvent {
 
-    String taskIdentifier;
+    @NotNull
+    @Min(1)
+    private Long serverId;
 
-    String privateIp;
-
-    String publicIp;
+    @NotNull
+    @Valid
+    private List<PawnDto> pawns;
 }

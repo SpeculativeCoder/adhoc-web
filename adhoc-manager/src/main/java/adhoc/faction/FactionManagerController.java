@@ -40,14 +40,6 @@ public class FactionManagerController {
 
     private final FactionManagerService factionManagerService;
 
-    @GetMapping("/servers/{serverId}/factions")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<FactionDto> getServerFactions(
-            @PathVariable Long serverId) {
-
-        return factionManagerService.getServerFactions(serverId);
-    }
-
     @PutMapping("/factions/{factionId}")
     @PreAuthorize("hasRole('ADMIN')")
     public FactionDto putFaction(
@@ -58,5 +50,13 @@ public class FactionManagerController {
                 "Faction ID mismatch: %s != %s", factionId, factionDto.getId());
 
         return factionManagerService.updateFaction(factionDto);
+    }
+
+    @GetMapping("/servers/{serverId}/factions")
+    @PreAuthorize("hasRole('SERVER')")
+    public List<FactionDto> getServerFactions(
+            @PathVariable Long serverId) {
+
+        return factionManagerService.getServerFactions(serverId);
     }
 }

@@ -23,7 +23,7 @@
 package adhoc.task.orchestrate;
 
 import adhoc.hosting.HostingService;
-import adhoc.hosting.task.ServerHostingTask;
+import adhoc.hosting.ServerHostingTask;
 import adhoc.message.MessageService;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;

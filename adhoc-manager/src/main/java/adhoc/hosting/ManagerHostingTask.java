@@ -20,22 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.universe.updated;
+package adhoc.hosting;
 
-import adhoc.system.AdhocEvent;
-import adhoc.universe.UniverseDto;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
+import lombok.Data;
 
-@Value
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class UniverseUpdatedEvent implements AdhocEvent {
+@Data
+public class ManagerHostingTask implements HostingTask {
 
-    @NotNull
-    UniverseDto universe;
+    String taskIdentifier;
+
+    String privateIp;
+
+    String publicIp;
 }

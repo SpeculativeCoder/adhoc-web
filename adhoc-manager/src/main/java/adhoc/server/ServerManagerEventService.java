@@ -20,11 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.server.updated;
+package adhoc.server;
 
 import adhoc.area.Area;
-import adhoc.server.Server;
-import adhoc.server.ServerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -40,7 +38,7 @@ import java.util.stream.Collectors;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ServerUpdatedEventService {
+public class ServerManagerEventService {
 
     private final ServerRepository serverRepository;
 

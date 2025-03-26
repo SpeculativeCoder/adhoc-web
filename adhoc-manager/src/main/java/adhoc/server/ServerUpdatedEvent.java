@@ -20,11 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.server.updated;
+package adhoc.server;
 
 import adhoc.system.AdhocEvent;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,20 +31,38 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerStartedEvent implements AdhocEvent {
+public class ServerUpdatedEvent implements AdhocEvent {
 
     @NotNull
     @Min(1)
     private Long serverId;
 
-    @NotEmpty
-    private String privateIp;
+    @NotNull
+    @Min(0)
+    private Long version;
 
-    @NotEmpty
-    private String managerHost;
+    @NotNull
+    private Long regionId;
+    @NotNull
+    private List<Long> areaIds;
+    @NotNull
+    private List<Integer> areaIndexes;
+
+    @NotNull
+    private Boolean enabled;
+    @NotNull
+    private Boolean active;
+
+    private String publicIp;
+
+    private Integer publicWebSocketPort;
+
+    private String webSocketUrl;
 }

@@ -20,20 +20,21 @@
  * SOFTWARE.
  */
 
-package adhoc.hosting.task;
+package adhoc.universe;
 
-import lombok.Data;
+import adhoc.system.AdhocEvent;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-@Data
-public class ServerHostingTask implements HostingTask {
+@Value
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class UniverseUpdatedEvent implements AdhocEvent {
 
-    String taskIdentifier;
-
-    String privateIp;
-
-    String publicIp;
-
-    Integer publicWebSocketPort;
-
-    Long serverId;
+    @NotNull
+    UniverseDto universe;
 }

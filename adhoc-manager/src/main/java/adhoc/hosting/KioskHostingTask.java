@@ -20,13 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.hosting.task;
+package adhoc.hosting;
 
-public interface HostingTask {
+import lombok.Data;
 
-    String getTaskIdentifier();
+@Data
+public class KioskHostingTask implements HostingTask {
 
-    String getPrivateIp();
+    String taskIdentifier;
 
-    String getPublicIp();
+    String privateIp;
+
+    String publicIp;
 }

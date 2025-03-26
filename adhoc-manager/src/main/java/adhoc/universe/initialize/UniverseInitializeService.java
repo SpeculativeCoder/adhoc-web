@@ -37,7 +37,7 @@ import adhoc.system.properties.ManagerProperties;
 import adhoc.universe.Universe;
 import adhoc.universe.UniverseRepository;
 import adhoc.universe.UniverseService;
-import adhoc.universe.updated.UniverseUpdatedEvent;
+import adhoc.universe.UniverseUpdatedEvent;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;

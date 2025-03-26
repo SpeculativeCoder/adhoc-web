@@ -22,16 +22,8 @@
 
 package adhoc.task.refresh;
 
-import adhoc.hosting.HostingService;
-import adhoc.hosting.task.HostingTask;
-import adhoc.hosting.task.KioskHostingTask;
-import adhoc.hosting.task.ManagerHostingTask;
-import adhoc.hosting.task.ServerHostingTask;
-import adhoc.task.Task;
-import adhoc.task.TaskRepository;
-import adhoc.task.KioskTask;
-import adhoc.task.ManagerTask;
-import adhoc.task.ServerTask;
+import adhoc.hosting.*;
+import adhoc.task.*;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

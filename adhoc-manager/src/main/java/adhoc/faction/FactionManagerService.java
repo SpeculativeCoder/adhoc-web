@@ -40,14 +40,14 @@ public class FactionManagerService {
 
     private final FactionService factionService;
 
-    public List<FactionDto> getServerFactions(Long serverId) {
-        return factionRepository.findAll(Sort.by("index")).stream().map(factionService::toDto).toList();
-    }
-
     public FactionDto updateFaction(FactionDto factionDto) {
         Faction faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
 
         return factionService.toDto(faction);
+    }
+
+    public List<FactionDto> getServerFactions(Long serverId) {
+        return factionRepository.findAll(Sort.by("index")).stream().map(factionService::toDto).toList();
     }
 
     Faction toEntity(FactionDto factionDto, Faction faction) {

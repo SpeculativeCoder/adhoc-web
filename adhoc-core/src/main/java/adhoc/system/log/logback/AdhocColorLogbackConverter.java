@@ -41,61 +41,56 @@ import java.util.Map;
  */
 public class AdhocColorLogbackConverter extends CompositeConverter<ILoggingEvent> {
 
-    private static final Map<String, AnsiElement> ELEMENTS;
-    private static final Map<String, AnsiElement> BRIGHT_ELEMENTS;
+    private static final Map<String, AnsiElement> COLOR_ELEMENTS;
 
-    private static final Map<Integer, AnsiElement> LEVELS;
-    private static final Map<Integer, AnsiElement> BRIGHT_LEVELS;
+    private static final Map<Integer, AnsiElement> LOG_LEVEL_ELEMENTS;
+    private static final Map<Integer, AnsiElement> ADHOC_LOG_LEVEL_ELEMENTS;
 
     static {
-        Map<String, AnsiElement> ansiElements = new HashMap<>();
-        //ansiElements.put("faint", AnsiStyle.FAINT);
-        ansiElements.put("red", AnsiColor.RED);
-        ansiElements.put("green", AnsiColor.GREEN);
-        ansiElements.put("yellow", AnsiColor.YELLOW);
-        ansiElements.put("blue", AnsiColor.BLUE);
-        ansiElements.put("magenta", AnsiColor.MAGENTA);
-        ansiElements.put("cyan", AnsiColor.CYAN);
-        ansiElements.put("white", AnsiColor.WHITE);
-        ansiElements.put("gray", AnsiColor.BRIGHT_BLACK);
-        ELEMENTS = Collections.unmodifiableMap(ansiElements);
+        Map<String, AnsiElement> colorElements = new HashMap<>();
+        //colorElements.put("faint", AnsiStyle.FAINT);
+        colorElements.put("red", AnsiColor.RED);
+        colorElements.put("green", AnsiColor.GREEN);
+        colorElements.put("yellow", AnsiColor.YELLOW);
+        colorElements.put("blue", AnsiColor.BLUE);
+        colorElements.put("magenta", AnsiColor.MAGENTA);
+        colorElements.put("cyan", AnsiColor.CYAN);
+        colorElements.put("white", AnsiColor.WHITE);
+        colorElements.put("black", AnsiColor.BLACK);
+        colorElements.put("bright_red", AnsiColor.BRIGHT_RED);
+        colorElements.put("bright_green", AnsiColor.BRIGHT_GREEN);
+        colorElements.put("bright_yellow", AnsiColor.BRIGHT_YELLOW);
+        colorElements.put("bright_blue", AnsiColor.BRIGHT_BLUE);
+        colorElements.put("bright_magenta", AnsiColor.BRIGHT_MAGENTA);
+        colorElements.put("bright_cyan", AnsiColor.BRIGHT_CYAN);
+        colorElements.put("bright_white", AnsiColor.BRIGHT_WHITE);
+        colorElements.put("bright_black", AnsiColor.BRIGHT_BLACK);
+        COLOR_ELEMENTS = Collections.unmodifiableMap(colorElements);
 
-        Map<String, AnsiElement> brightAnsiElements = new HashMap<>();
-        //brightAnsiElements.put("faint", AnsiStyle.FAINT);
-        brightAnsiElements.put("red", AnsiColor.BRIGHT_RED);
-        brightAnsiElements.put("green", AnsiColor.BRIGHT_GREEN);
-        brightAnsiElements.put("yellow", AnsiColor.BRIGHT_YELLOW);
-        brightAnsiElements.put("blue", AnsiColor.BRIGHT_BLUE);
-        brightAnsiElements.put("magenta", AnsiColor.BRIGHT_MAGENTA);
-        brightAnsiElements.put("cyan", AnsiColor.BRIGHT_CYAN);
-        brightAnsiElements.put("white", AnsiColor.BRIGHT_WHITE);
-        brightAnsiElements.put("gray", AnsiColor.DEFAULT);
-        BRIGHT_ELEMENTS = Collections.unmodifiableMap(brightAnsiElements);
+        Map<Integer, AnsiElement> logLevelElements = new HashMap<>();
+        logLevelElements.put(Level.ERROR_INTEGER, AnsiColor.RED);
+        logLevelElements.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
+        logLevelElements.put(Level.INFO_INTEGER, AnsiColor.BRIGHT_BLACK);
+        logLevelElements.put(Level.DEBUG_INTEGER, AnsiColor.BRIGHT_BLACK);
+        logLevelElements.put(Level.TRACE_INTEGER, AnsiColor.BRIGHT_BLACK);
+        LOG_LEVEL_ELEMENTS = Collections.unmodifiableMap(logLevelElements);
 
-        Map<Integer, AnsiElement> ansiLevels = new HashMap<>();
-        ansiLevels.put(Level.ERROR_INTEGER, AnsiColor.RED);
-        ansiLevels.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
-        ansiLevels.put(Level.INFO_INTEGER, AnsiColor.DEFAULT);
-        ansiLevels.put(Level.DEBUG_INTEGER, AnsiColor.WHITE);
-        ansiLevels.put(Level.TRACE_INTEGER, AnsiColor.BRIGHT_BLACK);
-        LEVELS = Collections.unmodifiableMap(ansiLevels);
-
-        Map<Integer, AnsiElement> brightAnsiLevels = new HashMap<>();
-        brightAnsiLevels.put(Level.ERROR_INTEGER, AnsiColor.BRIGHT_RED);
-        brightAnsiLevels.put(Level.WARN_INTEGER, AnsiColor.BRIGHT_YELLOW);
-        brightAnsiLevels.put(Level.INFO_INTEGER, AnsiColor.BRIGHT_WHITE);
-        brightAnsiLevels.put(Level.DEBUG_INTEGER, AnsiColor.DEFAULT);
-        brightAnsiLevels.put(Level.TRACE_INTEGER, AnsiColor.WHITE);
-        BRIGHT_LEVELS = Collections.unmodifiableMap(brightAnsiLevels);
+        Map<Integer, AnsiElement> adhocLogLevelElements = new HashMap<>();
+        adhocLogLevelElements.put(Level.ERROR_INTEGER, AnsiColor.BRIGHT_RED);
+        adhocLogLevelElements.put(Level.WARN_INTEGER, AnsiColor.BRIGHT_YELLOW);
+        adhocLogLevelElements.put(Level.INFO_INTEGER, AnsiColor.DEFAULT);
+        adhocLogLevelElements.put(Level.DEBUG_INTEGER, AnsiColor.DEFAULT);
+        adhocLogLevelElements.put(Level.TRACE_INTEGER, AnsiColor.DEFAULT);
+        ADHOC_LOG_LEVEL_ELEMENTS = Collections.unmodifiableMap(adhocLogLevelElements);
     }
 
     @Override
     protected String transform(ILoggingEvent event, String in) {
-        boolean adhocLog = event.getLoggerName().contains("adhoc.");
 
-        AnsiElement element = adhocLog ? BRIGHT_ELEMENTS.get(getFirstOption()) : ELEMENTS.get(getFirstOption());
+        AnsiElement element = COLOR_ELEMENTS.get(getFirstOption());
         if (element == null) {
-            element = adhocLog ? BRIGHT_LEVELS.get(event.getLevel().toInteger()) : LEVELS.get(event.getLevel().toInteger());
+            boolean adhocLog = event.getLoggerName().contains("adhoc.");
+            element = adhocLog ? ADHOC_LOG_LEVEL_ELEMENTS.get(event.getLevel().toInteger()) : LOG_LEVEL_ELEMENTS.get(event.getLevel().toInteger());
             element = (element != null) ? element : AnsiColor.DEFAULT;
         }
         return toAnsiString(in, element);

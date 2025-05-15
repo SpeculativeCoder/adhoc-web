@@ -68,4 +68,4 @@ RUN chown -R adhoc /LinuxServer
 
 USER adhoc
 
-ENTRYPOINT ./adhoc_container_init.sh && cat /etc/hosts && ./${UNREAL_PROJECT_NAME}Server.sh ${MAP_NAME}?MaxPlayers=${MAX_PLAYERS} MaxPawns=${MAX_PAWNS} MaxBots=${MAX_BOTS} ServerID=${SERVER_ID} RegionID=${REGION_ID} InitialAreaIndexes=${INITIAL_AREA_INDEXES} PrivateIP=$(cat /etc/hosts | tail -1 | awk {'print $1'}) ManagerHost=${MANAGER_HOST} FeatureFlags=${FEATURE_FLAGS}
+ENTRYPOINT ./adhoc_container_init.sh && cat /etc/hosts && ./${UNREAL_PROJECT_NAME}Server.sh ${MAP_NAME}?MaxPlayers=${MAX_PLAYERS} MaxControllers=${MAX_CONTROLLERS} MaxBots=${MAX_BOTS} ServerID=${SERVER_ID} RegionID=${REGION_ID} InitialAreaIndexes=${INITIAL_AREA_INDEXES} PrivateIP=$(cat /etc/hosts | tail -1 | awk {'print $1'}) ManagerHost=${MANAGER_HOST} FeatureFlags=${FEATURE_FLAGS}

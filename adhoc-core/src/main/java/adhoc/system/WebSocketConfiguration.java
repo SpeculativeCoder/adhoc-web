@@ -39,6 +39,7 @@ import org.springframework.session.Session;
 import org.springframework.session.web.socket.config.annotation.AbstractSessionWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 @Configuration
@@ -108,5 +109,13 @@ public class WebSocketConfiguration {
                         .interceptors(mdcExecutorChannelInterceptor);
             }
         };
+    }
+
+    @Bean
+    public ServletServerContainerFactoryBean webSocketContainer() {
+        ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+        container.setMaxTextMessageBufferSize(8192 * 2); // multiplied default
+        container.setMaxBinaryMessageBufferSize(8192 * 2); // multiplied default
+        return container;
     }
 }

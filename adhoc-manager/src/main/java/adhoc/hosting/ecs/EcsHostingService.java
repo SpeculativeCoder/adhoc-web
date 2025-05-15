@@ -312,7 +312,7 @@ public class EcsHostingService implements HostingService {
                                                     .map(Area::getIndex)
                                                     .map(Object::toString)
                                                     .collect(Collectors.joining(","))).build(),
-                                    KeyValuePair.builder().name("MAX_PAWNS").value(managerProperties.getMaxPawns().toString()).build(),
+                                    KeyValuePair.builder().name("MAX_CONTROLLERS").value(managerProperties.getMaxControllers().toString()).build(),
                                     KeyValuePair.builder().name("MAX_PLAYERS").value(managerProperties.getMaxPlayers().toString()).build(),
                                     KeyValuePair.builder().name("MAX_BOTS").value(managerProperties.getMaxBots().toString()).build(),
                                     KeyValuePair.builder().name("FEATURE_FLAGS").value(coreProperties.getFeatureFlags()).build())

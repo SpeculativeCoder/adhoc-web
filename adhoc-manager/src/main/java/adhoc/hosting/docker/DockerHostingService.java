@@ -208,7 +208,7 @@ public class DockerHostingService implements HostingService {
                                         .map(Area::getIndex)
                                         .map(Object::toString)
                                         .collect(Collectors.joining(","))),
-                        String.format("MAX_PAWNS=%d", managerProperties.getMaxPawns()),
+                        String.format("MAX_CONTROLLERS=%d", managerProperties.getMaxControllers()),
                         String.format("MAX_PLAYERS=%d", managerProperties.getMaxPlayers()),
                         String.format("MAX_BOTS=%d", managerProperties.getMaxBots()),
                         String.format("FEATURE_FLAGS=%s", coreProperties.getFeatureFlags()),

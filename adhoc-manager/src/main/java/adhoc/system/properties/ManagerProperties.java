@@ -60,8 +60,8 @@ public class ManagerProperties {
     @Value("${adhoc.server-image}")
     private String serverImage;
 
-    @Value("${adhoc.max-pawns}")
-    private Integer maxPawns;
+    @Value("${adhoc.max-controllers}")
+    private Integer maxControllers;
     @Value("${adhoc.max-players}")
     private Integer maxPlayers;
     @Value("${adhoc.max-bots}")
@@ -76,7 +76,7 @@ public class ManagerProperties {
         log.info("defaultUserPassword={} defaultAdminPassword={}", defaultUserPassword, defaultAdminPassword == null ? null : "***");
         log.info("managerDomain={} kioskDomain={} serverDomain={}", managerDomain, kioskDomain, serverDomain);
         log.info("managerImage={} kioskImage={} serverImage={}", managerImage, kioskImage, serverImage);
-        log.info("maxPawns={} maxPlayers={} maxBots={}", maxPawns, maxPlayers, maxBots);
+        log.info("maxControllers={} maxPlayers={} maxBots={}", maxControllers, maxPlayers, maxBots);
         log.info("purgeOldServersSeenBefore={}", purgeOldServersSeenBefore);
     }
 }

@@ -41,6 +41,8 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
 
         if (exception != null) {
             log.warn("Handled: exception={}", exception.getClass().getSimpleName(), exception);
+        } else {
+            log.warn("Handled");
         }
 
         return message;

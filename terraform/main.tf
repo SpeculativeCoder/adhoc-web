@@ -1059,8 +1059,8 @@ resource "aws_ecs_task_definition" "adhoc_server" {
   requires_compatibilities = [
     "FARGATE"
   ]
-  cpu                = "512"
-  memory             = "1024"
+  cpu                = "1024"
+  memory             = "2048"
   // TODO
   #task_role_arn            = data.aws_iam_role.ecs_task_execution_role.arn
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn

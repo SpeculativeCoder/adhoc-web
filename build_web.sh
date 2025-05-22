@@ -61,6 +61,10 @@ export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_dev_server}
 export MANAGER_SPRING_PROFILES_ACTIVE=${MANAGER_SPRING_PROFILES_ACTIVE:-db-h2postgres,hosting-ecs,dns-route53}
 export KIOSK_SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE:-db-h2postgres}
 
+export MAX_CONTROLLERS=${MAX_CONTROLLERS:-32}
+export MAX_PLAYERS=${MAX_PLAYERS:-32}
+export MAX_BOTS=${MAX_BOTS:-32}
+
 mvn clean package -DskipITs -Dangular.configuration=${ANGULAR_CONFIGURATION} -Dunreal.configuration=${CLIENT_UNREAL_CONFIGURATION}
 
 docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
@@ -87,6 +91,9 @@ docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
   --build-arg KIOSK_IMAGE=${KIOSK_IMAGE} \
   --build-arg SERVER_IMAGE=${SERVER_IMAGE} \
   --build-arg SPRING_PROFILES_ACTIVE=${MANAGER_SPRING_PROFILES_ACTIVE} \
+  --build-arg MAX_CONTROLLERS=${MAX_CONTROLLERS} \
+  --build-arg MAX_PLAYERS=${MAX_PLAYERS} \
+  --build-arg MAX_BOTS=${MAX_BOTS} \
   .
 
 docker build --tag ${KIOSK_IMAGE} -f docker/adhoc_kiosk.Dockerfile \
@@ -113,4 +120,7 @@ docker build --tag ${KIOSK_IMAGE} -f docker/adhoc_kiosk.Dockerfile \
   --build-arg KIOSK_IMAGE=${KIOSK_IMAGE} \
   --build-arg SERVER_IMAGE=${SERVER_IMAGE} \
   --build-arg SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE} \
+  --build-arg MAX_CONTROLLERS=${MAX_CONTROLLERS} \
+  --build-arg MAX_PLAYERS=${MAX_PLAYERS} \
+  --build-arg MAX_BOTS=${MAX_BOTS} \
   .

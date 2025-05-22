@@ -114,8 +114,8 @@ public class WebSocketConfiguration {
     @Bean
     public ServletServerContainerFactoryBean webSocketContainer() {
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-        container.setMaxTextMessageBufferSize(8192 * 2); // multiplied default
-        container.setMaxBinaryMessageBufferSize(8192 * 2); // multiplied default
+        container.setMaxTextMessageBufferSize(8192 * 10); // multiplied default
+        container.setMaxBinaryMessageBufferSize(8192 * 10); // multiplied default
         return container;
     }
 }

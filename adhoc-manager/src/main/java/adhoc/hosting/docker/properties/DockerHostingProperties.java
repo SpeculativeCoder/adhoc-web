@@ -39,9 +39,13 @@ public class DockerHostingProperties {
     @Value("${adhoc.docker.host}")
     private String dockerHost;
 
+    @Value("${adhoc.docker.auto-remove}")
+    private Boolean autoRemove;
+
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
         log.info("dockerHost={}", dockerHost);
+        log.info("autoRemove={}", autoRemove);
     }
 }
 

@@ -149,6 +149,29 @@ data "local_sensitive_file" "adhoc_private_key" {
   filename = "${path.root}/../certs/${local.adhoc_name}.key"
 }
 
+// user permissions purely for generating certs via acme from command line
+resource "aws_iam_policy" "adhoc_acme" {
+  name = "${local.adhoc_name}_${terraform.workspace}_acme.${local.aws_region}"
+  policy = jsonencode(
+    {
+      Version = "2012-10-17",
+      Statement = flatten([
+          var.route53_zone == null ? [] : [
+          {
+            Sid    = "0",
+            Effect = "Allow",
+            Action = [
+              "route53:ChangeResourceRecordSets",
+              "route53:ListResourceRecordSets"
+            ],
+            Resource = data.aws_route53_zone.adhoc[0].arn
+          },
+        ]
+      ])
+    }
+  )
+}
+
 // TODO: minimal permissions
 resource "aws_iam_policy" "adhoc_manager" {
   name = "${local.adhoc_name}_${terraform.workspace}_manager.${local.aws_region}"
@@ -203,8 +226,18 @@ resource "aws_iam_policy" "adhoc_manager" {
   )
 }
 
+resource "aws_iam_group" "adhoc_acme" {
+  name = "${local.adhoc_name}_${terraform.workspace}_acme.${local.aws_region}"
+}
+
+
 resource "aws_iam_group" "adhoc_manager" {
   name = "${local.adhoc_name}_${terraform.workspace}_manager.${local.aws_region}"
+}
+
+resource "aws_iam_group_policy_attachment" "adhoc_acme" {
+  group      = aws_iam_group.adhoc_acme.name
+  policy_arn = aws_iam_policy.adhoc_acme.arn
 }
 
 resource "aws_iam_group_policy_attachment" "adhoc_manager" {
@@ -212,8 +245,19 @@ resource "aws_iam_group_policy_attachment" "adhoc_manager" {
   policy_arn = aws_iam_policy.adhoc_manager.arn
 }
 
+resource "aws_iam_user" "adhoc_acme" {
+  name = "${local.adhoc_name}_${terraform.workspace}_acme.${local.aws_region}"
+}
+
 resource "aws_iam_user" "adhoc_manager" {
   name = "${local.adhoc_name}_${terraform.workspace}_manager.${local.aws_region}"
+}
+
+resource "aws_iam_user_group_membership" "adhoc_acme" {
+  user = aws_iam_user.adhoc_acme.name
+  groups = [
+    aws_iam_group.adhoc_acme.name
+  ]
 }
 
 resource "aws_iam_user_group_membership" "adhoc_manager" {
@@ -221,6 +265,10 @@ resource "aws_iam_user_group_membership" "adhoc_manager" {
   groups = [
     aws_iam_group.adhoc_manager.name
   ]
+}
+
+resource "aws_iam_access_key" "adhoc_acme" {
+  user = aws_iam_user.adhoc_acme.name
 }
 
 resource "aws_iam_access_key" "adhoc_manager" {
@@ -1059,8 +1107,8 @@ resource "aws_ecs_task_definition" "adhoc_server" {
   requires_compatibilities = [
     "FARGATE"
   ]
-  cpu                = "1024"
-  memory             = "2048"
+  cpu                = "512"
+  memory             = "4096"
   // TODO
   #task_role_arn            = data.aws_iam_role.ecs_task_execution_role.arn
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn

@@ -22,12 +22,10 @@
 
 package adhoc.system.log.logback;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.AbstractMatcherFilter;
 import ch.qos.logback.core.spi.FilterReply;
-import org.slf4j.event.Level;
-
-import java.util.logging.Logger;
 
 public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEvent> {
 
@@ -36,9 +34,10 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
 
         String loggerName = event.getLoggerName();
         String message = event.getMessage();
+        Level level = event.getLevel();
 
         if ("org.apache.activemq.artemis.core.server".equals(loggerName)
-                && Logger.getLogger(loggerName).getLevel().intValue() > Level.DEBUG.toInt()) {
+                && level.toInt() > Level.DEBUG.toInt()) {
 
             if (message.startsWith("AMQ224037: cluster connection Failed to handle message")) {
                 return FilterReply.DENY;
@@ -50,7 +49,7 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
         }
 
         if ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(loggerName)
-                && Logger.getLogger(loggerName).getLevel().intValue() > Level.DEBUG.toInt()) {
+                && level.toInt() > Level.DEBUG.toInt()) {
 
             // suppress no data warnings from UPDATEs etc. which don't update any columns
             if ("SQL Warning Code: -1100, SQLState: 02000".equals(message)
@@ -78,7 +77,7 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
         }
 
         if ("org.hibernate.orm.jdbc.batch".equals(loggerName)
-                && Logger.getLogger(loggerName).getLevel().intValue() > Level.DEBUG.toInt()) {
+                && level.toInt() > Level.DEBUG.toInt()) {
 
             // batch insert failures due to concurrency
             if ("HHH100503: On release of batch it still contained JDBC statements".equals(message)) {
@@ -87,7 +86,7 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
         }
 
         if ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(loggerName)
-                && Logger.getLogger(loggerName).getLevel().intValue() > Level.DEBUG.toInt()) {
+                && level.toInt() > Level.DEBUG.toInt()) {
 
             // web browser stomp disconnection failures
             if (message.startsWith("Failed to forward DISCONNECT ")) {

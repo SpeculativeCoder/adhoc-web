@@ -2,9 +2,6 @@
 !Package/Development/LinuxServer
 !Package/Test/LinuxServer
 !Package/Shipping/LinuxServer
-#Package/Development/LinuxServer/MyProject/Binaries/Linux/MyProjectServer.debug
-#Package/Test/LinuxServer/MyProject/Binaries/Linux/MyProjectServer.debug
-#Package/Shipping/LinuxServer/MyProject/Binaries/Linux/MyProjectServer.debug
 #!certs/adhoc-ca.cer
 #!certs/adhoc.cer
 #!certs/adhoc.key

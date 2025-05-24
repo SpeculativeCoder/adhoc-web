@@ -100,36 +100,60 @@ public class UniverseInitializeService {
         // insert factions
 
         Faction team1 = new Faction();
-        //team1.setId(1L);
         team1.setIndex(0);
         team1.setName("Alpha");
-        team1.setColor("#FFFF00");
+        team1.setColor("#62ABFF");
         team1.setScore(BigDecimal.valueOf(0.0));
         team1 = factionRepository.save(team1);
 
         Faction team2 = new Faction();
-        //team2.setId(2L);
         team2.setIndex(1);
         team2.setName("Beta");
-        team2.setColor("#00AAFF");
+        team2.setColor("#FF9D00");
         team2.setScore(BigDecimal.valueOf(0.0));
         team2 = factionRepository.save(team2);
 
         Faction team3 = new Faction();
-        //team3.setId(3L);
         team3.setIndex(2);
         team3.setName("Gamma");
-        team3.setColor("#AA00FF");
+        team3.setColor("#FFFF00");
         team3.setScore(BigDecimal.valueOf(0.0));
         team3 = factionRepository.save(team3);
 
-        //Faction team4 = new Faction();
-        ////team4.setId(4L);
-        //team4.setIndex(3);
-        //team4.setName("Delta");
-        //team4.setColor("#FF2200");
-        //team4.setScore(BigDecimal.valueOf(0.0));
-        //team4 = factionRepository.save(team4);
+        Faction team4 = new Faction();
+        team4.setIndex(3);
+        team4.setName("Delta");
+        team4.setColor("#FF009D");
+        team4.setScore(BigDecimal.valueOf(0.0));
+        team4 = factionRepository.save(team4);
+
+        Faction team5 = new Faction();
+        team5.setIndex(4);
+        team5.setName("Epsilon");
+        team5.setColor("#00F7FF");
+        team5.setScore(BigDecimal.valueOf(0.0));
+        team5 = factionRepository.save(team5);
+
+        Faction team6 = new Faction();
+        team6.setIndex(5);
+        team6.setName("Zeta");
+        team6.setColor("#C1F8BD");
+        team6.setScore(BigDecimal.valueOf(0.0));
+        team6 = factionRepository.save(team6);
+
+        Faction team7 = new Faction();
+        team7.setIndex(6);
+        team7.setName("Eta");
+        team7.setColor("#FFC2F3");
+        team7.setScore(BigDecimal.valueOf(0.0));
+        team7 = factionRepository.save(team7);
+
+        Faction team8 = new Faction();
+        team8.setIndex(7);
+        team8.setName("Theta");
+        team8.setColor("#A300FF");
+        team8.setScore(BigDecimal.valueOf(0.0));
+        team8 = factionRepository.save(team8);
 
         Region region1 = new Region();
         //region1.setId(1L);

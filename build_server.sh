@@ -57,6 +57,10 @@ ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
  -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
  -NoP4 -UTF8Output -NoDebugInfo
 
+# we only want the symbols for now so delete debug info
+#debug_filepath=${package_dir}/${SERVER_UNREAL_CONFIGURATION}/LinuxServer/${UNREAL_PROJECT_NAME}/Binaries/Linux/${UNREAL_PROJECT_NAME}Server.debug
+#rm -v $debug_filepath
+
 docker build --tag ${SERVER_IMAGE} -f docker/adhoc_server.Dockerfile \
   --build-arg ADHOC_NAME=${ADHOC_NAME} \
   --build-arg SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION} \

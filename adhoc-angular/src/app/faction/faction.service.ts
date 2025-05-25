@@ -68,8 +68,8 @@ export class FactionService {
     return this.getFaction(id);
   }
 
-  refreshCachedFactions(): Observable<Faction[]> {
-    return this.http.get<Page<Faction>>(this.factionsUrl).pipe(
+  refreshCachedFactions(paging: Paging = new Paging()): Observable<Faction[]> {
+    return this.http.get<Page<Faction>>(this.factionsUrl, {params: paging.toParams()}).pipe(
       map(factions => {
         this.cachedFactions ? this.cachedFactions.length = 0 : this.cachedFactions = [];
         this.cachedFactions.push(...factions.content);

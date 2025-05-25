@@ -164,12 +164,12 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
 
   private loadData() {
     forkJoin([
-      this.regionService.getRegions(new Paging(0, Number.MAX_SAFE_INTEGER)),
-      this.areaService.getAreas(new Paging(0, Number.MAX_SAFE_INTEGER)),
-      this.objectiveService.refreshCachedObjectives(),
-      this.serverService.getServers(new Paging(0, Number.MAX_SAFE_INTEGER)),
-      this.factionService.refreshCachedFactions(),
-      this.pawnService.getPawns(new Paging(0, Number.MAX_SAFE_INTEGER)),
+      this.regionService.getRegions(new Paging(0, 100)),
+      this.areaService.getAreas(new Paging(0, 100)),
+      this.objectiveService.refreshCachedObjectives(new Paging(0, 100)),
+      this.serverService.getServers(new Paging(0, 100)),
+      this.factionService.refreshCachedFactions(new Paging(0, 100)),
+      this.pawnService.getPawns(new Paging(0, 100)),
     ]).subscribe(data => {
       // TODO
       let regionsPage: Page<Region>;
@@ -330,19 +330,23 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     for (const objective of this.objectives) {
       for (const linkedObjectiveId of objective.linkedObjectiveIds) {
         const linkedObjective = this.objectives.find(o => o.id == linkedObjectiveId);
-        if (visitedObjectives.indexOf(linkedObjective) === -1) {
-          let linkLine = new fabric.Line([
-            objective.x,
-            -objective.y,
-            linkedObjective.x, // + 15 * (1 / this.mapScale),
-            -linkedObjective.y, // + 15 * (1 / this.mapScale),
-          ], {
-            stroke: '#888888',
-            strokeWidth: 1 * (1 / this.mapScale),
-            hoverCursor: 'default',
-            selectable: false,
-          });
-          this.canvas.add(linkLine);
+        if (!linkedObjective) {
+          console.log(`Failed to find linked objective with ID: ${linkedObjectiveId}`);
+        } else {
+          if (visitedObjectives.indexOf(linkedObjective) === -1) {
+            let linkLine = new fabric.Line([
+              objective.x,
+              -objective.y,
+              linkedObjective.x, // + 15 * (1 / this.mapScale),
+              -linkedObjective.y, // + 15 * (1 / this.mapScale),
+            ], {
+              stroke: '#888888',
+              strokeWidth: 1 * (1 / this.mapScale),
+              hoverCursor: 'default',
+              selectable: false,
+            });
+            this.canvas.add(linkLine);
+          }
         }
       }
       // TODO

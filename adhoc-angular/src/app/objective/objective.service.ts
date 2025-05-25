@@ -69,8 +69,8 @@ export class ObjectiveService {
     return this.refreshCachedObjectives();
   }
 
-  refreshCachedObjectives(): Observable<Objective[]> {
-    return this.http.get<Page<Objective>>(this.objectivesUrl).pipe(
+  refreshCachedObjectives(paging: Paging = new Paging()): Observable<Objective[]> {
+    return this.http.get<Page<Objective>>(this.objectivesUrl, {params: paging.toParams()}).pipe(
       map(objectives => {
         this.cachedObjectives ? this.cachedObjectives.length = 0 : this.cachedObjectives = [];
         this.cachedObjectives.push(...objectives.content);

@@ -39,7 +39,7 @@ public class TomcatConfiguration {
     @Bean(destroyMethod = "destroy")
     public Connector httpConnector() {
         final Connector connector = new Connector();
-        connector.setPort(coreProperties.getServerPort2());
+        connector.setPort(coreProperties.getServerPortHttp());
         return connector;
     }
 

@@ -25,7 +25,6 @@ package adhoc;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -36,13 +35,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled // disabled for now
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Slf4j
 public class AdhocManagerApplicationIT {
 
-    @Value("${server.port-2}")
-    private Integer serverPort2;
+    @Value("${adhoc.server-port-http}")
+    private Integer serverPortHttp;
 
     //@Value("${adhoc.manager-domain}")
     //private String managerDomain;
@@ -53,7 +51,7 @@ public class AdhocManagerApplicationIT {
 
     @BeforeEach
     public void beforeEach() {
-        baseUrl = "http://localhost:" + serverPort2;
+        baseUrl = "http://localhost:" + serverPortHttp;
         //baseUrl = "https://" + managerDomain;
         log.info("baseUrl={}", baseUrl);
 

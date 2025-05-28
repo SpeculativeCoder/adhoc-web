@@ -26,12 +26,18 @@ set -x # show all commands being run
 set -u # error on undefined variables
 set -e # bail on ANY error
 
+set -a
+source ./env/common.env || true
+set +a
+
+export ADHOC_ENV=${ADHOC_ENV:-dev}
+
 export ADHOC_NAME=${ADHOC_NAME:-adhoc}
 
 export SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION:-Development}
 export FEATURE_FLAGS=${FEATURE_FLAGS:-development}
 
-export MANAGER_HOST=${MANAGER_HOST:-${ADHOC_NAME}-dev-manager.${ADHOC_NAME}-dev}
+export MANAGER_HOST=${MANAGER_HOST:-${ADHOC_NAME}-${ADHOC_ENV}-manager.${ADHOC_NAME}-${ADHOC_ENV}}
 
 export UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME:-MyProject}
 export UNREAL_PROJECT_REGION_MAPS=${UNREAL_PROJECT_REGION_MAPS:-Region0001}
@@ -40,7 +46,7 @@ export UNREAL_PROJECT_TRANSITION_MAP=${UNREAL_PROJECT_TRANSITION_MAP:-Entry}
 export UNREAL_PROJECT_DIR=${UNREAL_PROJECT_DIR:-${HOME}/Unreal\ Projects/${UNREAL_PROJECT_NAME}}
 export UNREAL_ENGINE_DIR=${UNREAL_ENGINE_DIR:-${HOME}/ue-4.27-html5-es3}
 
-export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_dev_server}
+export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_${ADHOC_ENV}_server}
 
 web_project_dir=$(realpath -e $(dirname "$0"))
 package_dir=${web_project_dir}/Package

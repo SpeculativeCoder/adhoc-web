@@ -26,6 +26,10 @@ set -x # show all commands being run
 set -u # error on undefined variables
 set -e # bail on ANY error
 
+set -a
+source ./env/common.env || true
+set +a
+
 export CLIENT_UNREAL_CONFIGURATION=${CLIENT_UNREAL_CONFIGURATION:-Development}
 
 export UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME:-MyProject}

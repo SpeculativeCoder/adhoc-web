@@ -26,13 +26,19 @@ set -x # show all commands being run
 set -u # error on undefined variables
 set -e # bail on ANY error
 
+set -a
+source ./env/common.env || true
+set +a
+
+export ADHOC_ENV=${ADHOC_ENV:-dev}
+
 export ADHOC_NAME=${ADHOC_NAME:-adhoc}
 
 export AWS_PROFILE_FOR_ECR=${AWS_PROFILE_FOR_ECR:-adhoc_admin}
 
-export MANAGER_IMAGE=${MANAGER_IMAGE:-${ADHOC_NAME}_dev_manager}
-export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_dev_kiosk}
-export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_dev_server}
+export MANAGER_IMAGE=${MANAGER_IMAGE:-${ADHOC_NAME}_${ADHOC_ENV}_manager}
+export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_${ADHOC_ENV}_kiosk}
+export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_${ADHOC_ENV}_server}
 
 export AWS_REGION=${AWS_REGION:-us-east-1}
 export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text --profile ${AWS_PROFILE_FOR_ECR})

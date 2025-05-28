@@ -27,16 +27,12 @@ set -u # error on undefined variables
 set -e # bail on ANY error
 
 set -a
-source ./env/common.env || true
 source ./env/qa.env || true
+source ./env/common.env || true
 set +a
 
+export ADHOC_ENV=qa
+
 export ADHOC_NAME=${ADHOC_NAME:-adhoc}
-
-export AWS_PROFILE_FOR_ECR=${AWS_PROFILE_FOR_ECR:-adhoc_admin}
-
-export MANAGER_IMAGE=${MANAGER_IMAGE:-${ADHOC_NAME}_qa_manager}
-export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_qa_kiosk}
-export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_qa_server}
 
 ./upload_all.sh

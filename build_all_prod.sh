@@ -27,9 +27,11 @@ set -u # error on undefined variables
 set -e # bail on ANY error
 
 set -a
-source ./env/common.env || true
 source ./env/prod.env || true
+source ./env/common.env || true
 set +a
+
+export ADHOC_ENV=prod
 
 export ADHOC_NAME=${ADHOC_NAME:-adhoc}
 
@@ -40,34 +42,9 @@ export CLIENT_UNREAL_CONFIGURATION=${CLIENT_UNREAL_CONFIGURATION:-Shipping}
 export SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION:-Shipping}
 export FEATURE_FLAGS=${FEATURE_FLAGS:-production}
 
-export POSTGRES_HOST=${POSTGRES_HOST:-${ADHOC_NAME}-prod-manager.${ADHOC_NAME}-prod}
-export H2_HOST=${H2_HOST:-${ADHOC_NAME}-prod-manager.${ADHOC_NAME}-prod}
-export HSQLDB_HOST=${HSQLDB_HOST:-${ADHOC_NAME}-prod-manager.${ADHOC_NAME}-prod}
-export MANAGER_HOST=${MANAGER_HOST:-${ADHOC_NAME}-prod-manager.${ADHOC_NAME}-prod}
-export KIOSK_HOST=${KIOSK_HOST:-${ADHOC_NAME}-prod-kiosk.${ADHOC_NAME}-prod}
-
-export AWS_REGION=${AWS_REGION:-us-east-1}
-export SERVER_AVAILABILITY_ZONE=${SERVER_AVAILABILITY_ZONE:-us-east-1a}
-export SERVER_SECURITY_GROUP_NAME=${SERVER_SECURITY_GROUP_NAME:-${ADHOC_NAME}_prod_server}
-
-export ECS_CLUSTER=${ECS_CLUSTER:-${ADHOC_NAME}_prod}
-export ADHOC_DOMAIN=${ADHOC_DOMAIN:-localhost}
-export ROUTE53_ZONE=${ROUTE53_ZONE:-localhost}
+# use the real domain(s) for prod
 export MANAGER_DOMAIN=${MANAGER_DOMAIN:-manager.${ADHOC_DOMAIN}}
 export KIOSK_DOMAIN=${KIOSK_DOMAIN:-${ADHOC_DOMAIN}}
 export SERVER_DOMAIN=${SERVER_DOMAIN:-server.${ADHOC_DOMAIN}}
-
-export UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME:-MyProject}
-
-export MANAGER_IMAGE=${MANAGER_IMAGE:-${ADHOC_NAME}_prod_manager}
-export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_prod_kiosk}
-export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_prod_server}
-
-export MANAGER_SPRING_PROFILES_ACTIVE=${MANAGER_SPRING_PROFILES_ACTIVE:-db-h2postgres,hosting-ecs,dns-route53}
-export KIOSK_SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE:-db-h2postgres}
-
-export MAX_CONTROLLERS=${MAX_CONTROLLERS:-32}
-export MAX_PLAYERS=${MAX_PLAYERS:-32}
-export MAX_BOTS=${MAX_BOTS:-32}
 
 ./build_all.sh

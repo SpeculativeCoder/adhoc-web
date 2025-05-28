@@ -27,9 +27,11 @@ set -u # error on undefined variables
 set -e # bail on ANY error
 
 set -a
-source ./env/common.env || true
 source ./env/dev.env || true
+source ./env/common.env || true
 set +a
+
+export ADHOC_ENV=dev
 
 export ADHOC_NAME=${ADHOC_NAME:-adhoc}
 
@@ -39,35 +41,5 @@ export ANGULAR_CONFIGURATION=${ANGULAR_CONFIGURATION:-development}
 export CLIENT_UNREAL_CONFIGURATION=${CLIENT_UNREAL_CONFIGURATION:-Development}
 export SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION:-Development}
 export FEATURE_FLAGS=${FEATURE_FLAGS:-development}
-
-export POSTGRES_HOST=${POSTGRES_HOST:-${ADHOC_NAME}-dev-manager.${ADHOC_NAME}-dev}
-export H2_HOST=${H2_HOST:-${ADHOC_NAME}-dev-manager.${ADHOC_NAME}-dev}
-export HSQLDB_HOST=${HSQLDB_HOST:-${ADHOC_NAME}-dev-manager.${ADHOC_NAME}-dev}
-export MANAGER_HOST=${MANAGER_HOST:-${ADHOC_NAME}-dev-manager.${ADHOC_NAME}-dev}
-export KIOSK_HOST=${KIOSK_HOST:-${ADHOC_NAME}-dev-kiosk.${ADHOC_NAME}-dev}
-
-export AWS_REGION=${AWS_REGION:-us-east-1}
-export SERVER_AVAILABILITY_ZONE=${SERVER_AVAILABILITY_ZONE:-us-east-1a}
-export SERVER_SECURITY_GROUP_NAME=${SERVER_SECURITY_GROUP_NAME:-${ADHOC_NAME}_dev_server}
-
-export ECS_CLUSTER=${ECS_CLUSTER:-${ADHOC_NAME}_dev}
-export ADHOC_DOMAIN=${ADHOC_DOMAIN:-localhost}
-export ROUTE53_ZONE=${ROUTE53_ZONE:-localhost}
-export MANAGER_DOMAIN=${MANAGER_DOMAIN:-manager-dev.${ADHOC_DOMAIN}}
-export KIOSK_DOMAIN=${KIOSK_DOMAIN:-dev.${ADHOC_DOMAIN}}
-export SERVER_DOMAIN=${SERVER_DOMAIN:-server-dev.${ADHOC_DOMAIN}}
-
-export UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME:-MyProject}
-
-export MANAGER_IMAGE=${MANAGER_IMAGE:-${ADHOC_NAME}_dev_manager}
-export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_dev_kiosk}
-export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_dev_server}
-
-export MANAGER_SPRING_PROFILES_ACTIVE=${MANAGER_SPRING_PROFILES_ACTIVE:-db-h2postgres,hosting-ecs,dns-route53}
-export KIOSK_SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE:-db-h2postgres}
-
-export MAX_CONTROLLERS=${MAX_CONTROLLERS:-32}
-export MAX_PLAYERS=${MAX_PLAYERS:-32}
-export MAX_BOTS=${MAX_BOTS:-32}
 
 ./build_all.sh

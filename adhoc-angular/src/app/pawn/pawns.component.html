@@ -68,6 +68,7 @@
     <ngb-pagination [page]="pawns.page.number + 1"
                     [pageSize]="pawns.page.size"
                     [collectionSize]="pawns.page.totalElements"
+                    [maxSize]="3"
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>
   </div>

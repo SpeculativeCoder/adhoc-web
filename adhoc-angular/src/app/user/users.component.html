@@ -77,6 +77,7 @@
     <ngb-pagination [page]="users.page.number + 1"
                     [pageSize]="users.page.size"
                     [collectionSize]="users.page.totalElements"
+                    [maxSize]="3"
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>
   </div>

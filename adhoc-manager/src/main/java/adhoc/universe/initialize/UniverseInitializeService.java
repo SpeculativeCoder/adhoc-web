@@ -376,9 +376,11 @@ public class UniverseInitializeService {
         //pawn1.setUser(alphaUser);
         //pawn1 = pawnRepository.save(pawn1);
 
-        // insert some messages to test pagination UI
-        for (int i = 0; i < 1000; i++) {
-            messageService.addGlobalMessage("Example message " + i);
+        if (coreProperties.getFeatureFlags().contains("development")) {
+            // insert some messages to test pagination UI
+            for (int i = 0; i < 1000; i++) {
+                messageService.addGlobalMessage("Example message " + i);
+            }
         }
 
         messageService.addGlobalMessage(String.format("Universe %d initialized", universe.getId()));

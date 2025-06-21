@@ -20,7 +20,7 @@
 # SOFTWARE.
 #
 
-FROM ubuntu:latest
+FROM ubuntu:rolling
 
 RUN apt-get update -y && apt-get dist-upgrade -y
 RUN apt-get install -y openjdk-21-jre-headless curl

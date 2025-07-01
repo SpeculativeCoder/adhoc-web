@@ -8,6 +8,16 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
+  "prettier": {
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "^20.0.0",
@@ -19,10 +29,10 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
-    "@ng-bootstrap/ng-bootstrap": "^19.0.0-rc.0",
+    "@ng-bootstrap/ng-bootstrap": "^19.0.1",
     "@popperjs/core": "^2.11.8",
     "angular-in-memory-web-api": "^0.20.0",
-    "bootstrap": "^5.3.6",
+    "bootstrap": "^5.3.7",
     "fabric": "^6.7.0",
     "open-iconic": "^1.1.1",
     "rxjs": "~7.8.0",
@@ -32,8 +42,8 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular/build": "^20.0.2",
-    "@angular/cli": "^20.0.2",
+    "@angular/build": "^20.0.4",
+    "@angular/cli": "^20.0.4",
     "@angular/compiler-cli": "^20.0.0",
     "@types/jasmine": "~5.1.0",
     "@types/sockjs-client": "^1.5.4",

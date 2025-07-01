@@ -89,7 +89,7 @@
     </div>
     <div class="mb-3">
       <label class="form-label" for="factionInput">Faction</label>
-      <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(structure.factionId)?.name"/>
+      <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(structure.factionId!)?.name"/>
     </div>
     <div class="row">
       <!--<div class="col-auto mt-3 mb-3">

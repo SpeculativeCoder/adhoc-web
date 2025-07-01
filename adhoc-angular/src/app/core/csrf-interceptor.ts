@@ -41,7 +41,7 @@ export class CsrfInterceptor implements HttpInterceptor {
     return this.csrfService.getCsrf().pipe(mergeMap(csrf => {
       req = req.clone({
         headers: req.headers
-          .set(csrf.headerName, csrf.token)
+          .set(csrf!.headerName!, csrf!.token!)
         //.set('Content-Type', 'application/json')
         //.set('Authorization', 'Basic ' + window.btoa('user:password'))
       })

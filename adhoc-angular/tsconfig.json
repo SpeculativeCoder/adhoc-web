@@ -1,21 +1,20 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "strict": false,
-    //true,
+    "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "esModuleInterop": true,
+    //"esModuleInterop": true,
     "experimentalDecorators": true,
-    "moduleResolution": "bundler",
+    //"moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "useDefineForClassFields": false
+    //"useDefineForClassFields": false
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

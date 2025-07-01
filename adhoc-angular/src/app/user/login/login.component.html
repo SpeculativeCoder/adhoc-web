@@ -76,8 +76,8 @@
           <label class="form-label" for="factionId">Faction</label>
           <div ngbDropdown>
             <button type="button" class="btn btn-outline-secondary" id="factionId" ngbDropdownToggle>
-              <span [ngStyle]="{'color': getFaction(userRegisterRequest.factionId)?.color}"><span class="oi oi-media-stop"></span></span>
-              <span class="text-body"> {{ getFaction(userRegisterRequest.factionId)?.name }}</span>
+              <span [ngStyle]="{'color': getFaction(userRegisterRequest.factionId!)?.color}"><span class="oi oi-media-stop"></span></span>
+              <span class="text-body"> {{ getFaction(userRegisterRequest.factionId!)?.name }}</span>
             </button>
             <div ngbDropdownMenu aria-labelledby="factionId">
               <button type="button" ngbDropdownItem

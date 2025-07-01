@@ -37,11 +37,11 @@ import {Sort} from "../paging/sort";
 export class HeaderSortComponent {
 
   // tslint:disable-next-line: no-input-rename
-  @Input('sortable') column: string;
+  @Input('sortable') column?: string;
 
   @Output('sort') sortEvent$ = new EventEmitter<Sort>();
 
-  direction: SortDirection;
+  direction?: SortDirection;
 
   get openIconicIconClass() {
     return this.direction === 'asc' ? 'oi-sort-ascending' : 'oi-sort-descending';
@@ -50,6 +50,6 @@ export class HeaderSortComponent {
   @HostListener('click', ['$event'])
   click(event: MouseEvent) {
     this.direction = this.direction === 'asc' ? 'desc' : 'asc';
-    this.sortEvent$.emit({column: this.column, direction: this.direction});
+    this.sortEvent$.emit({column: this.column!, direction: this.direction});
   }
 }

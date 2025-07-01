@@ -51,7 +51,7 @@ export class TaskComponent implements OnInit {
   }
 
   ngOnInit() {
-    const taskId = +this.route.snapshot.paramMap.get('id');
+    const taskId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.taskService.getTask(taskId)]).subscribe(data => {
       [this.task] = data;
     });

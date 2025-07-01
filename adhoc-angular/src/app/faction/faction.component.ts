@@ -48,7 +48,7 @@ export class FactionComponent implements OnInit {
   }
 
   ngOnInit() {
-    const factionId = +this.route.snapshot.paramMap.get('id');
+    const factionId = +(this.route.snapshot.paramMap.get('id')!);
     this.factionService.getFaction(factionId).subscribe(faction => (this.faction = faction));
   }
 

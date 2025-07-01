@@ -43,12 +43,12 @@ export class ClientComponent implements OnInit {
 
   title = customization.title;
 
-  showClient: boolean;
-  showCompatibilityWarning: boolean;
+  showClient?: boolean;
+  showCompatibilityWarning?: boolean;
 
-  clientUrl: SafeResourceUrl;
+  clientUrl?: SafeResourceUrl;
 
-  private areaId: number;
+  private areaId?: number;
 
   constructor(private route: ActivatedRoute,
               private router: Router,

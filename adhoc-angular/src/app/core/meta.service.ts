@@ -36,7 +36,7 @@ export class MetaService {
 
     //let featureFlagsMetaElement = document.head.querySelector('meta[name=FEATURE_FLAGS]');
     let featureFlagsMetaElement = this.meta.getTag('name="FEATURE_FLAGS"');
-    this.featureFlags = featureFlagsMetaElement['content'] || 'development';
+    this.featureFlags = (featureFlagsMetaElement && featureFlagsMetaElement['content']) || 'development';
 
     console.log("featureFlags=" + this.featureFlags);
   }

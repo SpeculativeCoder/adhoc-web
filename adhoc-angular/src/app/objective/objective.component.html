@@ -61,7 +61,7 @@
     </div>
     <div class="mb-3">
       <label class="form-label" for="factionIdInput">Faction</label>
-      <input class="form-control" id="factionIdInput" name="factionId" type="text" readonly [ngModel]="getFaction(objective.factionId)?.name"/>
+      <input class="form-control" id="factionIdInput" name="factionId" type="text" readonly [ngModel]="getFaction(objective.factionId!)?.name"/>
       <!--<div ngbDropdown class="col-md-4 d-inline-block btn-block">
         <button class="btn btn-outline-dark btn-block" id="changeFactionDropdown" ngbDropdownToggle>
           {{ getFaction(controlPoint.factionId)?.name }}

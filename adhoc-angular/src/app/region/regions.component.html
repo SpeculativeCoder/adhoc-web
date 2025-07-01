@@ -53,10 +53,10 @@
     </table>
   </div>
   <div class="d-flex justify-content-end" *ngIf="regions?.page?.totalElements">
-    <div class="mt-2 me-4 text-nowrap">{{ (regions.page.number * regions.page.size) + 1 }} - {{ (regions.page.number * regions.page.size) + regions.content.length }} of {{ regions.page.totalElements }}</div>
-    <ngb-pagination [page]="regions.page.number + 1"
-                    [pageSize]="regions.page.size"
-                    [collectionSize]="regions.page.totalElements"
+    <div class="mt-2 me-4 text-nowrap">{{ (regions.page!.number! * regions.page!.size!) + 1 }} - {{ (regions.page!.number! * regions.page!.size!) + regions.content!.length }} of {{ regions.page!.totalElements }}</div>
+    <ngb-pagination [page]="regions.page!.number! + 1"
+                    [pageSize]="regions.page!.size!"
+                    [collectionSize]="regions.page!.totalElements!"
                     [maxSize]="3"
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>

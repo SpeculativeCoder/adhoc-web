@@ -39,7 +39,7 @@ export class AppTitleStrategy extends TitleStrategy {
       title += ' - ' + routeStateTitle;
     }
     // TODO
-    if (routerStateSnapshot.root.firstChild.paramMap.has('id')) {
+    if (routerStateSnapshot.root.firstChild?.paramMap.has('id')) {
       title += ' ' + routerStateSnapshot.root.firstChild.paramMap.get('id');
     }
     this.title.setTitle(title);

@@ -46,11 +46,11 @@ export class AppComponent implements OnInit {
 
   title = customization.title;
 
-  featureFlags: string;
+  featureFlags: string = '';
   extra: boolean;
 
-  currentUser: User;
-  currentUserFaction: Faction;
+  currentUser?: User;
+  currentUserFaction?: Faction;
 
   constructor(private factionService: FactionService,
               private currentUserService: CurrentUserService,
@@ -64,9 +64,10 @@ export class AppComponent implements OnInit {
     this.featureFlags = this.metaService.getFeatureFlags();
 
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
-      this.currentUser = currentUser;
+      // TODO
       if (currentUser) {
-        this.factionService.getCachedFaction(currentUser.factionId).subscribe(faction => {
+        this.currentUser = currentUser;
+        this.factionService.getCachedFaction(currentUser.factionId!).subscribe(faction => {
           this.currentUserFaction = faction
         });
       }

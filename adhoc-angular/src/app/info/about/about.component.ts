@@ -39,9 +39,9 @@ export class AboutComponent {
   description = customization.description;
   developer = customization.developer;
 
-  aboutPageMoreHtml: SafeHtml;
+  aboutPageMoreHtml: string;
 
   constructor(private sanitizer: DomSanitizer) {
-    this.aboutPageMoreHtml = sanitizer.sanitize(SecurityContext.HTML, customization.aboutPageMoreHtml);
+    this.aboutPageMoreHtml = sanitizer.sanitize(SecurityContext.HTML, customization.aboutPageMoreHtml)!;
   }
 }

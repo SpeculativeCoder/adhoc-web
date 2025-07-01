@@ -51,13 +51,13 @@ export class ObjectiveComponent implements OnInit {
   }
 
   ngOnInit() {
-    const objectiveId = +this.route.snapshot.paramMap.get('id');
+    const objectiveId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.objectiveService.getObjective(objectiveId), this.factionService.getCachedFactions()]).subscribe(data => {
       [this.objective, this.factions] = data;
     });
   }
 
-  getFaction(factionId: number): Faction {
+  getFaction(factionId: number) {
     return this.factions.find(faction => faction.id === factionId);
   }
 

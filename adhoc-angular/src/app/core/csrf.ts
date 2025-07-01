@@ -21,7 +21,7 @@
  */
 
 export class Csrf {
-  token: string;
-  headerName: string;
-  parameterName: string;
+  token?: string;
+  headerName?: string;
+  parameterName?: string;
 }

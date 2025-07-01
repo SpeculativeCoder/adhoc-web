@@ -38,12 +38,12 @@ import {EulaComponent} from "./eula/eula.component";
 })
 export class InfoComponent {
 
-  page: string;
+  page?: string;
 
   constructor(private route: ActivatedRoute,
               private router: Router) {
     this.route.paramMap.subscribe(params => {
-      this.page = params.get('page');
+      this.page = params.get('page')!;
     });
   }
 }

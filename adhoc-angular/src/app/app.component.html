@@ -69,7 +69,7 @@
       <em>Login/Register</em>
     </a>
     <a class="nav-link disabled text-nowrap" *ngIf="currentUser">
-      <small>{{ currentUser?.name }} </small>
+      <small>{{ currentUser.name }} </small>
       <span [ngStyle]="{'color': currentUserFaction?.color}">
         <small><span class="small oi oi-person"></span></small>
       </span>

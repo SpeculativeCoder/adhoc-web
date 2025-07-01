@@ -32,7 +32,7 @@ export class CsrfService {
 
   private readonly csrfUrl: string;
 
-  private csrf$: BehaviorSubject<Csrf> = new BehaviorSubject(null);
+  private csrf$: BehaviorSubject<Csrf | undefined> = new BehaviorSubject<Csrf | undefined>(undefined);
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
@@ -65,6 +65,6 @@ export class CsrfService {
    * Typically, this is called when the current user changes due to register/login etc.
    */
   clearCsrf() {
-    this.csrf$.next(null)
+    this.csrf$.next(undefined)
   }
 }

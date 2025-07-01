@@ -30,7 +30,7 @@ export class Paging {
   }
 
   toParams(): {} {
-    let params = {};
+    let params : {[key: string] : any} = {};
     if (typeof this.page !== 'undefined') {
       params['page'] = this.page;
     }

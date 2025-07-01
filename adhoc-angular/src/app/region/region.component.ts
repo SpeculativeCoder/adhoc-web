@@ -48,7 +48,7 @@ export class RegionComponent implements OnInit {
   }
 
   ngOnInit() {
-    const objectiveId = +this.route.snapshot.paramMap.get('id');
+    const objectiveId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.regionService.getRegion(objectiveId)]).subscribe(data => {
       [this.region] = data;
     });

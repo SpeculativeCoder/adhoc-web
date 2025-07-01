@@ -48,24 +48,24 @@ export class LoginComponent implements OnInit, AfterViewInit {
   loginPassword: string = '';
   loginRememberMe: boolean = false;
 
-  loginErrorMessage: string;
-  registerErrorMessage: string;
+  loginErrorMessage?: string;
+  registerErrorMessage?: string;
 
   userRegisterRequest: UserRegisterRequest = {};
 
   factions: Faction[] = [];
 
   @ViewChild('loginNameOrEmailInput')
-  loginNameOrEmailInput: ElementRef;
+  loginNameOrEmailInput?: ElementRef;
 
   constructor(private registerService: RegisterService,
               private loginService: LoginService,
               private factionService: FactionService,
               private router: Router) {
-    this.userRegisterRequest.name = null; // 'Anon' + Math.floor(Math.random() * 1000000000);
-    this.userRegisterRequest.email = null; // this.users.email = `${this.users.name}@localhost`;
-    this.userRegisterRequest.password = null;
-    this.userRegisterRequest.factionId = null;
+    this.userRegisterRequest.name = undefined; // 'Anon' + Math.floor(Math.random() * 1000000000);
+    this.userRegisterRequest.email = undefined; // this.users.email = `${this.users.name}@localhost`;
+    this.userRegisterRequest.password = undefined;
+    this.userRegisterRequest.factionId = undefined;
     this.userRegisterRequest.rememberMe = false;
     this.userRegisterRequest.human = true;
   }
@@ -78,10 +78,10 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.loginNameOrEmailInput.nativeElement.focus();
+    this.loginNameOrEmailInput?.nativeElement.focus();
   }
 
-  getFaction(factionId: number): Faction {
+  getFaction(factionId: number) {
     return this.factions.find(faction => faction.id === factionId);
   }
 
@@ -98,15 +98,15 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   register(): void {
     if (this.userRegisterRequest.name === '') {
-      this.userRegisterRequest.name = null;
+      this.userRegisterRequest.name = undefined;
     }
     if (this.userRegisterRequest.email === '') {
-      this.userRegisterRequest.email = null;
+      this.userRegisterRequest.email = undefined;
     }
     if (this.userRegisterRequest.password === '') {
-      this.userRegisterRequest.password = null;
+      this.userRegisterRequest.password = undefined;
     }
-    this.registerService.register(this.userRegisterRequest).subscribe((user: User) => {
+    this.registerService.register(this.userRegisterRequest).subscribe(user => {
       this.router.navigate(['']);
       //window.location.href = '/';
       //this.router.navigateByUrl(`/users/${users.userId}`)

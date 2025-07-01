@@ -32,7 +32,7 @@ export class CurrentUserService {
 
   private readonly currentUserUrl: string;
 
-  private currentUser$: BehaviorSubject<User> = new BehaviorSubject(null);
+  private currentUser$: BehaviorSubject<User | undefined> = new BehaviorSubject<User | undefined>(undefined);
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
@@ -40,7 +40,7 @@ export class CurrentUserService {
     this.currentUserUrl = `${baseUrl}/api/users/current`;
   }
 
-  getCurrentUser$(): Observable<User> {
+  getCurrentUser$() {
     return this.currentUser$.value ? this.currentUser$ : this.refreshCurrentUser$();
   }
 
@@ -52,11 +52,11 @@ export class CurrentUserService {
       }));
   }
 
-  getCurrentUser(): Observable<User> {
+  getCurrentUser() {
     return this.getCurrentUser$().pipe(take(1));
   }
 
-  refreshCurrentUser(): Observable<User> {
+  refreshCurrentUser() {
     return this.refreshCurrentUser$().pipe(take(1));
   }
 }

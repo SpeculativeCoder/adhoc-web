@@ -69,7 +69,7 @@
     </div>
     <div class="mb-3">
       <label class="form-label" for="factionInput">Faction</label>
-      <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(pawn.factionId)?.name"/>
+      <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(pawn.factionId!)?.name"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="seenInput">Seen</label>

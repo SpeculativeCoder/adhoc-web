@@ -49,7 +49,7 @@ export class ServerComponent implements OnInit {
   }
 
   ngOnInit() {
-    const serverId = +this.route.snapshot.paramMap.get('id');
+    const serverId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.serverService.getServer(serverId)]).subscribe(data => {
       [this.server] = data;
     });

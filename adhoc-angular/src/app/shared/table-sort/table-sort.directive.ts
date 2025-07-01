@@ -30,12 +30,12 @@ import {Sort} from "../paging/sort";
 })
 export class TableSortDirective implements AfterContentInit {
 
-  @ContentChildren(HeaderSortComponent, {descendants: true}) headers: QueryList<HeaderSortComponent>;
+  @ContentChildren(HeaderSortComponent, {descendants: true}) headers?: QueryList<HeaderSortComponent>;
 
   @Output('sort') sortEvent$ = new EventEmitter<Sort>();
 
   ngAfterContentInit() {
-    this.headers.forEach(header => {
+    this.headers?.forEach(header => {
       header.sortEvent$.subscribe((sortEvent: Sort) => {
         this.onSort(sortEvent);
       });
@@ -45,7 +45,7 @@ export class TableSortDirective implements AfterContentInit {
   onSort(sortEvent: Sort) {
     // clear the sort direction on the other headers
     this.headers
-      .filter(header => header.column !== sortEvent.column)
+      ?.filter(header => header.column !== sortEvent.column)
       .forEach(header => {
         header.direction = undefined;
       });

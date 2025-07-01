@@ -54,13 +54,13 @@ export class PawnComponent implements OnInit {
   }
 
   ngOnInit() {
-    const pawnId = +this.route.snapshot.paramMap.get('id');
+    const pawnId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.pawnService.getPawn(pawnId), this.factionService.getCachedFactions()]).subscribe(data => {
       [this.pawn, this.factions] = data;
     });
   }
 
-  getFaction(factionId: number): Faction {
+  getFaction(factionId: number) {
     return this.factions.find(faction => faction.id === factionId);
   }
 

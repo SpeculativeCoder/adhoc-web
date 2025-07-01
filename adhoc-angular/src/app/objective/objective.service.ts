@@ -38,7 +38,7 @@ export class ObjectiveService {
 
   private readonly objectivesUrl: string;
 
-  private cachedObjectives: Objective[];
+  private cachedObjectives?: Objective[];
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient,
@@ -73,7 +73,7 @@ export class ObjectiveService {
     return this.http.get<Page<Objective>>(this.objectivesUrl, {params: paging.toParams()}).pipe(
       map(objectives => {
         this.cachedObjectives ? this.cachedObjectives.length = 0 : this.cachedObjectives = [];
-        this.cachedObjectives.push(...objectives.content);
+        this.cachedObjectives.push(...objectives.content!);
         return this.cachedObjectives;
       }));
   }

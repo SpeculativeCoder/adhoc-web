@@ -31,7 +31,7 @@ import {CsrfService} from "./csrf.service";
 })
 export class StompService {
 
-  private client: Client;
+  private client?: Client;
   private eventListeners: { [key: string]: Subject<object> } = {};
 
   constructor(private csrfService: CsrfService) {
@@ -50,8 +50,8 @@ export class StompService {
       this.client = webstomp.over(new SockJS(window.location.protocol + '//' + location.host + '/ws/stomp/user_sockjs', {}), {
         debug: false,
       });
-      let headers = {};
-      headers[csrf.headerName] = csrf.token;
+      let headers: { [key: string]: string } = {}
+      headers[csrf!.headerName!] = csrf!.token!;
       this.client.connect(headers, () => this.onConnect(), () => this.onError());
     });
   }
@@ -64,11 +64,11 @@ export class StompService {
   }
 
   private onConnect() {
-    this.client.subscribe('/topic/events', message => this.onMessage(message));
+    this.client!.subscribe('/topic/events', message => this.onMessage(message));
   }
 
   send(eventType: string, payload: object) {
-    this.client.send(`/app/${eventType}`, JSON.stringify(payload));
+    this.client!.send(`/app/${eventType}`, JSON.stringify(payload));
   }
 
   observeEvent(eventType: string): Observable<object> {

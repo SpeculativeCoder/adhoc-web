@@ -57,7 +57,7 @@
             <span *ngIf="!isLast">, </span>
           </ng-container>
         </td>
-        <td>{{ getFaction(objective.factionId)?.name }}</td>
+        <td>{{ getFaction(objective.factionId!)?.name }}</td>
         <!-- <div *ngIf="false" ngbDropdown class="d-inline-block btn-block">
            <button class="btn btn-sm btn-outline-dark btn-block" id="changeFactionDropdown" ngbDropdownToggle>
              {{ getFaction(objective.factionId)?.name }}
@@ -75,10 +75,10 @@
     </table>
   </div>
   <div class="d-flex justify-content-end" *ngIf="objectives?.page?.totalElements">
-    <div class="mt-2 me-4 text-nowrap">{{ (objectives.page.number * objectives.page.size) + 1 }} - {{ (objectives.page.number * objectives.page.size) + objectives.content.length }} of {{ objectives.page.totalElements }}</div>
-    <ngb-pagination [page]="objectives.page.number + 1"
-                    [pageSize]="objectives.page.size"
-                    [collectionSize]="objectives.page.totalElements"
+    <div class="mt-2 me-4 text-nowrap">{{ (objectives.page!.number! * objectives.page!.size!) + 1 }} - {{ (objectives.page!.number! * objectives.page!.size!) + objectives.content!.length }} of {{ objectives.page!.totalElements }}</div>
+    <ngb-pagination [page]="objectives.page!.number! + 1"
+                    [pageSize]="objectives.page!.size!"
+                    [collectionSize]="objectives.page!.totalElements!"
                     [maxSize]="3"
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>

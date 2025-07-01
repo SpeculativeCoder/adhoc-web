@@ -46,7 +46,7 @@ export class AreaComponent implements OnInit {
   }
 
   ngOnInit() {
-    const objectiveId = +this.route.snapshot.paramMap.get('id');
+    const objectiveId = +this.route.snapshot.paramMap.get('id')!;
     this.areaService.getArea(objectiveId).subscribe(data => {
       this.area = data;
     });

@@ -60,7 +60,7 @@ export class PawnsComponent implements OnInit {
               private factionService: FactionService) {
   }
 
-  getFaction(factionId: number): Faction {
+  getFaction(factionId: number) {
     return this.factions.find(faction => faction.id === factionId);
   }
 

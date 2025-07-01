@@ -29,7 +29,7 @@ import {formatDate} from '@angular/common';
 })
 export class SimpleDatePipe implements PipeTransform {
 
-  transform(value: string, ...args: unknown[]): string {
+  transform(value: string | undefined, ...args: unknown[]): string | undefined {
     return (value !== undefined && value !== null) ? formatDate(value, 'yyyy-MM-dd HH:mm:ss', 'en-US') : undefined; // TODO: en-GB
   }
 

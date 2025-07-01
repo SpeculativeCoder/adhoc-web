@@ -43,7 +43,7 @@ export class RegisterService {
     this.usersUrl = `${baseUrl}/api/users`;
   }
 
-  register(userRegisterRequest: UserRegisterRequest): Observable<User> {
+  register(userRegisterRequest: UserRegisterRequest) {
     return this.http.post(`${this.usersUrl}/register`, {...userRegisterRequest}, {
       params: {
         'remember-me': userRegisterRequest.rememberMe || false
@@ -55,7 +55,7 @@ export class RegisterService {
       }));
   }
 
-  getCurrentUserOrRegister(): Observable<User> {
+  getCurrentUserOrRegister() {
     return this.currentUserService.getCurrentUser().pipe(
       mergeMap(currentUser => {
         return currentUser ? of(currentUser) : this.register({

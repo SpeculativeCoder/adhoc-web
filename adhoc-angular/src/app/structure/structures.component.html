@@ -63,17 +63,17 @@
         <td>{{ structure.sizeX }}</td>
         <td>{{ structure.sizeY }}</td>
         <td>{{ structure.sizeZ }}</td>
-        <td>{{ getFaction(structure.factionId)?.name }}</td>
+        <td>{{ getFaction(structure.factionId!)?.name }}</td>
         <td>{{ structure.userId }}</td>
       </tr>
       </tbody>
     </table>
   </div>
   <div class="d-flex justify-content-end" *ngIf="structures?.page?.totalElements">
-    <div class="mt-2 me-4 text-nowrap">{{ (structures.page.number * structures.page.size) + 1 }} - {{ (structures.page.number * structures.page.size) + structures.content.length }} of {{ structures.page.totalElements }}</div>
-    <ngb-pagination [page]="structures.page.number + 1"
-                    [pageSize]="structures.page.size"
-                    [collectionSize]="structures.page.totalElements"
+    <div class="mt-2 me-4 text-nowrap">{{ (structures.page!.number! * structures.page!.size!) + 1 }} - {{ (structures.page!.number! * structures.page!.size!) + structures.content!.length }} of {{ structures.page!.totalElements }}</div>
+    <ngb-pagination [page]="structures.page!.number! + 1"
+                    [pageSize]="structures.page!.size!"
+                    [collectionSize]="structures.page!.totalElements!"
                     [maxSize]="3"
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>

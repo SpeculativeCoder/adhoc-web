@@ -35,7 +35,7 @@ export class FactionService {
 
   private readonly factionsUrl: string;
 
-  private cachedFactions: Faction[];
+  private cachedFactions?: Faction[];
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
@@ -61,9 +61,13 @@ export class FactionService {
     return this.refreshCachedFactions();
   }
 
+  // TODO
   getCachedFaction(id: number): Observable<Faction> {
     if (this.cachedFactions) {
-      return of(this.cachedFactions.find(faction => faction.id === id));
+      let cachedFaction = this.cachedFactions.find(faction => faction.id === id);
+      if (cachedFaction) {
+        return of(cachedFaction);
+      }
     }
     return this.getFaction(id);
   }
@@ -72,7 +76,7 @@ export class FactionService {
     return this.http.get<Page<Faction>>(this.factionsUrl, {params: paging.toParams()}).pipe(
       map(factions => {
         this.cachedFactions ? this.cachedFactions.length = 0 : this.cachedFactions = [];
-        this.cachedFactions.push(...factions.content);
+        this.cachedFactions.push(...factions.content!);
         return this.cachedFactions;
       }));
   }

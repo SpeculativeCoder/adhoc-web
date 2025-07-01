@@ -57,17 +57,17 @@
         <td>{{ pawn.z }}</td>
         <td>{{ pawn.userId }}</td>
         <td>{{ pawn.human }}</td>
-        <td>{{ getFaction(pawn.factionId)?.name }}</td>
+        <td>{{ getFaction(pawn.factionId!)?.name }}</td>
         <td>{{ pawn.seen | simpleDate }}</td>
       </tr>
       </tbody>
     </table>
   </div>
   <div class="d-flex justify-content-end" *ngIf="pawns?.page?.totalElements">
-    <div class="mt-2 me-4 text-nowrap">{{ (pawns.page.number * pawns.page.size) + 1 }} - {{ (pawns.page.number * pawns.page.size) + pawns.content.length }} of {{ pawns.page.totalElements }}</div>
-    <ngb-pagination [page]="pawns.page.number + 1"
-                    [pageSize]="pawns.page.size"
-                    [collectionSize]="pawns.page.totalElements"
+    <div class="mt-2 me-4 text-nowrap">{{ (pawns.page!.number! * pawns.page!.size!) + 1 }} - {{ (pawns.page!.number! * pawns.page!.size!) + pawns.content!.length }} of {{ pawns.page!.totalElements }}</div>
+    <ngb-pagination [page]="pawns.page!.number! + 1"
+                    [pageSize]="pawns.page!.size!"
+                    [collectionSize]="pawns.page!.totalElements!"
                     [maxSize]="3"
                     [boundaryLinks]="true"
                     (pageChange)="onPageChange($event - 1)"/>

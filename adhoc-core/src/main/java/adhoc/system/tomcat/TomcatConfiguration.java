@@ -39,7 +39,9 @@ public class TomcatConfiguration {
     @Bean(destroyMethod = "destroy")
     public Connector httpConnector() {
         final Connector connector = new Connector();
+        connector.setThrowOnFailure(true);
         connector.setPort(coreProperties.getServerPortHttp());
+        //connector.addUpgradeProtocol(new Http2Protocol());
         return connector;
     }
 

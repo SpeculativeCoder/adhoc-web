@@ -161,10 +161,11 @@ resource "aws_iam_policy" "adhoc_acme" {
             Sid    = "0",
             Effect = "Allow",
             Action = [
+              "route53:ListHostedZones",
               "route53:ChangeResourceRecordSets",
               "route53:ListResourceRecordSets"
             ],
-            Resource = data.aws_route53_zone.adhoc[0].arn
+            Resource = "*"
           },
         ]
       ])

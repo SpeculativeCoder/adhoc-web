@@ -25,7 +25,7 @@ package adhoc.system;
 import adhoc.system.auth.AdhocAccessDeniedHandler;
 import adhoc.system.auth.AdhocAuthenticationFailureHandler;
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
-import adhoc.system.auth.ServerBasicAuthRequestMatcher;
+import adhoc.system.auth.AdhocServerBasicAuthRequestMatcher;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +70,7 @@ public class WebSecurityConfiguration<S extends Session> {
             CsrfTokenRepository csrfTokenRepository,
             RememberMeServices rememberMeServices,
             SpringSessionBackedSessionRegistry<S> sessionRegistry,
-            ServerBasicAuthRequestMatcher serverBasicAuthRequestMatcher,
+            AdhocServerBasicAuthRequestMatcher adhocServerBasicAuthRequestMatcher,
             AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler,
             AdhocAuthenticationFailureHandler adhocAuthenticationFailureHandler,
             AdhocAccessDeniedHandler adhocAccessDeniedHandler) throws Exception {
@@ -110,7 +110,7 @@ public class WebSecurityConfiguration<S extends Session> {
                         // ignore CSRF for sockjs as protected by Stomp headers
                         .ignoringRequestMatchers("/ws/stomp/user_sockjs/**")
                         // we don't want CSRF on requests from Unreal server
-                        .ignoringRequestMatchers(serverBasicAuthRequestMatcher))
+                        .ignoringRequestMatchers(adhocServerBasicAuthRequestMatcher))
 
                 .cors(withDefaults())
 

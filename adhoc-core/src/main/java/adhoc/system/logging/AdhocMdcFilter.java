@@ -20,23 +20,35 @@
  * SOFTWARE.
  */
 
-package adhoc.system.log.util;
+package adhoc.system.logging;
 
-import lombok.experimental.UtilityClass;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.util.regex.Pattern;
+import java.io.IOException;
 
-@UtilityClass
-public final class LoggingUtils {
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class AdhocMdcFilter extends OncePerRequestFilter {
 
-    private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
-
-    public String replaceSpecialChars(String text) {
-
-        text = text.replace("\r", "\\r");
-        text = text.replace("\n", "\\n");
-        text = text.replace("\t", "\\t");
-
-        return NON_PRINTABLE.matcher(text).replaceAll("?");
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            //MDC.put("uuid", UUID.randomUUID().toString());
+            //MDC.put("method", request.getMethod());
+            MDC.put("uri", request.getRequestURI());
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove("uri");
+            //MDC.remove("method");
+            //MDC.remove("uuid");
+        }
     }
 }

@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.system.log.logback;
+package adhoc.system.logging.logback;
 
-import adhoc.system.log.util.LoggingUtils;
+import adhoc.system.logging.util.LoggingUtils;
 import ch.qos.logback.classic.pattern.RootCauseFirstThrowableProxyConverter;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.RequiredArgsConstructor;

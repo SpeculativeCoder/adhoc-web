@@ -43,8 +43,6 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
 
-        response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
-
         Level level = Level.WARN;
 
         if ((exception instanceof MissingCsrfTokenException
@@ -53,7 +51,9 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
             level = Level.DEBUG;
         }
 
-        log.atLevel(level).log("Handled: exception={} status={} method={} uri={}",
-                exception.getClass().getSimpleName(), response.getStatus(), request.getMethod(), request.getRequestURI(), exception);
+        log.atLevel(level).log("handle: exception={} method={} uri={}",
+                exception.getClass().getSimpleName(), request.getMethod(), request.getRequestURI(), exception);
+
+        response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
     }
 }

@@ -51,6 +51,7 @@ public class AdhocCsrfChannelInterceptor implements ChannelInterceptor {
     public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication instanceof UsernamePasswordAuthenticationToken authenticationToken &&
                 authenticationToken.getAuthorities()
                         .stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()))) {

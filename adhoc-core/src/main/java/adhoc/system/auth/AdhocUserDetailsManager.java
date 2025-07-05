@@ -80,7 +80,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         User user = userRepository.findByNameOrEmail(username, username).orElseThrow(() ->
                 new UsernameNotFoundException("Failed to find user with name or email: " + username));
 
-        log.debug("loadUserByUsername: user={} token={}", user, user.getToken());
+        log.debug("loadUserByUsername: user={} user.token={}", user, user.getToken());
 
         Collection<GrantedAuthority> authorities = new LinkedHashSet<>(user.getAuthorities());
         //if (coreProperties.getFeatureFlags().contains("development")) {

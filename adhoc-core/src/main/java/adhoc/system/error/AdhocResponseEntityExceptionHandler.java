@@ -39,7 +39,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 /** Extension of default Spring MVC exception handler to gracefully handle some additional exceptions. */
 @ControllerAdvice
 @Slf4j
-public class AdhocExceptionHandler extends ResponseEntityExceptionHandler {
+public class AdhocResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     @Nullable
@@ -64,15 +64,6 @@ public class AdhocExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(@NonNull Exception exception, Object body, @NonNull HttpHeaders httpHeaders, @NonNull HttpStatusCode statusCode, @NonNull WebRequest webRequest) {
 
-        ResponseEntity<Object> responseEntity = super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
-
-        String status = "?";
-        HttpStatusCode httpStatusCode;
-        if (responseEntity != null) {
-            httpStatusCode = responseEntity.getStatusCode();
-            status = String.valueOf(httpStatusCode.value());
-        }
-
         String method = "?";
         String uri = "?";
         if (webRequest instanceof ServletWebRequest servletWebRequest) {
@@ -87,8 +78,19 @@ public class AdhocExceptionHandler extends ResponseEntityExceptionHandler {
             level = Level.DEBUG;
         }
 
-        log.atLevel(level).log("Handled: exception={} status={} method={} uri={}", exception.getClass().getSimpleName(), status, method, uri, exception);
-        //LogFormatUtils.formatValue(exception, 500, true)
+        log.atLevel(level).log("handleExceptionInternal: exception={} method={} uri={}",
+                exception.getClass().getSimpleName(), method, uri, exception);
+
+        ResponseEntity<Object> responseEntity = super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
+
+        String status = "?";
+        HttpStatusCode httpStatusCode;
+        if (responseEntity != null) {
+            httpStatusCode = responseEntity.getStatusCode();
+            status = String.valueOf(httpStatusCode.value());
+        }
+
+        log.atLevel(level).log("handleExceptionInternal: status={}", status);
 
         return responseEntity;
     }

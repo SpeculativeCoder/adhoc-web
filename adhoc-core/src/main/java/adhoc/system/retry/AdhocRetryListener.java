@@ -23,6 +23,7 @@
 package adhoc.system.retry;
 
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.interceptor.MethodInvocationRetryCallback;
 import org.springframework.retry.listener.MethodInvocationRetryListenerSupport;
@@ -34,6 +35,14 @@ public class AdhocRetryListener extends MethodInvocationRetryListenerSupport {
 
     @Override
     protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
-        log.debug("{}: {}", callback.getLabel(), context);
+        Level level;
+        if (context.getRetryCount() >= 3) {
+            level = Level.WARN;
+        } else if (context.getRetryCount() >= 2) {
+            level = Level.INFO;
+        } else {
+            level = Level.DEBUG;
+        }
+        log.atLevel(level).log("doOnError: label={} context={}", callback.getLabel(), context);
     }
 }

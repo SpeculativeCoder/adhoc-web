@@ -40,9 +40,9 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
         Message<byte[]> message = super.handleInternal(errorHeaderAccessor, errorPayload, exception, clientHeaderAccessor);
 
         if (exception != null) {
-            log.warn("Handled: exception={}", exception.getClass().getSimpleName(), exception);
+            log.warn("handleInternal: exception={}", exception.getClass().getSimpleName(), exception);
         } else {
-            log.warn("Handled");
+            log.warn("handleInternal");
         }
 
         return message;

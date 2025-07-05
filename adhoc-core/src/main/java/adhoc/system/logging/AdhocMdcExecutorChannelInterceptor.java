@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.log;
+package adhoc.system.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class MdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
+public class AdhocMdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
 
     @Override
     public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {

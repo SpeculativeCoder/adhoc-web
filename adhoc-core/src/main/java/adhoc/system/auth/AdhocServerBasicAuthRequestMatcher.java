@@ -39,7 +39,7 @@ import java.util.Optional;
  */
 @Component
 @Slf4j
-public class ServerBasicAuthRequestMatcher implements RequestMatcher {
+public class AdhocServerBasicAuthRequestMatcher implements RequestMatcher {
 
     @Value("${adhoc.server.basic-auth.username:#{null}}")
     private Optional<String> serverBasicAuthUsername;
@@ -60,8 +60,10 @@ public class ServerBasicAuthRequestMatcher implements RequestMatcher {
     public boolean matches(HttpServletRequest request) {
 
         boolean userServer = false;
+
         if (encodedServerBasicAuth != null) {
             String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
             userServer = encodedServerBasicAuth != null
                     && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
         }

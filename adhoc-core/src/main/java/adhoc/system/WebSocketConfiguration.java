@@ -23,7 +23,7 @@
 package adhoc.system;
 
 import adhoc.system.error.AdhocStompSubProtocolErrorHandler;
-import adhoc.system.log.MdcExecutorChannelInterceptor;
+import adhoc.system.logging.AdhocMdcExecutorChannelInterceptor;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisMode;
@@ -54,7 +54,7 @@ public class WebSocketConfiguration {
     @Bean
     public AbstractSessionWebSocketMessageBrokerConfigurer<Session> webSocketMessageBrokerConfigurer(
             AdhocStompSubProtocolErrorHandler adhocStompSubProtocolErrorHandler,
-            MdcExecutorChannelInterceptor mdcExecutorChannelInterceptor,
+            AdhocMdcExecutorChannelInterceptor adhocMdcExecutorChannelInterceptor,
             @Lazy TaskScheduler taskScheduler) {
 
         return new AbstractSessionWebSocketMessageBrokerConfigurer<>() {
@@ -106,7 +106,7 @@ public class WebSocketConfiguration {
             @Override
             public void configureClientInboundChannel(ChannelRegistration registration) {
                 registration
-                        .interceptors(mdcExecutorChannelInterceptor);
+                        .interceptors(adhocMdcExecutorChannelInterceptor);
             }
         };
     }

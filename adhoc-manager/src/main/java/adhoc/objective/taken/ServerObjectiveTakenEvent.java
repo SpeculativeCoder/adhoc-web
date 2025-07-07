@@ -22,7 +22,7 @@
 
 package adhoc.objective.taken;
 
-import adhoc.system.AdhocEvent;
+import adhoc.system.AdhocStompEvent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerObjectiveTakenEvent implements AdhocEvent {
+public class ServerObjectiveTakenEvent implements AdhocStompEvent {
 
     @NotNull
     @Min(1)

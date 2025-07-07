@@ -22,7 +22,7 @@
 
 package adhoc.server;
 
-import adhoc.system.AdhocEvent;
+import adhoc.system.AdhocStompEvent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -37,7 +37,7 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerStartedEvent implements AdhocEvent {
+public class ServerStartedEvent implements AdhocStompEvent {
 
     @NotNull
     @Min(1)

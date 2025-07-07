@@ -22,7 +22,7 @@
 
 package adhoc.pawn;
 
-import adhoc.system.AdhocEvent;
+import adhoc.system.AdhocStompEvent;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -39,7 +39,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerPawnsEvent implements AdhocEvent {
+public class ServerPawnsEvent implements AdhocStompEvent {
 
     @NotNull
     @Min(1)

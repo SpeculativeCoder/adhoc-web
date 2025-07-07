@@ -22,7 +22,7 @@
 
 package adhoc.universe;
 
-import adhoc.system.AdhocEvent;
+import adhoc.system.AdhocStompEvent;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,7 +33,7 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class UniverseUpdatedEvent implements AdhocEvent {
+public class UniverseUpdatedEvent implements AdhocStompEvent {
 
     @NotNull
     UniverseDto universe;

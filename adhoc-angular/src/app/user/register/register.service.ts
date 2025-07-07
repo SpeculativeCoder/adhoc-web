@@ -26,7 +26,7 @@ import {mergeMap, Observable, of} from 'rxjs';
 import {User} from '../user';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current-user.service';
-import {CsrfService} from '../../core/csrf.service';
+import {CsrfService} from '../../system/csrf.service';
 
 @Injectable({
   providedIn: 'root'

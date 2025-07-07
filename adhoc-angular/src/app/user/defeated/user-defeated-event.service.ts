@@ -21,7 +21,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {StompService} from '../../core/stomp.service';
+import {StompService} from '../../system/stomp.service';
 import {User} from '../user';
 
 @Injectable({

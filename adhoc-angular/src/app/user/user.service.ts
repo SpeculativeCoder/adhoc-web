@@ -26,7 +26,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Paging} from "../shared/paging/paging";
 import {Page} from "../shared/paging/page";
-import {CsrfService} from "../core/csrf.service";
+import {CsrfService} from "../system/csrf.service";
 import {CurrentUserService} from './current-user.service';
 
 @Injectable({

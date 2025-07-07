@@ -24,7 +24,7 @@ import {Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
-import {MetaService} from "../core/meta.service";
+import {MetaService} from "../system/meta.service";
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
 import {Router, RouterLink} from "@angular/router";
 import {CommonModule} from "@angular/common";

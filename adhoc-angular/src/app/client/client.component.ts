@@ -23,7 +23,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {MetaService} from "../core/meta.service";
+import {MetaService} from "../system/meta.service";
 import {AreaService} from "../area/area.service";
 import {ServerService} from "../server/server.service";
 import {customization} from "../customization";

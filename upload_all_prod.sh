@@ -33,6 +33,4 @@ set +a
 
 export ADHOC_ENV=prod
 
-export ADHOC_NAME=${ADHOC_NAME:-adhoc}
-
 ./upload_all.sh

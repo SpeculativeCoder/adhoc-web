@@ -38,7 +38,9 @@ export ADHOC_DOMAIN=${ADHOC_DOMAIN:-localhost}
 
 export UNREAL_ENGINE_CERTS_DIR=${UNREAL_ENGINE_CERTS_DIR:-${UNREAL_ENGINE_DIR}/certs}
 
+# we keep the certs in a certs directory in this project (this should be git ignored)
 mkdir -p certs
+# we also put them in a folder in the engine (for local testing - also should be git ignored)
 mkdir -p ${UNREAL_ENGINE_CERTS_DIR}
 
 # root certificate

@@ -129,7 +129,7 @@ public class UserRegisterService {
         }
 
         log.atLevel(Optional.ofNullable(userRegisterRequest.getHuman()).orElse(false) ? Level.INFO : Level.DEBUG)
-                .log("User registered: id={} name={} password?={} human={} factionIndex={} remoteAddr={} userAgent={}",
+                .log("userRegister: id={} name={} password?={} human={} factionIndex={} remoteAddr={} userAgent={}",
                         user.getId(),
                         user.getName(),
                         user.getPassword() != null,

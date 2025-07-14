@@ -22,8 +22,10 @@
 
 package adhoc.system;
 
+import adhoc.system.error.AdhocExceptionHandlerExceptionResolver;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
@@ -31,6 +33,7 @@ import org.springframework.data.web.config.PageableHandlerMethodArgumentResolver
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 @Configuration
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
@@ -43,6 +46,16 @@ public class WebConfiguration {
     public PageableHandlerMethodArgumentResolverCustomizer pageableHandlerMethodArgumentResolverCustomizer() {
         return pc -> {
             pc.setMaxPageSize(100);
+        };
+    }
+
+    @Bean
+    public WebMvcRegistrations webMvcRegistrations() {
+        return new WebMvcRegistrations() {
+            @Override
+            public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
+                return new AdhocExceptionHandlerExceptionResolver();
+            }
         };
     }
 

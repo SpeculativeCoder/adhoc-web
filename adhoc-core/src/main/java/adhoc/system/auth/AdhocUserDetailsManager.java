@@ -57,7 +57,6 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
 
     private final PasswordEncoder passwordEncoder;
 
-    //@Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
     private final UserRepository userRepository;
 
     @Override

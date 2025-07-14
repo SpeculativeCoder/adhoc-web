@@ -25,7 +25,6 @@ package adhoc.system.error;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.event.Level;
 import org.springframework.http.*;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /** Extension of default Spring MVC exception handler to gracefully handle some additional exceptions. */
 @ControllerAdvice
@@ -71,14 +69,7 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
             method = request.getMethod();
             uri = request.getRequestURI();
         }
-
-        Level level = Level.WARN;
-
-        if (exception instanceof NoResourceFoundException) {
-            level = Level.DEBUG;
-        }
-
-        log.atLevel(level).log("handleExceptionInternal: exception={} method={} uri={}",
+        log.debug("handleExceptionInternal: exception={} method={} uri={}",
                 exception.getClass().getSimpleName(), method, uri, exception);
 
         ResponseEntity<Object> responseEntity = super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
@@ -89,8 +80,7 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
             httpStatusCode = responseEntity.getStatusCode();
             status = String.valueOf(httpStatusCode.value());
         }
-
-        log.atLevel(level).log("handleExceptionInternal: status={}", status);
+        log.debug("handleExceptionInternal: status={}", status);
 
         return responseEntity;
     }

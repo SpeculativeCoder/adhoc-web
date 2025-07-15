@@ -1,6 +1,5 @@
 package adhoc.system.error;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -19,18 +18,14 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
     public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {
         ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
-        String method = request.getMethod();
-        String uri = request.getRequestURI();
-
-        Level level = Level.WARN;
-        if (exception instanceof EntityNotFoundException) { // row not found in database
-            level = Level.INFO;
-        } else if (exception instanceof NoResourceFoundException) { // invalid static resource attempts
+        Level level = Level.INFO;
+        //if (exception instanceof EntityNotFoundException) { // row not found in database
+        if (exception instanceof NoResourceFoundException) { // invalid static resource attempts
             level = Level.DEBUG;
         }
 
-        log.atLevel(level).log("resolveException: exception={} method={} uri={}",
-                exception.getClass().getSimpleName(), method, uri, exception);
+        log.atLevel(level).log("resolveException: exception={} status={} method={} uri={}",
+                exception.getClass().getSimpleName(), response.getStatus(), request.getMethod(), request.getRequestURI(), exception);
 
         return modelAndView;
     }

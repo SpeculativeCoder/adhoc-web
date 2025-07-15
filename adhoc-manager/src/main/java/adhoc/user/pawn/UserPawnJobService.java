@@ -93,7 +93,7 @@ public class UserPawnJobService {
 
     private static void leaveUser(User user) {
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
-                .log("User left: id={} name={} password?={} human={} factionIndex={} serverId={}",
+                .log("leaveUser: id={} name={} password?={} human={} factionIndex={} serverId={}",
                         user.getId(),
                         user.getName(),
                         user.getPassword() != null,

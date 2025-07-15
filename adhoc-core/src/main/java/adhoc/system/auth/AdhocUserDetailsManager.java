@@ -86,16 +86,21 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         //    authorities.add(new SimpleGrantedAuthority("ROLE_" + UserRole.DEBUG.name()));
         //}
 
-        AdhocUserDetails userDetails = new AdhocUserDetails(
-                user.getName(),
-                // TODO
-                user.getPassword() == null ? UUID.randomUUID().toString() : user.getPassword(),
-                // NOTE: password null means user is not to be logged in to (i.e. temporary users) so we mark as not "enabled"
-                user.getPassword() != null, true, true, true,
+        String name = user.getName();
+        // TODO
+        String password = user.getPassword() == null ? UUID.randomUUID().toString() : user.getPassword();
+        // NOTE: password null means user is not to be logged in to (i.e. temporary users) so we mark as not "enabled"
+        boolean enabled = user.getPassword() != null;
+
+        return new AdhocUserDetails(
+                name,
+                password,
+                enabled,
+                true,
+                true,
+                true,
                 authorities,
                 user.getId());
-
-        return userDetails;
     }
 
     @Override

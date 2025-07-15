@@ -22,6 +22,7 @@
 
 package adhoc.system.logging;
 
+import com.google.common.base.Verify;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,8 +40,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
@@ -67,7 +70,9 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
         setIncludePayload(true);
         setMaxPayloadLength(2000);
         setIncludeClientInfo(true);
-        // setHeaderPredicate(...);
+        setHeaderPredicate(
+                header -> !"cookie".equalsIgnoreCase(header)
+                        && !"x-csrf-token".equalsIgnoreCase(header));
     }
 
     @PostConstruct
@@ -81,11 +86,13 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        Verify.verify(!isAsyncDispatch(request));
+
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request, getMaxPayloadLength());
         //ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
         try {
-            filterChain.doFilter(requestWrapper, response);
+            filterChain.doFilter(requestWrapper, response); //responseWrapper);
 
         } finally {
 
@@ -97,50 +104,62 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
             //&& response.getStatus() != HttpStatus.NOT_FOUND.value() // 404
             //&& response.getStatus() != HttpStatus.METHOD_NOT_ALLOWED.value() // 405
 
-            boolean statusError;
+            boolean statusIsServerError;
+            boolean statusIsBadRequest;
             try {
                 HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
-                statusError = httpStatus.is5xxServerError(); // || httpStatus.value() == 400;
 
-            } catch (
-                    IllegalArgumentException e) {
-                statusError = true;
+                statusIsServerError = httpStatus.is5xxServerError();
+                statusIsBadRequest = httpStatus == HttpStatus.BAD_REQUEST;
+
+            } catch (IllegalArgumentException e) {
+                statusIsServerError = true;
+                statusIsBadRequest = true;
             }
 
-            boolean methodGet = "GET".equals(request.getMethod());
+            boolean methodIsGet = "GET".equals(request.getMethod());
 
-            boolean server = false;
+            boolean authIsServer = false;
             if (encodedServerBasicAuth != null) {
                 String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-                server = encodedServerBasicAuth != null
+                authIsServer = encodedServerBasicAuth != null
                         && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
             }
 
-            Logger logger = server ? serverLogger : userLogger;
+            Logger logger = authIsServer ? serverLogger : userLogger;
 
-            LoggingEventBuilder loggingEventBuilder = null;
+            LoggingEventBuilder builder = null;
 
-            if (logger.isInfoEnabled() && statusError) {
-                loggingEventBuilder = logger.atInfo();
+            if (logger.isWarnEnabled() && statusIsServerError) {
+                builder = logger.atWarn();
 
-                //} else if (log.isInfoEnabled() && isRegisterOrLoginRequest(request)) {
-                //    loggingEventBuilder = log.atInfo();
+            } else if (logger.isInfoEnabled() && statusIsBadRequest) {
+                builder = logger.atInfo();
 
-            } else if (logger.isDebugEnabled() && !methodGet) { //&& !server) {
-                loggingEventBuilder = logger.atDebug();
+            } else if (logger.isDebugEnabled() && !methodIsGet) {
+                builder = logger.atDebug();
 
-            } else if (logger.isTraceEnabled()) { //&& !server) {
-                loggingEventBuilder = logger.atTrace();
+            } else if (logger.isTraceEnabled()) {
+                builder = logger.atTrace();
             }
 
-            if (loggingEventBuilder != null) {
-                loggingEventBuilder.log("{}, status={}",
+            if (builder != null) {
+                //String body = getBody(responseWrapper);
+
+                builder.log("{}, status={}, response={}",
                         createMessage(requestWrapper, "", ""),
-                        response.getStatus());
+                        response.getStatus()); //, body);
             }
+
+            Verify.verify(!isAsyncStarted(request));
 
             //responseWrapper.copyBodyToResponse();
         }
+    }
+
+    private String getBody(ContentCachingResponseWrapper responseWrapper) {
+        int length = Math.min(responseWrapper.getContentSize(), getMaxPayloadLength());
+        return new String(responseWrapper.getContentAsByteArray(), 0, length, StandardCharsets.UTF_8);
     }
 
     @Override
@@ -161,19 +180,19 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
     @Override
     protected String getMessagePayload(@NonNull HttpServletRequest request) {
-        if (isRegisterOrLoginRequest(request)) {
+        if (isRegisterOrLogin(request)) {
             return "***";
         }
         return super.getMessagePayload(request);
     }
 
-    private boolean isRegisterOrLoginRequest(HttpServletRequest request) {
+    private boolean isRegisterOrLogin(HttpServletRequest request) {
         // TODO
 
-        boolean methodPost = "POST".equals(request.getMethod());
-        boolean uriRegister = "/api/users/register".equals(request.getRequestURI());
-        boolean uriLogin = "/login".equals(request.getRequestURI());
+        boolean methodIsPost = "POST".equals(request.getMethod());
+        boolean uriIsRegister = "/api/users/register".equals(request.getRequestURI());
+        boolean uriIsLogin = "/api/login".equals(request.getRequestURI());
 
-        return methodPost && (uriRegister || uriLogin);
+        return methodIsPost && (uriIsRegister || uriIsLogin);
     }
 }

@@ -86,13 +86,22 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        Verify.verify(!isAsyncDispatch(request));
+        Verify.verify(!isAsyncDispatch(request)); // not properly supported by this logger
 
-        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request, getMaxPayloadLength());
-        //ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+        ContentCachingRequestWrapper requestWrapper = null;
+        ContentCachingResponseWrapper responseWrapper = null;
+
+        if (request.getRequestURI().startsWith("/api/")
+                || request.getRequestURI().startsWith("/ws/")) {
+
+            requestWrapper = new ContentCachingRequestWrapper(request, getMaxPayloadLength());
+            responseWrapper = new ContentCachingResponseWrapper(response);
+        }
 
         try {
-            filterChain.doFilter(requestWrapper, response); //responseWrapper);
+            filterChain.doFilter(
+                    requestWrapper != null ? requestWrapper : request,
+                    responseWrapper != null ? responseWrapper : response);
 
         } finally {
 
@@ -104,39 +113,39 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
             //&& response.getStatus() != HttpStatus.NOT_FOUND.value() // 404
             //&& response.getStatus() != HttpStatus.METHOD_NOT_ALLOWED.value() // 405
 
-            boolean statusIsServerError;
-            boolean statusIsBadRequest;
+            boolean statusServerError;
+            boolean statusBadRequest;
             try {
                 HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
 
-                statusIsServerError = httpStatus.is5xxServerError();
-                statusIsBadRequest = httpStatus == HttpStatus.BAD_REQUEST;
+                statusServerError = httpStatus.is5xxServerError();
+                statusBadRequest = httpStatus == HttpStatus.BAD_REQUEST;
 
             } catch (IllegalArgumentException e) {
-                statusIsServerError = true;
-                statusIsBadRequest = true;
+                statusServerError = true;
+                statusBadRequest = true;
             }
 
-            boolean methodIsGet = "GET".equals(request.getMethod());
+            boolean methodGet = "GET".equals(request.getMethod());
 
-            boolean authIsServer = false;
+            boolean authServer = false;
             if (encodedServerBasicAuth != null) {
                 String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-                authIsServer = encodedServerBasicAuth != null
+                authServer = encodedServerBasicAuth != null
                         && ("Basic " + encodedServerBasicAuth).equals(authorizationHeader);
             }
 
-            Logger logger = authIsServer ? serverLogger : userLogger;
+            Logger logger = authServer ? serverLogger : userLogger;
 
             LoggingEventBuilder builder = null;
 
-            if (logger.isWarnEnabled() && statusIsServerError) {
+            if (logger.isWarnEnabled() && statusServerError) {
                 builder = logger.atWarn();
 
-            } else if (logger.isInfoEnabled() && statusIsBadRequest) {
+            } else if (logger.isInfoEnabled() && statusBadRequest) {
                 builder = logger.atInfo();
 
-            } else if (logger.isDebugEnabled() && !methodIsGet) {
+            } else if (logger.isDebugEnabled() && !methodGet) {
                 builder = logger.atDebug();
 
             } else if (logger.isTraceEnabled()) {
@@ -144,20 +153,25 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
             }
 
             if (builder != null) {
-                //String body = getBody(responseWrapper);
+                String body = null;
+                if (responseWrapper != null) {
+                    body = getResponseBody(responseWrapper);
+                }
 
                 builder.log("{}, status={}, response={}",
-                        createMessage(requestWrapper, "", ""),
-                        response.getStatus()); //, body);
+                        createMessage(requestWrapper != null ? requestWrapper : request, "", ""),
+                        response.getStatus(), body);
             }
 
-            Verify.verify(!isAsyncStarted(request));
+            Verify.verify(!isAsyncStarted(request)); // not properly supported by this logger
 
-            //responseWrapper.copyBodyToResponse();
+            if (responseWrapper != null) {
+                responseWrapper.copyBodyToResponse();
+            }
         }
     }
 
-    private String getBody(ContentCachingResponseWrapper responseWrapper) {
+    private String getResponseBody(ContentCachingResponseWrapper responseWrapper) {
         int length = Math.min(responseWrapper.getContentSize(), getMaxPayloadLength());
         return new String(responseWrapper.getContentAsByteArray(), 0, length, StandardCharsets.UTF_8);
     }
@@ -189,10 +203,10 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
     private boolean isRegisterOrLogin(HttpServletRequest request) {
         // TODO
 
-        boolean methodIsPost = "POST".equals(request.getMethod());
-        boolean uriIsRegister = "/api/users/register".equals(request.getRequestURI());
-        boolean uriIsLogin = "/api/login".equals(request.getRequestURI());
+        boolean methodPost = "POST".equals(request.getMethod());
+        boolean uriRegister = "/api/users/register".equals(request.getRequestURI());
+        boolean uriLogin = "/api/login".equals(request.getRequestURI());
 
-        return methodIsPost && (uriIsRegister || uriIsLogin);
+        return methodPost && (uriRegister || uriLogin);
     }
 }

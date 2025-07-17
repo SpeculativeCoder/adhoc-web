@@ -23,14 +23,14 @@
 package adhoc.system.error;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
-import org.springframework.lang.NonNull;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -59,29 +59,29 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
     //    return handleExceptionInternal(exception, problemDetail, httpHeaders, httpStatus, webRequest);
     //}
 
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(@NonNull Exception exception, Object body, @NonNull HttpHeaders httpHeaders, @NonNull HttpStatusCode statusCode, @NonNull WebRequest webRequest) {
-
-        String method = "?";
-        String uri = "?";
-        if (webRequest instanceof ServletWebRequest servletWebRequest) {
-            HttpServletRequest request = servletWebRequest.getRequest();
-            method = request.getMethod();
-            uri = request.getRequestURI();
-        }
-        log.debug("handleExceptionInternal: exception={} method={} uri={}",
-                exception.getClass().getSimpleName(), method, uri, exception);
-
-        ResponseEntity<Object> responseEntity = super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
-
-        String status = "?";
-        HttpStatusCode httpStatusCode;
-        if (responseEntity != null) {
-            httpStatusCode = responseEntity.getStatusCode();
-            status = String.valueOf(httpStatusCode.value());
-        }
-        log.debug("handleExceptionInternal: status={}", status);
-
-        return responseEntity;
-    }
+    //@Override
+    //protected ResponseEntity<Object> handleExceptionInternal(@NonNull Exception exception, Object body, @NonNull HttpHeaders httpHeaders, @NonNull HttpStatusCode statusCode, @NonNull WebRequest webRequest) {
+    //
+    //    String method = "?";
+    //    String uri = "?";
+    //    if (webRequest instanceof ServletWebRequest servletWebRequest) {
+    //        HttpServletRequest request = servletWebRequest.getRequest();
+    //        method = request.getMethod();
+    //        uri = request.getRequestURI();
+    //    }
+    //    log.debug("handleExceptionInternal: exception={} method={} uri={}",
+    //            exception.getClass().getSimpleName(), method, uri, exception);
+    //
+    //    ResponseEntity<Object> responseEntity = super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
+    //
+    //    String status = "?";
+    //    HttpStatusCode httpStatusCode;
+    //    if (responseEntity != null) {
+    //        httpStatusCode = responseEntity.getStatusCode();
+    //        status = String.valueOf(httpStatusCode.value());
+    //    }
+    //    log.debug("handleExceptionInternal: status={}", status);
+    //
+    //    return responseEntity;
+    //}
 }

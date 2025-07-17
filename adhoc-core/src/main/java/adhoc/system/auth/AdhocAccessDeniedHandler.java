@@ -44,9 +44,10 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
 
         Level level = Level.INFO;
-        if ((exception instanceof MissingCsrfTokenException
-                || exception instanceof InvalidCsrfTokenException)
-                && !request.getRequestURI().startsWith("/api/")) {
+        if (!(request.getRequestURI().startsWith("/api/")
+                || request.getRequestURI().startsWith("/ws/"))
+                && (exception instanceof MissingCsrfTokenException
+                || exception instanceof InvalidCsrfTokenException)) {
             level = Level.DEBUG;
         }
 

@@ -19,8 +19,10 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
         ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
         Level level = Level.INFO;
-        //if (exception instanceof EntityNotFoundException) { // row not found in database
-        if (exception instanceof NoResourceFoundException) { // invalid static resource attempts
+        if (!(request.getRequestURI().startsWith("/api/")
+                || request.getRequestURI().startsWith("/ws/"))
+                && (exception instanceof NoResourceFoundException)) { // invalid static resource attempts
+                //exception instanceof EntityNotFoundException // row not found in database
             level = Level.DEBUG;
         }
 

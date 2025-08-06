@@ -22,6 +22,8 @@
 
 package adhoc.pawn;
 
+import adhoc.pawn.event.PawnEventService;
+import adhoc.pawn.event.ServerPawnsEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -40,7 +42,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PawnManagerController {
 
-    private final PawnManagerEventService pawnManagerEventService;
+    private final PawnEventService pawnEventService;
 
     @MessageMapping("ServerPawns")
     @SendTo("/topic/events")
@@ -50,7 +52,7 @@ public class PawnManagerController {
 
         log.debug("Handling: {}", event);
 
-        List<PawnDto> pawnDtos = pawnManagerEventService.handleServerPawns(event);
+        List<PawnDto> pawnDtos = pawnEventService.handleServerPawns(event);
 
         ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
         log.debug("Sending: {}", serverPawnsEvent);

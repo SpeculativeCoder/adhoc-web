@@ -37,7 +37,7 @@ import adhoc.system.properties.ManagerProperties;
 import adhoc.universe.Universe;
 import adhoc.universe.UniverseRepository;
 import adhoc.universe.UniverseService;
-import adhoc.universe.UniverseUpdatedEvent;
+import adhoc.universe.event.UniverseUpdatedEvent;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
@@ -54,8 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service

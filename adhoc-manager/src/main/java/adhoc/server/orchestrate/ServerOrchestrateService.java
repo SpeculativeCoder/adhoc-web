@@ -27,9 +27,9 @@ import adhoc.area.groups.AreaGroupsFactory;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
 import adhoc.server.Server;
-import adhoc.server.ServerManagerEventService;
 import adhoc.server.ServerRepository;
-import adhoc.server.ServerUpdatedEvent;
+import adhoc.server.event.ServerEventService;
+import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
 import adhoc.task.ServerTask;
 import adhoc.task.ServerTaskRepository;
@@ -54,7 +54,7 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ServerOrchestrateJobService {
+public class ServerOrchestrateService {
 
     private final ServerProperties serverProperties;
 
@@ -62,7 +62,7 @@ public class ServerOrchestrateJobService {
     private final RegionRepository regionRepository;
     private final ServerTaskRepository serverTaskRepository;
 
-    private final ServerManagerEventService serverManagerEventService;
+    private final ServerEventService serverEventService;
 
     private final AreaGroupsFactory areaGroupsFactory;
 
@@ -103,7 +103,7 @@ public class ServerOrchestrateJobService {
                     usedServerIds.add(server.getId());
 
                     if (emitEvent) {
-                        ServerUpdatedEvent event = serverManagerEventService.toServerUpdatedEvent(server);
+                        ServerUpdatedEvent event = serverEventService.toServerUpdatedEvent(server);
                         //log.info("{}", event);
                         events.add(event);
                     }
@@ -117,7 +117,7 @@ public class ServerOrchestrateJobService {
                         boolean emitEvent = updateServerWithRegionAndAreaGroup(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
-                            ServerUpdatedEvent event = serverManagerEventService.toServerUpdatedEvent(unusedServer);
+                            ServerUpdatedEvent event = serverEventService.toServerUpdatedEvent(unusedServer);
                             //log.info("{}", event);
                             events.add(event);
                         }

@@ -36,13 +36,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserScoreJobService {
+public class UserScoreService {
 
     private final UserRepository userRepository;
     private final ObjectiveRepository objectiveRepository;

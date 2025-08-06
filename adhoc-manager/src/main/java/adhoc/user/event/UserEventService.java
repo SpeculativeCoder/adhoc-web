@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.defeated;
+package adhoc.user.event;
 
 import adhoc.message.MessageService;
 import adhoc.user.User;
@@ -40,7 +40,7 @@ import java.math.BigDecimal;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserDefeatedService {
+public class UserEventService {
 
     private final UserRepository userRepository;
 

@@ -20,38 +20,27 @@
  * SOFTWARE.
  */
 
-package adhoc.server.purge;
+package adhoc.user.event;
 
-import adhoc.server.Server;
-import adhoc.server.ServerRepository;
-import adhoc.system.properties.ManagerProperties;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import adhoc.system.event.Event;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
+@Value
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class ServerUserDefeatedEvent implements Event {
 
-@Service
-@Transactional
-@Slf4j
-@RequiredArgsConstructor
-public class ServerPurgeJobService {
+    @NotNull
+    @Min(1)
+    Long userId;
 
-    private final ManagerProperties managerProperties;
-
-    private final ServerRepository serverRepository;
-
-    public void purgeOldServers() {
-        LocalDateTime seenBefore = LocalDateTime.now().minus(managerProperties.getPurgeOldServersSeenBefore());
-
-        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
-            oldServers.forEach(oldServer -> {
-                log.debug("Deleting old server {}", oldServer.getId());
-
-                serverRepository.delete(oldServer);
-            });
-        }
-    }
+    @NotNull
+    @Min(1)
+    Long defeatedUserId;
 }

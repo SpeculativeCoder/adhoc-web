@@ -20,8 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.pawn.event;
 
+import adhoc.pawn.Pawn;
+import adhoc.pawn.PawnDto;
+import adhoc.pawn.PawnManagerService;
+import adhoc.pawn.PawnRepository;
+import adhoc.pawn.PawnService;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import com.google.common.base.Preconditions;
@@ -35,16 +40,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class PawnManagerEventService {
+public class PawnEventService {
 
     private final PawnRepository pawnRepository;
     private final ServerRepository serverRepository;

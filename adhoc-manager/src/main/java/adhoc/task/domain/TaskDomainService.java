@@ -26,7 +26,11 @@ import adhoc.dns.DnsService;
 import adhoc.message.MessageService;
 import adhoc.system.event.Event;
 import adhoc.system.properties.ManagerProperties;
-import adhoc.task.*;
+import adhoc.task.KioskTask;
+import adhoc.task.ManagerTask;
+import adhoc.task.ServerTask;
+import adhoc.task.Task;
+import adhoc.task.TaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -49,7 +53,7 @@ import java.util.*;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class TaskDomainJobService {
+public class TaskDomainService {
 
     private final ManagerProperties managerProperties;
 
@@ -59,7 +63,7 @@ public class TaskDomainJobService {
     private final MessageService messageService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private TaskDomainJobService self;
+    private TaskDomainService self;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
@@ -92,7 +96,7 @@ public class TaskDomainJobService {
             List<String> publicIps = Verify.verifyNotNull(tasksPublicIps.get(task));
 
             //log.info("{} -> {}", domain, publicIps);
-            dnsService.createOrUpdateDnsRecord(domain, new LinkedHashSet<>(publicIps));
+            dnsService.createOrUpdate(domain, new LinkedHashSet<>(publicIps));
 
             self.updateTaskDomainInNewTransaction(task.getId(), domain);
         }

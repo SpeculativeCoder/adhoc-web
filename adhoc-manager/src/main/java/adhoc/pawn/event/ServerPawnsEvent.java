@@ -20,11 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.pawn.event;
 
+import adhoc.pawn.PawnDto;
 import adhoc.system.event.Event;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,20 +33,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerStartedEvent implements Event {
+public class ServerPawnsEvent implements Event {
 
     @NotNull
     @Min(1)
     private Long serverId;
 
-    @NotEmpty
-    private String privateIp;
-
-    @NotEmpty
-    private String managerHost;
+    @NotNull
+    @Valid
+    private List<PawnDto> pawns;
 }

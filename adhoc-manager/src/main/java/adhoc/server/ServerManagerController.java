@@ -22,16 +22,23 @@
 
 package adhoc.server;
 
+import adhoc.server.event.ServerEventService;
+import adhoc.server.event.ServerStartedEvent;
+import adhoc.server.event.ServerUpdatedEvent;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -40,7 +47,7 @@ import java.util.Objects;
 public class ServerManagerController {
 
     private final ServerManagerService serverManagerService;
-    private final ServerManagerEventService serverManagerEventService;
+    private final ServerEventService serverEventService;
 
     @PutMapping("/servers/{serverId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -69,6 +76,6 @@ public class ServerManagerController {
 
         log.debug("Handling: {}", serverStartedEvent);
 
-        return serverManagerEventService.handleServerStarted(serverStartedEvent);
+        return serverEventService.handleServerStarted(serverStartedEvent);
     }
 }

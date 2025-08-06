@@ -37,10 +37,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Service
@@ -59,18 +56,18 @@ public class AreaManagerService {
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<AreaDto> updateServerAreas(Long serverId, List<AreaDto> areaDtos) {
         Server server = serverRepository.getReferenceById(serverId);
-        Region region = server.getRegion();
+        Region serverRegion = server.getRegion();
 
         Set<Integer> areaIndexes = new TreeSet<>();
         for (AreaDto areaDto : areaDtos) {
-            Preconditions.checkArgument(Objects.equals(region.getId(), areaDto.getRegionId()),
-                    "Region ID mismatch: %s != %s", region.getId(), areaDto.getRegionId());
+            Preconditions.checkArgument(Objects.equals(serverRegion.getId(), areaDto.getRegionId()),
+                    "Region ID mismatch: %s != %s", serverRegion.getId(), areaDto.getRegionId());
 
             boolean unique = areaIndexes.add(areaDto.getIndex());
             Preconditions.checkArgument(unique, "Area index not unique: %s", areaDto.getIndex());
         }
 
-        try (Stream<Area> areasToDelete = areaRepository.streamByRegionAndIndexNotIn(region, areaIndexes)) {
+        try (Stream<Area> areasToDelete = areaRepository.streamByRegionAndIndexNotIn(serverRegion, areaIndexes)) {
             areasToDelete.forEach(areaToDelete -> {
                 log.info("Deleting unused area: {}", areaToDelete);
                 // before deleting unused areas we must unlink any objectives that will become orphaned
@@ -83,7 +80,7 @@ public class AreaManagerService {
 
         return areaDtos.stream()
                 .map(areaDto -> toEntity(areaDto,
-                        areaRepository.findByRegionAndIndex(region, areaDto.getIndex()).orElseGet(Area::new)))
+                        areaRepository.findByRegionAndIndex(serverRegion, areaDto.getIndex()).orElseGet(Area::new)))
                 .map(areaRepository::save)
                 .map(areaService::toDto)
                 .toList();

@@ -22,9 +22,9 @@
 
 package adhoc.dns;
 
-import java.util.Set;
+import java.util.*;
 
 public interface DnsService {
 
-    void createOrUpdateDnsRecord(String domain, Set<String> ips);
+    void createOrUpdate(String domain, Set<String> ips);
 }

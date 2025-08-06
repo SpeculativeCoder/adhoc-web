@@ -20,49 +20,33 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.pawn.purge;
 
-import adhoc.system.event.Event;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import adhoc.pawn.PawnRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class ServerUpdatedEvent implements Event {
+@Service
+@Transactional
+@Slf4j
+@RequiredArgsConstructor
+public class PawnPurgeService {
 
-    @NotNull
-    @Min(1)
-    private Long serverId;
+    private final PawnRepository pawnRepository;
 
-    @NotNull
-    @Min(0)
-    private Long version;
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public void purgeOldPawns() {
+        log.trace("Purging old pawns...");
 
-    @NotNull
-    private Long regionId;
-    @NotNull
-    private List<Long> areaIds;
-    @NotNull
-    private List<Integer> areaIndexes;
-
-    @NotNull
-    private Boolean enabled;
-    @NotNull
-    private Boolean active;
-
-    private String publicIp;
-
-    private Integer publicWebSocketPort;
-
-    private String webSocketUrl;
+        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
+    }
 }

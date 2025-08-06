@@ -45,7 +45,7 @@ import java.util.*;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class TaskRefreshJobService {
+public class TaskRefreshService {
 
     private final TaskRepository taskRepository;
 

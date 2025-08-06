@@ -22,9 +22,9 @@
 
 package adhoc.user;
 
-import adhoc.user.defeated.ServerUserDefeatedEvent;
-import adhoc.user.defeated.UserDefeatedEvent;
-import adhoc.user.defeated.UserDefeatedService;
+import adhoc.user.event.ServerUserDefeatedEvent;
+import adhoc.user.event.UserDefeatedEvent;
+import adhoc.user.event.UserEventService;
 import adhoc.user.join.UserJoinRequest;
 import adhoc.user.join.UserJoinService;
 import adhoc.user.navigate.UserNavigateRequest;
@@ -38,9 +38,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -51,7 +56,7 @@ public class UserManagerController {
     private final UserManagerService userManagerService;
     private final UserJoinService userJoinService;
     private final UserNavigateService userNavigateService;
-    private final UserDefeatedService userDefeatedService;
+    private final UserEventService userEventService;
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -93,7 +98,7 @@ public class UserManagerController {
             @Valid @RequestBody ServerUserDefeatedEvent serverUserDefeatedEvent) {
 
         log.debug("Handling: {}", serverUserDefeatedEvent);
-        UserDefeatedEvent userDefeatedEvent = userDefeatedService.userDefeated(serverUserDefeatedEvent);
+        UserDefeatedEvent userDefeatedEvent = userEventService.userDefeated(serverUserDefeatedEvent);
 
         log.debug("Sending: {}", userDefeatedEvent);
         return userDefeatedEvent;

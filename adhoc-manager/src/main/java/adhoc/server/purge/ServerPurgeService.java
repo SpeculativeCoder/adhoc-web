@@ -20,33 +20,38 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn.purge;
+package adhoc.server.purge;
 
-import adhoc.pawn.PawnRepository;
+import adhoc.server.Server;
+import adhoc.server.ServerRepository;
+import adhoc.system.properties.ManagerProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class PawnPurgeJobService {
+public class ServerPurgeService {
 
-    private final PawnRepository pawnRepository;
+    private final ManagerProperties managerProperties;
 
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void purgeOldPawns() {
-        log.trace("Purging old pawns...");
+    private final ServerRepository serverRepository;
 
-        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
+    public void purgeOldServers() {
+        LocalDateTime seenBefore = LocalDateTime.now().minus(managerProperties.getPurgeOldServersSeenBefore());
+
+        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
+            oldServers.forEach(oldServer -> {
+                log.debug("Deleting old server {}", oldServer.getId());
+
+                serverRepository.delete(oldServer);
+            });
+        }
     }
 }

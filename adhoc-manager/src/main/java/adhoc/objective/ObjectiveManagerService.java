@@ -69,11 +69,11 @@ public class ObjectiveManagerService {
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<ObjectiveDto> updateServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
         Server server = serverRepository.getReferenceById(serverId);
-        Region region = server.getRegion();
+        Region serverRegion = server.getRegion();
 
         Set<Integer> objectiveIndexes = new TreeSet<>();
         for (ObjectiveDto objectiveDto : objectiveDtos) {
-            Preconditions.checkArgument(Objects.equals(region.getId(), objectiveDto.getRegionId()));
+            Preconditions.checkArgument(Objects.equals(serverRegion.getId(), objectiveDto.getRegionId()));
 
             objectiveDto.getLinkedObjectiveIndexes().forEach(linkedObjectiveIndex -> {
                 Preconditions.checkArgument(!Objects.equals(objectiveDto.getIndex(), linkedObjectiveIndex),
@@ -91,7 +91,7 @@ public class ObjectiveManagerService {
             Preconditions.checkArgument(unique, "Objective index not unique: %s", objectiveDto.getIndex());
         }
 
-        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamByRegionAndIndexNotIn(region, objectiveIndexes)) {
+        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamByRegionAndIndexNotIn(serverRegion, objectiveIndexes)) {
             objectivesToDelete.forEach(objectiveToDelete -> {
                 log.info("Deleting unused objective: {}", objectiveToDelete);
                 objectiveRepository.delete(objectiveToDelete);
@@ -101,7 +101,7 @@ public class ObjectiveManagerService {
         // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveDtos.stream().map(objectiveDto -> {
             Objective objective = toEntityStage1(objectiveDto,
-                    objectiveRepository.findByRegionAndIndex(region, objectiveDto.getIndex()).orElseGet(Objective::new));
+                    objectiveRepository.findByRegionAndIndex(serverRegion, objectiveDto.getIndex()).orElseGet(Objective::new));
 
             // set faction to be initial faction if this is a new entity
             if (objective.getId() == null) {

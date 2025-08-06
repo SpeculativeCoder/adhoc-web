@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Profile({"dns-local"})
@@ -35,7 +35,7 @@ import java.util.Set;
 public class LocalDnsService implements DnsService {
 
     @Override
-    public void createOrUpdateDnsRecord(String domain, Set<String> ips) {
+    public void createOrUpdate(String domain, Set<String> ips) {
         log.info("Assuming DNS entry (e.g. in Windows hosts file): domain={} ips={}", domain, ips);
 
         // TODO: actually look at hosts file to check the mapping is there?

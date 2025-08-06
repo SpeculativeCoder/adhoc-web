@@ -20,9 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.user.purge;
+package adhoc.faction.score;
 
-import adhoc.user.UserRepository;
+import adhoc.faction.Faction;
+import adhoc.faction.FactionRepository;
+import adhoc.objective.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -32,33 +34,42 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.TreeSet;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserPurgeJobService {
+public class FactionScoreService {
 
-    private final UserRepository userRepository;
+    private final FactionRepository factionRepository;
+    private final ObjectiveRepository objectiveRepository;
 
+    /**
+     * Award faction score according to how many objectives the faction currently owns.
+     * Also decay all faction scores.
+     */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void purgeOldUsers() {
-        log.trace("Purging old users...");
-        Set<Long> oldUserIds = new TreeSet<>();
+    public void awardAndDecayFactionScores() {
+        log.trace("Awarding and decaying faction scores...");
 
-        // regular cleanup of anon users who had a temp account created but never were seen in a server
-        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
-        // regular cleanup of anon users who were last seen in a server a long time ago
-        oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
+        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts =
+                objectiveRepository.getFactionObjectiveCounts();
 
-        if (!oldUserIds.isEmpty()) {
-            log.debug("Purging old users: {}", oldUserIds);
+        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
+            Faction faction = factionObjectiveCount.getFaction();
+            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
-            userRepository.deleteAllByIdInBatch(oldUserIds);
+            BigDecimal scoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
+
+            factionRepository.updateScoreAddById(scoreAdd, faction.getId());
         }
+
+        // TODO: multiplier property
+        BigDecimal scoreMultiply = BigDecimal.valueOf(0.999);
+
+        factionRepository.updateScoreMultiply(scoreMultiply);
     }
 }

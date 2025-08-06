@@ -22,9 +22,9 @@
 
 package adhoc.objective;
 
-import adhoc.objective.taken.ObjectiveTakenEvent;
-import adhoc.objective.taken.ObjectiveTakenEventService;
-import adhoc.objective.taken.ServerObjectiveTakenEvent;
+import adhoc.objective.event.ObjectiveEventService;
+import adhoc.objective.event.ObjectiveTakenEvent;
+import adhoc.objective.event.ServerObjectiveTakenEvent;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +32,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -44,7 +48,7 @@ import java.util.Objects;
 public class ObjectiveManagerController {
 
     private final ObjectiveManagerService objectiveManagerService;
-    private final ObjectiveTakenEventService objectiveTakenEventService;
+    private final ObjectiveEventService objectiveEventService;
 
     @PutMapping("/objectives/{objectiveId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -75,7 +79,7 @@ public class ObjectiveManagerController {
 
         log.debug("Handling: {}", event);
 
-        return objectiveTakenEventService.handleObjectiveTaken(event);
+        return objectiveEventService.handleObjectiveTaken(event);
     }
 
 }

@@ -20,12 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.objective.taken;
+package adhoc.user.purge;
 
-import adhoc.faction.Faction;
-import adhoc.faction.FactionRepository;
-import adhoc.objective.Objective;
-import adhoc.objective.ObjectiveRepository;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,38 +32,32 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ObjectiveTakenEventService {
+public class UserPurgeService {
 
-    private final ObjectiveRepository objectiveRepository;
-    private final FactionRepository factionRepository;
     private final UserRepository userRepository;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
-        Objective objective = objectiveRepository.getReferenceById(event.getObjectiveId());
-        Faction faction = factionRepository.getReferenceById(event.getFactionId());
+    public void purgeOldUsers() {
+        log.trace("Purging old users...");
+        Set<Long> oldUserIds = new TreeSet<>();
 
-        log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
+        // regular cleanup of anon users who had a temp account created but never were seen in a server
+        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
+        // regular cleanup of anon users who were last seen in a server a long time ago
+        oldUserIds.addAll(userRepository.findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
 
-        objective.setFaction(faction);
+        if (!oldUserIds.isEmpty()) {
+            log.debug("Purging old users: {}", oldUserIds);
 
-        factionRepository.updateScoreAddById(BigDecimal.valueOf(1.0), faction.getId());
-
-        BigDecimal humanScoreAdd = BigDecimal.valueOf(1.0);
-        BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.1);
-        LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
-
-        userRepository.updateScoreAddByFactionIdAndSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
-
-        // TODO
-        return new ObjectiveTakenEvent(objective.getId(), objective.getVersion(), faction.getId(), faction.getVersion() + 1);
+            userRepository.deleteAllByIdInBatch(oldUserIds);
+        }
     }
 }

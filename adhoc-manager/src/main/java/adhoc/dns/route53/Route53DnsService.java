@@ -32,10 +32,19 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.route53.Route53Client;
-import software.amazon.awssdk.services.route53.model.*;
+import software.amazon.awssdk.services.route53.model.Change;
+import software.amazon.awssdk.services.route53.model.ChangeAction;
+import software.amazon.awssdk.services.route53.model.ChangeBatch;
+import software.amazon.awssdk.services.route53.model.ChangeResourceRecordSetsRequest;
+import software.amazon.awssdk.services.route53.model.ChangeResourceRecordSetsResponse;
+import software.amazon.awssdk.services.route53.model.HostedZone;
+import software.amazon.awssdk.services.route53.model.ListHostedZonesByNameRequest;
+import software.amazon.awssdk.services.route53.model.ListHostedZonesByNameResponse;
+import software.amazon.awssdk.services.route53.model.RRType;
+import software.amazon.awssdk.services.route53.model.ResourceRecord;
+import software.amazon.awssdk.services.route53.model.ResourceRecordSet;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Profile({"dns-route53"})
@@ -58,7 +67,7 @@ public class Route53DnsService implements DnsService {
     }
 
     @Override
-    public void createOrUpdateDnsRecord(String domain, Set<String> ips) {
+    public void createOrUpdate(String domain, Set<String> ips) {
         log.info("Updating Route 53 DNS entry: domain={} ips={}", domain, ips);
 
         //  TODO

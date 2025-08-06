@@ -20,10 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.user.defeated;
+package adhoc.universe.event;
 
 import adhoc.system.event.Event;
-import jakarta.validation.constraints.Min;
+import adhoc.universe.UniverseDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,13 +34,8 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerUserDefeatedEvent implements Event {
+public class UniverseUpdatedEvent implements Event {
 
     @NotNull
-    @Min(1)
-    Long userId;
-
-    @NotNull
-    @Min(1)
-    Long defeatedUserId;
+    UniverseDto universe;
 }

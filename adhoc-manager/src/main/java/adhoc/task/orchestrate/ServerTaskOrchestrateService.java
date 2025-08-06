@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ServerTaskOrchestrateJobService {
+public class ServerTaskOrchestrateService {
 
     private final ServerRepository serverRepository;
     private final ServerTaskRepository serverTaskRepository;
@@ -58,7 +58,7 @@ public class ServerTaskOrchestrateJobService {
     private final MessageService messageService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private ServerTaskOrchestrateJobService self;
+    private ServerTaskOrchestrateService self;
 
     /**
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.

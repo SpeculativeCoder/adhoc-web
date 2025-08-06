@@ -26,7 +26,7 @@ import adhoc.faction.score.FactionScoreJobService;
 import adhoc.pawn.purge.PawnPurgeJobService;
 import adhoc.server.orchestrate.ServerOrchestrateJobService;
 import adhoc.server.purge.ServerPurgeJobService;
-import adhoc.system.AdhocStompEvent;
+import adhoc.system.event.Event;
 import adhoc.task.domain.TaskDomainJobService;
 import adhoc.task.orchestrate.ServerTaskOrchestrateJobService;
 import adhoc.task.refresh.TaskRefreshJobService;
@@ -70,7 +70,7 @@ public class ManagerQuartzJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String jobName = context.getJobDetail().getKey().getName();
 
-        List<? extends AdhocStompEvent> events = Collections.emptyList();
+        List<? extends Event> events = Collections.emptyList();
 
         try (MDC.MDCCloseable closeable = MDC.putCloseable("job", jobName)) {
             //log.info("jobName={}", jobName);
@@ -110,7 +110,7 @@ public class ManagerQuartzJob implements Job {
                 break;
             }
 
-            for (AdhocStompEvent event : events) {
+            for (Event event : events) {
                 log.debug("Sending: {}", event);
                 stomp.convertAndSend("/topic/events", event);
             }

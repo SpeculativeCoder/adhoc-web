@@ -22,7 +22,7 @@
 
 package adhoc.user.defeated;
 
-import adhoc.system.AdhocStompEvent;
+import adhoc.system.event.Event;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -35,7 +35,7 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class UserDefeatedEvent implements AdhocStompEvent {
+public class UserDefeatedEvent implements Event {
 
     @NotNull
     @Min(1)

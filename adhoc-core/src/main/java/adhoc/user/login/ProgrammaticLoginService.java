@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.programmaticlogin;
+package adhoc.user.login;
 
 import adhoc.system.WebSecurityConfiguration;
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;

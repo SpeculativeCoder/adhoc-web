@@ -30,7 +30,7 @@ import adhoc.server.Server;
 import adhoc.server.ServerManagerEventService;
 import adhoc.server.ServerRepository;
 import adhoc.server.ServerUpdatedEvent;
-import adhoc.system.AdhocStompEvent;
+import adhoc.system.event.Event;
 import adhoc.task.ServerTask;
 import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;
@@ -72,9 +72,9 @@ public class ServerOrchestrateJobService {
      */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public List<? extends AdhocStompEvent> manageServers() {
+    public List<? extends Event> manageServers() {
         log.trace("Managing servers...");
-        List<AdhocStompEvent> events = new ArrayList<>();
+        List<Event> events = new ArrayList<>();
 
         try (Stream<Region> regions = regionRepository.streamBy()) {
             regions.forEach(region -> {

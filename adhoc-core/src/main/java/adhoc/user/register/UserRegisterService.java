@@ -26,7 +26,7 @@ import adhoc.faction.FactionRepository;
 import adhoc.region.RegionRepository;
 import adhoc.system.properties.CoreProperties;
 import adhoc.user.*;
-import adhoc.user.programmaticlogin.ProgrammaticLoginService;
+import adhoc.user.login.ProgrammaticLoginService;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;

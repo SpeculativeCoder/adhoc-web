@@ -23,11 +23,15 @@
 package adhoc.hosting.ecs;
 
 import adhoc.area.Area;
-import adhoc.hosting.*;
+import adhoc.hosting.HostingService;
 import adhoc.hosting.ecs.properties.EcsHostingProperties;
 import adhoc.server.Server;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
+import adhoc.task.KioskTask;
+import adhoc.task.ManagerTask;
+import adhoc.task.ServerTask;
+import adhoc.task.Task;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,10 +41,32 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.ec2.model.*;
+import software.amazon.awssdk.services.ec2.model.DescribeNetworkInterfacesRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeNetworkInterfacesResponse;
+import software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeSecurityGroupsResponse;
+import software.amazon.awssdk.services.ec2.model.DescribeSubnetsRequest;
+import software.amazon.awssdk.services.ec2.model.DescribeSubnetsResponse;
+import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.NetworkInterface;
+import software.amazon.awssdk.services.ec2.model.SecurityGroup;
 import software.amazon.awssdk.services.ecs.EcsClient;
-import software.amazon.awssdk.services.ecs.model.*;
+import software.amazon.awssdk.services.ecs.model.AssignPublicIp;
+import software.amazon.awssdk.services.ecs.model.Attachment;
+import software.amazon.awssdk.services.ecs.model.AwsVpcConfiguration;
+import software.amazon.awssdk.services.ecs.model.CapacityProviderStrategyItem;
+import software.amazon.awssdk.services.ecs.model.Container;
+import software.amazon.awssdk.services.ecs.model.ContainerOverride;
+import software.amazon.awssdk.services.ecs.model.DescribeTasksRequest;
+import software.amazon.awssdk.services.ecs.model.DescribeTasksResponse;
+import software.amazon.awssdk.services.ecs.model.KeyValuePair;
+import software.amazon.awssdk.services.ecs.model.ListTasksRequest;
+import software.amazon.awssdk.services.ecs.model.ListTasksResponse;
+import software.amazon.awssdk.services.ecs.model.NetworkConfiguration;
+import software.amazon.awssdk.services.ecs.model.RunTaskRequest;
+import software.amazon.awssdk.services.ecs.model.RunTaskResponse;
+import software.amazon.awssdk.services.ecs.model.StopTaskRequest;
+import software.amazon.awssdk.services.ecs.model.TaskOverride;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -81,13 +107,13 @@ public class EcsHostingService implements HostingService {
                 .build();
     }
 
-    public List<HostingTask> poll() {
+    public List<Task> poll() {
         log.trace("Polling ECS container service tasks...");
 
         // we will do a lookup of public IPs using the network interface IDs after we have looked through all the tasks
-        Map<String, ManagerHostingTask> managerNetworkInterfaceIds = new LinkedHashMap<>();
-        Map<String, KioskHostingTask> kioskNetworkInterfaceIds = new LinkedHashMap<>();
-        Map<String, ServerHostingTask> serverNetworkInterfaceIds = new LinkedHashMap<>();
+        Map<String, ManagerTask> managerNetworkInterfaceIds = new LinkedHashMap<>();
+        Map<String, KioskTask> kioskNetworkInterfaceIds = new LinkedHashMap<>();
+        Map<String, ServerTask> serverNetworkInterfaceIds = new LinkedHashMap<>();
 
         try (EcsClient ecsClient = ecsClient();
              Ec2Client ec2Client = ec2Client()) {
@@ -107,7 +133,7 @@ public class EcsHostingService implements HostingService {
                             .cluster(ecsHostingProperties.getEcsCluster()).tasks(listTasksResponse.taskArns()).build());
             log.trace("describeTasksResponse: {}", describeTasksResponse);
 
-            for (Task task : describeTasksResponse.tasks()) {
+            for (software.amazon.awssdk.services.ecs.model.Task task : describeTasksResponse.tasks()) {
                 log.trace("task: {}", task);
 
                 String networkInterfaceId = null;
@@ -142,7 +168,7 @@ public class EcsHostingService implements HostingService {
                     if (managerProperties.getManagerImage().equals(containerName) && networkInterfaceId != null) {
                         log.trace("Found manager. networkInterfaceId={}", networkInterfaceId);
 
-                        ManagerHostingTask managerTask = new ManagerHostingTask();
+                        ManagerTask managerTask = new ManagerTask();
                         managerTask.setTaskIdentifier(task.taskArn());
                         managerTask.setPrivateIp(privateIp);
                         managerNetworkInterfaceIds.put(networkInterfaceId, managerTask);
@@ -150,7 +176,7 @@ public class EcsHostingService implements HostingService {
                     } else if (managerProperties.getKioskImage().equals(containerName) && networkInterfaceId != null) {
                         log.trace("Found kiosk. networkInterfaceId={}", networkInterfaceId);
 
-                        KioskHostingTask kioskTask = new KioskHostingTask();
+                        KioskTask kioskTask = new KioskTask();
                         kioskTask.setTaskIdentifier(task.taskArn());
                         kioskTask.setPrivateIp(privateIp);
                         kioskNetworkInterfaceIds.put(networkInterfaceId, kioskTask);
@@ -173,7 +199,7 @@ public class EcsHostingService implements HostingService {
                                         throw new RuntimeException("Failed to parse server ID", e);
                                     }
 
-                                    ServerHostingTask serverTask = new ServerHostingTask();
+                                    ServerTask serverTask = new ServerTask();
                                     serverTask.setTaskIdentifier(task.taskArn());
                                     serverTask.setPrivateIp(privateIp);
                                     serverTask.setServerId(serverId);
@@ -205,19 +231,19 @@ public class EcsHostingService implements HostingService {
                     log.trace("networkInterfaceId: {}", networkInterfaceId);
                     log.trace("publicIp: {}", publicIp);
 
-                    ManagerHostingTask managerTask = managerNetworkInterfaceIds.get(networkInterfaceId);
+                    ManagerTask managerTask = managerNetworkInterfaceIds.get(networkInterfaceId);
                     if (managerTask != null) {
                         log.trace("Found manager: publicIp={}", publicIp);
                         managerTask.setPublicIp(publicIp);
                     }
 
-                    KioskHostingTask kioskTask = kioskNetworkInterfaceIds.get(networkInterfaceId);
+                    KioskTask kioskTask = kioskNetworkInterfaceIds.get(networkInterfaceId);
                     if (kioskTask != null) {
                         log.trace("Found kiosk: publicIp={}", publicIp);
                         kioskTask.setPublicIp(publicIp);
                     }
 
-                    ServerHostingTask serverTask = serverNetworkInterfaceIds.get(networkInterfaceId);
+                    ServerTask serverTask = serverNetworkInterfaceIds.get(networkInterfaceId);
                     if (serverTask != null) {
                         log.trace("Found server: publicIp={}", publicIp);
                         serverTask.setPublicIp(publicIp);
@@ -234,7 +260,7 @@ public class EcsHostingService implements HostingService {
                 serverNetworkInterfaceIds.values().stream()).toList();
     }
 
-    public ServerHostingTask startServerTask(Server server) {
+    public ServerTask startServerTask(Server server) {
         log.debug("Starting task for {}", server);
 
         try (EcsClient ecsClient = ecsClient();
@@ -344,7 +370,7 @@ public class EcsHostingService implements HostingService {
             String taskArn = runTaskResponse.tasks().getFirst().taskArn();
             log.debug("taskArn={}", taskArn);
 
-            ServerHostingTask serverTask = new ServerHostingTask();
+            ServerTask serverTask = new ServerTask();
             serverTask.setTaskIdentifier(taskArn);
             serverTask.setPublicWebSocketPort(8889);
             serverTask.setServerId(server.getId());

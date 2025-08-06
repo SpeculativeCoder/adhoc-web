@@ -22,18 +22,20 @@
 
 package adhoc.hosting.local;
 
-import adhoc.hosting.*;
+import adhoc.hosting.HostingService;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
+import adhoc.task.KioskTask;
+import adhoc.task.ManagerTask;
+import adhoc.task.ServerTask;
+import adhoc.task.Task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.artemis.utils.collections.ConcurrentHashSet;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Treats whatever server is running on 127.0.0.1 as the task for ALL servers.
@@ -50,17 +52,17 @@ public class LocalHostingService implements HostingService {
     private final Set<Long> serverIds = new ConcurrentHashSet<>();
 
     @Override
-    public List<HostingTask> poll() {
+    public List<Task> poll() {
 
-        List<HostingTask> tasks = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
 
-        ManagerHostingTask managerTask = new ManagerHostingTask();
+        ManagerTask managerTask = new ManagerTask();
         managerTask.setTaskIdentifier("local manager task");
         managerTask.setPrivateIp("127.0.0.1");
         managerTask.setPublicIp("127.0.0.1");
         tasks.add(managerTask);
 
-        KioskHostingTask kioskTask = new KioskHostingTask();
+        KioskTask kioskTask = new KioskTask();
         kioskTask.setTaskIdentifier("local kiosk task");
         kioskTask.setPrivateIp("127.0.0.1");
         kioskTask.setPublicIp("127.0.0.1");
@@ -71,7 +73,7 @@ public class LocalHostingService implements HostingService {
         for (Server server : servers) {
             if (serverIds.contains(server.getId())) {
 
-                ServerHostingTask serverTask = new ServerHostingTask();
+                ServerTask serverTask = new ServerTask();
                 serverTask.setTaskIdentifier(server.getId().toString());
                 serverTask.setPrivateIp("127.0.0.1");
                 serverTask.setPublicIp("127.0.0.1");
@@ -86,11 +88,11 @@ public class LocalHostingService implements HostingService {
     }
 
     @Override
-    public ServerHostingTask startServerTask(Server server) {
+    public ServerTask startServerTask(Server server) {
         log.debug("Assuming local task for server {}", server);
         serverIds.add(server.getId());
 
-        ServerHostingTask serverTask = new ServerHostingTask();
+        ServerTask serverTask = new ServerTask();
         serverTask.setTaskIdentifier(server.getId().toString());
         serverTask.setPublicWebSocketPort(8889);
         serverTask.setServerId(server.getId());

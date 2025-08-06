@@ -23,7 +23,6 @@
 package adhoc.task.orchestrate;
 
 import adhoc.hosting.HostingService;
-import adhoc.hosting.ServerHostingTask;
 import adhoc.message.MessageService;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
@@ -43,9 +42,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Service
@@ -78,7 +75,7 @@ public class ServerTaskOrchestrateJobService {
                     taskIdentifiers.add(optionalServerTask.get().getTaskIdentifier());
 
                 } else {
-                    ServerHostingTask serverHostingTask = startHostedServerTask(server);
+                    ServerTask serverHostingTask = startHostedServerTask(server);
                     taskIdentifiers.add(serverHostingTask.getTaskIdentifier());
 
                     self.createServerTaskInNewTransaction(server, serverHostingTask);
@@ -98,7 +95,7 @@ public class ServerTaskOrchestrateJobService {
         }
     }
 
-    private ServerHostingTask startHostedServerTask(Server server) {
+    private ServerTask startHostedServerTask(Server server) {
         try {
             log.debug("Starting server task for server {}", server.getId());
             return hostingService.startServerTask(server);
@@ -123,7 +120,7 @@ public class ServerTaskOrchestrateJobService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    void createServerTaskInNewTransaction(Server server, ServerHostingTask serverHostingTask) {
+    void createServerTaskInNewTransaction(Server server, ServerTask serverHostingTask) {
         ServerTask serverTask = new ServerTask();
 
         serverTask.setTaskIdentifier(serverHostingTask.getTaskIdentifier());

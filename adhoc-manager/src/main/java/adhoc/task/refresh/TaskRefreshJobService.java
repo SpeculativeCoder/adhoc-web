@@ -22,8 +22,12 @@
 
 package adhoc.task.refresh;
 
-import adhoc.hosting.*;
-import adhoc.task.*;
+import adhoc.hosting.HostingService;
+import adhoc.task.KioskTask;
+import adhoc.task.ManagerTask;
+import adhoc.task.ServerTask;
+import adhoc.task.Task;
+import adhoc.task.TaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Transactional
@@ -55,7 +57,7 @@ public class TaskRefreshJobService {
         log.trace("Managing tasks...");
 
         // get state of running containers
-        List<HostingTask> hostingTasks = hostingService.poll();
+        List<Task> hostingTasks = hostingService.poll();
         log.debug("hostingTasks={}", hostingTasks);
         Verify.verifyNotNull(hostingTasks, "hostingTasks is null after polling hosting service!");
 
@@ -63,13 +65,13 @@ public class TaskRefreshJobService {
 
         List<String> taskIdentifiers = new ArrayList<>();
 
-        for (HostingTask hostingTask : hostingTasks) {
+        for (Task hostingTask : hostingTasks) {
             Task task = taskRepository.findByTaskIdentifier(hostingTask.getTaskIdentifier())
                     // TODO
                     .orElseGet(() -> switch (hostingTask) {
-                        case ManagerHostingTask hostedManagerTask -> new ManagerTask();
-                        case KioskHostingTask hostedKioskTask -> new KioskTask();
-                        case ServerHostingTask hostedServerTask -> new ServerTask();
+                        case ManagerTask hostedManagerTask -> new ManagerTask();
+                        case KioskTask hostedKioskTask -> new KioskTask();
+                        case ServerTask hostedServerTask -> new ServerTask();
                         default -> throw new IllegalStateException("Unknown hosting task type: " + hostingTask.getClass());
                     });
 
@@ -84,7 +86,7 @@ public class TaskRefreshJobService {
             }
 
             // TODO
-            if (hostingTask instanceof ServerHostingTask serverHostingTask) {
+            if (hostingTask instanceof ServerTask serverHostingTask) {
                 ServerTask serverTask = (ServerTask) task;
 
                 if (!Objects.equals(serverTask.getPublicWebSocketPort(), serverHostingTask.getPublicWebSocketPort())) {

@@ -28,6 +28,7 @@ import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.task.ServerTask;
 import adhoc.task.ServerTaskRepository;
+import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -64,32 +65,29 @@ public class ServerTaskOrchestrateService {
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.
      */
     public void manageServerTasks() {
-        log.trace("Managing server tasks...");
         List<String> taskIdentifiers = new ArrayList<>();
 
         try (Stream<Server> servers = serverRepository.streamByEnabledTrue()) {
             servers.forEach(server -> {
-                Optional<ServerTask> optionalServerTask = serverTaskRepository.findFirstByServerId(server.getId());
+                ServerTask serverTask = serverTaskRepository.findFirstByServerId(server.getId())
+                        // no existing server task? start a new one
+                        .orElseGet(() -> {
+                            ServerTask serverHostingTask = startHostedServerTask(server);
+                            self.createServerTaskInNewTransaction(serverHostingTask);
+                            return serverHostingTask;
+                        });
 
-                if (optionalServerTask.isPresent()) {
-                    taskIdentifiers.add(optionalServerTask.get().getTaskIdentifier());
-
-                } else {
-                    ServerTask serverHostingTask = startHostedServerTask(server);
-                    taskIdentifiers.add(serverHostingTask.getTaskIdentifier());
-
-                    self.createServerTaskInNewTransaction(server, serverHostingTask);
-                }
+                taskIdentifiers.add(serverTask.getTaskIdentifier());
             });
         }
 
-        // any other server tasks that are no longer in use should be stopped and their entry deleted
-        try (Stream<ServerTask> unusedServerTasks = serverTaskRepository.streamByTaskIdentifierNotInAndInitiatedBefore(taskIdentifiers, LocalDateTime.now().minusMinutes(1))) {
+        LocalDateTime initiatedBefore = LocalDateTime.now().minusMinutes(1);
+        // any other server tasks that are no longer in use by a server should be stopped and their entry deleted
+        try (Stream<ServerTask> unusedServerTasks = serverTaskRepository.streamByTaskIdentifierNotInAndInitiatedBefore(taskIdentifiers, initiatedBefore)) {
             unusedServerTasks.forEach(unusedServerTask -> {
                 if (unusedServerTask.getSeen() != null) {
                     stopHostedServerTask(unusedServerTask);
                 }
-
                 self.deleteServerTaskInNewTransaction(unusedServerTask.getId());
             });
         }
@@ -98,7 +96,12 @@ public class ServerTaskOrchestrateService {
     private ServerTask startHostedServerTask(Server server) {
         try {
             log.debug("Starting server task for server {}", server.getId());
-            return hostingService.startServerTask(server);
+            ServerTask serverTask = hostingService.startServerTask(server);
+
+            Verify.verifyNotNull(serverTask.getTaskIdentifier());
+            Verify.verifyNotNull(serverTask.getServerId());
+
+            return serverTask;
 
         } catch (Exception e) {
             log.warn("Failed to start server task for server {}!", server.getId(), e);
@@ -108,11 +111,11 @@ public class ServerTaskOrchestrateService {
 
     private void stopHostedServerTask(ServerTask serverTask) {
         try {
-            log.debug("Stopping server task for server task {}", serverTask.getServerId());
+            log.debug("Stopping server task for server {}", serverTask.getServerId());
             hostingService.stopServerTask(serverTask.getTaskIdentifier());
 
         } catch (Exception e) {
-            log.warn("Failed to stop server task for server task {}!", serverTask.getServerId(), e);
+            log.warn("Failed to stop server task for server {}!", serverTask.getServerId(), e);
             throw e;
         }
     }
@@ -120,24 +123,22 @@ public class ServerTaskOrchestrateService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    void createServerTaskInNewTransaction(Server server, ServerTask serverHostingTask) {
-        ServerTask serverTask = new ServerTask();
+    void createServerTaskInNewTransaction(ServerTask serverTask) {
 
-        serverTask.setTaskIdentifier(serverHostingTask.getTaskIdentifier());
         serverTask.setInitiated(LocalDateTime.now()); // TODO
-        serverTask.setServerId(server.getId());
 
         serverTaskRepository.save(serverTask);
 
-        //messageService.addGlobalMessage(String.format("Server task %d created", server.getId()));
+        messageService.addGlobalMessage(String.format("Server task %d created", serverTask.getId()));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     void deleteServerTaskInNewTransaction(Long serverTaskId) {
+
         serverTaskRepository.deleteById(serverTaskId);
 
-        //messageService.addGlobalMessage(String.format("Server task %d deleted", serverTaskId));
+        messageService.addGlobalMessage(String.format("Server task %d deleted", serverTaskId));
     }
 }

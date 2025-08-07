@@ -29,7 +29,7 @@ import adhoc.server.purge.ServerPurgeService;
 import adhoc.system.event.Event;
 import adhoc.task.domain.TaskDomainService;
 import adhoc.task.orchestrate.ServerTaskOrchestrateService;
-import adhoc.task.refresh.TaskRefreshService;
+import adhoc.task.poll.TaskPollService;
 import adhoc.user.pawn.UserPawnService;
 import adhoc.user.purge.UserPurgeService;
 import adhoc.user.score.UserScoreService;
@@ -54,7 +54,7 @@ public class ManagerQuartzJob implements Job {
 
     private final ServerOrchestrateService serverOrchestrateService;
     private final ServerPurgeService serverPurgeService;
-    private final TaskRefreshService taskRefreshService;
+    private final TaskPollService taskPollService;
     private final TaskDomainService taskDomainService;
     private final ServerTaskOrchestrateService serverTaskOrchestrateService;
     private final FactionScoreService factionScoreService;
@@ -78,7 +78,7 @@ public class ManagerQuartzJob implements Job {
                 events = serverOrchestrateService.manageServers();
                 break;
             case ManagerQuartzConfiguration.MANAGE_TASKS:
-                taskRefreshService.manageTasks();
+                taskPollService.pollTasks();
                 break;
             case ManagerQuartzConfiguration.MANAGE_TASK_DOMAINS:
                 events = taskDomainService.manageTaskDomains();

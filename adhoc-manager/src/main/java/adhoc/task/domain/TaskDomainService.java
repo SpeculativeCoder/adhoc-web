@@ -65,10 +65,7 @@ public class TaskDomainService {
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
     private TaskDomainService self;
 
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<? extends Event> manageTaskDomains() {
-        log.trace("Managing task domains...");
         List<Event> events = new ArrayList<>();
 
         Map<Task, String> tasksDomains = new LinkedHashMap<>();
@@ -77,13 +74,7 @@ public class TaskDomainService {
         for (Task task : taskRepository.findAll()) {
             if (task.getDomain() == null && task.getPublicIp() != null) {
 
-                // TODO
-                String domain = switch (task) {
-                    case ManagerTask managerTask -> managerProperties.getManagerDomain();
-                    case KioskTask kioskTask -> managerProperties.getKioskDomain();
-                    case ServerTask serverTask -> serverTask.getServerId() + "-" + managerProperties.getServerDomain();
-                    default -> throw new IllegalStateException("Unknown task type: " + task.getClass());
-                };
+                String domain = determineDomain(task);
 
                 tasksDomains.put(task, domain);
                 tasksPublicIps.add(task, task.getPublicIp());
@@ -104,7 +95,7 @@ public class TaskDomainService {
         return events;
     }
 
-    // NOTE: done in new transaction to avoid spamming DNS service due to optimistic locking
+    // NOTE: done in new transaction to avoid retries spamming DNS service due to optimistic locking
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
@@ -116,5 +107,14 @@ public class TaskDomainService {
         }
 
         messageService.addGlobalMessage(String.format("Task %d (of type %s) mapped to domain %s", task.getId(), task.getTaskType().name(), domain));
+    }
+
+    private String determineDomain(Task task) {
+        return switch (task) {
+            case ManagerTask managerTask -> managerProperties.getManagerDomain();
+            case KioskTask kioskTask -> managerProperties.getKioskDomain();
+            case ServerTask serverTask -> serverTask.getServerId() + "-" + managerProperties.getServerDomain();
+            default -> throw new IllegalStateException("Unknown task type: " + task.getClass());
+        };
     }
 }

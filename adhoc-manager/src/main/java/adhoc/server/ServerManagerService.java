@@ -22,15 +22,20 @@
 
 package adhoc.server;
 
+import adhoc.area.Area;
 import adhoc.area.AreaRepository;
 import adhoc.region.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Sort;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,6 +60,17 @@ public class ServerManagerService {
         return serverService.toDto(server);
     }
 
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
+        Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
+
+        // TODO: internal server status?
+        server.setActive(true);
+
+        return toServerUpdatedEvent(server);
+    }
+
     Server toEntity(ServerDto serverDto, Server server) {
         server.setRegion(regionRepository.getReferenceById(serverDto.getRegionId()));
         server.setAreas(serverDto.getAreaIds().stream().map(areaRepository::getReferenceById).collect(Collectors.toList())); // TODO
@@ -70,5 +86,20 @@ public class ServerManagerService {
         server.setWebSocketUrl(server.getWebSocketUrl());
 
         return server;
+    }
+
+    ServerUpdatedEvent toServerUpdatedEvent(Server server) {
+        ServerUpdatedEvent event = new ServerUpdatedEvent(
+                server.getId(),
+                server.getVersion(),
+                server.getRegion().getId(),
+                server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
+                server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
+                server.isEnabled(),
+                server.isActive(),
+                server.getPublicIp(),
+                server.getPublicWebSocketPort(),
+                server.getWebSocketUrl());
+        return event;
     }
 }

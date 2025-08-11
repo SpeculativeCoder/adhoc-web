@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.server.event;
+package adhoc.user.defeated;
 
-import adhoc.area.Area;
-import adhoc.server.Server;
-import adhoc.server.ServerRepository;
+import adhoc.message.MessageService;
+import adhoc.user.User;
+import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -34,39 +34,34 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Collectors;
+import java.math.BigDecimal;
 
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ServerEventService {
+public class UserDefeatedService {
 
-    private final ServerRepository serverRepository;
+    private final UserRepository userRepository;
+
+    private final MessageService messageService;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
-        Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
+    public UserDefeatedEvent userDefeated(ServerUserDefeatedEvent serverUserDefeatedEvent) {
+        User user = userRepository.getReferenceById(serverUserDefeatedEvent.getUserId());
+        User defeatedUser = userRepository.getReferenceById(serverUserDefeatedEvent.getDefeatedUserId());
 
-        // TODO: internal server status?
-        server.setActive(true);
+        BigDecimal scoreAdd = BigDecimal.valueOf(user.isHuman() ? 1.0f : 0.1f);
+        userRepository.updateScoreAddById(scoreAdd, user.getId());
 
-        return toServerUpdatedEvent(server);
-    }
+        if (user.isHuman() || defeatedUser.isHuman()) {
+            messageService.addGlobalMessage(String.format("%s defeated %s", user.getName(), defeatedUser.getName()));
+        }
 
-    public ServerUpdatedEvent toServerUpdatedEvent(Server server) {
-        ServerUpdatedEvent event = new ServerUpdatedEvent(
-                server.getId(),
-                server.getVersion(),
-                server.getRegion().getId(),
-                server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
-                server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
-                server.isEnabled(),
-                server.isActive(),
-                server.getPublicIp(),
-                server.getPublicWebSocketPort(),
-                server.getWebSocketUrl());
-        return event;
+        // TODO
+        return new UserDefeatedEvent(
+                user.getId(), user.getVersion() + 1, user.getName(), user.isHuman(),
+                defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.isHuman());
     }
 }

@@ -22,9 +22,9 @@
 
 package adhoc.user;
 
-import adhoc.user.event.ServerUserDefeatedEvent;
-import adhoc.user.event.UserDefeatedEvent;
-import adhoc.user.event.UserEventService;
+import adhoc.user.defeated.ServerUserDefeatedEvent;
+import adhoc.user.defeated.UserDefeatedEvent;
+import adhoc.user.defeated.UserDefeatedService;
 import adhoc.user.join.UserJoinRequest;
 import adhoc.user.join.UserJoinService;
 import adhoc.user.navigate.UserNavigateRequest;
@@ -56,7 +56,7 @@ public class UserManagerController {
     private final UserManagerService userManagerService;
     private final UserJoinService userJoinService;
     private final UserNavigateService userNavigateService;
-    private final UserEventService userEventService;
+    private final UserDefeatedService userDefeatedService;
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -98,7 +98,7 @@ public class UserManagerController {
             @Valid @RequestBody ServerUserDefeatedEvent serverUserDefeatedEvent) {
 
         log.debug("Handling: {}", serverUserDefeatedEvent);
-        UserDefeatedEvent userDefeatedEvent = userEventService.userDefeated(serverUserDefeatedEvent);
+        UserDefeatedEvent userDefeatedEvent = userDefeatedService.userDefeated(serverUserDefeatedEvent);
 
         log.debug("Sending: {}", userDefeatedEvent);
         return userDefeatedEvent;

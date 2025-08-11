@@ -20,12 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.task.poll;
+package adhoc.task;
 
 import adhoc.hosting.HostingService;
-import adhoc.task.ServerTask;
-import adhoc.task.Task;
-import adhoc.task.TaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -47,17 +44,17 @@ import java.util.*;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class TaskPollService {
+public class TaskRefreshService {
 
     private final TaskRepository taskRepository;
 
     private final HostingService hostingService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private TaskPollService self;
+    private TaskRefreshService self;
 
     /** Query the hosting service for the current state of the tasks. */
-    public void pollTasks() {
+    public void refreshTasks() {
         List<Task> hostedTasks = hostingService.poll();
 
         log.debug("hostedTasks={}", hostedTasks);

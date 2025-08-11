@@ -23,12 +23,21 @@
 package adhoc.pawn;
 
 import adhoc.faction.FactionRepository;
+import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.UserRepository;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Transactional
@@ -36,11 +45,64 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PawnManagerService {
 
+    private final PawnRepository pawnRepository;
+    private final ServerRepository serverRepository;
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
-    private final ServerRepository serverRepository;
 
-    public Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
+    private final PawnService pawnService;
+
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public List<PawnDto> handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
+        LocalDateTime seen = LocalDateTime.now();
+
+        Server server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
+
+        List<UUID> pawnUuids = new ArrayList<>();
+        //List<Long> userIds = new ArrayList<>();
+        List<PawnDto> pawnDtos = new ArrayList<>();
+
+        for (PawnDto dto : serverPawnsEvent.getPawns()) {
+            Preconditions.checkArgument(Objects.equals(server.getId(), dto.getServerId()));
+
+            Pawn pawn = toEntity(dto,
+                    pawnRepository.findByUuid(dto.getUuid()).orElseGet(Pawn::new));
+
+            pawn.setSeen(seen);
+
+            pawnUuids.add(pawn.getUuid());
+
+            //if (pawn.getUser() != null) {
+            // TODO
+            //pawn.getUser().setX(pawn.getX());
+            //pawn.getUser().setY(pawn.getY());
+            //pawn.getUser().setZ(pawn.getZ());
+            //pawn.getUser().setPitch(pawn.getPitch());
+            //pawn.getUser().setYaw(pawn.getYaw());
+            //pawn.getUser().setServer(server);
+            //pawn.getUser().setSeen(seen);
+
+            //userIds.add(pawn.getUser().getId());
+            //}
+
+            if (pawn.getId() == null) {
+                pawn = pawnRepository.save(pawn);
+            }
+
+            pawnDtos.add(pawnService.toDto(pawn));
+        }
+
+        // clean up any pawns that are no longer on this server
+        pawnRepository.deleteByServerAndUuidNotIn(server, pawnUuids);
+
+        // update users seen
+        //userRepository.updateServerAndSeenByIdIn(server, seen, userIds);
+
+        return pawnDtos;
+    }
+
+    Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
         pawn.setUuid(pawnDto.getUuid());
         pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
         pawn.setIndex(pawnDto.getIndex());

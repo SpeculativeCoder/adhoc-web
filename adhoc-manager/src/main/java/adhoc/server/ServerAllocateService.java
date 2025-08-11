@@ -20,16 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.server.orchestrate;
+package adhoc.server;
 
 import adhoc.area.Area;
 import adhoc.area.groups.AreaGroupsFactory;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.server.Server;
-import adhoc.server.ServerRepository;
-import adhoc.server.event.ServerEventService;
-import adhoc.server.event.ServerUpdatedEvent;
 import adhoc.system.event.Event;
 import adhoc.task.ServerTask;
 import adhoc.task.ServerTaskRepository;
@@ -54,7 +50,7 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ServerOrchestrateService {
+public class ServerAllocateService {
 
     private final ServerProperties serverProperties;
 
@@ -62,7 +58,7 @@ public class ServerOrchestrateService {
     private final RegionRepository regionRepository;
     private final ServerTaskRepository serverTaskRepository;
 
-    private final ServerEventService serverEventService;
+    private final ServerManagerService serverManagerService;
 
     private final AreaGroupsFactory areaGroupsFactory;
 
@@ -72,7 +68,7 @@ public class ServerOrchestrateService {
      */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public List<? extends Event> manageServers() {
+    public List<? extends Event> allocateServers() {
         log.trace("Managing servers...");
         List<Event> events = new ArrayList<>();
 
@@ -103,7 +99,7 @@ public class ServerOrchestrateService {
                     usedServerIds.add(server.getId());
 
                     if (emitEvent) {
-                        ServerUpdatedEvent event = serverEventService.toServerUpdatedEvent(server);
+                        ServerUpdatedEvent event = serverManagerService.toServerUpdatedEvent(server);
                         //log.info("{}", event);
                         events.add(event);
                     }
@@ -117,7 +113,7 @@ public class ServerOrchestrateService {
                         boolean emitEvent = updateServerWithRegionAndAreaGroup(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
-                            ServerUpdatedEvent event = serverEventService.toServerUpdatedEvent(unusedServer);
+                            ServerUpdatedEvent event = serverManagerService.toServerUpdatedEvent(unusedServer);
                             //log.info("{}", event);
                             events.add(event);
                         }

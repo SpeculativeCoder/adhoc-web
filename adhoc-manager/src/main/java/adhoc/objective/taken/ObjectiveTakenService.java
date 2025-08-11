@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.objective.event;
+package adhoc.objective.taken;
 
 import adhoc.faction.Faction;
 import adhoc.faction.FactionRepository;
@@ -43,7 +43,7 @@ import java.time.LocalDateTime;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ObjectiveEventService {
+public class ObjectiveTakenService {
 
     private final ObjectiveRepository objectiveRepository;
     private final FactionRepository factionRepository;

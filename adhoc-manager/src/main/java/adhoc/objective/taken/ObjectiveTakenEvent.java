@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.objective.event;
+package adhoc.objective.taken;
 
 import adhoc.system.event.Event;
 import jakarta.validation.constraints.Min;
@@ -36,13 +36,21 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerObjectiveTakenEvent implements Event {
+public class ObjectiveTakenEvent implements Event {
 
     @NotNull
     @Min(1)
     private Long objectiveId;
 
     @NotNull
+    @Min(0)
+    private Long objectiveVersion;
+
+    @NotNull
     @Min(1)
     private Long factionId;
+
+    @NotNull
+    @Min(0)
+    private Long factionVersion;
 }

@@ -20,32 +20,21 @@
  * SOFTWARE.
  */
 
-package adhoc.server.event;
+package adhoc.universe;
 
 import adhoc.system.event.Event;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-@Data
-@NoArgsConstructor
+@Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerStartedEvent implements Event {
+public class UniverseUpdatedEvent implements Event {
 
     @NotNull
-    @Min(1)
-    private Long serverId;
-
-    @NotEmpty
-    private String privateIp;
-
-    @NotEmpty
-    private String managerHost;
+    UniverseDto universe;
 }

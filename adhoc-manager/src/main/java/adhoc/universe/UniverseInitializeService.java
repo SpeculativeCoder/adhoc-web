@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.universe.initialize;
+package adhoc.universe;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
@@ -34,10 +34,6 @@ import adhoc.region.RegionRepository;
 import adhoc.server.ServerRepository;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
-import adhoc.universe.Universe;
-import adhoc.universe.UniverseRepository;
-import adhoc.universe.UniverseService;
-import adhoc.universe.event.UniverseUpdatedEvent;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;

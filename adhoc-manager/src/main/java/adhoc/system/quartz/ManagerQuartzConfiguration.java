@@ -24,12 +24,16 @@ package adhoc.system.quartz;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.*;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Instant;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Scheduled jobs triggered by Quartz.
@@ -40,9 +44,9 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class ManagerQuartzConfiguration {
 
-    public static final String MANAGE_SERVERS = "manageServers";
-    public static final String MANAGE_TASKS = "manageTasks";
-    public static final String MANAGE_SERVER_TASKS = "manageServerTasks";
+    public static final String ALLOCATE_SERVERS = "allocateServers";
+    public static final String REFRESH_TASKS = "refreshTasks";
+    public static final String ALLOCATE_SERVER_TASKS = "allocateServerTasks";
     public static final String MANAGE_TASK_DOMAINS = "manageTaskDomains";
     public static final String AWARD_AND_DECAY_FACTION_SCORES = "awardAndDecayFactionScores";
     public static final String AWARD_AND_DECAY_USER_SCORES = "awardAndDecayUserScores";
@@ -55,10 +59,10 @@ public class ManagerQuartzConfiguration {
     public static long startOffset = 0;
 
     @Bean
-    public Trigger manageServersTrigger() {
+    public Trigger allocateServersTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_SERVERS)
-                .withIdentity(MANAGE_SERVERS)
+                .forJob(ALLOCATE_SERVERS)
+                .withIdentity(ALLOCATE_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever()
                         .withIntervalInSeconds(10)
@@ -68,10 +72,10 @@ public class ManagerQuartzConfiguration {
     }
 
     @Bean
-    public Trigger manageTasksTrigger() {
+    public Trigger refreshTasksTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_TASKS)
-                .withIdentity(MANAGE_TASKS)
+                .forJob(REFRESH_TASKS)
+                .withIdentity(REFRESH_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever()
                         .withIntervalInSeconds(10)
@@ -94,10 +98,10 @@ public class ManagerQuartzConfiguration {
     }
 
     @Bean
-    public Trigger manageServerTasksTrigger() {
+    public Trigger allocateServerTasksTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(MANAGE_SERVER_TASKS)
-                .withIdentity(MANAGE_SERVER_TASKS)
+                .forJob(ALLOCATE_SERVER_TASKS)
+                .withIdentity(ALLOCATE_SERVER_TASKS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever()
                         .withIntervalInSeconds(10)
@@ -185,13 +189,13 @@ public class ManagerQuartzConfiguration {
     }
 
     @Bean
-    public JobDetail manageServersJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_SERVERS).storeDurably().build();
+    public JobDetail allocateServersJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(ALLOCATE_SERVERS).storeDurably().build();
     }
 
     @Bean
-    public JobDetail manageTasksJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_TASKS).storeDurably().build();
+    public JobDetail refreshTasksJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(REFRESH_TASKS).storeDurably().build();
     }
 
     @Bean
@@ -200,8 +204,8 @@ public class ManagerQuartzConfiguration {
     }
 
     @Bean
-    public JobDetail manageServerTasksJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_SERVER_TASKS).storeDurably().build();
+    public JobDetail allocateServerTasksJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(ALLOCATE_SERVER_TASKS).storeDurably().build();
     }
 
     @Bean
@@ -215,7 +219,7 @@ public class ManagerQuartzConfiguration {
     }
 
     @Bean
-    public JobDetail manageUserPawnsJobDetail() {
+    public JobDetail manageSeenUsersJobDetail() {
         return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_SEEN_USERS).storeDurably().build();
     }
 

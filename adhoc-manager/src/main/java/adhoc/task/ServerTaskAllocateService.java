@@ -20,14 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.task.orchestrate;
+package adhoc.task;
 
 import adhoc.hosting.HostingService;
 import adhoc.message.MessageService;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
-import adhoc.task.ServerTask;
-import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -50,7 +48,7 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ServerTaskOrchestrateService {
+public class ServerTaskAllocateService {
 
     private final ServerRepository serverRepository;
     private final ServerTaskRepository serverTaskRepository;
@@ -59,12 +57,12 @@ public class ServerTaskOrchestrateService {
     private final MessageService messageService;
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private ServerTaskOrchestrateService self;
+    private ServerTaskAllocateService self;
 
     /**
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.
      */
-    public void manageServerTasks() {
+    public void allocateServerTasks() {
         List<String> taskIdentifiers = new ArrayList<>();
 
         try (Stream<Server> servers = serverRepository.streamByEnabledTrue()) {

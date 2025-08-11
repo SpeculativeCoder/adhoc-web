@@ -20,17 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.task.domain;
+package adhoc.task;
 
 import adhoc.dns.DnsService;
 import adhoc.message.MessageService;
 import adhoc.system.event.Event;
 import adhoc.system.properties.ManagerProperties;
-import adhoc.task.KioskTask;
-import adhoc.task.ManagerTask;
-import adhoc.task.ServerTask;
-import adhoc.task.Task;
-import adhoc.task.TaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

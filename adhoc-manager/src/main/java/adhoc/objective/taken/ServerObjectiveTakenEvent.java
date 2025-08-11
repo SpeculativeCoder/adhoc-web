@@ -20,27 +20,29 @@
  * SOFTWARE.
  */
 
-package adhoc.user.event;
+package adhoc.objective.taken;
 
 import adhoc.system.event.Event;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
-@Value
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerUserDefeatedEvent implements Event {
+public class ServerObjectiveTakenEvent implements Event {
 
     @NotNull
     @Min(1)
-    Long userId;
+    private Long objectiveId;
 
     @NotNull
     @Min(1)
-    Long defeatedUserId;
+    private Long factionId;
 }

@@ -42,7 +42,7 @@ variable "adhoc_region_dev" {
   type        = string
   nullable    = false
   description = "AWS Region in which Adhoc operates for dev workspace"
-  default     = "us-west-1"
+  default     = "us-east-1"
 }
 
 variable "adhoc_region_qa" {
@@ -72,7 +72,7 @@ variable "adhoc_name_dev" {
   description = "Name of the Adhoc project in dev workspace (will be used as a name or a prefix to the name of most resources)"
   default     = "adhoc"
   validation {
-    condition = can(regex("^[a-z0-9_]+$", var.adhoc_name_dev))
+    condition     = can(regex("^[a-z0-9_]+$", var.adhoc_name_dev))
     error_message = "adhoc_name_dev must match regex [a-z0-9_]+"
   }
 }
@@ -83,7 +83,7 @@ variable "adhoc_name_qa" {
   description = "Name of the Adhoc project in qa workspace (will be used as a name or a prefix to the name of most resources)"
   default     = "adhoc"
   validation {
-    condition = can(regex("^[a-z0-9_]+$", var.adhoc_name_qa))
+    condition     = can(regex("^[a-z0-9_]+$", var.adhoc_name_qa))
     error_message = "adhoc_name_qa must match regex [a-z0-9_]+"
   }
 }
@@ -94,7 +94,7 @@ variable "adhoc_name_prod" {
   description = "Name of the Adhoc project in prod workspace (will be used as a name or a prefix to the name of most resources)"
   default     = "adhoc"
   validation {
-    condition = can(regex("^[a-z0-9_]+$", var.adhoc_name_prod))
+    condition     = can(regex("^[a-z0-9_]+$", var.adhoc_name_prod))
     error_message = "adhoc_name_prod must match regex [a-z0-9_]+"
   }
 }
@@ -102,10 +102,10 @@ variable "adhoc_name_prod" {
 locals {
   aws_region = (terraform.workspace == "prod" ? var.adhoc_region_prod :
     (terraform.workspace == "qa" ? var.adhoc_region_qa :
-      (terraform.workspace == "dev" ? var.adhoc_region_dev : "us-east-1")))
+  (terraform.workspace == "dev" ? var.adhoc_region_dev : "us-east-1")))
   adhoc_name = (terraform.workspace == "prod" ? var.adhoc_name_prod :
     (terraform.workspace == "qa" ? var.adhoc_name_qa :
-      (terraform.workspace == "dev" ? var.adhoc_name_dev : "adhoc")))
+  (terraform.workspace == "dev" ? var.adhoc_name_dev : "adhoc")))
 }
 
 provider "local" {
@@ -156,7 +156,7 @@ resource "aws_iam_policy" "adhoc_acme" {
     {
       Version = "2012-10-17",
       Statement = flatten([
-          var.route53_zone == null ? [] : [
+        var.route53_zone == null ? [] : [
           {
             Sid    = "0",
             Effect = "Allow",
@@ -180,7 +180,7 @@ resource "aws_iam_policy" "adhoc_manager" {
     {
       Version = "2012-10-17",
       Statement = flatten([
-          var.route53_zone == null ? [] : [
+        var.route53_zone == null ? [] : [
           {
             Sid    = "0",
             Effect = "Allow",
@@ -286,16 +286,16 @@ resource "aws_vpc" "adhoc" {
   }
 }
 
-resource "aws_subnet" "adhoc_a" {
-  vpc_id                          = aws_vpc.adhoc.id
-  cidr_block                      = "10.0.0.0/24"
+resource "aws_subnet" "adhoc_b" {
+  vpc_id          = aws_vpc.adhoc.id
+  cidr_block      = "10.0.0.0/24"
   ipv6_cidr_block = cidrsubnet(aws_vpc.adhoc.ipv6_cidr_block, 8, 0)
   # TODO: multi subnets / zones
-  availability_zone               = "${data.aws_region.region.name}a"
+  availability_zone               = "${data.aws_region.region.name}b"
   map_public_ip_on_launch         = true
   assign_ipv6_address_on_creation = true
   tags = {
-    Name = "${local.adhoc_name}_${terraform.workspace}_a"
+    Name = "${local.adhoc_name}_${terraform.workspace}_b"
   }
 }
 
@@ -316,7 +316,7 @@ resource "aws_route" "adhoc_ipv6" {
 }
 
 #resource "aws_route_table_association" "adhoc" {
-#  subnet_id      = aws_subnet.adhoc_a.id
+#  subnet_id      = aws_subnet.adhoc_b.id
 #  route_table_id = aws_vpc.adhoc.default_route_table_id
 #}
 
@@ -714,8 +714,8 @@ resource "aws_ssm_parameter" "adhoc_hsqldb_password" {
 }
 
 resource "aws_ssm_parameter" "adhoc_postgres_host" {
-  name  = "${local.adhoc_name}_${terraform.workspace}_postgres_host"
-  type  = "String"
+  name = "${local.adhoc_name}_${terraform.workspace}_postgres_host"
+  type = "String"
   tier = "Standard"
   // TODO
   value = "localhost"
@@ -816,7 +816,7 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
           protocol      = "tcp"
         }
       ],
-      essential = true
+      essential  = true
       entryPoint = []
       command = [
       ],
@@ -882,13 +882,13 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
           valueFrom = "${local.adhoc_name}_${terraform.workspace}_postgres_host"
         }
       ],
-      dnsServers = []
+      dnsServers       = []
       dnsSearchDomains = []
       extraHosts = [
       ],
       dockerSecurityOptions = []
-      dockerLabels = {}
-      ulimits = []
+      dockerLabels          = {}
+      ulimits               = []
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -920,8 +920,8 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
   requires_compatibilities = [
     "FARGATE"
   ]
-  cpu                = "512"
-  memory             = "1024"
+  cpu    = "512"
+  memory = "1024"
   // TODO
   #task_role_arn            = data.aws_iam_role.ecs_task_execution_role.arn
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
@@ -953,7 +953,7 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
           protocol      = "tcp"
         }
       ],
-      essential = true
+      essential  = true
       entryPoint = []
       command = [
       ],
@@ -999,13 +999,13 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
           valueFrom = "${local.adhoc_name}_${terraform.workspace}_postgres_host"
         }
       ],
-      dnsServers = []
+      dnsServers       = []
       dnsSearchDomains = []
       extraHosts = [
       ],
       dockerSecurityOptions = []
-      dockerLabels = {}
-      ulimits = []
+      dockerLabels          = {}
+      ulimits               = []
       logConfiguration = {
         logDriver = "awslogs",
         options = {
@@ -1037,8 +1037,8 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
   requires_compatibilities = [
     "FARGATE"
   ]
-  cpu                = "512"
-  memory             = "1024"
+  cpu    = "512"
+  memory = "1024"
   // TODO
   #task_role_arn            = data.aws_iam_role.ecs_task_execution_role.arn
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
@@ -1108,8 +1108,8 @@ resource "aws_ecs_task_definition" "adhoc_server" {
   requires_compatibilities = [
     "FARGATE"
   ]
-  cpu                = "512"
-  memory             = "4096"
+  cpu    = "512"
+  memory = "4096"
   // TODO
   #task_role_arn            = data.aws_iam_role.ecs_task_execution_role.arn
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
@@ -1137,9 +1137,9 @@ resource "aws_ecs_cluster_capacity_providers" "adhoc" {
 }
 
 resource "aws_ecs_service" "adhoc_manager" {
-  name                               = "${local.adhoc_name}_${terraform.workspace}_manager"
+  name    = "${local.adhoc_name}_${terraform.workspace}_manager"
   cluster = aws_ecs_cluster.adhoc.id
-  #launch_type     = "FARGATE"
+  #launch_type = "FARGATE"
   task_definition                    = "${aws_ecs_task_definition.adhoc_manager.family}:${aws_ecs_task_definition.adhoc_manager.revision}"
   desired_count                      = 0
   deployment_minimum_healthy_percent = 0
@@ -1154,7 +1154,7 @@ resource "aws_ecs_service" "adhoc_manager" {
       aws_security_group.adhoc_manager.id
     ]
     subnets = [
-      aws_subnet.adhoc_a.id
+      aws_subnet.adhoc_b.id
     ]
     assign_public_ip = true
   }
@@ -1169,7 +1169,7 @@ resource "aws_ecs_service" "adhoc_manager" {
 }
 
 resource "aws_ecs_service" "adhoc_kiosk" {
-  name                               = "${local.adhoc_name}_${terraform.workspace}_kiosk"
+  name    = "${local.adhoc_name}_${terraform.workspace}_kiosk"
   cluster = aws_ecs_cluster.adhoc.id
   #launch_type = "FARGATE"
   task_definition                    = "${aws_ecs_task_definition.adhoc_kiosk.family}:${aws_ecs_task_definition.adhoc_kiosk.revision}"
@@ -1186,7 +1186,7 @@ resource "aws_ecs_service" "adhoc_kiosk" {
       aws_security_group.adhoc_kiosk.id
     ]
     subnets = [
-      aws_subnet.adhoc_a.id
+      aws_subnet.adhoc_b.id
     ]
     assign_public_ip = true
   }

@@ -24,6 +24,7 @@ package adhoc.user.navigate;
 
 import adhoc.area.Area;
 import adhoc.area.AreaRepository;
+import adhoc.region.Region;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.User;
@@ -44,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -63,31 +65,33 @@ public class UserNavigateService {
      * It will provide connection details for an appropriate destination server.
      * <p>
      * You can choose a specific destination server, or an area (the server for the area will be chosen).
-     * If you do not specify a server or area, a random enabled and active will be chosen.
+     * If you do not specify a server or area, a random enabled and active server will be chosen.
      * <p>
      * A server can also call this to try to automatically navigate the user to another server
      * when the user's pawn has moved into an area represented by the other server.
      */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserNavigateResponse userNavigate(UserNavigateRequest userNavigateRequest) {
+    public UserNavigateResponse userNavigate(UserNavigateRequest request) {
+
+        log.debug("userNavigate: request={}", request);
 
         // for now, only server may specify location update
         if (!isAuthenticatedAsServer()) {
-            Preconditions.checkArgument(userNavigateRequest.getX() == null);
-            Preconditions.checkArgument(userNavigateRequest.getY() == null);
-            Preconditions.checkArgument(userNavigateRequest.getZ() == null);
-            Preconditions.checkArgument(userNavigateRequest.getYaw() == null);
-            Preconditions.checkArgument(userNavigateRequest.getPitch() == null);
+            Preconditions.checkArgument(request.getX() == null);
+            Preconditions.checkArgument(request.getY() == null);
+            Preconditions.checkArgument(request.getZ() == null);
+            Preconditions.checkArgument(request.getYaw() == null);
+            Preconditions.checkArgument(request.getPitch() == null);
         }
 
-        User user = userRepository.getReferenceById(userNavigateRequest.getUserId());
+        User user = userRepository.getReferenceById(request.getUserId());
 
-        Server destinationServer = userNavigateRequest.getDestinationServerId() != null ?
-                serverRepository.getReferenceById(userNavigateRequest.getDestinationServerId()) : null;
+        Server destinationServer = request.getDestinationServerId() != null ?
+                serverRepository.getReferenceById(request.getDestinationServerId()) : null;
 
-        Area destinationArea = userNavigateRequest.getDestinationAreaId() != null ?
-                areaRepository.getReferenceById(userNavigateRequest.getDestinationAreaId()) : null;
+        Area destinationArea = request.getDestinationAreaId() != null ?
+                areaRepository.getReferenceById(request.getDestinationAreaId()) : null;
 
         // if no server provided, use server from area if that was provided
         if (destinationServer == null && destinationArea != null) {
@@ -110,24 +114,32 @@ public class UserNavigateService {
             destinationServer = servers.get(ThreadLocalRandom.current().nextInt(servers.size()));
         }
 
+        Server oldDestinationServer = user.getDestinationServer();
+        Region oldRegion = oldDestinationServer == null ? null : oldDestinationServer.getRegion();
+
         // when moving servers, update the position to ensure they can spawn at the right location
-        if (destinationServer != user.getDestinationServer()) {
-            user.setX(userNavigateRequest.getX());
-            user.setY(userNavigateRequest.getY());
-            user.setZ(userNavigateRequest.getZ());
-            user.setYaw(userNavigateRequest.getYaw());
-            user.setPitch(userNavigateRequest.getPitch());
+        if (destinationServer != oldDestinationServer
+                && Objects.equals(destinationServer.getRegion(), oldRegion)) {
+            user.setX(request.getX());
+            user.setY(request.getY());
+            user.setZ(request.getZ());
+            user.setYaw(request.getYaw());
+            user.setPitch(request.getPitch());
         }
 
         user.setDestinationServer(destinationServer);
         user.setNavigated(LocalDateTime.now());
 
-        return new UserNavigateResponse(
+        UserNavigateResponse response = new UserNavigateResponse(
                 user.getDestinationServer().getPublicIp(),
                 user.getDestinationServer().getPublicWebSocketPort(),
                 user.getDestinationServer().getWebSocketUrl(),
                 user.getDestinationServer().getRegion().getMapName(),
                 user.getX(), user.getY(), user.getZ(), user.getYaw(), user.getPitch());
+
+        log.debug("userNavigate: response={}", response);
+
+        return response;
     }
 
     private static boolean isAuthenticatedAsServer() {

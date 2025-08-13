@@ -110,7 +110,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               @Inject(DOCUMENT) private document: Document) {
 
     if (customization.extra) {
-      let extra : any = customization.extra;
+      let extra: any = customization.extra;
       this.mapComponentExtra = new extra.MapComponentExtra(this, injector);
     }
   }
@@ -135,12 +135,12 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     // });
 
     this.stompService
-      .observeEvent('ObjectiveTaken')
-      .subscribe((event: any) => this.handleObjectiveTaken(event));
+        .observeEvent('ObjectiveTaken')
+        .subscribe((event: any) => this.handleObjectiveTaken(event));
 
     this.stompService
-      .observeEvent('ServerPawns')
-      .subscribe((event: any) => this.handleServerPawns(event));
+        .observeEvent('ServerPawns')
+        .subscribe((event: any) => this.handleServerPawns(event));
 
     this.stompService.connect();
 
@@ -359,7 +359,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
     }
 
     for (const server of this.servers) {
-      if (server.webSocketUrl && server.areaIds) {
+      if (server.enabled && server.active && server.webSocketUrl && server.areaIds) {
         let areasText = '';
         for (const area of this.areas) {
           if (server.areaIds.includes(area.id!)) {
@@ -406,14 +406,10 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
           hoverCursor: 'pointer',
         });
         serverGroup.on('selected', () => {
-          this.registerService.getCurrentUserOrRegister().subscribe(user => {
-            this.navigateService.navigate(server.id).subscribe(navigation => {
-              this.router.navigate(['client'], {
-                // queryParams: {
-                //   areaId: area.id
-                // }
-              });
-            });
+          this.router.navigate(['client'], {
+            state: {
+              serverId: server.id
+            }
           });
         });
         this.canvas!.add(serverGroup);

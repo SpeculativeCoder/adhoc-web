@@ -24,6 +24,7 @@ import {Inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {UserNavigateResponse} from './user-navigate-response';
 import {HttpClient} from '@angular/common/http';
+import {UserNavigateRequest} from './user-navigate-request';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +39,11 @@ export class NavigateService {
     this.currentUserUrl = `${baseUrl}/api/users/current`;
   }
 
-  navigate(destinationServerId?: number): Observable<UserNavigateResponse> {
-    return this.http.post(`${this.currentUserUrl}/navigate`, {destinationServerId: destinationServerId});
+  navigate(serverId?: number): Observable<UserNavigateResponse> {
+    let userNavigateRequest: UserNavigateRequest = {};
+    if (serverId !== undefined) {
+      userNavigateRequest.serverId = serverId;
+    }
+    return this.http.post(`${this.currentUserUrl}/navigate`, userNavigateRequest);
   }
 }

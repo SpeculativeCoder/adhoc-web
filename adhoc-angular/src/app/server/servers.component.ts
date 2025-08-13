@@ -73,21 +73,10 @@ export class ServersComponent implements OnInit {
   }
 
   joinServer(server: Server) {
-    // send to a random area being handled by this server
-    // console.log(`server.areaIds: ${server.areaIds}`);
-    // let randomServerAreaIdsIndex = Math.floor(Math.random() * server.areaIds.length);
-    // console.log(`randomServerAreaIdsIndex: ${randomServerAreaIdsIndex}`);
-    // let randomServerAreaId = server.areaIds[randomServerAreaIdsIndex];
-    // console.log(`randomServerAreaId: ${randomServerAreaId}`);
-
-    this.registerService.getCurrentUserOrRegister().subscribe(user => {
-      this.navigateService.navigate(server.id).subscribe(navigation => {
-        this.router.navigate(['client'], {
-          // queryParams: {
-          //   areaId: randomServerAreaId
-          // }
-        });
-      });
+    this.router.navigate(['client'], {
+      state: {
+        serverId: server.id
+      }
     });
   }
 

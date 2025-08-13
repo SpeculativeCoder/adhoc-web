@@ -38,7 +38,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
@@ -91,8 +96,8 @@ public class UserController {
             @Valid @RequestBody UserNavigateRequest userNavigateRequest,
             Authentication authentication) {
 
-        Preconditions.checkState(authentication != null);
-        Preconditions.checkState(authentication.getPrincipal() instanceof AdhocUserDetails);
+        Preconditions.checkArgument(authentication != null);
+        Preconditions.checkArgument(authentication.getPrincipal() instanceof AdhocUserDetails);
 
         AdhocUserDetails adhocUserDetails = (AdhocUserDetails) authentication.getPrincipal();
 

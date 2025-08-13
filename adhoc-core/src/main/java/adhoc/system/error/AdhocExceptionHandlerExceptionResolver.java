@@ -15,6 +15,11 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExceptionResolver {
 
     @Override
+    public void setWarnLogCategory(@NonNull String loggerName) {
+        // ignore - we do our own logging below
+    }
+
+    @Override
     public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {
         ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
@@ -22,7 +27,7 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
         if (!(request.getRequestURI().startsWith("/api/")
                 || request.getRequestURI().startsWith("/ws/"))
                 && (exception instanceof NoResourceFoundException)) { // invalid static resource attempts
-                //exception instanceof EntityNotFoundException // row not found in database
+            //exception instanceof EntityNotFoundException // row not found in database
             level = Level.DEBUG;
         }
 

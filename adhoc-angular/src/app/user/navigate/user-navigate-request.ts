@@ -20,60 +20,6 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
-
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
-
-import java.math.BigDecimal;
-import java.util.Optional;
-
-@Value
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class AreaDto {
-
-    @Min(1)
-    Long id;
-
-    @Min(0)
-    Long version;
-
-    @NotNull
-    @Min(1)
-    Long regionId;
-
-    @NotNull
-    @Min(0)
-    Integer index;
-
-    @NotEmpty
-    String name;
-
-    @NotNull
-    BigDecimal x;
-    @NotNull
-    BigDecimal y;
-    @NotNull
-    BigDecimal z;
-
-    @NotNull
-    @Positive
-    BigDecimal sizeX;
-    @NotNull
-    @Positive
-    BigDecimal sizeY;
-    @NotNull
-    @Positive
-    BigDecimal sizeZ;
-
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    Optional<@Min(1) Long> serverId;
+export class UserNavigateRequest {
+  serverId?: number;
 }

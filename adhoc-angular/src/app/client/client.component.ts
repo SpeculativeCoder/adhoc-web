@@ -20,14 +20,12 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {MetaService} from "../system/meta.service";
-import {AreaService} from "../area/area.service";
-import {ServerService} from "../server/server.service";
 import {customization} from "../customization";
-import {CommonModule} from "@angular/common";
+import {CommonModule, DOCUMENT} from "@angular/common";
 import {RegisterService} from '../user/register/register.service';
 import {NavigateService} from '../user/navigate/navigate.service';
 
@@ -48,16 +46,14 @@ export class ClientComponent implements OnInit {
 
   clientUrl?: SafeResourceUrl;
 
-  private areaId?: number;
-
-  constructor(private route: ActivatedRoute,
-              private router: Router,
-              private sanitizer: DomSanitizer,
-              private metaService: MetaService,
-              private areaService: AreaService,
-              private serverService: ServerService,
-              private registerService: RegisterService,
-              private navigateService: NavigateService) {
+  constructor(
+      @Inject(DOCUMENT) private document: Document,
+      private route: ActivatedRoute,
+      private router: Router,
+      private sanitizer: DomSanitizer,
+      private metaService: MetaService,
+      private registerService: RegisterService,
+      private navigateService: NavigateService) {
   }
 
   ngOnInit() {
@@ -71,11 +67,8 @@ export class ClientComponent implements OnInit {
   }
 
   private isUserAgentCompatible(): boolean {
-    if (window.navigator.userAgent.indexOf('Windows') != -1) {
-      //|| window.navigator.userAgent.indexOf('Intel Mac OS') != -1) {
-      return true;
-    }
-    return false;
+    // TODO: 'Intel Mac OS'
+    return this.document.defaultView?.navigator.userAgent.indexOf('Windows') != -1;
   }
 
   runClientAnyway() {
@@ -85,42 +78,46 @@ export class ClientComponent implements OnInit {
   }
 
   private runClient() {
-    // let areaIdString: string = this.route.snapshot.paramMap.get('areaId');
-    // console.log(`areaId: ${areaIdString}`);
-    // if (!areaIdString) {
-    //   throw new Error(`areaId not set or empty`);
-    // }
-    //
-    // this.areaId = Number.parseInt(areaIdString);
-    // if (Number.isNaN(this.areaId)) {
-    //   throw new Error(`areaId is not a number: ${areaIdString}`);
-    // }
+    let serverIdString = this.document.defaultView?.history.state['serverId'];
+    console.log(`serverId: ${serverIdString}`);
 
-    // TODO: allow user and navigation information to be passed into this component?
+    let serverId: number | undefined = undefined;
+    if (serverIdString) {
+      serverId = Number.parseInt(serverIdString);
+      if (Number.isNaN(serverId)) {
+        throw new Error(`serverId is not a number: ${serverIdString}`);
+      }
+    }
+
     this.registerService.getCurrentUserOrRegister().subscribe(user => {
-      this.navigateService.navigate().subscribe(navigation => {
+      this.navigateService.navigate(serverId).subscribe(navigation => {
+        // TODO: error check
+
         if (!navigation.ip) {
-          throw new Error(`Navigation response has no IP`);
+          throw new Error(`Server ${serverId} has no IP`);
         }
         if ((typeof navigation.port) !== 'number') {
-          throw new Error(`Navigation response has no port`);
+          throw new Error(`Server ${serverId} has no port`);
         }
         if (!navigation.webSocketUrl) {
-          throw new Error(`Navigation response has no websocket URL`);
+          throw new Error(`Server ${serverId} has no websocket URL`);
         }
 
         let unrealEngineCommandLine = navigation.ip + ":" + navigation.port;
         if (user && (typeof user.id) === 'number' && (typeof user.factionId) === 'number' && user.token) {
           unrealEngineCommandLine += '?UserID=' + user.id + '?FactionID=' + user.factionId + '?Token=' + user.token;
         }
-        // if user is joining region they were last in, try to start their initial location where they may be spawned at
+
+        // try to start their initial spectator location where they may be immediately spawned at
         if ((typeof navigation.x) === 'number' && (typeof navigation.y) === 'number' && (typeof navigation.z) === 'number'
-          && (typeof navigation.pitch) === 'number' && (typeof navigation.yaw) === 'number') {
+            && (typeof navigation.pitch) === 'number' && (typeof navigation.yaw) === 'number') {
           unrealEngineCommandLine += '?X=' + navigation.x + '?Y=' + navigation.y + '?Z=' + navigation.z + '?Pitch=' + navigation.pitch + '?Yaw=' + navigation.yaw;
         }
+
         if (this.metaService.getFeatureFlags()) {
           unrealEngineCommandLine += ' FeatureFlags=' + this.metaService.getFeatureFlags();
         }
+
         unrealEngineCommandLine += ' -stdout';
         console.log(`unrealEngineCommandLine: ${unrealEngineCommandLine}`);
 

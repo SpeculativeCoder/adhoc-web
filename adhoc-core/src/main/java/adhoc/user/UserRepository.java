@@ -37,8 +37,6 @@ import java.util.stream.Stream;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByName(String name);
-
     Optional<User> findByNameOrEmail(String name, String email);
 
     Optional<User> findFirstByHumanFalseAndFactionIdAndSeenBefore(Long factionId, LocalDateTime seenBefore);

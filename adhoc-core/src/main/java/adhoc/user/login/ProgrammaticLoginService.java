@@ -25,7 +25,6 @@ package adhoc.user.login;
 import adhoc.system.WebSecurityConfiguration;
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
 import adhoc.user.User;
-import adhoc.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -53,8 +52,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProgrammaticLoginService {
 
-    private final UserRepository userRepository;
-
     private final WebSecurityConfiguration<?> webSecurityConfiguration;
 
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -70,12 +67,10 @@ public class ProgrammaticLoginService {
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
     /**
-     * Login the user programmatically (i.e. by invoking necessary Spring Security actions etc.), given a username and password.
+     * Login the user programmatically (i.e. by invoking necessary Spring Security actions etc.), given a user and password.
      * Used after registering a user (we want them to be automatically logged in).
      */
-    public void programmaticLogin(Long userId, String username, String password) {
-        User user = userRepository.getReferenceById(userId);
-
+    public void programmaticLogin(User user, String password) {
         String tempPassword = null;
         if (user.getPassword() == null) {
             tempPassword = UUID.randomUUID().toString();
@@ -83,18 +78,18 @@ public class ProgrammaticLoginService {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 UsernamePasswordAuthenticationToken.unauthenticated(
-                        username,
+                        user.getName(),
                         tempPassword != null ? tempPassword : password);
         authenticationToken.setDetails(authenticationDetailsSource.buildDetails(httpServletRequest));
 
         if (tempPassword != null) {
-            user.setPassword(passwordEncoder.encode(tempPassword));
+            user.setPassword(tempPassword, passwordEncoder);
         }
 
         Authentication authentication = getAuthenticationManager().authenticate(authenticationToken);
 
         if (tempPassword != null) {
-            user.setPassword(null);
+            user.setPassword(null, passwordEncoder);
         }
 
         webSecurityConfiguration.getSessionAuthenticationStrategy().onAuthentication(authentication, httpServletRequest, httpServletResponse);

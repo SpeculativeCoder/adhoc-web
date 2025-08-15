@@ -72,7 +72,6 @@ public class AdhocManagerApplicationTest {
     @Test
     public void testRegister() throws Exception {
         UserRegisterRequest request = UserRegisterRequest.builder()
-                .human(true)
                 .build();
 
         MvcTestResult result = mvc.post().uri("/api/users/register")

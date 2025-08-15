@@ -48,6 +48,15 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @Nullable
+    public ResponseEntity<Object> handleIllegalArgumentException(Exception exception, WebRequest webRequest) {
+        IllegalArgumentException illegalArgumentException = (IllegalArgumentException) exception;
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, illegalArgumentException.getMessage(), null, null, webRequest);
+        return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
+    }
+
     //@ExceptionHandler(Throwable.class)
     //@Nullable
     //public ResponseEntity<Object> handleThrowable(Exception exception, WebRequest webRequest) {

@@ -50,7 +50,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Service
@@ -299,7 +300,7 @@ public class UniverseInitializeService {
             adminUser.setFaction(team1);
             adminUser.setHuman(true);
             adminUser.setScore(BigDecimal.valueOf(0.0));
-            adminUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultAdminPassword()));
+            adminUser.setPassword(managerProperties.getDefaultAdminPassword(), passwordEncoder);
             adminUser.setCreated(userCreated);
             adminUser.setUpdated(userCreated);
             adminUser.setSeen(userSeen);
@@ -312,7 +313,7 @@ public class UniverseInitializeService {
             alphaUser.setFaction(team1);
             alphaUser.setHuman(true);
             alphaUser.setScore(BigDecimal.valueOf(0.0));
-            alphaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
+            alphaUser.setPassword(managerProperties.getDefaultUserPassword(), passwordEncoder);
             alphaUser.setCreated(userCreated);
             alphaUser.setUpdated(userCreated);
             alphaUser.setSeen(userSeen);
@@ -325,7 +326,7 @@ public class UniverseInitializeService {
             betaUser.setFaction(team2);
             betaUser.setHuman(true);
             betaUser.setScore(BigDecimal.valueOf(10.0));
-            betaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
+            betaUser.setPassword(managerProperties.getDefaultUserPassword(), passwordEncoder);
             betaUser.setCreated(userCreated);
             betaUser.setUpdated(userCreated);
             betaUser.setSeen(userSeen);
@@ -338,7 +339,7 @@ public class UniverseInitializeService {
             gammaUser.setFaction(team3);
             gammaUser.setHuman(true);
             gammaUser.setScore(BigDecimal.valueOf(20.0));
-            gammaUser.setPassword(passwordEncoder.encode(managerProperties.getDefaultUserPassword()));
+            gammaUser.setPassword(managerProperties.getDefaultUserPassword(), passwordEncoder);
             gammaUser.setCreated(userCreated);
             gammaUser.setUpdated(userCreated);
             //gammaUser.setSeen(seen);

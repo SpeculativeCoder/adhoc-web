@@ -22,13 +22,13 @@
 
 package adhoc.user.join;
 
+import adhoc.faction.FactionRepository;
 import adhoc.server.Server;
 import adhoc.server.ServerRepository;
 import adhoc.user.User;
 import adhoc.user.UserFullDto;
 import adhoc.user.UserRepository;
 import adhoc.user.UserService;
-import adhoc.user.register.UserRegisterRequest;
 import adhoc.user.register.UserRegisterService;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -53,6 +53,7 @@ public class UserJoinService {
 
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
+    private final FactionRepository factionRepository;
 
     private final UserService userService;
     private final UserRegisterService userRegisterService;
@@ -99,9 +100,10 @@ public class UserJoinService {
     }
 
     private User autoRegister(Boolean human, Long factionId) {
+        Verify.verifyNotNull(human);
+
         User user = null;
 
-        Verify.verifyNotNull(human);
         if (!human) {
             // bots should try to use existing bot account
             // TODO: avoid using seen (should use serverId)
@@ -110,14 +112,11 @@ public class UserJoinService {
         }
 
         if (user == null) {
-            UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder()
-                    .factionId(factionId)
-                    .human(human)
-                    .build();
+            user = new User();
+            user.setHuman(human);
+            user.setFaction(factionRepository.getReferenceById(factionId));
 
-            UserFullDto userFullDto = userRegisterService.userRegister(userRegisterRequest);
-
-            user = userRepository.getReferenceById(userFullDto.getId());
+            user = userRegisterService.userRegister(user);
         }
 
         return user;

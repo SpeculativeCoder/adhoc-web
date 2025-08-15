@@ -22,7 +22,10 @@
 
 package adhoc.user.register;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -50,7 +53,4 @@ public class UserRegisterRequest {
 
     @Min(1)
     Long factionId;
-
-    @NotNull
-    Boolean human;
 }

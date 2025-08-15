@@ -23,9 +23,12 @@
 package adhoc.user.register;
 
 import adhoc.faction.FactionRepository;
-import adhoc.region.RegionRepository;
 import adhoc.system.properties.CoreProperties;
-import adhoc.user.*;
+import adhoc.user.User;
+import adhoc.user.UserFullDto;
+import adhoc.user.UserRepository;
+import adhoc.user.UserRole;
+import adhoc.user.UserService;
 import adhoc.user.login.ProgrammaticLoginService;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -38,14 +41,11 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.lang.Nullable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,7 +59,6 @@ public class UserRegisterService {
 
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
-    private final RegionRepository regionRepository;
 
     private final UserService userService;
     private final ProgrammaticLoginService programmaticLoginService;
@@ -70,66 +69,63 @@ public class UserRegisterService {
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public UserFullDto userRegister(UserRegisterRequest userRegisterRequest) {
-        String userAgent = determineUserAgent();
-        String remoteAddr = determineRemoteAddr();
-
-        log.debug("userRegister: name={} password?={} human={} factionId={} remoteAddr={} userAgent={}",
+        log.debug("userRegister: name={} password?={} factionId={}",
                 userRegisterRequest.getName(),
                 userRegisterRequest.getPassword() != null,
-                userRegisterRequest.getHuman(),
-                userRegisterRequest.getFactionId(),
-                remoteAddr,
-                userAgent);
+                userRegisterRequest.getFactionId());
+
+        User user = new User();
+        user.setName(userRegisterRequest.getName());
+        user.setEmail(userRegisterRequest.getEmail());
+        user.setPassword(userRegisterRequest.getPassword(), passwordEncoder);
+        user.setHuman(true);
+        user.setFaction(userRegisterRequest.getFactionId() == null ? null : factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
+
+        user = userRegister(user);
+
+        programmaticLoginService.programmaticLogin(user, userRegisterRequest.getPassword());
+
+        return userService.toFullDto(user);
+    }
+
+    public User userRegister(User user) {
+        String userAgent = determineUserAgent();
+        String remoteAddr = determineRemoteAddr();
+        log.debug("userRegister: remoteAddr={} userAgent={}", remoteAddr, userAgent);
 
         if (!coreProperties.getFeatureFlags().contains("development")) {
-            Preconditions.checkArgument(userRegisterRequest.getEmail() == null, "Registering with email not allowed yet");
-            Preconditions.checkArgument(userRegisterRequest.getPassword() == null, "Registering with password not allowed yet");
-            Preconditions.checkArgument(userRegisterRequest.getName() == null, "Registering with name not allowed yet");
+            Preconditions.checkArgument(user.getEmail() == null, "Registering with email not allowed yet");
+            Preconditions.checkArgument(user.getPassword() == null, "Registering with password not allowed yet");
+            Preconditions.checkArgument(user.getName() == null, "Registering with name not allowed yet");
         }
-
-        boolean authenticatedAsServer = isAuthenticatedAsServer();
-
-        Preconditions.checkArgument(userRegisterRequest.getHuman() != null);
-        // human can only register user as human, but server may register users as human or bot
-        Preconditions.checkArgument(userRegisterRequest.getHuman() || authenticatedAsServer);
 
         // TODO: think about existing name/email check before allowing name/email input
-        Optional<User> existingUser;
-        if (userRegisterRequest.getName() != null && userRegisterRequest.getEmail() != null) {
-            existingUser = userRepository.findByNameOrEmail(userRegisterRequest.getName(), userRegisterRequest.getEmail());
-        } else if (userRegisterRequest.getName() != null) {
-            existingUser = userRepository.findByName(userRegisterRequest.getName());
-        } else {
-            existingUser = Optional.empty();
+        if (user.getName() != null || user.getEmail() != null) {
+            Optional<User> existingUser = userRepository.findByNameOrEmail(user.getName(), user.getEmail());
+            if (existingUser.isPresent()) {
+                log.warn("User name or email already in use: name={} email={}", user.getName(), user.getEmail());
+                throw new IllegalArgumentException("User name or email already in use");
+            }
         }
 
-        if (existingUser.isPresent()) {
-            log.warn("User name or email already in use: name={} email={}", userRegisterRequest.getName(), userRegisterRequest.getEmail());
-            throw new IllegalArgumentException("User name or email already in use");
+        if (user.getName() == null) {
+            String prefix = user.isHuman() ? "Anon" : "Bot";
+            user.setName(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
         }
 
-        UserRegisterRequest.UserRegisterRequestBuilder builder = userRegisterRequest.toBuilder();
-
-        if (userRegisterRequest.getName() == null) {
-            String prefix = userRegisterRequest.getHuman() ? "Anon" : "Bot";
-            builder.name(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
+        if (user.getFaction() == null) {
+            Long factionId = 1 + (long) Math.floor(Math.random() * factionRepository.count());
+            user.setFaction(factionRepository.getReferenceById(factionId));
         }
 
-        if (userRegisterRequest.getFactionId() == null) {
-            builder.factionId(1 + (long) Math.floor(Math.random() * factionRepository.count()));
-        }
+        user.setScore(BigDecimal.valueOf(0.0));
+        user.setRoles(Sets.newHashSet(UserRole.USER));
+        user.setToken(UUID.randomUUID());
 
-        userRegisterRequest = builder.build();
+        user = userRepository.save(user);
 
-        User user = userRepository.save(toEntity(userRegisterRequest));
-
-        // if not an auto-register from server - log them in too
-        if (!authenticatedAsServer) {
-            programmaticLoginService.programmaticLogin(user.getId(), userRegisterRequest.getName(), userRegisterRequest.getPassword());
-        }
-
-        log.atLevel(Optional.ofNullable(userRegisterRequest.getHuman()).orElse(false) ? Level.INFO : Level.DEBUG)
-                .log("userRegister: id={} name={} password?={} human={} factionIndex={} remoteAddr={} userAgent={}",
+        log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
+                .log("User registered: id={} name={} password?={} human={} factionIndex={} remoteAddr={} userAgent={}",
                         user.getId(),
                         user.getName(),
                         user.getPassword() != null,
@@ -138,7 +134,7 @@ public class UserRegisterService {
                         remoteAddr,
                         userAgent);
 
-        return userService.toFullDto(user);
+        return user;
     }
 
     private @Nullable String determineRemoteAddr() {
@@ -148,28 +144,5 @@ public class UserRegisterService {
     private @Nullable String determineUserAgent() {
         String userAgent = httpServletRequest.getHeader("user-agent");
         return userAgent == null ? null : userAgent.replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?");
-    }
-
-    private static boolean isAuthenticatedAsServer() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null
-                && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
-    }
-
-    private User toEntity(UserRegisterRequest userRegisterRequest) {
-        User user = new User();
-
-        user.setName(userRegisterRequest.getName());
-        user.setEmail(userRegisterRequest.getEmail());
-        user.setPassword(userRegisterRequest.getPassword() == null ? null
-                : passwordEncoder.encode(userRegisterRequest.getPassword()));
-        user.setHuman(userRegisterRequest.getHuman());
-        user.setFaction(factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
-        user.setScore(BigDecimal.valueOf(0.0));
-        user.setRoles(Sets.newHashSet(UserRole.USER));
-        user.setToken(UUID.randomUUID());
-        user.setNavigated(LocalDateTime.now());
-
-        return user;
     }
 }

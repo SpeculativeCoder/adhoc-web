@@ -26,12 +26,33 @@ import adhoc.faction.Faction;
 import adhoc.pawn.Pawn;
 import adhoc.region.Region;
 import adhoc.server.Server;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -80,6 +101,7 @@ public class User {
     private String email;
 
     @ToString.Exclude
+    @Setter(AccessLevel.NONE)
     private String password;
 
     @Column(nullable = false)
@@ -148,5 +170,9 @@ public class User {
                 .map(role -> "ROLE_" + role.name())
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public void setPassword(String password, PasswordEncoder passwordEncoder) {
+        this.password = password == null ? null : passwordEncoder.encode(password);
     }
 }

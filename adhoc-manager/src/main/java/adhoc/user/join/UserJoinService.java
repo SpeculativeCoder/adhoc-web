@@ -116,7 +116,7 @@ public class UserJoinService {
             user.setHuman(human);
             user.setFaction(factionRepository.getReferenceById(factionId));
 
-            user = userRegisterService.userRegister(user);
+            user = userRegisterService.userRegisterInternal(user);
         }
 
         return user;

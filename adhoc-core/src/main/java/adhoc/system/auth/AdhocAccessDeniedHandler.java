@@ -27,6 +27,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
+import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -43,17 +44,25 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
 
+        log.debug("handle: method={} uri={}",
+                request.getMethod(), request.getRequestURI(), exception);
+
+        response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
+
+        boolean typical = exception instanceof MissingCsrfTokenException
+                || exception instanceof InvalidCsrfTokenException;
+
         Level level = Level.INFO;
-        if (!(request.getRequestURI().startsWith("/api/")
-                || request.getRequestURI().startsWith("/ws/"))
-                && (exception instanceof MissingCsrfTokenException
-                || exception instanceof InvalidCsrfTokenException)) {
+        if (typical && !(request.getRequestURI().startsWith("/api/")
+                || request.getRequestURI().startsWith("/ws/"))) {
             level = Level.DEBUG;
         }
 
-        log.atLevel(level).log("handle: exception={} method={} uri={}",
-                exception.getClass().getSimpleName(), request.getMethod(), request.getRequestURI(), exception);
-
-        response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
+        LoggingEventBuilder logEvent = log.atLevel(level);
+        if (!typical) {
+            logEvent = logEvent.setCause(exception);
+        }
+        logEvent.log("Access denied: method={} uri={} exception={}",
+                request.getMethod(), request.getRequestURI(), exception.getClass().getSimpleName());
     }
 }

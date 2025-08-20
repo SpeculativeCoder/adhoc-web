@@ -38,6 +38,6 @@ public class UserLoginService {
         user.setToken(newToken);
         user.setLastLogin(now);
 
-        log.debug("onAuthenticationSuccess: id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getToken());
+        log.debug("Authentication success: id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getToken());
     }
 }

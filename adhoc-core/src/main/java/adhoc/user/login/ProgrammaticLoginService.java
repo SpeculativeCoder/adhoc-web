@@ -70,7 +70,7 @@ public class ProgrammaticLoginService {
      * Login the user programmatically (i.e. by invoking necessary Spring Security actions etc.), given a user and password.
      * Used after registering a user (we want them to be automatically logged in).
      */
-    public void programmaticLogin(User user, String password) {
+    public void programmaticLoginInternal(User user, String password) {
         String tempPassword = null;
         if (user.getPassword() == null) {
             tempPassword = UUID.randomUUID().toString();

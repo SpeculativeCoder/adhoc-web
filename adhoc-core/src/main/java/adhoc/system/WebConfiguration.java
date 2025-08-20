@@ -22,7 +22,7 @@
 
 package adhoc.system;
 
-import adhoc.system.error.AdhocExceptionHandlerExceptionResolver;
+import adhoc.system.exception.AdhocExceptionHandlerExceptionResolver;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;

@@ -40,9 +40,13 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
-        log.debug("onAuthenticationFailure: exception={} method={} uri={}",
-                exception.getClass().getSimpleName(), request.getMethod(), request.getRequestURI(), exception);
+        log.debug("onAuthenticationFailure: method={} uri={}",
+                request.getMethod(), request.getRequestURI(), exception);
 
         response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
+
+        // TODO
+        log.info("Authentication failure: method={} uri={} exception={}",
+                request.getMethod(), request.getRequestURI(), exception.getClass().getSimpleName(), exception);
     }
 }

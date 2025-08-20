@@ -1,9 +1,10 @@
-package adhoc.system.error;
+package adhoc.system.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
+import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,16 +24,24 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
     public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {
         ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
+        log.debug("resolveException: method={} uri={} status={}",
+                request.getMethod(), request.getRequestURI(), response.getStatus(), exception);
+
+        boolean typical = exception instanceof NoResourceFoundException; // invalid static resource attempts
+        // exception instanceof EntityNotFoundException // row not found in database
+
         Level level = Level.INFO;
-        if (!(request.getRequestURI().startsWith("/api/")
-                || request.getRequestURI().startsWith("/ws/"))
-                && (exception instanceof NoResourceFoundException)) { // invalid static resource attempts
-            //exception instanceof EntityNotFoundException // row not found in database
+        if (typical && !(request.getRequestURI().startsWith("/api/")
+                || request.getRequestURI().startsWith("/ws/"))) {
             level = Level.DEBUG;
         }
 
-        log.atLevel(level).log("resolveException: exception={} status={} method={} uri={}",
-                exception.getClass().getSimpleName(), response.getStatus(), request.getMethod(), request.getRequestURI(), exception);
+        LoggingEventBuilder logEvent = log.atLevel(level);
+        if (!typical) {
+            logEvent = logEvent.setCause(exception);
+        }
+        logEvent.log("Request failure: method={} uri={} status={} exception={}",
+                request.getMethod(), request.getRequestURI(), response.getStatus(), exception.getClass().getSimpleName());
 
         return modelAndView;
     }

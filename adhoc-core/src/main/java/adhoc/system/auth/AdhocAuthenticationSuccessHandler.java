@@ -47,8 +47,8 @@ public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessH
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
         Object principal = authentication.getPrincipal();
-        log.debug("onAuthenticationSuccess: principal={} method={} uri={}",
-                principal, request.getMethod(), request.getRequestURI());
+        log.debug("onAuthenticationSuccess: method={} uri={} principal={}",
+                request.getMethod(), request.getRequestURI(), principal);
 
         Verify.verify(principal instanceof AdhocUserDetails);
         AdhocUserDetails userDetails = (AdhocUserDetails) principal;

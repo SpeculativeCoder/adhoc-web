@@ -20,18 +20,35 @@
  * SOFTWARE.
  */
 
-package adhoc.system.error;
+package adhoc.system.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.lang.NonNull;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 
-@ControllerAdvice
+@Component
 @Slf4j
-public class AdhocMessageExceptionHandler {
+public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHandler {
 
-    @MessageExceptionHandler
-    public void handleThrowable(Throwable exception) {
-        log.warn("handleThrowable: exception={}", exception.getClass().getSimpleName(), exception);
+    @NonNull
+    @Override
+    protected Message<byte[]> handleInternal(@NonNull StompHeaderAccessor errorHeaderAccessor, @NonNull byte[] errorPayload, Throwable exception, StompHeaderAccessor clientHeaderAccessor) {
+
+        log.debug("handleInternal", exception);
+
+        Message<byte[]> message = super.handleInternal(errorHeaderAccessor, errorPayload, exception, clientHeaderAccessor);
+
+        if (exception != null) {
+            // TODO
+            log.warn("Stomp failure: exception={}", exception.getClass().getSimpleName(), exception);
+        } else {
+            // TODO
+            log.warn("Stomp failure");
+        }
+
+        return message;
     }
 }

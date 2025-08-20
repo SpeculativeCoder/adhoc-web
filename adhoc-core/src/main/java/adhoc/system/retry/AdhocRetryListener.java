@@ -43,6 +43,6 @@ public class AdhocRetryListener extends MethodInvocationRetryListenerSupport {
         } else {
             level = Level.DEBUG;
         }
-        log.atLevel(level).log("doOnError: label={} context={}", callback.getLabel(), context);
+        log.atLevel(level).log("Retry: label={} context={}", callback.getLabel(), context);
     }
 }

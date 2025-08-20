@@ -81,17 +81,17 @@ public class UserRegisterService {
         user.setHuman(true);
         user.setFaction(userRegisterRequest.getFactionId() == null ? null : factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
 
-        user = userRegister(user);
+        user = userRegisterInternal(user);
 
-        programmaticLoginService.programmaticLogin(user, userRegisterRequest.getPassword());
+        programmaticLoginService.programmaticLoginInternal(user, userRegisterRequest.getPassword());
 
         return userService.toFullDto(user);
     }
 
-    public User userRegister(User user) {
+    public User userRegisterInternal(User user) {
         String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();
-        log.debug("userRegister: remoteAddr={} userAgent={}", remoteAddr, userAgent);
+        log.debug("userRegisterInternal: remoteAddr={} userAgent={}", remoteAddr, userAgent);
 
         if (!coreProperties.getFeatureFlags().contains("development")) {
             Preconditions.checkArgument(user.getEmail() == null, "Registering with email not allowed yet");

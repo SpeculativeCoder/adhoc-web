@@ -22,7 +22,7 @@
 
 package adhoc.system;
 
-import adhoc.system.error.AdhocStompSubProtocolErrorHandler;
+import adhoc.system.exception.AdhocStompSubProtocolErrorHandler;
 import adhoc.system.logging.AdhocMdcExecutorChannelInterceptor;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;

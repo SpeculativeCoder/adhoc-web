@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 
 @Service
 @Transactional
@@ -67,7 +67,7 @@ public class UserScoreService {
             BigDecimal scoreToAddForHumans = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
             BigDecimal scoreToAddForNonHumans = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
 
-            userRepository.updateScoreAddByFactionIdAndSeenAfter(scoreToAddForHumans, scoreToAddForNonHumans, faction.getId(), forUsersSeenAfter);
+            userRepository.updateScoreAddByFactionIdAndStateSeenAfter(scoreToAddForHumans, scoreToAddForNonHumans, faction.getId(), forUsersSeenAfter);
         }
 
         // TODO: multiplier property

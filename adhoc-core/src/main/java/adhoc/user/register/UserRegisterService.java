@@ -29,6 +29,7 @@ import adhoc.user.UserFullDto;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
 import adhoc.user.UserService;
+import adhoc.user.UserState;
 import adhoc.user.login.ProgrammaticLoginService;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -75,6 +76,8 @@ public class UserRegisterService {
                 userRegisterRequest.getFactionId());
 
         User user = new User();
+        user.setState(new UserState());
+        user.getState().setUser(user);
         user.setName(userRegisterRequest.getName());
         user.setEmail(userRegisterRequest.getEmail());
         user.setPassword(userRegisterRequest.getPassword(), passwordEncoder);
@@ -120,7 +123,7 @@ public class UserRegisterService {
 
         user.setScore(BigDecimal.valueOf(0.0));
         user.setRoles(Sets.newHashSet(UserRole.USER));
-        user.setToken(UUID.randomUUID());
+        user.getState().setToken(UUID.randomUUID());
 
         user = userRepository.save(user);
 

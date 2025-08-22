@@ -24,8 +24,7 @@ package adhoc.user;
 
 import adhoc.faction.Faction;
 import adhoc.pawn.Pawn;
-import adhoc.region.Region;
-import adhoc.server.Server;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -39,6 +38,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
@@ -59,7 +60,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -71,10 +71,7 @@ import java.util.stream.Collectors;
         @Index(name = "idx_user_name", columnList = "name"),
         @Index(name = "idx_user_email", columnList = "email"),
         @Index(name = "idx_user_faction_id", columnList = "faction_id"),
-        @Index(name = "idx_user_region_id", columnList = "region_id"),
-        @Index(name = "idx_user_created", columnList = "created"),
-        @Index(name = "idx_user_seen", columnList = "seen"),
-        @Index(name = "idx_user_server_id", columnList = "server_id")
+        @Index(name = "idx_user_created", columnList = "created")
 })
 // TODO: unique constraint(s)
 //@DynamicInsert
@@ -95,6 +92,10 @@ public class User {
     @Column(nullable = false)
     private Long version;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private UserState state;
+
     @Column(nullable = false)
     private String name;
 
@@ -114,22 +115,6 @@ public class User {
     @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal score;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Region region;
-
-    @Column(precision = 128, scale = 64)
-    private BigDecimal x;
-    @Column(precision = 128, scale = 64)
-    private BigDecimal y;
-    @Column(precision = 128, scale = 64)
-    private BigDecimal z;
-
-    @Column(precision = 128, scale = 64)
-    private BigDecimal pitch;
-    @Column(precision = 128, scale = 64)
-    private BigDecimal yaw;
-
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime created;
@@ -144,22 +129,10 @@ public class User {
 
     private LocalDateTime lastJoin;
 
-    private LocalDateTime seen;
-
     @ElementCollection(fetch = FetchType.EAGER) // TODO: can we make the login success handler transactional?
     @CollectionTable(name = "adhoc_user_roles")
     @Enumerated(EnumType.STRING)
     private Set<UserRole> roles;
-
-    private UUID token;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Server destinationServer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Server server;
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude

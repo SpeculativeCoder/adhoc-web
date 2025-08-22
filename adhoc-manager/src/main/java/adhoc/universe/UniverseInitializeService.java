@@ -37,6 +37,7 @@ import adhoc.system.properties.ManagerProperties;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
+import adhoc.user.UserState;
 import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -295,6 +296,8 @@ public class UniverseInitializeService {
 
         if (coreProperties.getFeatureFlags().contains("development")) {
             User adminUser = new User();
+            adminUser.setState(new UserState());
+            adminUser.getState().setUser(adminUser);
             adminUser.setName("admin");
             adminUser.setEmail("admin@" + coreProperties.getAdhocDomain());
             adminUser.setFaction(team1);
@@ -303,11 +306,13 @@ public class UniverseInitializeService {
             adminUser.setPassword(managerProperties.getDefaultAdminPassword(), passwordEncoder);
             adminUser.setCreated(userCreated);
             adminUser.setUpdated(userCreated);
-            adminUser.setSeen(userSeen);
+            adminUser.getState().setSeen(userSeen);
             adminUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG)); // TODO: restore User.Role.ADMIN,
             adminUser = userRepository.save(adminUser);
 
             User alphaUser = new User();
+            alphaUser.setState(new UserState());
+            alphaUser.getState().setUser(alphaUser);
             alphaUser.setName("TestAlpha");
             alphaUser.setEmail("testalpha@" + coreProperties.getAdhocDomain());
             alphaUser.setFaction(team1);
@@ -316,11 +321,13 @@ public class UniverseInitializeService {
             alphaUser.setPassword(managerProperties.getDefaultUserPassword(), passwordEncoder);
             alphaUser.setCreated(userCreated);
             alphaUser.setUpdated(userCreated);
-            alphaUser.setSeen(userSeen);
+            alphaUser.getState().setSeen(userSeen);
             alphaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             alphaUser = userRepository.save(alphaUser);
 
             User betaUser = new User();
+            betaUser.setState(new UserState());
+            betaUser.getState().setUser(betaUser);
             betaUser.setName("TestBeta");
             betaUser.setEmail("testbeta@" + coreProperties.getAdhocDomain());
             betaUser.setFaction(team2);
@@ -329,11 +336,13 @@ public class UniverseInitializeService {
             betaUser.setPassword(managerProperties.getDefaultUserPassword(), passwordEncoder);
             betaUser.setCreated(userCreated);
             betaUser.setUpdated(userCreated);
-            betaUser.setSeen(userSeen);
+            betaUser.getState().setSeen(userSeen);
             betaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             betaUser = userRepository.save(betaUser);
 
             User gammaUser = new User();
+            gammaUser.setState(new UserState());
+            gammaUser.getState().setUser(gammaUser);
             gammaUser.setName("TestGamma");
             gammaUser.setEmail("testgamma@" + coreProperties.getAdhocDomain());
             gammaUser.setFaction(team3);
@@ -347,6 +356,8 @@ public class UniverseInitializeService {
             gammaUser = userRepository.save(gammaUser);
 
             //User deltaUser = new User();
+            //deltaUser.setState(new UserState());
+            //deltaUser.getState().setUser(deltaUser);
             //deltaUser.setName("TestDelta");
             //deltaUser.setEmail("testdelta@" + coreProperties.getAdhocDomain());
             //deltaUser.setFaction(team4);

@@ -30,18 +30,30 @@
 
         <!-- TODO: until the schema / architecture settles down we are nuking all tables/data (except user information) on every run -->
         <sql dbms="postgresql">
-            drop table if exists universe;
+            drop table if exists message;
+
+            drop table if exists server_task;
+            drop table if exists kiosk_task;
+            drop table if exists manager_task;
+
+            drop table if exists structure;
+
+            drop table if exists user_state;
+
+            drop table if exists pawn;
+
             drop table if exists objective_linked_objectives;
             drop table if exists objective;
+
             drop table if exists area;
-            drop table if exists pawn;
+
             drop table if exists server;
-            drop table if exists structure;
+
             drop table if exists faction;
+
             drop table if exists region;
-            drop table if exists manager_task;
-            drop table if exists kiosk_task;
-            drop table if exists server_task;
+
+            drop table if exists universe;
         </sql>
 
         <createSequence sequenceName="universe_id_sequence"
@@ -458,6 +470,76 @@
                                  constraintName="fk_pawn_on_faction"
                                  referencedColumnNames="id"
                                  referencedTableName="faction"/>
+
+        <createTable tableName="adhoc_user_state">
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_adhocuserstate"/>
+            </column>
+            <column name="version"
+                    type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region_id"
+                    type="BIGINT"/>
+            <column name="x"
+                    type="DECIMAL(128,32)"/>
+            <column name="y"
+                    type="DECIMAL(128,32)"/>
+            <column name="z"
+                    type="DECIMAL(128,32)"/>
+            <column name="pitch"
+                    type="DECIMAL(128,32)"/>
+            <column name="yaw"
+                    type="DECIMAL(128,32)"/>
+            <column name="created"
+                    type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated"
+                    type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seen"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="token"
+                    type="UUID"/>
+            <column name="destination_server_id"
+                    type="BIGINT"/>
+            <column name="server_id"
+                    type="BIGINT"/>
+        </createTable>
+
+        <createIndex indexName="idx_adhoc_user_state_region_id"
+                     tableName="adhoc_user_state">
+            <column name="region_id"/>
+        </createIndex>
+        <createIndex indexName="idx_adhoc_state_user_created"
+                     tableName="adhoc_user_state">
+            <column name="created"/>
+        </createIndex>
+        <createIndex indexName="idx_adhoc_user_state_seen"
+                     tableName="adhoc_user_state">
+            <column name="seen"/>
+        </createIndex>
+        <createIndex indexName="idx_adhoc_user_state_server_id"
+                     tableName="adhoc_user_state">
+            <column name="server_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="id"
+                                 baseTableName="adhoc_user_state"
+                                 constraintName="fk_adhocuserstate_on_adhocuser"
+                                 referencedColumnNames="id"
+                                 referencedTableName="adhoc_user"/>
+
+        <addForeignKeyConstraint baseColumnNames="server_id"
+                                 baseTableName="adhoc_user_state"
+                                 constraintName="fk_adhocuserstate_on_server"
+                                 referencedColumnNames="id"
+                                 referencedTableName="adhoc_user"/>
 
         <createSequence sequenceName="structure_id_sequence"
                         startValue="1"

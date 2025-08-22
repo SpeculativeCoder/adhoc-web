@@ -25,9 +25,22 @@ package adhoc.server;
 import adhoc.area.Area;
 import adhoc.pawn.Pawn;
 import adhoc.region.Region;
-import adhoc.user.User;
-import jakarta.persistence.*;
-import lombok.*;
+import adhoc.user.UserState;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Version;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -100,7 +113,7 @@ public class Server {
 
     @OneToMany(mappedBy = "server")
     @ToString.Exclude
-    private List<User> users;
+    private List<UserState> userStates;
 
     @OneToMany(mappedBy = "server")
     @ToString.Exclude

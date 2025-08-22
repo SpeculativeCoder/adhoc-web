@@ -29,6 +29,7 @@ import adhoc.user.User;
 import adhoc.user.UserFullDto;
 import adhoc.user.UserRepository;
 import adhoc.user.UserService;
+import adhoc.user.UserState;
 import adhoc.user.register.UserRegisterService;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -74,11 +75,11 @@ public class UserJoinService {
                     "Faction ID mismatch: %s != %s", user.getFaction().getId(), userJoinRequest.getFactionId());
 
             Preconditions.checkArgument(userJoinRequest.getToken() != null, "Token missing");
-            Verify.verifyNotNull(user.getToken(), "User has no token");
+            Verify.verifyNotNull(user.getState().getToken(), "User has no token");
 
             // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
-            if (!Objects.equals(user.getToken().toString(), userJoinRequest.getToken())) {
-                log.warn("Token {} mismatch {} for user {}", userJoinRequest.getToken(), user.getToken(), user);
+            if (!Objects.equals(user.getState().getToken().toString(), userJoinRequest.getToken())) {
+                log.warn("Token {} mismatch {} for user {}", userJoinRequest.getToken(), user.getState().getToken(), user);
                 throw new IllegalArgumentException("Token mismatch");
             }
 
@@ -86,15 +87,15 @@ public class UserJoinService {
             user = autoRegister(userJoinRequest.getHuman(), userJoinRequest.getFactionId());
         }
 
-        user.setRegion(server.getRegion());
-        user.setServer(server);
-        user.setDestinationServer(server);
+        user.getState().setRegion(server.getRegion());
+        user.getState().setServer(server);
+        user.getState().setDestinationServer(server);
         user.setLastJoin(LocalDateTime.now());
-        user.setSeen(user.getLastJoin());
+        user.getState().setSeen(user.getLastJoin());
 
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
                 .log("userJoin: userId={} userName={} userHuman={} factionId={} serverId={} regionId={} x={} y={} z={} pitch={} yaw={}",
-                        user.getId(), user.getName(), user.isHuman(), user.getFaction().getIndex(), server.getId(), server.getRegion().getId(), user.getX(), user.getY(), user.getZ(), user.getPitch(), user.getYaw());
+                        user.getId(), user.getName(), user.isHuman(), user.getFaction().getIndex(), server.getId(), server.getRegion().getId(), user.getState().getX(), user.getState().getY(), user.getState().getZ(), user.getState().getPitch(), user.getState().getYaw());
 
         return userService.toFullDto(user);
     }
@@ -107,12 +108,14 @@ public class UserJoinService {
         if (!human) {
             // bots should try to use existing bot account
             // TODO: avoid using seen (should use serverId)
-            user = userRepository.findFirstByHumanFalseAndFactionIdAndSeenBefore(
+            user = userRepository.findFirstByHumanFalseAndFactionIdAndStateSeenBefore(
                     factionId, LocalDateTime.now().minusMinutes(1)).orElse(null);
         }
 
         if (user == null) {
             user = new User();
+            user.setState(new UserState());
+            user.getState().setUser(user);
             user.setHuman(human);
             user.setFaction(factionRepository.getReferenceById(factionId));
 

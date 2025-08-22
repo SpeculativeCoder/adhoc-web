@@ -36,21 +36,21 @@ public class UserSeenService {
         log.trace("Managing seen users... now={} leaveUsersSeenBefore={}", now, leaveUsersSeenBefore);
 
         // manage users who we think are currently connected to a server
-        try (Stream<User> users = userRepository.streamForWriteByServerNotNull()) {
+        try (Stream<User> users = userRepository.streamForWriteByStateServerNotNull()) {
             users.forEach(user -> {
                 // users may be moving from one server to another so we are only interested after they have arrived at their desired server
-                if (user.getServer() == user.getDestinationServer()) {
+                if (user.getState().getServer() == user.getState().getDestinationServer()) {
 
                     //user.getPawns().stream()
                     //.filter(pawn -> pawn.getServer() == user.getServer())
                     //.max(Comparator.comparing(Pawn::getSeen));
 
                     // see if there is a pawn for the user
-                    pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getServer(), user)
+                    pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getState().getServer(), user)
                             .ifPresent(pawn -> updateUserForPawn(user, pawn, now));
                 }
 
-                if (user.getSeen() != null && user.getSeen().isBefore(leaveUsersSeenBefore)) {
+                if (user.getState().getSeen() != null && user.getState().getSeen().isBefore(leaveUsersSeenBefore)) {
                     leaveUser(user);
                 }
             });
@@ -58,13 +58,13 @@ public class UserSeenService {
     }
 
     private static void updateUserForPawn(User user, Pawn pawn, LocalDateTime now) {
-        user.setX(pawn.getX());
-        user.setY(pawn.getY());
-        user.setZ(pawn.getZ());
-        user.setPitch(pawn.getPitch());
-        user.setYaw(pawn.getYaw());
+        user.getState().setX(pawn.getX());
+        user.getState().setY(pawn.getY());
+        user.getState().setZ(pawn.getZ());
+        user.getState().setPitch(pawn.getPitch());
+        user.getState().setYaw(pawn.getYaw());
 
-        user.setSeen(now);
+        user.getState().setSeen(now);
     }
 
     private static void leaveUser(User user) {
@@ -75,9 +75,9 @@ public class UserSeenService {
                         user.getPassword() != null,
                         user.isHuman(),
                         user.getFaction().getIndex(),
-                        user.getServer().getId());
+                        user.getState().getServer().getId());
 
         // TODO: common path?
-        user.setServer(null);
+        user.getState().setServer(null);
     }
 }

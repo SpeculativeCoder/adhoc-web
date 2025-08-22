@@ -114,28 +114,28 @@ public class UserNavigateService {
             destinationServer = servers.get(ThreadLocalRandom.current().nextInt(servers.size()));
         }
 
-        Server oldDestinationServer = user.getDestinationServer();
+        Server oldDestinationServer = user.getState().getDestinationServer();
         Region oldRegion = oldDestinationServer == null ? null : oldDestinationServer.getRegion();
 
         // when moving servers, update the position to ensure they can spawn at the right location
         if (destinationServer != oldDestinationServer
                 && Objects.equals(destinationServer.getRegion(), oldRegion)) {
-            user.setX(request.getX());
-            user.setY(request.getY());
-            user.setZ(request.getZ());
-            user.setYaw(request.getYaw());
-            user.setPitch(request.getPitch());
+            user.getState().setX(request.getX());
+            user.getState().setY(request.getY());
+            user.getState().setZ(request.getZ());
+            user.getState().setYaw(request.getYaw());
+            user.getState().setPitch(request.getPitch());
         }
 
-        user.setDestinationServer(destinationServer);
+        user.getState().setDestinationServer(destinationServer);
         user.setNavigated(LocalDateTime.now());
 
         UserNavigateResponse response = new UserNavigateResponse(
-                user.getDestinationServer().getPublicIp(),
-                user.getDestinationServer().getPublicWebSocketPort(),
-                user.getDestinationServer().getWebSocketUrl(),
-                user.getDestinationServer().getRegion().getMapName(),
-                user.getX(), user.getY(), user.getZ(), user.getYaw(), user.getPitch());
+                user.getState().getDestinationServer().getPublicIp(),
+                user.getState().getDestinationServer().getPublicWebSocketPort(),
+                user.getState().getDestinationServer().getWebSocketUrl(),
+                user.getState().getDestinationServer().getRegion().getMapName(),
+                user.getState().getX(), user.getState().getY(), user.getState().getZ(), user.getState().getYaw(), user.getState().getPitch());
 
         log.debug("userNavigate: response={}", response);
 

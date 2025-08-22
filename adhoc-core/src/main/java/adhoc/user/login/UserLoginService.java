@@ -35,9 +35,9 @@ public class UserLoginService {
         UUID newToken = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        user.setToken(newToken);
+        user.getState().setToken(newToken);
         user.setLastLogin(now);
 
-        log.debug("Authentication success: id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getToken());
+        log.debug("Authentication success: id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getState().getToken());
     }
 }

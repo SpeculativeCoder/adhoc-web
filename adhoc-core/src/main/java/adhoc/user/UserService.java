@@ -62,10 +62,10 @@ public class UserService {
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
-                user.getRegion() == null ? null : user.getRegion().getId(),
-                user.getSeen(),
-                user.getDestinationServer() == null ? null : user.getDestinationServer().getId(),
-                user.getServer() == null ? null : user.getServer().getId());
+                user.getState().getRegion() == null ? null : user.getState().getRegion().getId(),
+                user.getState().getSeen(),
+                user.getState().getDestinationServer() == null ? null : user.getState().getDestinationServer().getId(),
+                user.getState().getServer() == null ? null : user.getState().getServer().getId());
     }
 
     public UserFullDto toFullDto(User user) {
@@ -76,21 +76,21 @@ public class UserService {
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
-                user.getRegion() == null ? null : user.getRegion().getId(),
-                user.getX(),
-                user.getY(),
-                user.getZ(),
-                user.getPitch(),
-                user.getYaw(),
+                user.getState().getRegion() == null ? null : user.getState().getRegion().getId(),
+                user.getState().getX(),
+                user.getState().getY(),
+                user.getState().getZ(),
+                user.getState().getPitch(),
+                user.getState().getYaw(),
                 user.getCreated(),
                 user.getUpdated(),
                 user.getLastLogin(),
                 user.getNavigated(),
                 user.getLastJoin(),
-                user.getSeen(),
+                user.getState().getSeen(),
                 user.getRoles().stream().map(UserRole::name).collect(Collectors.toList()),
-                user.getToken().toString(),
-                user.getDestinationServer() == null ? null : user.getDestinationServer().getId(),
-                user.getServer() == null ? null : user.getServer().getId());
+                user.getState().getToken().toString(),
+                user.getState().getDestinationServer() == null ? null : user.getState().getDestinationServer().getId(),
+                user.getState().getServer() == null ? null : user.getState().getServer().getId());
     }
 }

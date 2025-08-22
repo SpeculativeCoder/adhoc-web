@@ -46,7 +46,7 @@ public class ServerPurgeService {
     public void purgeOldServers() {
         LocalDateTime seenBefore = LocalDateTime.now().minus(managerProperties.getPurgeOldServersSeenBefore());
 
-        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
+        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUserStatesEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
             oldServers.forEach(oldServer -> {
                 log.debug("Deleting old server {}", oldServer.getId());
 

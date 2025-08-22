@@ -41,5 +41,5 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
 
     Stream<Server> streamByRegionAndIdNotIn(Region region, Collection<Long> ids);
 
-    Stream<Server> streamByAreasEmptyAndUsersEmptyAndPawnsEmptyAndSeenBefore(LocalDateTime seenBefore);
+    Stream<Server> streamByAreasEmptyAndUserStatesEmptyAndPawnsEmptyAndSeenBefore(LocalDateTime seenBefore);
 }

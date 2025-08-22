@@ -37,7 +37,11 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Consults the {@link adhoc.user.User} table for user info as needed by Spring Security.
@@ -79,7 +83,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         User user = userRepository.findByNameOrEmail(username, username).orElseThrow(() ->
                 new UsernameNotFoundException("Failed to find user with name or email: " + username));
 
-        log.debug("loadUserByUsername: user={} user.token={}", user, user.getToken());
+        log.debug("loadUserByUsername: user={} user.token={}", user, user.getState().getToken());
 
         Collection<GrantedAuthority> authorities = new LinkedHashSet<>(user.getAuthorities());
         //if (coreProperties.getFeatureFlags().contains("development")) {

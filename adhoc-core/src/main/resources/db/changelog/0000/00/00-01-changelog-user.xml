@@ -63,18 +63,6 @@
                     type="DECIMAL(128,32)">
                 <constraints nullable="false"/>
             </column>
-            <column name="region_id"
-                    type="BIGINT"/>
-            <column name="x"
-                    type="DECIMAL(128,32)"/>
-            <column name="y"
-                    type="DECIMAL(128,32)"/>
-            <column name="z"
-                    type="DECIMAL(128,32)"/>
-            <column name="pitch"
-                    type="DECIMAL(128,32)"/>
-            <column name="yaw"
-                    type="DECIMAL(128,32)"/>
             <column name="created"
                     type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
@@ -89,17 +77,9 @@
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="last_join"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="seen"
-                    type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="token"
-                    type="UUID"/>
-            <column name="destination_server_id"
-                    type="BIGINT"/>
-            <column name="server_id"
-                    type="BIGINT"/>
         </createTable>
 
-        <!-- NOTE: deliberately no foreign keys for adhoc_user on faction and server.
+        <!-- NOTE: deliberately no foreign keys for adhoc_user on faction -
         this is so we can nuke all tables except adhoc_user during development process (for now) -->
 
         <createIndex indexName="idx_adhoc_user_name"
@@ -114,21 +94,9 @@
                      tableName="adhoc_user">
             <column name="faction_id"/>
         </createIndex>
-        <createIndex indexName="idx_adhoc_user_region_id"
-                     tableName="adhoc_user">
-            <column name="region_id"/>
-        </createIndex>
         <createIndex indexName="idx_adhoc_user_created"
                      tableName="adhoc_user">
             <column name="created"/>
-        </createIndex>
-        <createIndex indexName="idx_adhoc_user_seen"
-                     tableName="adhoc_user">
-            <column name="seen"/>
-        </createIndex>
-        <createIndex indexName="idx_adhoc_user_server_id"
-                     tableName="adhoc_user">
-            <column name="server_id"/>
         </createIndex>
 
         <createTable tableName="adhoc_user_roles">

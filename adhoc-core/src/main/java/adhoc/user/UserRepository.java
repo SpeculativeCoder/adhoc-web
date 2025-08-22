@@ -23,9 +23,7 @@
 package adhoc.user;
 
 import adhoc.server.Server;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
@@ -39,20 +37,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByNameOrEmail(String name, String email);
 
-    Optional<User> findFirstByHumanFalseAndFactionIdAndSeenBefore(Long factionId, LocalDateTime seenBefore);
+    Optional<User> findFirstByHumanFalseAndFactionIdAndStateSeenBefore(Long factionId, LocalDateTime seenBefore);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Stream<User> streamForWriteByServerNotNull();
+    Stream<User> streamForWriteByStateServerNotNull();
 
-    @Query("select u.id from User u where u.created < ?1 and u.seen is null and u.password is null and u.pawns is empty")
+    @Query("select u.id from User u where u.created < ?1 and u.state.seen is null and u.password is null and u.pawns is empty")
     List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
 
-    @Query("select u.id from User u where u.seen < ?1 and u.password is null and u.pawns is empty")
-    List<Long> findIdsBySeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime seenBefore);
+    @Query("select u.id from User u where u.state.seen < ?1 and u.password is null and u.pawns is empty")
+    List<Long> findIdsByStateSeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime seenBefore);
 
     @Query("select cast(count(1) as boolean) " +
             "from User u " +
-            "where u.human and ((u.destinationServer = ?1 and u.navigated > ?2) or (u.server = ?1))")
+            "where u.human and ((u.state.destinationServer = ?1 and u.navigated > ?2) or (u.state.server = ?1))")
     boolean existsByHumanTrueAnd_DestinationServerAndNavigatedAfterOrServer_(Server server, LocalDateTime navigatedAfter);
 
     @Modifying
@@ -63,8 +60,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("update User u " +
             "set u.version = u.version + 1, " +
             "    u.score = u.score + (case u.human when true then ?1 else ?2 end) " +
-            "where u.faction.id = ?3 and u.seen > ?4")
-    void updateScoreAddByFactionIdAndSeenAfter(BigDecimal scoreToAddForHumans, BigDecimal scoreToAddForNonHumans, Long factionId, LocalDateTime seenAfter);
+            "where u.faction.id = ?3 and (select us.seen from u.state us) > ?4")
+    void updateScoreAddByFactionIdAndStateSeenAfter(BigDecimal scoreToAddForHumans, BigDecimal scoreToAddForNonHumans, Long factionId, LocalDateTime seenAfter);
 
     @Modifying
     @Query("update User u set u.version = u.version + 1, u.score = u.score * ?1")

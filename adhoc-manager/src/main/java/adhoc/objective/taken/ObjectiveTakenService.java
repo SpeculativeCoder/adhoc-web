@@ -65,7 +65,7 @@ public class ObjectiveTakenService {
         BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.1);
         LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
 
-        userRepository.updateScoreAddByFactionIdAndSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
+        userRepository.updateScoreAddByFactionIdAndStateSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
 
         // TODO
         return new ObjectiveTakenEvent(objective.getId(), objective.getVersion(), faction.getId(), faction.getVersion() + 1);

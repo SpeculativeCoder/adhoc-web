@@ -23,6 +23,7 @@
 package adhoc.user.purge;
 
 import adhoc.user.UserRepository;
+import adhoc.user.UserStateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -43,6 +44,7 @@ import java.util.TreeSet;
 public class UserPurgeService {
 
     private final UserRepository userRepository;
+    private final UserStateRepository userStateRepository;
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
@@ -58,6 +60,7 @@ public class UserPurgeService {
         if (!oldUserIds.isEmpty()) {
             log.debug("Purging old users: {}", oldUserIds);
 
+            userStateRepository.deleteAllByIdInBatch(oldUserIds);
             userRepository.deleteAllByIdInBatch(oldUserIds);
         }
     }

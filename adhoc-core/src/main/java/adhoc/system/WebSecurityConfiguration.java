@@ -57,7 +57,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 @Slf4j
 @RequiredArgsConstructor
-@SuppressWarnings("LombokGetterMayBeUsed")
 public class WebSecurityConfiguration<S extends Session> {
 
     @Getter

@@ -32,8 +32,7 @@ public class AdhocMessageExceptionHandler {
 
     @MessageExceptionHandler
     public void handleThrowable(Throwable exception) {
-        log.debug("handleThrowable", exception);
         // TODO
-        log.warn("Message failure: exception={}", exception.getClass().getSimpleName(), exception);
+        log.warn("Message failure", exception);
     }
 }

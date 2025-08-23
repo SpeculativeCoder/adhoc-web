@@ -22,10 +22,14 @@
 
 package adhoc.system.auth;
 
+import adhoc.user.auth.UserAuthenticateService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -37,16 +41,17 @@ import java.io.IOException;
 @Slf4j
 public class AdhocAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private UserAuthenticateService userAuthenticateService;
+
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
         log.debug("onAuthenticationFailure: method={} uri={}",
                 request.getMethod(), request.getRequestURI(), exception);
 
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
+        userAuthenticateService.onAuthenticationFailure(exception);
 
-        // TODO
-        log.info("Authentication failure: method={} uri={} exception={}",
-                request.getMethod(), request.getRequestURI(), exception.getClass().getSimpleName(), exception);
+        response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
     }
 }

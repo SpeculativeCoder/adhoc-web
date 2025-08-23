@@ -22,10 +22,11 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
 
     @Override
     public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {
-        ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
-        log.debug("resolveException: method={} uri={} status={}",
-                request.getMethod(), request.getRequestURI(), response.getStatus(), exception);
+        log.debug("resolveException: method={} uri={}",
+                request.getMethod(), request.getRequestURI(), exception);
+
+        ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
         boolean typical = exception instanceof NoResourceFoundException; // invalid static resource attempts
         // exception instanceof EntityNotFoundException // row not found in database
@@ -35,7 +36,6 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
                 || request.getRequestURI().startsWith("/ws/"))) {
             level = Level.DEBUG;
         }
-
         LoggingEventBuilder logEvent = log.atLevel(level);
         if (!typical) {
             logEvent = logEvent.setCause(exception);

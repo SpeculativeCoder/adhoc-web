@@ -94,6 +94,15 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
             }
         }
 
+        if ("org.hibernate.SQL".equals(loggerName)) {
+
+            if (message.startsWith("select")
+                    || message.startsWith("/* select")
+                    || message.startsWith("/* <criteria> */ select")) {
+                return FilterReply.DENY;
+            }
+        }
+
         return FilterReply.NEUTRAL;
     }
 }

@@ -44,10 +44,11 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
         if (exception != null) {
             // TODO
             log.warn("Stomp failure", exception);
-        } else {
-            // TODO
-            log.warn("Stomp failure");
         }
+        //else {
+        //    // TODO
+        //    log.debug("Stomp failure");
+        //}
 
         return message;
     }

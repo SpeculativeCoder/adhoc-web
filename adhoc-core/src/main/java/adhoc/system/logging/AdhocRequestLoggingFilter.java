@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
@@ -53,8 +52,8 @@ import java.util.Optional;
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
-    private static final Logger userLogger = LoggerFactory.getLogger(AdhocRequestLoggingFilter.class.getName() + ".user");
-    private static final Logger serverLogger = LoggerFactory.getLogger(AdhocRequestLoggingFilter.class.getName() + ".server");
+    private static final Logger userLogger = LoggerFactory.getLogger(AdhocRequestLoggingFilter.class.getName() + ".USER");
+    private static final Logger serverLogger = LoggerFactory.getLogger(AdhocRequestLoggingFilter.class.getName() + ".SERVER");
 
     @Value("${adhoc.server.basic-auth.username:#{null}}")
     private Optional<String> serverBasicAuthUsername;
@@ -91,8 +90,12 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
         ContentCachingRequestWrapper requestWrapper = null;
         ContentCachingResponseWrapper responseWrapper = null;
 
+        boolean uriApi = false;
+
         if (request.getRequestURI().startsWith("/adhoc_api/")
                 || request.getRequestURI().startsWith("/adhoc_ws/")) {
+
+            uriApi = true;
 
             requestWrapper = new ContentCachingRequestWrapper(request, getMaxPayloadLength());
             responseWrapper = new ContentCachingResponseWrapper(response);
@@ -113,18 +116,10 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
             //&& response.getStatus() != HttpStatus.NOT_FOUND.value() // 404
             //&& response.getStatus() != HttpStatus.METHOD_NOT_ALLOWED.value() // 405
 
-            boolean statusServerError;
-            boolean statusBadRequest;
-            try {
-                HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
-
-                statusServerError = httpStatus.is5xxServerError();
-                statusBadRequest = httpStatus == HttpStatus.BAD_REQUEST;
-
-            } catch (IllegalArgumentException e) {
-                statusServerError = true;
-                statusBadRequest = true;
-            }
+            boolean statusServerError = (response.getStatus() / 100) == 5;
+            boolean statusBadRequest = response.getStatus() == 400;
+            boolean statusSuccess = (response.getStatus() / 100) == 2;
+            boolean statusInfo = (response.getStatus() / 100) == 1;
 
             boolean methodGet = "GET".equals(request.getMethod());
 
@@ -139,10 +134,13 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
             LoggingEventBuilder builder = null;
 
-            if (logger.isWarnEnabled() && statusServerError) {
+            if (logger.isErrorEnabled() && statusServerError && uriApi) {
+                builder = logger.atError();
+
+            } else if (logger.isWarnEnabled() && statusBadRequest && uriApi) {
                 builder = logger.atWarn();
 
-            } else if (logger.isInfoEnabled() && statusBadRequest) {
+            } else if (logger.isInfoEnabled() && !statusSuccess && !statusInfo && uriApi) {
                 builder = logger.atInfo();
 
             } else if (logger.isDebugEnabled() && !methodGet) {

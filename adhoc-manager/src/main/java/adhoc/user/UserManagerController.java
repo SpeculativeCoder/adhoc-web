@@ -45,10 +45,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.Objects;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/adhoc_api")
 @Slf4j
 @RequiredArgsConstructor
 public class UserManagerController {

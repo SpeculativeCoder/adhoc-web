@@ -36,7 +36,7 @@ export class RegionService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
-    this.regionsUrl = `${baseUrl}/api/regions`;
+    this.regionsUrl = `${baseUrl}/adhoc_api/regions`;
   }
 
   getRegions(paging: Paging = new Paging()): Observable<Page<Region>> {

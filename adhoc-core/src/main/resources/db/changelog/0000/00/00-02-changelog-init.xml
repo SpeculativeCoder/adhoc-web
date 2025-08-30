@@ -28,8 +28,9 @@
 
     <changeSet id="0000000000000-2" author="adhoc" runOnChange="true">
 
-        <!-- TODO: until the schema / architecture settles down we are nuking all tables/data (except user information) on every run -->
-        <sql dbms="postgresql">
+        <!-- TODO: until the schema / architecture settles down we are nuking all tables/data (except user information) on every change -->
+        <!-- dbms="postgresql" -->
+        <sql>
             drop table if exists message;
 
             drop table if exists server_task;

@@ -22,8 +22,7 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {UserRegisterRequest} from './user-register-request';
-import {mergeMap, Observable, of} from 'rxjs';
-import {User} from '../user';
+import {mergeMap, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current-user.service';
 import {CsrfService} from '../../system/csrf.service';
@@ -40,7 +39,7 @@ export class RegisterService {
               private currentUserService: CurrentUserService,
               private csrfService: CsrfService) {
 
-    this.usersUrl = `${baseUrl}/api/users`;
+    this.usersUrl = `${baseUrl}/adhoc_api/users`;
   }
 
   register(userRegisterRequest: UserRegisterRequest) {
@@ -49,18 +48,18 @@ export class RegisterService {
         'remember-me': userRegisterRequest.rememberMe || false
       }
     }).pipe(
-      mergeMap(user => {
-        this.csrfService.clearCsrf();
-        return this.currentUserService.refreshCurrentUser();
-      }));
+        mergeMap(user => {
+          this.csrfService.clearCsrf();
+          return this.currentUserService.refreshCurrentUser();
+        }));
   }
 
   getCurrentUserOrRegister() {
     return this.currentUserService.getCurrentUser().pipe(
-      mergeMap(currentUser => {
-        return currentUser ? of(currentUser) : this.register({
-          human: true
-        });
-      }));
+        mergeMap(currentUser => {
+          return currentUser ? of(currentUser) : this.register({
+            human: true
+          });
+        }));
   }
 }

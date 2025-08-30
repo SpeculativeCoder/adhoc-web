@@ -74,7 +74,7 @@ public class AdhocManagerApplicationTest {
         UserRegisterRequest request = UserRegisterRequest.builder()
                 .build();
 
-        MvcTestResult result = mvc.post().uri("/api/users/register")
+        MvcTestResult result = mvc.post().uri("/adhoc_api/users/register")
                 .contentType(MediaType.APPLICATION_JSON).with(csrf())
                 .content(objectMapper.writeValueAsBytes(request))
                 .exchange();

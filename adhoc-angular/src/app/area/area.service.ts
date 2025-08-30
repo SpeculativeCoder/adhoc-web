@@ -37,7 +37,7 @@ export class AreaService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
-    this.areasUrl = `${baseUrl}/api/areas`;
+    this.areasUrl = `${baseUrl}/adhoc_api/areas`;
   }
 
   getAreas(paging: Paging = new Paging()): Observable<Page<Area>> {

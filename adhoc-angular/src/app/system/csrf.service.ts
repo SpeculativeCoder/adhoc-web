@@ -37,7 +37,7 @@ export class CsrfService {
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
 
-    this.csrfUrl = `${baseUrl}/api/csrf`;
+    this.csrfUrl = `${baseUrl}/adhoc_api/csrf`;
   }
 
   getCsrf$() {
@@ -46,10 +46,10 @@ export class CsrfService {
 
   refreshCsrf$() {
     return this.http.get<Csrf>(this.csrfUrl).pipe(
-      mergeMap(csrf => {
-        this.csrf$.next(csrf);
-        return this.csrf$;
-      }));
+        mergeMap(csrf => {
+          this.csrf$.next(csrf);
+          return this.csrf$;
+        }));
   }
 
   getCsrf() {

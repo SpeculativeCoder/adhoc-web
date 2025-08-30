@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Allows access to CSRF token for the Angular app. */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/adhoc_api")
 @RequiredArgsConstructor
 public class CsrfController {
 

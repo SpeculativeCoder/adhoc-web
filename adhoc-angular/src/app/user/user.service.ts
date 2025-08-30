@@ -41,7 +41,7 @@ export class UserService {
               private currentUserService: CurrentUserService,
               private csrfService: CsrfService) {
 
-    this.usersUrl = `${baseUrl}/api/users`;
+    this.usersUrl = `${baseUrl}/adhoc_api/users`;
   }
 
   getUsers(paging: Paging = new Paging()): Observable<Page<User>> {

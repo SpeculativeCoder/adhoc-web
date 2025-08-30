@@ -23,7 +23,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {User} from './user';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, mergeMap, Observable, take} from 'rxjs';
+import {BehaviorSubject, mergeMap, take} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +37,7 @@ export class CurrentUserService {
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
 
-    this.currentUserUrl = `${baseUrl}/api/users/current`;
+    this.currentUserUrl = `${baseUrl}/adhoc_api/users/current`;
   }
 
   getCurrentUser$() {
@@ -46,10 +46,10 @@ export class CurrentUserService {
 
   refreshCurrentUser$() {
     return this.http.get<User>(this.currentUserUrl).pipe(
-      mergeMap(currentUser => {
-        this.currentUser$.next(currentUser);
-        return this.currentUser$;
-      }));
+        mergeMap(currentUser => {
+          this.currentUser$.next(currentUser);
+          return this.currentUser$;
+        }));
   }
 
   getCurrentUser() {

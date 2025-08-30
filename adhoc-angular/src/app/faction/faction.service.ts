@@ -39,7 +39,7 @@ export class FactionService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
-    this.factionsUrl = `${baseUrl}/api/factions`;
+    this.factionsUrl = `${baseUrl}/adhoc_api/factions`;
   }
 
   getFactions(paging: Paging = new Paging()): Observable<Page<Faction>> {
@@ -74,10 +74,10 @@ export class FactionService {
 
   refreshCachedFactions(paging: Paging = new Paging()): Observable<Faction[]> {
     return this.http.get<Page<Faction>>(this.factionsUrl, {params: paging.toParams()}).pipe(
-      map(factions => {
-        this.cachedFactions ? this.cachedFactions.length = 0 : this.cachedFactions = [];
-        this.cachedFactions.push(...factions.content!);
-        return this.cachedFactions;
-      }));
+        map(factions => {
+          this.cachedFactions ? this.cachedFactions.length = 0 : this.cachedFactions = [];
+          this.cachedFactions.push(...factions.content!);
+          return this.cachedFactions;
+        }));
   }
 }

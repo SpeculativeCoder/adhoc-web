@@ -36,7 +36,7 @@ export class TaskService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
-    this.tasksUrl = `${baseUrl}/api/tasks`;
+    this.tasksUrl = `${baseUrl}/adhoc_api/tasks`;
   }
 
   getTasks(paging: Paging = new Paging()): Observable<Page<Task>> {

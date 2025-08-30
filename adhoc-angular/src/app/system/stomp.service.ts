@@ -47,7 +47,7 @@ export class StompService {
     // });
 
     this.csrfService.getCsrf().subscribe(csrf => {
-      this.client = webstomp.over(new SockJS(window.location.protocol + '//' + location.host + '/ws/stomp/user_sockjs', {}), {
+      this.client = webstomp.over(new SockJS(window.location.protocol + '//' + location.host + '/adhoc_ws/stomp/user_sockjs', {}), {
         debug: false,
       });
       let headers: { [key: string]: string } = {}

@@ -62,10 +62,10 @@ public class WebSocketConfiguration {
             @Override
             public void configureStompEndpoints(StompEndpointRegistry registry) {
 
-                registry.addEndpoint("/ws/stomp/server")
+                registry.addEndpoint("/adhoc_ws/stomp/server")
                         .addInterceptors(new HttpSessionHandshakeInterceptor());
 
-                registry.addEndpoint("/ws/stomp/user_sockjs")
+                registry.addEndpoint("/adhoc_ws/stomp/user_sockjs")
                         .addInterceptors(new HttpSessionHandshakeInterceptor())
                         .setAllowedOriginPatterns(
                                 "https://" + coreProperties.getAdhocDomain(),

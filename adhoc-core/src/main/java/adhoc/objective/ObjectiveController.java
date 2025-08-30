@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/adhoc_api")
 @Slf4j
 @RequiredArgsConstructor
 public class ObjectiveController {

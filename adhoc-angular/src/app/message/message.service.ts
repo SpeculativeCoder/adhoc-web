@@ -36,7 +36,7 @@ export class MessageService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
-    this.messagesUrl = `${baseUrl}/api/messages`;
+    this.messagesUrl = `${baseUrl}/adhoc_api/messages`;
   }
 
   getMessages(paging: Paging = new Paging()): Observable<Page<Message>> {

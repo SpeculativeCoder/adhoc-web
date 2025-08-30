@@ -36,7 +36,7 @@ export class ServerService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
-    this.serversUrl = `${baseUrl}/api/servers`;
+    this.serversUrl = `${baseUrl}/adhoc_api/servers`;
   }
 
   getServers(paging: Paging = new Paging()): Observable<Page<Server>> {

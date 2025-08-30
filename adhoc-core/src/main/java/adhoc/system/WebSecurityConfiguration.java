@@ -77,17 +77,17 @@ public class WebSecurityConfiguration<S extends Session> {
         return http
                 .authorizeHttpRequests(auth -> auth
                         // TODO: ideally have a separate one for anonymous?
-                        .requestMatchers("/ws/stomp/user_sockjs/**").permitAll()
-                        //.requestMatchers("/ws/stomp/user/**").permitAll()
-                        .requestMatchers("/ws/stomp/server/**").hasAnyRole("SERVER")
-                        .requestMatchers("/ws/stomp/**").denyAll()
+                        .requestMatchers("/adhoc_ws/stomp/user_sockjs/**").permitAll()
+                        //.requestMatchers("/adhoc_ws/stomp/user/**").permitAll()
+                        .requestMatchers("/adhoc_ws/stomp/server/**").hasAnyRole("SERVER")
+                        .requestMatchers("/adhoc_ws/stomp/**").denyAll()
 
                         .requestMatchers("/HTML5Client/**").hasAnyRole("USER")
 
-                        .requestMatchers("/api/users/login").permitAll()
-                        .requestMatchers("/api/users/register").permitAll()
-                        .requestMatchers("/api/users/current").permitAll()
-                        .requestMatchers("/api/**").permitAll() // TODO: some should be for logged in only
+                        .requestMatchers("/adhoc_api/users/login").permitAll()
+                        .requestMatchers("/adhoc_api/users/register").permitAll()
+                        .requestMatchers("/adhoc_api/users/current").permitAll()
+                        .requestMatchers("/adhoc_api/**").permitAll() // TODO: some should be for logged in only
 
                         .requestMatchers("/csrf").permitAll()
 
@@ -107,7 +107,7 @@ public class WebSecurityConfiguration<S extends Session> {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfTokenRepository)
                         // ignore CSRF for sockjs as protected by Stomp headers
-                        .ignoringRequestMatchers("/ws/stomp/user_sockjs/**")
+                        .ignoringRequestMatchers("/adhoc_ws/stomp/user_sockjs/**")
                         // we don't want CSRF on requests from Unreal server
                         .ignoringRequestMatchers(adhocServerBasicAuthRequestMatcher))
 
@@ -124,7 +124,7 @@ public class WebSecurityConfiguration<S extends Session> {
                 // allow form login - used by users
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .loginProcessingUrl("/api/login")
+                        .loginProcessingUrl("/adhoc_api/login")
                         .failureHandler(adhocAuthenticationFailureHandler)
                         .successHandler(adhocAuthenticationSuccessHandler))
 

@@ -44,10 +44,10 @@ export class ObjectiveService {
               private http: HttpClient,
               private stomp: StompService,
               private factionService: FactionService) {
-    this.objectivesUrl = `${baseUrl}/api/objectives`;
+    this.objectivesUrl = `${baseUrl}/adhoc_api/objectives`;
     this.stomp
-      .observeEvent('ObjectiveTaken')
-      .subscribe((event: any) => this.handleObjectiveTaken(event.objectiveId, event.factionId));
+        .observeEvent('ObjectiveTaken')
+        .subscribe((event: any) => this.handleObjectiveTaken(event.objectiveId, event.factionId));
   }
 
   getObjectives(paging: Paging = new Paging()): Observable<Page<Objective>> {
@@ -71,11 +71,11 @@ export class ObjectiveService {
 
   refreshCachedObjectives(paging: Paging = new Paging()): Observable<Objective[]> {
     return this.http.get<Page<Objective>>(this.objectivesUrl, {params: paging.toParams()}).pipe(
-      map(objectives => {
-        this.cachedObjectives ? this.cachedObjectives.length = 0 : this.cachedObjectives = [];
-        this.cachedObjectives.push(...objectives.content!);
-        return this.cachedObjectives;
-      }));
+        map(objectives => {
+          this.cachedObjectives ? this.cachedObjectives.length = 0 : this.cachedObjectives = [];
+          this.cachedObjectives.push(...objectives.content!);
+          return this.cachedObjectives;
+        }));
   }
 
   objectiveTaken(objective: Objective, faction: Faction) {

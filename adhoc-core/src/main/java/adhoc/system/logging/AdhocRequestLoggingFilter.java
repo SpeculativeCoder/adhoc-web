@@ -91,8 +91,8 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
         ContentCachingRequestWrapper requestWrapper = null;
         ContentCachingResponseWrapper responseWrapper = null;
 
-        if (request.getRequestURI().startsWith("/api/")
-                || request.getRequestURI().startsWith("/ws/")) {
+        if (request.getRequestURI().startsWith("/adhoc_api/")
+                || request.getRequestURI().startsWith("/adhoc_ws/")) {
 
             requestWrapper = new ContentCachingRequestWrapper(request, getMaxPayloadLength());
             responseWrapper = new ContentCachingResponseWrapper(response);
@@ -204,8 +204,8 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
         // TODO
 
         boolean methodPost = "POST".equals(request.getMethod());
-        boolean uriRegister = "/api/users/register".equals(request.getRequestURI());
-        boolean uriLogin = "/api/login".equals(request.getRequestURI());
+        boolean uriRegister = "/adhoc_api/users/register".equals(request.getRequestURI());
+        boolean uriLogin = "/adhoc_api/login".equals(request.getRequestURI());
 
         return methodPost && (uriRegister || uriLogin);
     }

@@ -38,7 +38,7 @@ export class LoginService {
               private currentUserService: CurrentUserService,
               private csrfService: CsrfService) {
 
-    this.loginUrl = `${baseUrl}/api/login`;
+    this.loginUrl = `${baseUrl}/adhoc_api/login`;
   }
 
   login(usernameOrEmail: string, password: string, rememberMe: boolean) {
@@ -53,9 +53,9 @@ export class LoginService {
         'remember-me': rememberMe
       }
     }).pipe(
-      mergeMap(_ => {
-        this.csrfService.clearCsrf();
-        return this.currentUserService.refreshCurrentUser();
-      }));
+        mergeMap(_ => {
+          this.csrfService.clearCsrf();
+          return this.currentUserService.refreshCurrentUser();
+        }));
   }
 }

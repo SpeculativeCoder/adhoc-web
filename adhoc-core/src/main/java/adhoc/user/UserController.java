@@ -48,7 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/adhoc_api")
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
@@ -88,7 +88,7 @@ public class UserController {
 
         UserFullDto response = userRegisterService.userRegister(userRegisterRequest);
 
-        return ResponseEntity.created(URI.create("/api/users/current")).body(response);
+        return ResponseEntity.created(URI.create("/adhoc_api/users/current")).body(response);
     }
 
     @PostMapping("/users/current/navigate")

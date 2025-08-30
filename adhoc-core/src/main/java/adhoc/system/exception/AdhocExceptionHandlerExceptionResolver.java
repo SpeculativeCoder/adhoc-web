@@ -32,8 +32,8 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
         // exception instanceof EntityNotFoundException // row not found in database
 
         Level level = Level.INFO;
-        if (typical && !(request.getRequestURI().startsWith("/api/")
-                || request.getRequestURI().startsWith("/ws/"))) {
+        if (typical && !(request.getRequestURI().startsWith("/adhoc_api/")
+                || request.getRequestURI().startsWith("/adhoc_ws/"))) {
             level = Level.DEBUG;
         }
         LoggingEventBuilder logEvent = log.atLevel(level);

@@ -23,7 +23,7 @@
 const PROXY_CONFIG = [
   {
     context: [
-      "/api",
+      "/adhoc_api",
       "/HTML5Client",
       "/fonts",
     ],
@@ -32,7 +32,7 @@ const PROXY_CONFIG = [
   },
   {
     context: [
-      "/ws",
+      "/adhoc_ws",
     ],
     target: "ws://localhost:80",
     ws: true,

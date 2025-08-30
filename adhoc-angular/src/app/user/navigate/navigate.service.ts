@@ -36,7 +36,7 @@ export class NavigateService {
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
 
-    this.currentUserUrl = `${baseUrl}/api/users/current`;
+    this.currentUserUrl = `${baseUrl}/adhoc_api/users/current`;
   }
 
   navigate(serverId?: number): Observable<UserNavigateResponse> {

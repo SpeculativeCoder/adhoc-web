@@ -37,7 +37,7 @@ export class PawnService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
-    this.pawnsUrl = `${baseUrl}/api/pawns`;
+    this.pawnsUrl = `${baseUrl}/adhoc_api/pawns`;
   }
 
   getPawns(paging: Paging = new Paging()): Observable<Page<Pawn>> {

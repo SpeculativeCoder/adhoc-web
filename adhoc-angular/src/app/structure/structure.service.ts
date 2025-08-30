@@ -36,7 +36,7 @@ export class StructureService {
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
-    this.structuresUrl = `${baseUrl}/api/structures`;
+    this.structuresUrl = `${baseUrl}/adhoc_api/structures`;
   }
 
   getStructures(paging: Paging = new Paging()): Observable<Page<Structure>> {

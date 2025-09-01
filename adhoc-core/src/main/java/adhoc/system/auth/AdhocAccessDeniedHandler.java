@@ -47,19 +47,17 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
         log.debug("handle: method={} uri={}",
                 request.getMethod(), request.getRequestURI(), exception);
 
-        boolean typical = exception instanceof MissingCsrfTokenException
+        boolean exceptionKnown = exception instanceof MissingCsrfTokenException
                 || exception instanceof InvalidCsrfTokenException;
 
-        Level level = Level.INFO;
-        if (typical && !(request.getRequestURI().startsWith("/adhoc_api/")
-                || request.getRequestURI().startsWith("/adhoc_ws/"))) {
-            level = Level.DEBUG;
-        }
-        LoggingEventBuilder logEvent = log.atLevel(level);
-        if (!typical) {
+        boolean uriApi = request.getRequestURI().startsWith("/adhoc_api/")
+                || request.getRequestURI().startsWith("/adhoc_ws/");
+
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG));
+        if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Access denied: method={} uri={} exception={}",
+        logEvent.log("Access denied. method={} uri={} exception={}",
                 request.getMethod(), request.getRequestURI(), exception.getClass().getSimpleName());
 
         response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());

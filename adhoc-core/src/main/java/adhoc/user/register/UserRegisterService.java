@@ -106,7 +106,7 @@ public class UserRegisterService {
         if (user.getName() != null || user.getEmail() != null) {
             Optional<User> existingUser = userRepository.findByNameOrEmail(user.getName(), user.getEmail());
             if (existingUser.isPresent()) {
-                log.warn("User name or email already in use: name={} email={}", user.getName(), user.getEmail());
+                log.warn("User name or email already in use. name={} email={}", user.getName(), user.getEmail());
                 throw new IllegalArgumentException("User name or email already in use");
             }
         }
@@ -128,7 +128,7 @@ public class UserRegisterService {
         user = userRepository.save(user);
 
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
-                .log("User registered: id={} name={} password?={} human={} factionIndex={} remoteAddr={} userAgent={}",
+                .log("User registered. id={} name={} password?={} human={} factionIndex={} remoteAddr={} userAgent={}",
                         user.getId(),
                         user.getName(),
                         user.getPassword() != null,

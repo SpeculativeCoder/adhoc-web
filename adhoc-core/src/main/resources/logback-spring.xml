@@ -31,7 +31,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
         <encoder>
-            <pattern>%color(%-5level){} %color(%specialChars(%mdc)){green} %color([%thread]){blue} %color(%logger){cyan}%color(:){} %color(%specialChars(%message)){}%n%color(%specialCharsThrowable)){}
+            <pattern>%color(%-5level){} %color(%specialChars(%mdc)){green} %color([%thread]){blue} %color(%logger{1}){cyan}%color(:){} %color(%specialChars(%message)){}%n%color(%specialCharsThrowable)){}
             </pattern>
             <charset>UTF-8</charset>
         </encoder>

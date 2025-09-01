@@ -51,7 +51,7 @@ public class UserAuthenticateService {
         user.getState().setToken(newToken);
         user.setLastLogin(now);
 
-        log.debug("Authentication success: id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getState().getToken());
+        log.debug("Authentication success. id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getState().getToken());
     }
 
     /**
@@ -62,18 +62,13 @@ public class UserAuthenticateService {
         Authentication authentication = exception.getAuthenticationRequest();
         //Verify.verifyNotNull(authentication);
 
-        boolean typical = exception instanceof BadCredentialsException;
+        boolean exceptionTypical = exception instanceof BadCredentialsException;
 
-        Level level = Level.INFO;
-        // TODO
-        if (typical) {
-            level = Level.DEBUG;
-        }
-        LoggingEventBuilder logEvent = log.atLevel(level);
-        if (!typical) {
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionTypical ? Level.WARN : Level.INFO);
+        if (!exceptionTypical) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Authentication failure: authentication={} exception={}",
+        logEvent.log("Authentication failure. authentication={} exception={}",
                 authentication, exception.getClass().getSimpleName());
     }
 }

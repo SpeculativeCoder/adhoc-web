@@ -94,7 +94,7 @@ public class UserJoinService {
         user.getState().setSeen(user.getLastJoin());
 
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
-                .log("userJoin: userId={} userName={} userHuman={} factionId={} serverId={} regionId={} x={} y={} z={} pitch={} yaw={}",
+                .log("User joined: userId={} userName={} userHuman={} factionId={} serverId={} regionId={} x={} y={} z={} pitch={} yaw={}",
                         user.getId(), user.getName(), user.isHuman(), user.getFaction().getIndex(), server.getId(), server.getRegion().getId(), user.getState().getX(), user.getState().getY(), user.getState().getZ(), user.getState().getPitch(), user.getState().getYaw());
 
         return userService.toFullDto(user);

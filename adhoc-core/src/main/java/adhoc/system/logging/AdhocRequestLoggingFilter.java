@@ -96,7 +96,9 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
                 || request.getRequestURI().startsWith("/adhoc_ws/")) {
 
             uriApi = true;
+        }
 
+        if (uriApi) {
             requestWrapper = new ContentCachingRequestWrapper(request, getMaxPayloadLength());
             responseWrapper = new ContentCachingResponseWrapper(response);
         }

@@ -28,19 +28,17 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
 
         ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
-        boolean typical = exception instanceof NoResourceFoundException; // invalid static resource attempts
+        boolean exceptionKnown = exception instanceof NoResourceFoundException; // invalid static resource attempts
         // exception instanceof EntityNotFoundException // row not found in database
 
-        Level level = Level.INFO;
-        if (typical && !(request.getRequestURI().startsWith("/adhoc_api/")
-                || request.getRequestURI().startsWith("/adhoc_ws/"))) {
-            level = Level.DEBUG;
-        }
-        LoggingEventBuilder logEvent = log.atLevel(level);
-        if (!typical) {
+        boolean uriApi = request.getRequestURI().startsWith("/adhoc_api/")
+                || request.getRequestURI().startsWith("/adhoc_ws/");
+
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG));
+        if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Request failure: method={} uri={} status={} exception={}",
+        logEvent.log("Request failure. method={} uri={} status={} exception={}",
                 request.getMethod(), request.getRequestURI(), response.getStatus(), exception.getClass().getSimpleName());
 
         return modelAndView;

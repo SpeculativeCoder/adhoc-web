@@ -43,10 +43,12 @@ public class AdhocMdcFilter extends OncePerRequestFilter {
         try {
             //MDC.put("uuid", UUID.randomUUID().toString());
             //MDC.put("method", request.getMethod());
-            MDC.put("uri", request.getRequestURI());
+            //MDC.put("uri", request.getRequestURI());
+            MDC.put("req", String.format("%s %s", request.getMethod(), request.getRequestURI()));
             filterChain.doFilter(request, response);
         } finally {
-            MDC.remove("uri");
+            MDC.remove("req");
+            //MDC.remove("uri");
             //MDC.remove("method");
             //MDC.remove("uuid");
         }

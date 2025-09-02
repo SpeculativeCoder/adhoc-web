@@ -16,11 +16,6 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExceptionResolver {
 
     @Override
-    public void setWarnLogCategory(@NonNull String loggerName) {
-        // ignore - we do our own logging below
-    }
-
-    @Override
     public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {
 
         log.debug("resolveException: method={} uri={}",

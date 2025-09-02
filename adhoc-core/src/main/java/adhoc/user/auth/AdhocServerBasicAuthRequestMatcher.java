@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.user.auth;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +34,6 @@ import java.util.Optional;
 
 /**
  * This matcher provides a way to identify server requests.
- * <p>
  * Used by {@link adhoc.system.WebSecurityConfiguration#securityFilterChain} to ignore CSRF checking on web requests from Unreal server.
  */
 @Component

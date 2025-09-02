@@ -25,6 +25,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * State of user in the world. Generally this changes a lot but is otherwise not important to keep so can be wiped/reset without too much consequence.
+ * Long term important information about the user (login details, score etc.) should not be kept in here and should be elsewhere i.e. in {@link adhoc.user.User}
+ */
 @Entity
 @Table(name = "adhoc_user_state", indexes = {
         @Index(name = "idx_user_region_id", columnList = "region_id"),

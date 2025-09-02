@@ -20,34 +20,53 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.user.auth;
 
-import adhoc.user.auth.UserAuthenticateService;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
+import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
-public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class AdhocAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private UserAuthenticateService userAuthenticateService;
+    private UserAuthService userAuthService;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
-        log.debug("onAuthenticationSuccess: method={} uri={} authentication={}",
-                request.getMethod(), request.getRequestURI(), authentication);
+        log.debug("onAuthenticationFailure: method={} uri={}",
+                request.getMethod(), request.getRequestURI(), exception);
 
-        userAuthenticateService.onAuthenticationSuccess(authentication);
+        userAuthService.onAuthenticationFailure(exception);
+
+        Authentication authentication = exception.getAuthenticationRequest();
+        //Verify.verifyNotNull(authentication);
+
+        boolean exceptionTypical = exception instanceof BadCredentialsException;
+
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionTypical ? Level.WARN : Level.INFO);
+        if (!exceptionTypical) {
+            logEvent = logEvent.setCause(exception);
+        }
+        logEvent.log("Authentication failure. authentication={} exception={}",
+                authentication, exception.getClass().getSimpleName());
+
+        response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
     }
 }

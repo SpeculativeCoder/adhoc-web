@@ -20,11 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.user.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
@@ -38,27 +39,34 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
+
+    private final UserAuthService userAuthService;
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
 
-        log.debug("handle: method={} uri={}",
-                request.getMethod(), request.getRequestURI(), exception);
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+
+        log.debug("handle: method={} uri={}", method, uri, exception);
+
+        userAuthService.onAccessDenied(method, uri, exception);
 
         boolean exceptionKnown = exception instanceof MissingCsrfTokenException
                 || exception instanceof InvalidCsrfTokenException;
 
-        boolean uriApi = request.getRequestURI().startsWith("/adhoc_api/")
-                || request.getRequestURI().startsWith("/adhoc_ws/");
+        boolean uriApi = uri.startsWith("/adhoc_api/")
+                || uri.startsWith("/adhoc_ws/");
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG));
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
         logEvent.log("Access denied. method={} uri={} exception={}",
-                request.getMethod(), request.getRequestURI(), exception.getClass().getSimpleName());
+                method, uri, exception.getClass().getSimpleName());
 
         response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
     }

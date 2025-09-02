@@ -22,7 +22,7 @@
 
 package adhoc.user;
 
-import adhoc.system.auth.AdhocUserDetails;
+import adhoc.user.auth.AdhocUserDetails;
 import adhoc.user.navigate.UserNavigateRequest;
 import adhoc.user.navigate.UserNavigateResponse;
 import adhoc.user.navigate.UserNavigateService;

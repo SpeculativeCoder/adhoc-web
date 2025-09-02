@@ -30,7 +30,7 @@ import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
 import adhoc.user.UserService;
 import adhoc.user.UserState;
-import adhoc.user.auth.ProgrammaticLoginService;
+import adhoc.user.auth.programmatic_login.ProgrammaticLoginService;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;

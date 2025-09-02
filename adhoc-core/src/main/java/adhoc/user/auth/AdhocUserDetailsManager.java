@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.user.auth;
 
 import adhoc.user.User;
 import adhoc.user.UserRepository;

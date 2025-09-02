@@ -22,10 +22,10 @@
 
 package adhoc.system;
 
-import adhoc.system.auth.AdhocAccessDeniedHandler;
-import adhoc.system.auth.AdhocAuthenticationFailureHandler;
-import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
-import adhoc.system.auth.AdhocServerBasicAuthRequestMatcher;
+import adhoc.user.auth.AdhocAccessDeniedHandler;
+import adhoc.user.auth.AdhocAuthenticationFailureHandler;
+import adhoc.user.auth.AdhocAuthenticationSuccessHandler;
+import adhoc.user.auth.AdhocServerBasicAuthRequestMatcher;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

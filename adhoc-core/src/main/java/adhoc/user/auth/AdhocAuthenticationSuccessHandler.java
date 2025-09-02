@@ -20,38 +20,33 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.user.auth;
 
-import adhoc.user.auth.UserAuthenticateService;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 @Component
 @Slf4j
-public class AdhocAuthenticationFailureHandler implements AuthenticationFailureHandler {
+@RequiredArgsConstructor
+public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private UserAuthenticateService userAuthenticateService;
+    private UserAuthService userAuthService;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
-        log.debug("onAuthenticationFailure: method={} uri={}",
-                request.getMethod(), request.getRequestURI(), exception);
+        log.debug("onAuthenticationSuccess: method={} uri={} authentication={}",
+                request.getMethod(), request.getRequestURI(), authentication);
 
-        userAuthenticateService.onAuthenticationFailure(exception);
-
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
+        userAuthService.onAuthenticationSuccess(authentication);
     }
 }

@@ -1,23 +1,19 @@
 package adhoc.user.auth;
 
-import adhoc.system.auth.AdhocAuthenticationFailureHandler;
-import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
-import adhoc.system.auth.AdhocUserDetails;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
-import org.slf4j.event.Level;
-import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -27,7 +23,7 @@ import java.util.UUID;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserAuthenticateService {
+public class UserAuthService {
 
     private final UserRepository userRepository;
 
@@ -37,7 +33,7 @@ public class UserAuthenticateService {
      */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void onAuthenticationSuccess(Authentication authentication) {
+    void onAuthenticationSuccess(Authentication authentication) {
 
         Object principal = authentication.getPrincipal();
         Verify.verify(principal instanceof AdhocUserDetails);
@@ -54,21 +50,17 @@ public class UserAuthenticateService {
         log.debug("Authentication success. id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getState().getToken());
     }
 
-    /**
-     * Called by {@link AdhocAuthenticationFailureHandler}.
-     */
-    public void onAuthenticationFailure(AuthenticationException exception) {
+    /** Called by {@link AdhocAuthenticationFailureHandler}. */
+    // for now
+    @Transactional(propagation = Propagation.NEVER)
+    void onAuthenticationFailure(AuthenticationException exception) {
+        // TODO
+    }
 
-        Authentication authentication = exception.getAuthenticationRequest();
-        //Verify.verifyNotNull(authentication);
-
-        boolean exceptionTypical = exception instanceof BadCredentialsException;
-
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionTypical ? Level.WARN : Level.INFO);
-        if (!exceptionTypical) {
-            logEvent = logEvent.setCause(exception);
-        }
-        logEvent.log("Authentication failure. authentication={} exception={}",
-                authentication, exception.getClass().getSimpleName());
+    /** Called by {@link AdhocAccessDeniedHandler}. */
+    // for now
+    @Transactional(propagation = Propagation.NEVER)
+    void onAccessDenied(String method, String uri, AccessDeniedException exception) {
+        // TODO
     }
 }

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.system;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +36,9 @@ import org.springframework.security.messaging.web.csrf.XorCsrfChannelInterceptor
 import org.springframework.stereotype.Component;
 
 /**
- * Replacement for Spring CSRF channel interceptor. This ignores CSRF for web socket connections from Unreal server.
- * All other requests are handled as usual by the Spring {@link XorCsrfChannelInterceptor}.
+ * Replacement for Spring messaging CSRF channel interceptor.
+ * This ignores CSRF for web socket connections from Unreal server.
+ * All other requests are handled as usual by the Spring messaging {@link XorCsrfChannelInterceptor}.
  */
 @Primary
 @Component("csrfChannelInterceptor")

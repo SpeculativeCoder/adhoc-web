@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.user.auth;
+package adhoc.user.auth.programmatic_login;
 
 import adhoc.system.WebSecurityConfiguration;
-import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
 import adhoc.user.User;
+import adhoc.user.auth.AdhocAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.event;
+package adhoc;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 

@@ -22,7 +22,7 @@
 
 package adhoc.pawn;
 
-import adhoc.system.event.Event;
+import adhoc.Event;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -32,7 +32,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor

@@ -22,11 +22,11 @@
 
 package adhoc.server;
 
+import adhoc.Event;
 import adhoc.area.Area;
 import adhoc.area.groups.AreaGroupsFactory;
 import adhoc.region.Region;
 import adhoc.region.RegionRepository;
-import adhoc.system.event.Event;
 import adhoc.task.ServerTask;
 import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;
@@ -43,7 +43,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @Service

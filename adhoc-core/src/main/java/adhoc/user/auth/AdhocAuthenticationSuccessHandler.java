@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private UserAuthService userAuthService;
+    private UserAuthSuccessService userAuthSuccessService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -47,6 +47,6 @@ public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessH
         log.debug("onAuthenticationSuccess: method={} uri={} authentication={}",
                 request.getMethod(), request.getRequestURI(), authentication);
 
-        userAuthService.onAuthenticationSuccess(authentication);
+        userAuthSuccessService.onAuthenticationSuccess(authentication);
     }
 }

@@ -43,7 +43,7 @@ import java.io.IOException;
 @Slf4j
 public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
 
-    private final UserAuthService userAuthService;
+    //private final UserAuthService userAuthService;
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
@@ -53,7 +53,7 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
 
         log.debug("handle: method={} uri={}", method, uri, exception);
 
-        userAuthService.onAccessDenied(method, uri, exception);
+        //userAuthService.onAccessDenied(method, uri, exception);
 
         boolean exceptionKnown = exception instanceof MissingCsrfTokenException
                 || exception instanceof InvalidCsrfTokenException;

@@ -9,11 +9,8 @@ import org.hibernate.exception.LockAcquisitionException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -23,7 +20,7 @@ import java.util.UUID;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserAuthService {
+public class UserAuthSuccessService {
 
     private final UserRepository userRepository;
 
@@ -50,17 +47,17 @@ public class UserAuthService {
         log.debug("Authentication success. id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getState().getToken());
     }
 
-    /** Called by {@link AdhocAuthenticationFailureHandler}. */
-    // for now
-    @Transactional(propagation = Propagation.NEVER)
-    void onAuthenticationFailure(AuthenticationException exception) {
-        // TODO
-    }
-
-    /** Called by {@link AdhocAccessDeniedHandler}. */
-    // for now
-    @Transactional(propagation = Propagation.NEVER)
-    void onAccessDenied(String method, String uri, AccessDeniedException exception) {
-        // TODO
-    }
+    ///** Called by {@link AdhocAuthenticationFailureHandler}. */
+    //// for now
+    //@Transactional(propagation = Propagation.NEVER)
+    //void onAuthenticationFailure(AuthenticationException exception) {
+    //    // TODO
+    //}
+    //
+    ///** Called by {@link AdhocAccessDeniedHandler}. */
+    //// for now
+    //@Transactional(propagation = Propagation.NEVER)
+    //void onAccessDenied(String method, String uri, AccessDeniedException exception) {
+    //    // TODO
+    //}
 }

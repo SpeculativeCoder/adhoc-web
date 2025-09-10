@@ -65,7 +65,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
-          <execution>
+          <!--<execution>
             <id>npm install</id>
             <phase>generate-resources</phase>
             <goals>
@@ -74,12 +74,12 @@
             <configuration>
               <executable>npm</executable>
               <arguments>
-                <argument>install</argument>
+                <argument>install</argument>-->
                 <!-- this is sometimes needed e.g. if using older version of ng-boostrap -->
                 <!--<argument>&#45;&#45;legacy-peer-deps</argument>-->
-              </arguments>
+              <!--</arguments>
             </configuration>
-          </execution>
+          </execution>-->
           <execution>
             <id>npm build</id>
             <phase>generate-resources</phase>

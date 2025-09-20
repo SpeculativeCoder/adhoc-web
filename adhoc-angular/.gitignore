@@ -41,6 +41,9 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# npm cache
+/.npm
+
 # Adhoc extra functionality
 /src/app/adhoc-angular-extra/
 

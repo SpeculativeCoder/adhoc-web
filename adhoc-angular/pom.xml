@@ -60,45 +60,97 @@
       </resource>
     </resources>
 
+    <!-- this is sometimes needed for npm e.g. if using older version of ng-boostrap -->
+    <!-- &#45;&#45;legacy-peer-deps -->
+
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
-          <!--<execution>
-            <id>npm install</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <executable>npm</executable>
-              <arguments>
-                <argument>install</argument>-->
-                <!-- this is sometimes needed e.g. if using older version of ng-boostrap -->
-                <!--<argument>&#45;&#45;legacy-peer-deps</argument>-->
-              <!--</arguments>
-            </configuration>
-          </execution>-->
           <execution>
-            <id>npm build</id>
+            <id>npm ci</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>exec</goal>
             </goals>
             <configuration>
-              <executable>npm</executable>
+              <executable>docker</executable>
               <arguments>
+                <argument>run</argument>
+                <argument>-v</argument>
+                <argument>./.npm:/home/node/.npm</argument>
+                <argument>-v</argument>
+                <argument>./node_modules:/home/node/app/node_modules</argument>
+                <argument>-v</argument>
+                <argument>./package.json:/home/node/app/package.json:ro</argument>
+                <argument>-v</argument>
+                <argument>./package-lock.json:/home/node/app/package-lock.json:ro</argument>
+                <argument>-w</argument>
+                <argument>/home/node/app</argument>
+                <argument>-e</argument>
+                <!--<argument>npm_config_loglevel=info</argument>-->
+                <argument>--rm</argument>
+                <argument>-u</argument>
+                <argument>node</argument>
+                <argument>node:trixie</argument>
+                <argument>npm</argument>
+                <argument>ci</argument>
+                <argument>--ignore-scripts</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm run build</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>docker</executable>
+              <arguments>
+                <argument>run</argument>
+                <argument>-v</argument>
+                <argument>./.angular:/home/node/app/.angular:ro</argument>
+                <argument>-v</argument>
+                <argument>./.npm:/home/node/.npm</argument>
+                <argument>-v</argument>
+                <argument>./dist:/home/node/app/dist</argument>
+                <argument>-v</argument>
+                <argument>./node_modules:/home/node/app/node_modules:ro</argument>
+                <argument>-v</argument>
+                <argument>./src:/home/node/app/src:ro</argument>
+                <argument>-v</argument>
+                <argument>./angular.json:/home/node/app/angular.json:ro</argument>
+                <argument>-v</argument>
+                <argument>./package.json:/home/node/app/package.json:ro</argument>
+                <argument>-v</argument>
+                <argument>./package-lock.json:/home/node/app/package-lock.json:ro</argument>
+                <argument>-v</argument>
+                <argument>./tsconfig.app.json:/home/node/app/tsconfig.app.json:ro</argument>
+                <argument>-v</argument>
+                <argument>./tsconfig.json:/home/node/app/tsconfig.json:ro</argument>
+                <argument>-v</argument>
+                <argument>./tsconfig.spec.json:/home/node/app/tsconfig.spec.json:ro</argument>
+                <argument>-w</argument>
+                <argument>/home/node/app</argument>
+                <argument>-e</argument>
+                <!--<argument>npm_config_loglevel=info</argument>-->
+                <argument>--rm</argument>
+                <argument>-u</argument>
+                <argument>node</argument>
+                <argument>node:trixie</argument>
+                <argument>npm</argument>
                 <argument>run</argument>
                 <argument>build</argument>
                 <argument>--</argument>
                 <!-- TODO: remove jsdom_fix when no longer needed -->
                 <argument>--configuration=jsdom_fix,${angular.configuration}${adhoc-angular-customization},en-US</argument>
               </arguments>
-              <environmentVariables>
+              <!--<environmentVariables>-->
                 <!-- TODO: figure out a way to have analytics on -->
-                <NG_CLI_ANALYTICS>false</NG_CLI_ANALYTICS>
-              </environmentVariables>
+                <!--<NG_CLI_ANALYTICS>false</NG_CLI_ANALYTICS>-->
+              <!--</environmentVariables>-->
             </configuration>
           </execution>
         </executions>

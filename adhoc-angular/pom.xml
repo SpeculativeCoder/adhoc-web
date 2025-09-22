@@ -79,23 +79,18 @@
               <arguments>
                 <argument>run</argument>
                 <argument>-v</argument>
-                <argument>./.npm:/home/node/.npm</argument>
-                <argument>-v</argument>
                 <argument>./node_modules:/home/node/app/node_modules</argument>
                 <argument>-v</argument>
                 <argument>./package.json:/home/node/app/package.json:ro</argument>
                 <argument>-v</argument>
                 <argument>./package-lock.json:/home/node/app/package-lock.json:ro</argument>
-                <argument>-w</argument>
-                <argument>/home/node/app</argument>
-                <argument>-e</argument>
-                <!--<argument>npm_config_loglevel=info</argument>-->
+                <argument>-v</argument>
+                <argument>./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro</argument>
                 <argument>--rm</argument>
-                <argument>-u</argument>
-                <argument>node</argument>
-                <argument>node:trixie</argument>
-                <argument>npm</argument>
-                <argument>ci</argument>
+                <argument>node_pnpm</argument>
+                <argument>pnpm</argument>
+                <argument>install</argument>
+                <argument>--frozen-lockfile</argument>
                 <argument>--ignore-scripts</argument>
               </arguments>
             </configuration>
@@ -113,8 +108,6 @@
                 <argument>-v</argument>
                 <argument>./.angular:/home/node/app/.angular:ro</argument>
                 <argument>-v</argument>
-                <argument>./.npm:/home/node/.npm</argument>
-                <argument>-v</argument>
                 <argument>./dist:/home/node/app/dist</argument>
                 <argument>-v</argument>
                 <argument>./node_modules:/home/node/app/node_modules:ro</argument>
@@ -125,25 +118,16 @@
                 <argument>-v</argument>
                 <argument>./package.json:/home/node/app/package.json:ro</argument>
                 <argument>-v</argument>
-                <argument>./package-lock.json:/home/node/app/package-lock.json:ro</argument>
-                <argument>-v</argument>
                 <argument>./tsconfig.app.json:/home/node/app/tsconfig.app.json:ro</argument>
                 <argument>-v</argument>
                 <argument>./tsconfig.json:/home/node/app/tsconfig.json:ro</argument>
                 <argument>-v</argument>
                 <argument>./tsconfig.spec.json:/home/node/app/tsconfig.spec.json:ro</argument>
-                <argument>-w</argument>
-                <argument>/home/node/app</argument>
-                <argument>-e</argument>
-                <!--<argument>npm_config_loglevel=info</argument>-->
                 <argument>--rm</argument>
-                <argument>-u</argument>
-                <argument>node</argument>
-                <argument>node:trixie</argument>
-                <argument>npm</argument>
+                <argument>node_pnpm</argument>
+                <argument>pnpm</argument>
                 <argument>run</argument>
                 <argument>build</argument>
-                <argument>--</argument>
                 <!-- TODO: remove jsdom_fix when no longer needed -->
                 <argument>--configuration=jsdom_fix,${angular.configuration}${adhoc-angular-customization},en-US</argument>
               </arguments>

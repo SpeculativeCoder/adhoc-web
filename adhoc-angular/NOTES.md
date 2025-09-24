@@ -106,7 +106,6 @@ MSYS_NO_PATHCONV=1 \
 docker run \
 -v ./node_modules:/home/node/app/node_modules \
 -v ./package.json:/home/node/app/package.json:ro \
--v ./package-lock.json:/home/node/app/package-lock.json:ro \
 -v ./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro \
 -i -t --rm \
 node_pnpm \

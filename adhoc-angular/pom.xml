@@ -69,7 +69,23 @@
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>npm ci</id>
+            <id>build node_pnpm</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>docker</executable>
+              <arguments>
+                <argument>build</argument>
+                <argument>-t</argument>
+                <argument>node_pnpm</argument>
+                <argument>./pnpm/.</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>pnpm ci</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>exec</goal>
@@ -83,8 +99,6 @@
                 <argument>-v</argument>
                 <argument>./package.json:/home/node/app/package.json:ro</argument>
                 <argument>-v</argument>
-                <argument>./package-lock.json:/home/node/app/package-lock.json:ro</argument>
-                <argument>-v</argument>
                 <argument>./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro</argument>
                 <argument>--rm</argument>
                 <argument>node_pnpm</argument>
@@ -96,7 +110,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>npm run build</id>
+            <id>pnpm run build</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>exec</goal>

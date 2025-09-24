@@ -71,7 +71,7 @@ export MAX_CONTROLLERS=${MAX_CONTROLLERS:-32}
 export MAX_PLAYERS=${MAX_PLAYERS:-32}
 export MAX_BOTS=${MAX_BOTS:-32}
 
-mvn clean package verify -Dangular.configuration=${ANGULAR_CONFIGURATION} -Dunreal.configuration=${CLIENT_UNREAL_CONFIGURATION}
+mvn clean verify -Dangular.configuration=${ANGULAR_CONFIGURATION} -Dunreal.configuration=${CLIENT_UNREAL_CONFIGURATION}
 
 docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
   --build-arg ADHOC_NAME=${ADHOC_NAME} \

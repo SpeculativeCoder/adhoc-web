@@ -133,6 +133,28 @@ node_pnpm \
 pnpm run build --configuration=jsdom_fix,development,customization,en-US
 
 
+## pnpm run serve
+
+MSYS_NO_PATHCONV=1 \
+docker build -t node_pnpm ./pnpm/. \
+&& \
+MSYS_NO_PATHCONV=1 \
+docker run \
+-v ./.angular:/home/node/app/.angular \
+-v ./dist:/home/node/app/dist \
+-v ./node_modules:/home/node/app/node_modules:ro \
+-v ./src:/home/node/app/src:ro \
+-v ./angular.json:/home/node/app/angular.json:ro \
+-v ./package.json:/home/node/app/package.json:ro \
+-v ./tsconfig.app.json:/home/node/app/tsconfig.app.json:ro \
+-v ./tsconfig.json:/home/node/app/tsconfig.json:ro \
+-v ./tsconfig.spec.json:/home/node/app/tsconfig.spec.json:ro \
+-p 127.0.0.1:4200:4200/tcp \
+-i -t --rm \
+node_pnpm \
+pnpm run start --host 0.0.0.0
+
+#--configuration=jsdom_fix,development,customization,en-US
 
 
 ## TODO REUSE CACHE

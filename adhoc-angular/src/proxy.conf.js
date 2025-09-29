@@ -27,14 +27,16 @@ const PROXY_CONFIG = [
       "/HTML5Client",
       "/fonts",
     ],
-    target: "http://localhost:80",
+    //target: "http://localhost:80",
+    target: "http://host.docker.internal:80",
     secure: false
   },
   {
     context: [
       "/adhoc_ws",
     ],
-    target: "ws://localhost:80",
+    //target: "ws://localhost:80",
+    target: "ws://host.docker.internal:80",
     ws: true,
     secure: false
   }

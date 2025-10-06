@@ -80,7 +80,7 @@
                 <argument>build</argument>
                 <argument>-t</argument>
                 <argument>node_pnpm</argument>
-                <argument>./pnpm/.</argument>
+                <argument>./node_pnpm/.</argument>
               </arguments>
             </configuration>
           </execution>

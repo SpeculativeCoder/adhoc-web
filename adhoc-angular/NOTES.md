@@ -59,7 +59,7 @@ npm run build -- --configuration=jsdom_fix,development,customization,en-US
 ## pnpm config
 
 MSYS_NO_PATHCONV=1 \
-docker build -t node_pnpm ./pnpm/. \
+docker build -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
@@ -71,7 +71,7 @@ bash -c "pnpm --version && pnpm config list"
 ## pnpm import
 
 MSYS_NO_PATHCONV=1 \
-docker build -t node_pnpm ./pnpm/. \
+docker build -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
@@ -86,7 +86,7 @@ bash -c "pnpm import && cat pnpm-lock.yaml > pnpm-lock.yaml.bind"
 ## pnpm audit
 
 MSYS_NO_PATHCONV=1 \
-docker build -t node_pnpm ./pnpm/. \
+docker build -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
@@ -100,7 +100,7 @@ pnpm audit
 ## pnpm ci
 
 MSYS_NO_PATHCONV=1 \
-docker build -t node_pnpm ./pnpm/. \
+docker build -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
@@ -115,7 +115,7 @@ pnpm install --frozen-lockfile --ignore-scripts
 ## pnpm run build
 
 MSYS_NO_PATHCONV=1 \
-docker build -t node_pnpm ./pnpm/. \
+docker build -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
@@ -136,7 +136,7 @@ pnpm run build --configuration=jsdom_fix,development,customization,en-US
 ## pnpm run serve
 
 MSYS_NO_PATHCONV=1 \
-docker build -t node_pnpm ./pnpm/. \
+docker build -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \

@@ -94,8 +94,20 @@ public class UserJoinService {
         user.getState().setSeen(user.getLastJoin());
 
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
-                .log("User joined: userId={} userName={} userHuman={} factionId={} serverId={} regionId={} x={} y={} z={} pitch={} yaw={}",
-                        user.getId(), user.getName(), user.isHuman(), user.getFaction().getIndex(), server.getId(), server.getRegion().getId(), user.getState().getX(), user.getState().getY(), user.getState().getZ(), user.getState().getPitch(), user.getState().getYaw());
+                .addKeyValue("id", user.getId())
+                .addKeyValue("name", user.getName())
+                .addKeyValue("password?", user.getPassword() != null)
+                .addKeyValue("human", user.isHuman())
+                .addKeyValue("factionIndex", user.getFaction().getIndex())
+                .addKeyValue("factionId", user.getFaction().getId())
+                .addKeyValue("serverId", user.getState().getServer().getId())
+                .addKeyValue("regionId", server.getRegion().getId())
+                .addKeyValue("x", user.getState().getX())
+                .addKeyValue("y", user.getState().getY())
+                .addKeyValue("z", user.getState().getZ())
+                .addKeyValue("pitch", user.getState().getPitch())
+                .addKeyValue("yaw", user.getState().getYaw())
+                .log("User joined.");
 
         return userService.toFullDto(user);
     }

@@ -69,13 +69,14 @@ public class UserSeenService {
 
     private static void leaveUser(User user) {
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
-                .log("User left: id={} name={} password?={} human={} factionIndex={} serverId={}",
-                        user.getId(),
-                        user.getName(),
-                        user.getPassword() != null,
-                        user.isHuman(),
-                        user.getFaction().getIndex(),
-                        user.getState().getServer().getId());
+                .addKeyValue("id", user.getId())
+                .addKeyValue("name", user.getName())
+                .addKeyValue("password?", user.getPassword() != null)
+                .addKeyValue("human", user.isHuman())
+                .addKeyValue("factionIndex", user.getFaction().getIndex())
+                .addKeyValue("factionId", user.getFaction().getId())
+                .addKeyValue("serverId", user.getState().getServer().getId())
+                .log("User left.");
 
         // TODO: common path?
         user.getState().setServer(null);

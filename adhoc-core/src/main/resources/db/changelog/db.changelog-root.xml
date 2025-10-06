@@ -27,7 +27,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
     <include file="db/changelog/0000/00/00-01-changelog-user.xml"/>
-    <include file="db/changelog/0000/00/00-02-changelog-init.xml"/>
+    <include file="db/changelog/0000/00/00-02-changelog-init-unstable.xml"/>
     <include file="db/changelog/0000/00/00-03-changelog-quartz.xml"/>
     <include file="db/changelog/0000/00/00-04-changelog-spring-session.xml"/>
     <include file="db/changelog/0000/00/00-99-changelog-truncate.xml"/>

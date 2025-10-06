@@ -128,14 +128,15 @@ public class UserRegisterService {
         user = userRepository.save(user);
 
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
-                .log("User registered. id={} name={} password?={} human={} factionIndex={} remoteAddr={} userAgent={}",
-                        user.getId(),
-                        user.getName(),
-                        user.getPassword() != null,
-                        user.isHuman(),
-                        user.getFaction().getIndex(),
-                        remoteAddr,
-                        userAgent);
+                .addKeyValue("id", user.getId())
+                .addKeyValue("name", user.getName())
+                .addKeyValue("password?", user.getPassword() != null)
+                .addKeyValue("human", user.isHuman())
+                .addKeyValue("factionIndex", user.getFaction().getIndex())
+                .addKeyValue("factionId", user.getFaction().getId())
+                .addKeyValue("remoteAddr", remoteAddr)
+                .addKeyValue("userAgent", userAgent)
+                .log("User registered.");
 
         return user;
     }

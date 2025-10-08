@@ -22,11 +22,18 @@
 
 package adhoc.system.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.UUID;
 
-public class RandomUUIDGenerator {
+@UtilityClass
+public class RandomUUIDUtils {
+
+    public UUID randomUUID() {
+        return UUID.randomUUID();
+    }
 
     public static void main(String[] args) {
-        System.err.println(UUID.randomUUID());
+        System.err.println(randomUUID());
     }
 }

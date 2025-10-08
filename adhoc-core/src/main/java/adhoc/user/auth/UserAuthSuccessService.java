@@ -1,5 +1,6 @@
 package adhoc.user.auth;
 
+import adhoc.system.util.RandomUUIDUtils;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import com.google.common.base.Verify;
@@ -38,7 +39,7 @@ public class UserAuthSuccessService {
 
         User user = userRepository.getReferenceById(userDetails.getUserId());
 
-        UUID newToken = UUID.randomUUID();
+        UUID newToken = RandomUUIDUtils.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
         user.getState().setToken(newToken);

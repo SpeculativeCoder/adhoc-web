@@ -52,6 +52,7 @@
         <awssdk.version>2.34.5</awssdk.version>
         <docker-java.version>3.6.0</docker-java.version>
         <exec-maven-plugin.version>3.5.1</exec-maven-plugin.version>
+        <datafaker.version>2.5.1</datafaker.version>
 
         <maven.compiler.debug>true</maven.compiler.debug>
         <angular.configuration>development</angular.configuration>

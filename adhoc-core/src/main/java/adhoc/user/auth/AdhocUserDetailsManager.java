@@ -22,6 +22,7 @@
 
 package adhoc.user.auth;
 
+import adhoc.system.util.RandomUUIDUtils;
 import adhoc.user.User;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
@@ -41,7 +42,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Consults the {@link adhoc.user.User} table for user info as needed by Spring Security.
@@ -92,7 +92,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
 
         String name = user.getName();
         // TODO
-        String password = user.getPassword() == null ? UUID.randomUUID().toString() : user.getPassword();
+        String password = user.getPassword() == null ? RandomUUIDUtils.randomUUID().toString() : user.getPassword();
         // NOTE: password null means user is not to be logged in to (i.e. temporary users) so we mark as not "enabled"
         boolean enabled = user.getPassword() != null;
 

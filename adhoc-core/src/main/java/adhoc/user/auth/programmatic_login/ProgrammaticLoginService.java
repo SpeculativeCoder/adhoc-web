@@ -23,6 +23,7 @@
 package adhoc.user.auth.programmatic_login;
 
 import adhoc.system.WebSecurityConfiguration;
+import adhoc.system.util.RandomUUIDUtils;
 import adhoc.user.User;
 import adhoc.user.auth.AdhocAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,8 +45,6 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -75,7 +74,7 @@ public class ProgrammaticLoginService {
     public void programmaticLoginInternal(User user, String password) {
         String tempPassword = null;
         if (user.getPassword() == null) {
-            tempPassword = UUID.randomUUID().toString();
+            tempPassword = RandomUUIDUtils.randomUUID().toString();
         }
 
         UsernamePasswordAuthenticationToken authenticationToken =

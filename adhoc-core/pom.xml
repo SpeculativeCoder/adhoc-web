@@ -186,6 +186,12 @@
             <version>${docker-java.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
+            <version>${datafaker.version}</version>
+        </dependency>
+
         <!--
         <dependency>
             <groupId>org.codehaus.janino</groupId>

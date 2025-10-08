@@ -24,6 +24,8 @@ package adhoc.user.register;
 
 import adhoc.faction.FactionRepository;
 import adhoc.system.properties.CoreProperties;
+import adhoc.system.util.RandomNameUtils;
+import adhoc.system.util.RandomUUIDUtils;
 import adhoc.user.User;
 import adhoc.user.UserFullDto;
 import adhoc.user.UserRepository;
@@ -49,7 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -114,8 +115,11 @@ public class UserRegisterService {
         }
 
         if (user.getName() == null) {
-            String prefix = user.isHuman() ? "Anon" : "Bot";
-            user.setName(prefix + (int) Math.floor(Math.random() * 1000000000)); // TODO
+            if (user.isHuman()) {
+                user.setName(RandomNameUtils.randomName()); // TODO
+            } else {
+                user.setName("Bot" + System.currentTimeMillis()); // TODO
+            }
         }
 
         if (user.getFaction() == null) {
@@ -125,7 +129,7 @@ public class UserRegisterService {
 
         user.setScore(BigDecimal.valueOf(0.0));
         user.setRoles(Sets.newHashSet(UserRole.USER));
-        user.getState().setToken(UUID.randomUUID());
+        user.getState().setToken(RandomUUIDUtils.randomUUID());
 
         user = userRepository.save(user);
 

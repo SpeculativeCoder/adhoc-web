@@ -42,6 +42,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -70,6 +71,7 @@ public class ProgrammaticLoginService {
      * Login the user programmatically (i.e. by invoking necessary Spring Security actions etc.), given a user and password.
      * Used after registering a user (we want them to be automatically logged in).
      */
+    @Transactional(propagation = Propagation.MANDATORY)
     public void programmaticLoginInternal(User user, String password) {
         String tempPassword = null;
         if (user.getPassword() == null) {

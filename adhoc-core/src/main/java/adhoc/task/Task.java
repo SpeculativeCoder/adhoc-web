@@ -36,6 +36,8 @@ import java.time.LocalDateTime;
  * and then many server tasks to run the Unreal servers (which will be spun up and spun down as needed by population).
  */
 @Entity
+//@DynamicInsert
+//@DynamicUpdate
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
 @Getter

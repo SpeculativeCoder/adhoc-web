@@ -44,6 +44,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -91,6 +92,7 @@ public class UserRegisterService {
         return userService.toFullDto(user);
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public User userRegisterInternal(User user) {
         String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();

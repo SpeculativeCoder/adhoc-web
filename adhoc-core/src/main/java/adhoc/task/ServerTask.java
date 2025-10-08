@@ -30,6 +30,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
+//@DynamicInsert
+//@DynamicUpdate
 @NoArgsConstructor
 @Getter
 @Setter

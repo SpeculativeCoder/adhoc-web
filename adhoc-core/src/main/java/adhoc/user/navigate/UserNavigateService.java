@@ -58,8 +58,6 @@ public class UserNavigateService {
     private final ServerRepository serverRepository;
     private final AreaRepository areaRepository;
 
-    private final UserService userService;
-
     /**
      * User navigation should be called some time prior to the client being launched.
      * It will provide connection details for an appropriate destination server.

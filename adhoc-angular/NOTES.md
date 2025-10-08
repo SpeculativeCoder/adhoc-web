@@ -1,6 +1,5 @@
 # WIP
 
-
 ## npm ci
 
 MSYS_NO_PATHCONV=1 \
@@ -16,7 +15,6 @@ docker run \
 node:trixie \
 npm ci --ignore-scripts
 
-
 ## npm audit
 
 MSYS_NO_PATHCONV=1 \
@@ -31,7 +29,6 @@ docker run \
 -u node \
 node:trixie \
 npm audit
-
 
 ## npm run build
 
@@ -55,7 +52,6 @@ docker run \
 node:trixie \
 npm run build -- --configuration=jsdom_fix,development,customization,en-US
 
-
 ## pnpm config
 
 MSYS_NO_PATHCONV=1 \
@@ -67,7 +63,6 @@ docker run \
 node_pnpm \
 bash -c "pnpm --version && pnpm config list"
 
-
 ## pnpm import
 
 MSYS_NO_PATHCONV=1 \
@@ -78,10 +73,10 @@ docker run \
 -v ./package.json:/home/node/app/package.json:ro \
 -v ./package-lock.json:/home/node/app/package-lock.json:ro \
 -v ./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml.bind \
+-v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
 -i -t --rm \
 node_pnpm \
 bash -c "pnpm import && cat pnpm-lock.yaml > pnpm-lock.yaml.bind"
-
 
 ## pnpm audit
 
@@ -92,10 +87,10 @@ MSYS_NO_PATHCONV=1 \
 docker run \
 -v ./package.json:/home/node/app/package.json:ro \
 -v ./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro \
+-v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
 -i -t --rm \
 node_pnpm \
 pnpm audit
-
 
 ## pnpm ci
 
@@ -107,10 +102,11 @@ docker run \
 -v ./node_modules:/home/node/app/node_modules \
 -v ./package.json:/home/node/app/package.json:ro \
 -v ./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro \
+-v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
+-e CI=1 \
 -i -t --rm \
 node_pnpm \
 pnpm install --frozen-lockfile --ignore-scripts
-
 
 ## pnpm run build
 
@@ -125,13 +121,13 @@ docker run \
 -v ./src:/home/node/app/src:ro \
 -v ./angular.json:/home/node/app/angular.json:ro \
 -v ./package.json:/home/node/app/package.json:ro \
+-v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
 -v ./tsconfig.app.json:/home/node/app/tsconfig.app.json:ro \
 -v ./tsconfig.json:/home/node/app/tsconfig.json:ro \
 -v ./tsconfig.spec.json:/home/node/app/tsconfig.spec.json:ro \
 -i -t --rm \
 node_pnpm \
 pnpm run build --configuration=jsdom_fix,development,customization,en-US
-
 
 ## pnpm run serve
 
@@ -146,6 +142,7 @@ docker run \
 -v ./src:/home/node/app/src:ro \
 -v ./angular.json:/home/node/app/angular.json:ro \
 -v ./package.json:/home/node/app/package.json:ro \
+-v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
 -v ./tsconfig.app.json:/home/node/app/tsconfig.app.json:ro \
 -v ./tsconfig.json:/home/node/app/tsconfig.json:ro \
 -v ./tsconfig.spec.json:/home/node/app/tsconfig.spec.json:ro \
@@ -156,8 +153,10 @@ pnpm run start --host 0.0.0.0
 
 #--configuration=jsdom_fix,development,customization,en-US
 
+## _TODO_ REUSE CACHE
 
-## TODO REUSE CACHE
+-v ./.pnpm-cache:/home/node/app/.pnpm-cache \
+-v ./.pnpm-store:/home/node/app/.pnpm-store \
 
 /home/node/.local/share/pnpm/store/v10
 /home/node/.cache/pnpm/metadata-v1.3

@@ -100,6 +100,8 @@
                 <argument>./package.json:/home/node/app/package.json:ro</argument>
                 <argument>-v</argument>
                 <argument>./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro</argument>
+                <argument>-v</argument>
+                <argument>./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro</argument>
                 <argument>--rm</argument>
                 <argument>node_pnpm</argument>
                 <argument>pnpm</argument>
@@ -132,6 +134,8 @@
                 <argument>-v</argument>
                 <argument>./package.json:/home/node/app/package.json:ro</argument>
                 <argument>-v</argument>
+                <argument>./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro</argument>
+                <argument>-v</argument>
                 <argument>./tsconfig.app.json:/home/node/app/tsconfig.app.json:ro</argument>
                 <argument>-v</argument>
                 <argument>./tsconfig.json:/home/node/app/tsconfig.json:ro</argument>
@@ -145,10 +149,11 @@
                 <!-- TODO: remove jsdom_fix when no longer needed -->
                 <argument>--configuration=jsdom_fix,${angular.configuration}${adhoc-angular-customization},en-US</argument>
               </arguments>
-              <!--<environmentVariables>-->
+              <environmentVariables>
+                <CI>1</CI>
                 <!-- TODO: figure out a way to have analytics on -->
                 <!--<NG_CLI_ANALYTICS>false</NG_CLI_ANALYTICS>-->
-              <!--</environmentVariables>-->
+              </environmentVariables>
             </configuration>
           </execution>
         </executions>

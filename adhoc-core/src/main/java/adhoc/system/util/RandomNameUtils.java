@@ -11,11 +11,13 @@ public class RandomNameUtils {
         Faker faker = new Faker();
 
         return WordUtils.capitalize(faker.word().adjective()) +
-                WordUtils.capitalize(faker.word().noun()) +
-                WordUtils.capitalize(faker.word().verb());
+                WordUtils.capitalize(faker.word().adjective()) +
+                WordUtils.capitalize(faker.word().noun());
     }
 
     public static void main() {
-        System.out.println(randomName());
+        for (int i = 0; i < 20; i++) {
+            System.out.println(randomName());
+        }
     }
 }

@@ -34,6 +34,6 @@ public class RandomUUIDUtils {
     }
 
     public static void main(String[] args) {
-        System.err.println(randomUUID());
+        System.out.println(randomUUID());
     }
 }

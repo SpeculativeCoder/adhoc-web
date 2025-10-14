@@ -20,24 +20,39 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.area;
 
-import adhoc.faction.Faction;
-import adhoc.server.Server;
-import adhoc.user.User;
-import jakarta.persistence.*;
-import lombok.*;
+import adhoc.objective.ObjectiveEntity;
+import adhoc.region.RegionEntity;
+import adhoc.server.ServerEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Version;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
 
 /**
- * A pawn is either a bot or user on an Unreal server.
- * Pawns are not updated regularly so only gives a recent location
- * (intended for an "at a glance" location of bots/users in the world).
+ * Area within a region (a region is map/level in the Unreal project).
+ * There may be more than one area per region. When users navigate from one area to another area,
+ * they may have to connect to a new server unless the same server manages both the areas.
  */
-@Entity
+@Entity(name = "Area")
+@Table(uniqueConstraints = @UniqueConstraint(name = "uc_area_region_id_index", columnNames = {"region_id", "index"}))
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
@@ -45,32 +60,26 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-public class Pawn {
+public class AreaEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PawnIdSequence")
-    @SequenceGenerator(name = "PawnIdSequence", initialValue = 1, allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AreaIdSequence")
+    @SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 50)
     private Long id;
 
     @Version
     @Column(nullable = false)
     private Long version;
 
-    @Column(nullable = false, unique = true)
-    private UUID uuid;
-
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Server server;
+    private RegionEntity region;
 
     @Column(nullable = false)
     private Integer index;
 
     @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
-    private String description;
 
     @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal x;
@@ -80,21 +89,18 @@ public class Pawn {
     private BigDecimal z;
 
     @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal pitch;
+    private BigDecimal sizeX;
     @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal yaw;
+    private BigDecimal sizeY;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal sizeZ;
 
+    @OneToMany(mappedBy = "area")
+    @ToString.Exclude
+    private List<ObjectiveEntity> objectives;
+
+    /** Server currently representing this area. */
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    private User user;
-
-    @Column(nullable = false)
-    private boolean human;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Faction faction;
-
-    @Column(nullable = false)
-    private LocalDateTime seen;
+    private ServerEntity server;
 }

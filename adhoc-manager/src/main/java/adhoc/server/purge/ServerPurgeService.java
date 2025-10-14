@@ -22,7 +22,7 @@
 
 package adhoc.server.purge;
 
-import adhoc.server.Server;
+import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.system.properties.ManagerProperties;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +46,7 @@ public class ServerPurgeService {
     public void purgeOldServers() {
         LocalDateTime seenBefore = LocalDateTime.now().minus(managerProperties.getPurgeOldServersSeenBefore());
 
-        try (Stream<Server> oldServers = serverRepository.streamByAreasEmptyAndUserStatesEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
+        try (Stream<ServerEntity> oldServers = serverRepository.streamByAreasEmptyAndUserStatesEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
             oldServers.forEach(oldServer -> {
                 log.debug("Deleting old server {}", oldServer.getId());
 

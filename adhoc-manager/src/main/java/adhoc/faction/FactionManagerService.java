@@ -41,7 +41,7 @@ public class FactionManagerService {
     private final FactionService factionService;
 
     public FactionDto updateFaction(FactionDto factionDto) {
-        Faction faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
+        FactionEntity faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
 
         return factionService.toDto(faction);
     }
@@ -50,7 +50,7 @@ public class FactionManagerService {
         return factionRepository.findAll(Sort.by("index")).stream().map(factionService::toDto).toList();
     }
 
-    Faction toEntity(FactionDto factionDto, Faction faction) {
+    FactionEntity toEntity(FactionDto factionDto, FactionEntity faction) {
         faction.setId(faction.getId());
         faction.setIndex(faction.getIndex());
         faction.setName(factionDto.getName());

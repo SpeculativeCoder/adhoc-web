@@ -24,7 +24,7 @@ package adhoc.user.auth.programmatic_login;
 
 import adhoc.system.WebSecurityConfiguration;
 import adhoc.system.util.RandomUUIDUtils;
-import adhoc.user.User;
+import adhoc.user.UserEntity;
 import adhoc.user.auth.AdhocAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -71,7 +71,7 @@ public class ProgrammaticLoginService {
      * Used after registering a user (we want them to be automatically logged in).
      */
     @Transactional(propagation = Propagation.MANDATORY)
-    public void programmaticLoginInternal(User user, String password) {
+    public void programmaticLoginInternal(UserEntity user, String password) {
         String tempPassword = null;
         if (user.getPassword() == null) {
             tempPassword = RandomUUIDUtils.randomUUID().toString();

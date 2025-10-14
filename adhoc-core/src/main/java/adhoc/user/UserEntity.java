@@ -22,8 +22,8 @@
 
 package adhoc.user;
 
-import adhoc.faction.Faction;
-import adhoc.pawn.Pawn;
+import adhoc.faction.FactionEntity;
+import adhoc.pawn.PawnEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
  * A user account can be created by registering via the web application. This allows the user to login again later to
  * the same account. A user is also automatically created on joining an Unreal server if there was no logged-in user.
  */
-@Entity
+@Entity(name = "User")
 @Table(name = "adhoc_user", indexes = {
         @Index(name = "idx_user_name", columnList = "name"),
         @Index(name = "idx_user_email", columnList = "email"),
@@ -81,7 +81,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @ToString
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UserIdSequence")
@@ -94,7 +94,7 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
-    private UserState state;
+    private UserStateEntity state;
 
     @Column(nullable = false)
     private String name;
@@ -110,7 +110,7 @@ public class User {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Faction faction;
+    private FactionEntity faction;
 
     @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal score;
@@ -136,7 +136,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
-    private List<Pawn> pawns;
+    private List<PawnEntity> pawns;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()

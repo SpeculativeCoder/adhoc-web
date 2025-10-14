@@ -47,7 +47,7 @@ public class FactionService {
         return toDto(factionRepository.getReferenceById(factionId));
     }
 
-    FactionDto toDto(Faction faction) {
+    FactionDto toDto(FactionEntity faction) {
         return new FactionDto(
                 faction.getId(),
                 faction.getVersion(),

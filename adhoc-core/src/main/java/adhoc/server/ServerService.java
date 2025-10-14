@@ -22,7 +22,7 @@
 
 package adhoc.server;
 
-import adhoc.area.Area;
+import adhoc.area.AreaEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -50,13 +50,13 @@ public class ServerService {
         return toDto(serverRepository.getReferenceById(serverId));
     }
 
-    ServerDto toDto(Server server) {
+    ServerDto toDto(ServerEntity server) {
         return new ServerDto(
                 server.getId(),
                 server.getVersion(),
                 server.getRegion().getId(),
-                server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
-                server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
+                server.getAreas().stream().map(AreaEntity::getId).collect(Collectors.toList()),
+                server.getAreas().stream().map(AreaEntity::getIndex).collect(Collectors.toList()),
                 server.getMapName(),
                 server.getX(), server.getY(), server.getZ(),
                 server.isEnabled(),

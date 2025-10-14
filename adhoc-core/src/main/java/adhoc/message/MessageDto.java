@@ -35,7 +35,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * DTO for {@link Message}
+ * DTO for {@link MessageEntity}
  */
 @Value
 @AllArgsConstructor

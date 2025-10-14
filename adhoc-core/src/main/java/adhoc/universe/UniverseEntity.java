@@ -20,59 +20,41 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.universe;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Version;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
-
 /**
- * Information about a task in the hosting service e.g. a task in an AWS ECS cluster.
- * There will be at least one task for the manager, one or more tasks for the kiosk (to handle load),
- * and then many server tasks to run the Unreal servers (which will be spun up and spun down as needed by population).
+ * Any details about the universe e.g. settings can go here.
+ * Currently, we can only have one universe per database.
  */
-@Entity
+@Entity(name = "Universe")
 //@DynamicInsert
 //@DynamicUpdate
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public abstract class Task {
+public class UniverseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TaskIdSequence")
-    @SequenceGenerator(name = "TaskIdSequence", initialValue = 1, allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UniverseIdSequence")
+    @SequenceGenerator(name = "UniverseIdSequence", initialValue = 1, allocationSize = 50)
     private Long id;
 
     @Version
     @Column(nullable = false)
     private Long version;
-
-    /** Identifier of the task within the hosting service (e.g. task ARN of AWS ECS task). */
-    @Column(nullable = false, unique = true)
-    private String taskIdentifier;
-
-    /** IP that is reachable within the hosting service but not externally. */
-    private String privateIp;
-
-    /** Public IP visible to users. */
-    private String publicIp;
-
-    /** Web socket port visible to users (for server tasks this is typically 8898) */
-    private Integer publicWebSocketPort;
-
-    /** DNS domain name that is mapped to the public IP. */
-    private String domain;
-
-    private LocalDateTime initiated;
-
-    private LocalDateTime seen;
-
-    public abstract TaskType getTaskType();
 }

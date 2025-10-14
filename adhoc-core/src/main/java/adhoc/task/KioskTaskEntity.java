@@ -20,31 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.universe;
+package adhoc.task;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-/**
- * Any details about the universe e.g. settings can go here.
- * Currently, we can only have one universe per database.
- */
-@Entity
+@Entity(name = "KioskTask")
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@ToString
-public class Universe {
+@ToString(callSuper = true)
+public class KioskTaskEntity extends TaskEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UniverseIdSequence")
-    @SequenceGenerator(name = "UniverseIdSequence", initialValue = 1, allocationSize = 50)
-    private Long id;
-
-    @Version
-    @Column(nullable = false)
-    private Long version;
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.KIOSK;
+    }
 }

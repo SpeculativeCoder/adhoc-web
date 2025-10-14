@@ -22,22 +22,22 @@
 
 package adhoc.universe;
 
-import adhoc.area.Area;
+import adhoc.area.AreaEntity;
 import adhoc.area.AreaRepository;
-import adhoc.faction.Faction;
+import adhoc.faction.FactionEntity;
 import adhoc.faction.FactionRepository;
 import adhoc.message.MessageService;
-import adhoc.objective.Objective;
+import adhoc.objective.ObjectiveEntity;
 import adhoc.objective.ObjectiveRepository;
-import adhoc.region.Region;
+import adhoc.region.RegionEntity;
 import adhoc.region.RegionRepository;
 import adhoc.server.ServerRepository;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
-import adhoc.user.User;
+import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
-import adhoc.user.UserState;
+import adhoc.user.UserStateEntity;
 import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -89,70 +89,70 @@ public class UniverseInitializeService {
             return; // already initialised the universe - no need to do anything
         }
 
-        Universe universe = new Universe();
+        UniverseEntity universe = new UniverseEntity();
         universe = universeRepository.save(universe);
 
         Verify.verify(universe.getId().equals(UniverseService.UNIVERSE_ID)); // TODO
 
         // insert factions
 
-        Faction team1 = new Faction();
+        FactionEntity team1 = new FactionEntity();
         team1.setIndex(0);
         team1.setName("Alpha");
         team1.setColor("#4B8EFF");
         team1.setScore(BigDecimal.valueOf(0.0));
         team1 = factionRepository.save(team1);
 
-        Faction team2 = new Faction();
+        FactionEntity team2 = new FactionEntity();
         team2.setIndex(1);
         team2.setName("Beta");
         team2.setColor("#FF4D96");
         team2.setScore(BigDecimal.valueOf(0.0));
         team2 = factionRepository.save(team2);
 
-        Faction team3 = new Faction();
+        FactionEntity team3 = new FactionEntity();
         team3.setIndex(2);
         team3.setName("Gamma");
         team3.setColor("#FFFA6A");
         team3.setScore(BigDecimal.valueOf(0.0));
         team3 = factionRepository.save(team3);
 
-        Faction team4 = new Faction();
+        FactionEntity team4 = new FactionEntity();
         team4.setIndex(3);
         team4.setName("Delta");
         team4.setColor("#A7FF6B");
         team4.setScore(BigDecimal.valueOf(0.0));
         team4 = factionRepository.save(team4);
 
-        Faction team5 = new Faction();
+        FactionEntity team5 = new FactionEntity();
         team5.setIndex(4);
         team5.setName("Epsilon");
         team5.setColor("#66FFFD");
         team5.setScore(BigDecimal.valueOf(0.0));
         team5 = factionRepository.save(team5);
 
-        Faction team6 = new Faction();
+        FactionEntity team6 = new FactionEntity();
         team6.setIndex(5);
         team6.setName("Zeta");
         team6.setColor("#B96EFF");
         team6.setScore(BigDecimal.valueOf(0.0));
         team6 = factionRepository.save(team6);
 
-        Faction team7 = new Faction();
+        FactionEntity team7 = new FactionEntity();
         team7.setIndex(6);
         team7.setName("Eta");
         team7.setColor("#FF905B");
         team7.setScore(BigDecimal.valueOf(0.0));
         team7 = factionRepository.save(team7);
 
-        Faction team8 = new Faction();
+        FactionEntity team8 = new FactionEntity();
         team8.setIndex(7);
         team8.setName("Theta");
         team8.setColor("#0F0FFF");
         team8.setScore(BigDecimal.valueOf(0.0));
         team8 = factionRepository.save(team8);
 
-        Region region1 = new Region();
+        RegionEntity region1 = new RegionEntity();
         //region1.setId(1L);
         region1.setName("Region 1");
         // TODO: handle multiple regions
@@ -163,7 +163,7 @@ public class UniverseInitializeService {
         region1.setAreas(Collections.emptyList());
         region1 = regionRepository.save(region1);
 
-        Area area1 = new Area();
+        AreaEntity area1 = new AreaEntity();
         area1.setIndex(0);
         area1.setName("A");
         area1.setX(BigDecimal.valueOf(1250.0));
@@ -175,7 +175,7 @@ public class UniverseInitializeService {
         area1.setRegion(region1);
         area1 = areaRepository.save(area1);
 
-        Area area2 = new Area();
+        AreaEntity area2 = new AreaEntity();
         area2.setIndex(1);
         area2.setName("B");
         area2.setX(BigDecimal.valueOf(1500.0));
@@ -219,7 +219,7 @@ public class UniverseInitializeService {
 
         // some startup objectives for the map - this will get clobbered once the first server reports in but nice to have something
 
-        Objective objectiveA1 = new Objective();
+        ObjectiveEntity objectiveA1 = new ObjectiveEntity();
         objectiveA1.setRegion(region1);
         objectiveA1.setIndex(0);
         objectiveA1.setName("A1");
@@ -231,7 +231,7 @@ public class UniverseInitializeService {
         objectiveA1.setArea(area1);
         objectiveA1 = objectiveRepository.save(objectiveA1);
 
-        Objective objectiveA2 = new Objective();
+        ObjectiveEntity objectiveA2 = new ObjectiveEntity();
         objectiveA2.setRegion(region1);
         objectiveA2.setIndex(1);
         objectiveA2.setName("A2");
@@ -243,7 +243,7 @@ public class UniverseInitializeService {
         objectiveA2.setArea(area1);
         objectiveA2 = objectiveRepository.save(objectiveA2);
 
-        Objective objectiveA3 = new Objective();
+        ObjectiveEntity objectiveA3 = new ObjectiveEntity();
         objectiveA3.setRegion(region1);
         objectiveA3.setIndex(2);
         objectiveA3.setName("A3");
@@ -255,7 +255,7 @@ public class UniverseInitializeService {
         objectiveA3.setArea(area1);
         objectiveA3 = objectiveRepository.save(objectiveA3);
 
-        Objective objectiveB1 = new Objective();
+        ObjectiveEntity objectiveB1 = new ObjectiveEntity();
         objectiveB1.setRegion(region1);
         objectiveB1.setIndex(3);
         objectiveB1.setName("B1");
@@ -267,7 +267,7 @@ public class UniverseInitializeService {
         objectiveB1.setArea(area2);
         objectiveB1 = objectiveRepository.save(objectiveB1);
 
-        Objective objectiveB2 = new Objective();
+        ObjectiveEntity objectiveB2 = new ObjectiveEntity();
         objectiveB2.setRegion(region1);
         objectiveB2.setIndex(4);
         objectiveB2.setName("B2");
@@ -278,15 +278,15 @@ public class UniverseInitializeService {
         objectiveB2 = objectiveRepository.save(objectiveB2);
 
         objectiveA1.setLinkedObjectives(Arrays.asList(objectiveB1, objectiveA2, objectiveA3, objectiveB2)
-                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
+                .stream().map(ObjectiveEntity::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
         objectiveA2.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveB1)
-                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
+                .stream().map(ObjectiveEntity::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
         objectiveA3.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveB2)
-                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
+                .stream().map(ObjectiveEntity::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
         objectiveB1.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveA2, objectiveB2)
-                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
+                .stream().map(ObjectiveEntity::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
         objectiveB2.setLinkedObjectives(Arrays.asList(objectiveA1, objectiveA3, objectiveB1)
-                .stream().map(Objective::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
+                .stream().map(ObjectiveEntity::getId).map(objectiveRepository::getReferenceById).collect(Collectors.toSet()));
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime userCreated = now.minusMinutes(30);
@@ -295,8 +295,8 @@ public class UniverseInitializeService {
         // admin user and some faction specific users for testing
 
         if (coreProperties.getFeatureFlags().contains("development")) {
-            User adminUser = new User();
-            adminUser.setState(new UserState());
+            UserEntity adminUser = new UserEntity();
+            adminUser.setState(new UserStateEntity());
             adminUser.getState().setUser(adminUser);
             adminUser.setName("admin");
             adminUser.setEmail("admin@" + coreProperties.getAdhocDomain());
@@ -310,8 +310,8 @@ public class UniverseInitializeService {
             adminUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG)); // TODO: restore User.Role.ADMIN,
             adminUser = userRepository.save(adminUser);
 
-            User alphaUser = new User();
-            alphaUser.setState(new UserState());
+            UserEntity alphaUser = new UserEntity();
+            alphaUser.setState(new UserStateEntity());
             alphaUser.getState().setUser(alphaUser);
             alphaUser.setName("TestAlpha");
             alphaUser.setEmail("testalpha@" + coreProperties.getAdhocDomain());
@@ -325,8 +325,8 @@ public class UniverseInitializeService {
             alphaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             alphaUser = userRepository.save(alphaUser);
 
-            User betaUser = new User();
-            betaUser.setState(new UserState());
+            UserEntity betaUser = new UserEntity();
+            betaUser.setState(new UserStateEntity());
             betaUser.getState().setUser(betaUser);
             betaUser.setName("TestBeta");
             betaUser.setEmail("testbeta@" + coreProperties.getAdhocDomain());
@@ -340,8 +340,8 @@ public class UniverseInitializeService {
             betaUser.setRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             betaUser = userRepository.save(betaUser);
 
-            User gammaUser = new User();
-            gammaUser.setState(new UserState());
+            UserEntity gammaUser = new UserEntity();
+            gammaUser.setState(new UserStateEntity());
             gammaUser.getState().setUser(gammaUser);
             gammaUser.setName("TestGamma");
             gammaUser.setEmail("testgamma@" + coreProperties.getAdhocDomain());
@@ -393,7 +393,7 @@ public class UniverseInitializeService {
         messageService.addGlobalMessage(String.format("Universe %d initialized", universe.getId()));
     }
 
-    UniverseUpdatedEvent toUniverseUpdatedEvent(Universe universe) {
+    UniverseUpdatedEvent toUniverseUpdatedEvent(UniverseEntity universe) {
         return new UniverseUpdatedEvent(universeService.toDto(universe));
     }
 }

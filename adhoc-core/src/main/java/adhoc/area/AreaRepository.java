@@ -22,18 +22,18 @@
 
 package adhoc.area;
 
-import adhoc.region.Region;
+import adhoc.region.RegionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface AreaRepository extends JpaRepository<Area, Long> {
+public interface AreaRepository extends JpaRepository<AreaEntity, Long> {
 
-    Area getByRegionAndIndex(Region region, Integer index);
+    AreaEntity getByRegionAndIndex(RegionEntity region, Integer index);
 
-    Optional<Area> findByRegionAndIndex(Region region, Integer index);
+    Optional<AreaEntity> findByRegionAndIndex(RegionEntity region, Integer index);
 
-    Stream<Area> streamByRegionAndIndexNotIn(Region region, Collection<Integer> indexNotIn);
+    Stream<AreaEntity> streamByRegionAndIndexNotIn(RegionEntity region, Collection<Integer> indexNotIn);
 }

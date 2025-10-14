@@ -26,7 +26,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.stream.Stream;
 
-public interface RegionRepository extends JpaRepository<Region, Long> {
+public interface RegionRepository extends JpaRepository<RegionEntity, Long> {
 
-    Stream<Region> streamBy();
+    Stream<RegionEntity> streamBy();
 }

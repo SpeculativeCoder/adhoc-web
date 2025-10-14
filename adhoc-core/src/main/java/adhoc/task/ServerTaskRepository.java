@@ -30,9 +30,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 // TODO: common
-public interface ServerTaskRepository extends JpaRepository<ServerTask, Long> {
+public interface ServerTaskRepository extends JpaRepository<ServerTaskEntity, Long> {
 
-    Stream<ServerTask> streamByTaskIdentifierNotInAndInitiatedBefore(Collection<String> taskIdentifiers, LocalDateTime initiatedBefore);
+    Stream<ServerTaskEntity> streamByTaskIdentifierNotInAndInitiatedBefore(Collection<String> taskIdentifiers, LocalDateTime initiatedBefore);
 
-    Optional<ServerTask> findFirstByServerId(Long serverId);
+    Optional<ServerTaskEntity> findFirstByServerId(Long serverId);
 }

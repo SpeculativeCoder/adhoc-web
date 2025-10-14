@@ -28,9 +28,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 // TODO
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
 
-    Optional<Task> findByTaskIdentifier(String taskIdentifier);
+    Optional<TaskEntity> findByTaskIdentifier(String taskIdentifier);
 
     void deleteByTaskIdentifierNotInAndSeenNotNull(Collection<String> taskIdentifiers);
 }

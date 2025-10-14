@@ -22,7 +22,7 @@
 
 package adhoc;
 
-import adhoc.user.User;
+import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.register.UserRegisterRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,8 +86,8 @@ public class AdhocManagerApplicationTest {
         assertThat(result).cookies()
                 .containsCookie("SESSION");
 
-        List<User> users = userRepository.findAll(Sort.by(Sort.Order.desc("id")));
-        User user = users.getFirst();
+        List<UserEntity> users = userRepository.findAll(Sort.by(Sort.Order.desc("id")));
+        UserEntity user = users.getFirst();
 
         assertThat(result).bodyJson().satisfies(json -> {
             //log.info(json.getJson());

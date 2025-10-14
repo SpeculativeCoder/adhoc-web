@@ -1,7 +1,7 @@
 package adhoc.user;
 
-import adhoc.region.Region;
-import adhoc.server.Server;
+import adhoc.region.RegionEntity;
+import adhoc.server.ServerEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,9 +27,9 @@ import java.util.UUID;
 
 /**
  * State of user in the world. Generally this changes a lot but is otherwise not important to keep so can be wiped/reset without too much consequence.
- * Long term important information about the user (login details, score etc.) should not be kept in here and should be elsewhere i.e. in {@link adhoc.user.User}
+ * Long term important information about the user (login details, score etc.) should not be kept in here and should be elsewhere i.e. in {@link UserEntity}
  */
-@Entity
+@Entity(name = "UserState")
 @Table(name = "adhoc_user_state", indexes = {
         @Index(name = "idx_user_region_id", columnList = "region_id"),
         @Index(name = "idx_user_created", columnList = "created"),
@@ -43,7 +43,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-public class UserState {
+public class UserStateEntity {
 
     @Id
     private Long id;
@@ -55,11 +55,11 @@ public class UserState {
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")
-    private User user;
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Region region;
+    private RegionEntity region;
 
     @Column(precision = 128, scale = 64)
     private BigDecimal x;
@@ -87,9 +87,9 @@ public class UserState {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Server destinationServer;
+    private ServerEntity destinationServer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Server server;
+    private ServerEntity server;
 }

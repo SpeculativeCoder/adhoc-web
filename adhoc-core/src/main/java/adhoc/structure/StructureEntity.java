@@ -20,12 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.structure;
 
-import adhoc.area.Area;
-import adhoc.pawn.Pawn;
-import adhoc.region.Region;
-import adhoc.user.UserState;
+import adhoc.faction.FactionEntity;
+import adhoc.region.RegionEntity;
+import adhoc.user.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,7 +32,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -43,16 +41,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.UUID;
 
 /**
- * A server is assigned to represent one or more areas of a region.
- * When a server is enabled, a server task (typically in the cloud) should be launched.
- * Once the server task is running, the server is considered active and users can navigate to it.
- * A server which is not enabled will have any associated task torn down and will be eventually purged.
+ * Structures are objects that are pre-placed or that users have placed in the world e.g. barriers etc.
  */
-@Entity
+@Entity(name = "Structure")
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
@@ -60,62 +54,63 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class Server {
+public class StructureEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ServerIdSequence")
-    @SequenceGenerator(name = "ServerIdSequence", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "StructureIdSequence")
+    @SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 50)
     private Long id;
 
     @Version
     @Column(nullable = false)
     private Long version;
 
+    @Column(nullable = false)
+    private UUID uuid;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String type;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Region region;
+    private RegionEntity region;
 
-    @OneToMany(mappedBy = "server")
-    @ToString.Exclude
-    private List<Area> areas;
-
-    @Column(nullable = false)
-    private String mapName;
-
-    @Column(precision = 128, scale = 64)
+    @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal x;
-    @Column(precision = 128, scale = 64)
+    @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal y;
-    @Column(precision = 128, scale = 64)
+    @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal z;
 
-    @Column(nullable = false)
-    private boolean enabled;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal pitch;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal yaw;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal roll;
 
-    @Column(nullable = false)
-    private boolean active;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal scaleX;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal scaleY;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal scaleZ;
 
-    private String publicIp;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal sizeX;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal sizeY;
+    @Column(precision = 128, scale = 64, nullable = false)
+    private BigDecimal sizeZ;
 
-    private Integer publicWebSocketPort;
-
-    private String domain;
-
-    private String webSocketUrl;
-
-    private LocalDateTime initiated;
-
-    private LocalDateTime started;
-
-    private LocalDateTime stopped;
-
-    private LocalDateTime seen;
-
-    @OneToMany(mappedBy = "server")
+    @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<UserState> userStates;
+    private FactionEntity faction;
 
-    @OneToMany(mappedBy = "server")
+    @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<Pawn> pawns;
+    private UserEntity user;
 }

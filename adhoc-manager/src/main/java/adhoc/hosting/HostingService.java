@@ -22,20 +22,20 @@
 
 package adhoc.hosting;
 
-import adhoc.server.Server;
-import adhoc.task.ServerTask;
-import adhoc.task.Task;
+import adhoc.server.ServerEntity;
+import adhoc.task.ServerTaskEntity;
+import adhoc.task.TaskEntity;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * A hosting service that can spin up Unreal servers on demand e.g. an ECS cluster that can spin up Unreal servers.
  */
 public interface HostingService {
 
-    List<Task> poll();
+    List<TaskEntity> poll();
 
-    ServerTask startServerTask(Server server);
+    ServerTaskEntity startServerTask(ServerEntity server);
 
     void stopServerTask(String taskIdentifier);
 }

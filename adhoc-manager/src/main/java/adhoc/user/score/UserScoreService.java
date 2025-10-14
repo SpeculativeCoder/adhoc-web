@@ -22,7 +22,7 @@
 
 package adhoc.user.score;
 
-import adhoc.faction.Faction;
+import adhoc.faction.FactionEntity;
 import adhoc.objective.ObjectiveRepository;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +61,7 @@ public class UserScoreService {
         List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts = objectiveRepository.getFactionObjectiveCounts();
 
         for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
-            Faction faction = factionObjectiveCount.getFaction();
+            FactionEntity faction = factionObjectiveCount.getFaction();
             Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
             BigDecimal scoreToAddForHumans = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));

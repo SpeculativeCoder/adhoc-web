@@ -22,23 +22,27 @@
 
 package adhoc.task;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Entity
+@Entity(name = "ServerTask")
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class KioskTask extends Task {
+public class ServerTaskEntity extends TaskEntity {
+
+    @Column(nullable = false)
+    private Long serverId;
 
     @Override
     public TaskType getTaskType() {
-        return TaskType.KIOSK;
+        return TaskType.SERVER;
     }
 }

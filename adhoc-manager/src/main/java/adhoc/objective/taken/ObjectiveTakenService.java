@@ -22,9 +22,9 @@
 
 package adhoc.objective.taken;
 
-import adhoc.faction.Faction;
+import adhoc.faction.FactionEntity;
 import adhoc.faction.FactionRepository;
-import adhoc.objective.Objective;
+import adhoc.objective.ObjectiveEntity;
 import adhoc.objective.ObjectiveRepository;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,8 +52,8 @@ public class ObjectiveTakenService {
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
-        Objective objective = objectiveRepository.getReferenceById(event.getObjectiveId());
-        Faction faction = factionRepository.getReferenceById(event.getFactionId());
+        ObjectiveEntity objective = objectiveRepository.getReferenceById(event.getObjectiveId());
+        FactionEntity faction = factionRepository.getReferenceById(event.getFactionId());
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
 

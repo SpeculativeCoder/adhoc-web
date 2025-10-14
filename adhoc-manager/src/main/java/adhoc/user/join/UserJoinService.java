@@ -23,13 +23,13 @@
 package adhoc.user.join;
 
 import adhoc.faction.FactionRepository;
-import adhoc.server.Server;
+import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.user.User;
+import adhoc.user.UserEntity;
 import adhoc.user.UserFullDto;
 import adhoc.user.UserRepository;
 import adhoc.user.UserService;
-import adhoc.user.UserState;
+import adhoc.user.UserStateEntity;
 import adhoc.user.register.UserRegisterService;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -65,9 +65,9 @@ public class UserJoinService {
         log.debug("userJoin: userId={} human={} factionId={} serverId={}",
                 userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
 
-        Server server = serverRepository.getReferenceById(userJoinRequest.getServerId());
+        ServerEntity server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
-        User user;
+        UserEntity user;
         // existing user? verify token
         if (userJoinRequest.getUserId() != null) {
             user = userRepository.getReferenceById(userJoinRequest.getUserId());
@@ -112,10 +112,10 @@ public class UserJoinService {
         return userService.toFullDto(user);
     }
 
-    private User autoRegister(Boolean human, Long factionId) {
+    private UserEntity autoRegister(Boolean human, Long factionId) {
         Verify.verifyNotNull(human);
 
-        User user = null;
+        UserEntity user = null;
 
         if (!human) {
             // bots should try to use existing bot account
@@ -125,8 +125,8 @@ public class UserJoinService {
         }
 
         if (user == null) {
-            user = new User();
-            user.setState(new UserState());
+            user = new UserEntity();
+            user.setState(new UserStateEntity());
             user.getState().setUser(user);
             user.setHuman(human);
             user.setFaction(factionRepository.getReferenceById(factionId));

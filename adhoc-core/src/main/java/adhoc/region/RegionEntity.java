@@ -22,10 +22,21 @@
 
 package adhoc.region;
 
-import adhoc.area.Area;
-import adhoc.server.Server;
-import jakarta.persistence.*;
-import lombok.*;
+import adhoc.area.AreaEntity;
+import adhoc.server.ServerEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Version;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,7 +47,7 @@ import java.util.List;
  * but can move freely from area to area within the region (which may sometimes mean joining different servers)
  * without having to download the HTML5 client again.
  */
-@Entity
+@Entity(name = "Region")
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
@@ -44,7 +55,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class Region {
+public class RegionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RegionIdSequence")
@@ -71,9 +82,9 @@ public class Region {
 
     @OneToMany(mappedBy = "region")
     @ToString.Exclude
-    private List<Area> areas;
+    private List<AreaEntity> areas;
 
     @OneToMany(mappedBy = "region")
     @ToString.Exclude
-    private List<Server> servers;
+    private List<ServerEntity> servers;
 }

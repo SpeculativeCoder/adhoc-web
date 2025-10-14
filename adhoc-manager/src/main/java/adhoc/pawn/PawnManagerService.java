@@ -23,7 +23,7 @@
 package adhoc.pawn;
 
 import adhoc.faction.FactionRepository;
-import adhoc.server.Server;
+import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;
@@ -37,7 +37,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -57,7 +60,7 @@ public class PawnManagerService {
     public List<PawnDto> handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
         LocalDateTime seen = LocalDateTime.now();
 
-        Server server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
+        ServerEntity server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
 
         List<UUID> pawnUuids = new ArrayList<>();
         //List<Long> userIds = new ArrayList<>();
@@ -66,8 +69,8 @@ public class PawnManagerService {
         for (PawnDto dto : serverPawnsEvent.getPawns()) {
             Preconditions.checkArgument(Objects.equals(server.getId(), dto.getServerId()));
 
-            Pawn pawn = toEntity(dto,
-                    pawnRepository.findByUuid(dto.getUuid()).orElseGet(Pawn::new));
+            PawnEntity pawn = toEntity(dto,
+                    pawnRepository.findByUuid(dto.getUuid()).orElseGet(PawnEntity::new));
 
             pawn.setSeen(seen);
 
@@ -102,7 +105,7 @@ public class PawnManagerService {
         return pawnDtos;
     }
 
-    Pawn toEntity(PawnDto pawnDto, Pawn pawn) {
+    PawnEntity toEntity(PawnDto pawnDto, PawnEntity pawn) {
         pawn.setUuid(pawnDto.getUuid());
         pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
         pawn.setIndex(pawnDto.getIndex());

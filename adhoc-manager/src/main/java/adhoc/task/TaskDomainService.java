@@ -68,10 +68,10 @@ public class TaskDomainService {
     public List<? extends Event> manageTaskDomains() {
         List<Event> events = new ArrayList<>();
 
-        Map<Task, String> tasksDomains = new LinkedHashMap<>();
-        MultiValueMap<Task, String> tasksPublicIps = new LinkedMultiValueMap<>();
+        Map<TaskEntity, String> tasksDomains = new LinkedHashMap<>();
+        MultiValueMap<TaskEntity, String> tasksPublicIps = new LinkedMultiValueMap<>();
 
-        for (Task task : taskRepository.findAll()) {
+        for (TaskEntity task : taskRepository.findAll()) {
             if (task.getDomain() == null && task.getPublicIp() != null) {
 
                 String domain = determineDomain(task);
@@ -81,8 +81,8 @@ public class TaskDomainService {
             }
         }
 
-        for (Map.Entry<Task, String> taskDomain : tasksDomains.entrySet()) {
-            Task task = taskDomain.getKey();
+        for (Map.Entry<TaskEntity, String> taskDomain : tasksDomains.entrySet()) {
+            TaskEntity task = taskDomain.getKey();
             String domain = taskDomain.getValue();
             List<String> publicIps = Verify.verifyNotNull(tasksPublicIps.get(task));
 
@@ -100,7 +100,7 @@ public class TaskDomainService {
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public void updateTaskDomainInNewTransaction(Long taskId, String domain) {
-        Task task = taskRepository.getReferenceById(taskId);
+        TaskEntity task = taskRepository.getReferenceById(taskId);
 
         if (!Objects.equals(task.getDomain(), domain)) {
             task.setDomain(domain);
@@ -109,11 +109,11 @@ public class TaskDomainService {
         messageService.addGlobalMessage(String.format("Task %d (of type %s) mapped to domain %s", task.getId(), task.getTaskType().name(), domain));
     }
 
-    private String determineDomain(Task task) {
+    private String determineDomain(TaskEntity task) {
         return switch (task) {
-            case ManagerTask managerTask -> managerProperties.getManagerDomain();
-            case KioskTask kioskTask -> managerProperties.getKioskDomain();
-            case ServerTask serverTask -> serverTask.getServerId() + "-" + managerProperties.getServerDomain();
+            case ManagerTaskEntity managerTask -> managerProperties.getManagerDomain();
+            case KioskTaskEntity kioskTask -> managerProperties.getKioskDomain();
+            case ServerTaskEntity serverTask -> serverTask.getServerId() + "-" + managerProperties.getServerDomain();
             default -> throw new IllegalStateException("Unknown task type: " + task.getClass());
         };
     }

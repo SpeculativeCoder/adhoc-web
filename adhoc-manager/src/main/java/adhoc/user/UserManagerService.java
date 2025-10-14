@@ -44,7 +44,7 @@ public class UserManagerService {
                 toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }
 
-    User toEntity(UserDto userDto, User user) {
+    UserEntity toEntity(UserDto userDto, UserEntity user) {
         // TODO
         //user.setName(userDto.getName());
         //user.setFaction(user.getFaction());

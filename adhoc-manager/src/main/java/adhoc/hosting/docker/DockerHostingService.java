@@ -22,16 +22,16 @@
 
 package adhoc.hosting.docker;
 
-import adhoc.area.Area;
+import adhoc.area.AreaEntity;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.docker.properties.DockerHostingProperties;
-import adhoc.server.Server;
+import adhoc.server.ServerEntity;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
-import adhoc.task.KioskTask;
-import adhoc.task.ManagerTask;
-import adhoc.task.ServerTask;
-import adhoc.task.Task;
+import adhoc.task.KioskTaskEntity;
+import adhoc.task.ManagerTaskEntity;
+import adhoc.task.ServerTaskEntity;
+import adhoc.task.TaskEntity;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
@@ -56,7 +56,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -105,7 +108,7 @@ public class DockerHostingService implements HostingService {
     }
 
     @Override
-    public List<Task> poll() {
+    public List<TaskEntity> poll() {
         log.debug("Polling Docker...");
 
         DockerClient dockerClient = dockerClient();
@@ -113,16 +116,16 @@ public class DockerHostingService implements HostingService {
         List<Container> containers = dockerClient.listContainersCmd().exec();
         log.trace("containers: {}", containers);
 
-        List<Task> tasks = new ArrayList<>();
+        List<TaskEntity> tasks = new ArrayList<>();
 
         // assume manager running on Docker host (unless we find an adhoc_manager container in Docker)
-        ManagerTask defaultManagerTask = new ManagerTask();
+        ManagerTaskEntity defaultManagerTask = new ManagerTaskEntity();
         defaultManagerTask.setTaskIdentifier("host manager task");
         defaultManagerTask.setPrivateIp("host.docker.internal");
         defaultManagerTask.setPublicIp("127.0.0.1");
         tasks.add(defaultManagerTask);
         // assume kiosk running on Docker host (unless we find an adhoc_kiosk container in Docker)
-        KioskTask defaultKioskTask = new KioskTask();
+        KioskTaskEntity defaultKioskTask = new KioskTaskEntity();
         defaultKioskTask.setTaskIdentifier("host kiosk task");
         defaultKioskTask.setPrivateIp("host.docker.internal");
         defaultKioskTask.setPublicIp("127.0.0.1");
@@ -150,7 +153,7 @@ public class DockerHostingService implements HostingService {
                 // as we have found a manager - remove the default assumption that the manager is the docker host
                 tasks.remove(defaultManagerTask);
 
-                ManagerTask managerTask = new ManagerTask();
+                ManagerTaskEntity managerTask = new ManagerTaskEntity();
                 managerTask.setTaskIdentifier(inspectedContainer.getId());
                 managerTask.setPrivateIp(privateIp);
                 managerTask.setPublicIp("127.0.0.1");
@@ -160,7 +163,7 @@ public class DockerHostingService implements HostingService {
                 // as we have found a kiosk - remove the default assumption that the kiosk is the docker host
                 tasks.remove(defaultKioskTask);
 
-                KioskTask kioskTask = new KioskTask();
+                KioskTaskEntity kioskTask = new KioskTaskEntity();
                 kioskTask.setTaskIdentifier(inspectedContainer.getId());
                 kioskTask.setPrivateIp(privateIp);
                 kioskTask.setPublicIp("127.0.0.1");
@@ -172,7 +175,7 @@ public class DockerHostingService implements HostingService {
                     if (serverIdMatcher.matches()) {
                         Long serverId = parseServerId(serverIdMatcher.group(1));
 
-                        ServerTask task = new ServerTask();
+                        ServerTaskEntity task = new ServerTaskEntity();
                         task.setTaskIdentifier(inspectedContainer.getId());
                         task.setPrivateIp(privateIp);
                         task.setPublicIp("127.0.0.1");
@@ -190,7 +193,7 @@ public class DockerHostingService implements HostingService {
     }
 
     @Override
-    public ServerTask startServerTask(Server server) {
+    public ServerTaskEntity startServerTask(ServerEntity server) {
         log.debug("Starting Docker container for {}", server); // linked to managers {}", managerHosts);
         int publicWebSocketPort = calculatePublicWebSocketPort(server.getId());
 
@@ -212,7 +215,7 @@ public class DockerHostingService implements HostingService {
                         //                .collect(Collectors.joining(","))),
                         String.format("INITIAL_AREA_INDEXES=%s",
                                 server.getAreas().stream()
-                                        .map(Area::getIndex)
+                                        .map(AreaEntity::getIndex)
                                         .map(Object::toString)
                                         .collect(Collectors.joining(","))),
                         String.format("MAX_CONTROLLERS=%d", managerProperties.getMaxControllers()),
@@ -237,7 +240,7 @@ public class DockerHostingService implements HostingService {
 
         //InspectContainerResponse inspectedContainer = dockerClient.inspectContainerCmd(createdContainer.getId()).exec();
 
-        ServerTask serverTask = new ServerTask();
+        ServerTaskEntity serverTask = new ServerTaskEntity();
         serverTask.setTaskIdentifier(createdContainer.getId());
         serverTask.setPublicWebSocketPort(publicWebSocketPort);
         serverTask.setServerId(server.getId());

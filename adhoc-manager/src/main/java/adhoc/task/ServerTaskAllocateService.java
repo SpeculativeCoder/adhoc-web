@@ -24,7 +24,7 @@ package adhoc.task;
 
 import adhoc.hosting.HostingService;
 import adhoc.message.MessageService;
-import adhoc.server.Server;
+import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -65,12 +66,12 @@ public class ServerTaskAllocateService {
     public void allocateServerTasks() {
         List<String> taskIdentifiers = new ArrayList<>();
 
-        try (Stream<Server> servers = serverRepository.streamByEnabledTrue()) {
+        try (Stream<ServerEntity> servers = serverRepository.streamByEnabledTrue()) {
             servers.forEach(server -> {
-                ServerTask serverTask = serverTaskRepository.findFirstByServerId(server.getId())
+                ServerTaskEntity serverTask = serverTaskRepository.findFirstByServerId(server.getId())
                         // no existing server task? start a new one
                         .orElseGet(() -> {
-                            ServerTask serverHostingTask = startHostedServerTask(server);
+                            ServerTaskEntity serverHostingTask = startHostedServerTask(server);
                             self.createServerTaskInNewTransaction(serverHostingTask);
                             return serverHostingTask;
                         });
@@ -81,7 +82,7 @@ public class ServerTaskAllocateService {
 
         LocalDateTime initiatedBefore = LocalDateTime.now().minusMinutes(1);
         // any other server tasks that are no longer in use by a server should be stopped and their entry deleted
-        try (Stream<ServerTask> unusedServerTasks = serverTaskRepository.streamByTaskIdentifierNotInAndInitiatedBefore(taskIdentifiers, initiatedBefore)) {
+        try (Stream<ServerTaskEntity> unusedServerTasks = serverTaskRepository.streamByTaskIdentifierNotInAndInitiatedBefore(taskIdentifiers, initiatedBefore)) {
             unusedServerTasks.forEach(unusedServerTask -> {
                 if (unusedServerTask.getSeen() != null) {
                     stopHostedServerTask(unusedServerTask);
@@ -91,10 +92,10 @@ public class ServerTaskAllocateService {
         }
     }
 
-    private ServerTask startHostedServerTask(Server server) {
+    private ServerTaskEntity startHostedServerTask(ServerEntity server) {
         try {
             log.debug("Starting server task for server {}", server.getId());
-            ServerTask serverTask = hostingService.startServerTask(server);
+            ServerTaskEntity serverTask = hostingService.startServerTask(server);
 
             Verify.verifyNotNull(serverTask.getTaskIdentifier());
             Verify.verifyNotNull(serverTask.getServerId());
@@ -107,7 +108,7 @@ public class ServerTaskAllocateService {
         }
     }
 
-    private void stopHostedServerTask(ServerTask serverTask) {
+    private void stopHostedServerTask(ServerTaskEntity serverTask) {
         try {
             log.debug("Stopping server task for server {}", serverTask.getServerId());
             hostingService.stopServerTask(serverTask.getTaskIdentifier());
@@ -121,7 +122,7 @@ public class ServerTaskAllocateService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    void createServerTaskInNewTransaction(ServerTask serverTask) {
+    void createServerTaskInNewTransaction(ServerTaskEntity serverTask) {
 
         serverTask.setInitiated(LocalDateTime.now()); // TODO
 

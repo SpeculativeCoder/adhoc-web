@@ -22,8 +22,8 @@
 
 package adhoc.server;
 
-import adhoc.area.Area;
-import adhoc.region.Region;
+import adhoc.area.AreaEntity;
+import adhoc.region.RegionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -31,15 +31,15 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface ServerRepository extends JpaRepository<Server, Long> {
+public interface ServerRepository extends JpaRepository<ServerEntity, Long> {
 
-    Optional<Server> findFirstByRegionAndAreasContains(Region region, Area area);
+    Optional<ServerEntity> findFirstByRegionAndAreasContains(RegionEntity region, AreaEntity area);
 
-    Optional<Server> findFirstByRegionAndAreasEmpty(Region region);
+    Optional<ServerEntity> findFirstByRegionAndAreasEmpty(RegionEntity region);
 
-    Stream<Server> streamByEnabledTrue();
+    Stream<ServerEntity> streamByEnabledTrue();
 
-    Stream<Server> streamByRegionAndIdNotIn(Region region, Collection<Long> ids);
+    Stream<ServerEntity> streamByRegionAndIdNotIn(RegionEntity region, Collection<Long> ids);
 
-    Stream<Server> streamByAreasEmptyAndUserStatesEmptyAndPawnsEmptyAndSeenBefore(LocalDateTime seenBefore);
+    Stream<ServerEntity> streamByAreasEmptyAndUserStatesEmptyAndPawnsEmptyAndSeenBefore(LocalDateTime seenBefore);
 }

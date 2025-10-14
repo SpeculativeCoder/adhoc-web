@@ -20,24 +20,37 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.objective;
 
-import adhoc.objective.Objective;
-import adhoc.region.Region;
-import adhoc.server.Server;
-import jakarta.persistence.*;
-import lombok.*;
+import adhoc.area.AreaEntity;
+import adhoc.faction.FactionEntity;
+import adhoc.region.RegionEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Version;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 /**
- * Area within a region (a region is map/level in the Unreal project).
- * There may be more than one area per region. When users navigate from one area to another area,
- * they may have to connect to a new server unless the same server manages both the areas.
+ * An objective that can be taken by a faction.
  */
-@Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "uc_area_region_id_index", columnNames = {"region_id", "index"}))
+@Entity(name = "Objective")
+@Table(uniqueConstraints = @UniqueConstraint(name = "uc_objective_region_id_index", columnNames = {"region_id", "index"}))
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
@@ -45,11 +58,11 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class Area {
+public class ObjectiveEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AreaIdSequence")
-    @SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ObjectiveIdSequence")
+    @SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 50)
     private Long id;
 
     @Version
@@ -58,7 +71,7 @@ public class Area {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Region region;
+    private RegionEntity region;
 
     @Column(nullable = false)
     private Integer index;
@@ -73,19 +86,19 @@ public class Area {
     @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal z;
 
-    @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal sizeX;
-    @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal sizeY;
-    @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal sizeZ;
-
-    @OneToMany(mappedBy = "area")
-    @ToString.Exclude
-    private List<Objective> objectives;
-
-    /** Server currently representing this area. */
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Server server;
+    private FactionEntity initialFaction;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private FactionEntity faction;
+
+    @ManyToMany
+    @ToString.Exclude
+    private Set<ObjectiveEntity> linkedObjectives;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private AreaEntity area;
 }

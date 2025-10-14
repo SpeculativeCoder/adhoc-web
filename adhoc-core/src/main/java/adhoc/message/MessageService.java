@@ -55,14 +55,14 @@ public class MessageService {
     public void addGlobalMessage(String text) {
         LocalDateTime now = LocalDateTime.now();
 
-        Message message = new Message();
+        MessageEntity message = new MessageEntity();
         message.setTimestamp(now);
         message.setText(text);
 
         messageRepository.save(message);
     }
 
-    MessageDto toDto(Message message) {
+    MessageDto toDto(MessageEntity message) {
         return new MessageDto(
                 message.getId(),
                 message.getVersion(),

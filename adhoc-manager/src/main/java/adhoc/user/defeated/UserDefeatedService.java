@@ -23,7 +23,7 @@
 package adhoc.user.defeated;
 
 import adhoc.message.MessageService;
-import adhoc.user.User;
+import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +49,8 @@ public class UserDefeatedService {
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public UserDefeatedEvent userDefeated(ServerUserDefeatedEvent serverUserDefeatedEvent) {
-        User user = userRepository.getReferenceById(serverUserDefeatedEvent.getUserId());
-        User defeatedUser = userRepository.getReferenceById(serverUserDefeatedEvent.getDefeatedUserId());
+        UserEntity user = userRepository.getReferenceById(serverUserDefeatedEvent.getUserId());
+        UserEntity defeatedUser = userRepository.getReferenceById(serverUserDefeatedEvent.getDefeatedUserId());
 
         BigDecimal scoreAdd = BigDecimal.valueOf(user.isHuman() ? 1.0f : 0.1f);
         userRepository.updateScoreAddById(scoreAdd, user.getId());

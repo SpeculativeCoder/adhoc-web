@@ -28,9 +28,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
 
-public interface FactionRepository extends JpaRepository<Faction, Long> {
+public interface FactionRepository extends JpaRepository<FactionEntity, Long> {
 
-    Faction getByIndex(Integer index);
+    FactionEntity getByIndex(Integer index);
 
     @Modifying
     @Query("update Faction f set f.version = f.version + 1, f.score = f.score + ?1 where f.id = ?2")

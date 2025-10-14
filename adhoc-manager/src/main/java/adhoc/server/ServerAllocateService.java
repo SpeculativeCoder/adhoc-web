@@ -23,11 +23,11 @@
 package adhoc.server;
 
 import adhoc.Event;
-import adhoc.area.Area;
+import adhoc.area.AreaEntity;
 import adhoc.area.groups.AreaGroupsFactory;
-import adhoc.region.Region;
+import adhoc.region.RegionEntity;
 import adhoc.region.RegionRepository;
-import adhoc.task.ServerTask;
+import adhoc.task.ServerTaskEntity;
 import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -79,21 +79,21 @@ public class ServerAllocateService {
         log.trace("Managing servers...");
         List<Event> events = new ArrayList<>();
 
-        try (Stream<Region> regions = regionRepository.streamBy()) {
+        try (Stream<RegionEntity> regions = regionRepository.streamBy()) {
             regions.forEach(region -> {
                 log.trace("Managing servers for region {}", region);
                 List<Long> usedServerIds = new ArrayList<>();
 
-                List<Set<Area>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
+                List<Set<AreaEntity>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
                 log.trace("Region {} area groups: {}", region.getId(), areaGroups);
 
-                for (Set<Area> areaGroup : areaGroups) {
+                for (Set<AreaEntity> areaGroup : areaGroups) {
                     // TODO: prefer searching by area(s) that have human(s) in them
-                    Area firstArea = areaGroup.iterator().next();
+                    AreaEntity firstArea = areaGroup.iterator().next();
 
                     // try to use an existing server for this area group, otherwise take an existing unused server or create a new server
-                    Server server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea)
-                            .orElseGet(() -> serverRepository.findFirstByRegionAndAreasEmpty(region).orElseGet(Server::new));
+                    ServerEntity server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea)
+                            .orElseGet(() -> serverRepository.findFirstByRegionAndAreasEmpty(region).orElseGet(ServerEntity::new));
 
                     // adjust server as necessary to ensure it is representing this region and area group
                     boolean emitEvent = updateServerWithRegionAndAreaGroup(server, region, areaGroup);
@@ -113,7 +113,7 @@ public class ServerAllocateService {
                 }
 
                 // any servers in this region that are no longer used should be adjusted to ensure they are not representing any areas
-                try (Stream<Server> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedServerIds)) {
+                try (Stream<ServerEntity> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedServerIds)) {
                     unusedServers.forEach(unusedServer -> {
                         log.trace("Managing unused server {} for region {}", unusedServer, region);
 
@@ -132,17 +132,17 @@ public class ServerAllocateService {
         return events;
     }
 
-    private boolean updateServerWithRegionAndAreaGroup(Server server, Region region, Set<Area> areaGroup) {
+    private boolean updateServerWithRegionAndAreaGroup(ServerEntity server, RegionEntity region, Set<AreaEntity> areaGroup) {
         log.trace("Updating server {} with region {} and area group {}", server, region, areaGroup);
 
-        Optional<ServerTask> optionalServerTask = Optional.ofNullable(server.getId()).flatMap(serverTaskRepository::findFirstByServerId);
+        Optional<ServerTaskEntity> optionalServerTask = Optional.ofNullable(server.getId()).flatMap(serverTaskRepository::findFirstByServerId);
 
         Verify.verifyNotNull(region, "region must be not null");
         String mapName = region.getMapName();
 
-        OptionalDouble averageX = areaGroup.stream().map(Area::getX).mapToDouble(BigDecimal::doubleValue).average();
-        OptionalDouble averageY = areaGroup.stream().map(Area::getY).mapToDouble(BigDecimal::doubleValue).average();
-        OptionalDouble averageZ = areaGroup.stream().map(Area::getZ).mapToDouble(BigDecimal::doubleValue).average();
+        OptionalDouble averageX = areaGroup.stream().map(AreaEntity::getX).mapToDouble(BigDecimal::doubleValue).average();
+        OptionalDouble averageY = areaGroup.stream().map(AreaEntity::getY).mapToDouble(BigDecimal::doubleValue).average();
+        OptionalDouble averageZ = areaGroup.stream().map(AreaEntity::getZ).mapToDouble(BigDecimal::doubleValue).average();
 
         BigDecimal areaGroupX = averageX.isPresent() ? BigDecimal.valueOf(averageX.getAsDouble()).setScale(32, RoundingMode.HALF_UP) : null;
         BigDecimal areaGroupY = averageY.isPresent() ? BigDecimal.valueOf(averageY.getAsDouble()).setScale(32, RoundingMode.HALF_UP) : null;
@@ -156,15 +156,15 @@ public class ServerAllocateService {
         boolean active = server.isActive() && optionalServerTask.isPresent();
 
         String publicIp = optionalServerTask
-                .map(ServerTask::getPublicIp)
+                .map(ServerTaskEntity::getPublicIp)
                 .orElse(null);
 
         Integer publicWebSocketPort = optionalServerTask
-                .map(ServerTask::getPublicWebSocketPort)
+                .map(ServerTaskEntity::getPublicWebSocketPort)
                 .orElse(null);
 
         String domain = optionalServerTask
-                .map(ServerTask::getDomain)
+                .map(ServerTaskEntity::getDomain)
                 .orElse(null);
 
         String webSocketUrl = null;
@@ -188,8 +188,8 @@ public class ServerAllocateService {
             emitEvent = true;
         }
         // remove areas no longer represented by this server
-        for (Iterator<Area> iter = server.getAreas().iterator(); iter.hasNext(); ) {
-            Area existingArea = iter.next();
+        for (Iterator<AreaEntity> iter = server.getAreas().iterator(); iter.hasNext(); ) {
+            AreaEntity existingArea = iter.next();
             if (!areaGroup.contains(existingArea)) {
                 log.debug("Server {} no longer contains area {}", server, existingArea);
                 iter.remove();
@@ -198,7 +198,7 @@ public class ServerAllocateService {
             }
         }
         // link new areas represented by this server
-        for (Area area : areaGroup) {
+        for (AreaEntity area : areaGroup) {
             if (!server.getAreas().contains(area)) {
                 log.debug("Server {} now contains area {}", server, area);
                 server.getAreas().add(area);

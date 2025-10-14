@@ -26,12 +26,12 @@ import adhoc.faction.FactionRepository;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.util.RandomNameUtils;
 import adhoc.system.util.RandomUUIDUtils;
-import adhoc.user.User;
+import adhoc.user.UserEntity;
 import adhoc.user.UserFullDto;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
 import adhoc.user.UserService;
-import adhoc.user.UserState;
+import adhoc.user.UserStateEntity;
 import adhoc.user.auth.programmatic_login.ProgrammaticLoginService;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -77,8 +77,8 @@ public class UserRegisterService {
                 userRegisterRequest.getPassword() != null,
                 userRegisterRequest.getFactionId());
 
-        User user = new User();
-        user.setState(new UserState());
+        UserEntity user = new UserEntity();
+        user.setState(new UserStateEntity());
         user.getState().setUser(user);
         user.setName(userRegisterRequest.getName());
         user.setEmail(userRegisterRequest.getEmail());
@@ -94,7 +94,7 @@ public class UserRegisterService {
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public User userRegisterInternal(User user) {
+    public UserEntity userRegisterInternal(UserEntity user) {
         String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();
         log.debug("userRegisterInternal: remoteAddr={} userAgent={}", remoteAddr, userAgent);
@@ -107,7 +107,7 @@ public class UserRegisterService {
 
         // TODO: think about existing name/email check before allowing name/email input
         if (user.getName() != null || user.getEmail() != null) {
-            Optional<User> existingUser = userRepository.findByNameOrEmail(user.getName(), user.getEmail());
+            Optional<UserEntity> existingUser = userRepository.findByNameOrEmail(user.getName(), user.getEmail());
             if (existingUser.isPresent()) {
                 log.warn("User name or email already in use. name={} email={}", user.getName(), user.getEmail());
                 throw new IllegalArgumentException("User name or email already in use");

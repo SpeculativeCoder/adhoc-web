@@ -20,44 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.faction;
+package adhoc.task;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.math.BigDecimal;
-
-/**
- * Each user is associated with a faction.
- */
-@Entity
+@Entity(name = "ManagerTask")
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@ToString
-public class Faction {
+@ToString(callSuper = true)
+public class ManagerTaskEntity extends TaskEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FactionIdSequence")
-    @SequenceGenerator(name = "FactionIdSequence", initialValue = 1, allocationSize = 50)
-    private Long id;
-
-    @Version
-    @Column(nullable = false)
-    private Long version;
-
-    @Column(nullable = false, unique = true)
-    private Integer index;
-
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String color;
-
-    @Column(precision = 128, scale = 32, nullable = false)
-    private BigDecimal score;
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.MANAGER;
+    }
 }

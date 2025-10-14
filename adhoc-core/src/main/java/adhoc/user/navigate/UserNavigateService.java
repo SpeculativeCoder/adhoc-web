@@ -22,14 +22,13 @@
 
 package adhoc.user.navigate;
 
-import adhoc.area.Area;
+import adhoc.area.AreaEntity;
 import adhoc.area.AreaRepository;
-import adhoc.region.Region;
-import adhoc.server.Server;
+import adhoc.region.RegionEntity;
+import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.user.User;
+import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
-import adhoc.user.UserService;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -83,12 +82,12 @@ public class UserNavigateService {
             Preconditions.checkArgument(request.getPitch() == null);
         }
 
-        User user = userRepository.getReferenceById(request.getUserId());
+        UserEntity user = userRepository.getReferenceById(request.getUserId());
 
-        Server destinationServer = request.getDestinationServerId() != null ?
+        ServerEntity destinationServer = request.getDestinationServerId() != null ?
                 serverRepository.getReferenceById(request.getDestinationServerId()) : null;
 
-        Area destinationArea = request.getDestinationAreaId() != null ?
+        AreaEntity destinationArea = request.getDestinationAreaId() != null ?
                 areaRepository.getReferenceById(request.getDestinationAreaId()) : null;
 
         // if no server provided, use server from area if that was provided
@@ -105,15 +104,15 @@ public class UserNavigateService {
 
         // if no server specified (or server from area above) then just pick a random active/enabled server
         if (destinationServer == null) {
-            List<Server> servers = serverRepository.findAll().stream()
+            List<ServerEntity> servers = serverRepository.findAll().stream()
                     .filter(server -> server.isEnabled() && server.isActive()).toList();
             Verify.verify(!servers.isEmpty());
 
             destinationServer = servers.get(ThreadLocalRandom.current().nextInt(servers.size()));
         }
 
-        Server oldDestinationServer = user.getState().getDestinationServer();
-        Region oldRegion = oldDestinationServer == null ? null : oldDestinationServer.getRegion();
+        ServerEntity oldDestinationServer = user.getState().getDestinationServer();
+        RegionEntity oldRegion = oldDestinationServer == null ? null : oldDestinationServer.getRegion();
 
         // when moving servers, update the position to ensure they can spawn at the right location
         if (destinationServer != oldDestinationServer

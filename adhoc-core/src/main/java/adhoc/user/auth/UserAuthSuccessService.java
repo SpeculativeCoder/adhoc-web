@@ -1,7 +1,7 @@
 package adhoc.user.auth;
 
 import adhoc.system.util.RandomUUIDUtils;
-import adhoc.user.User;
+import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class UserAuthSuccessService {
         Verify.verify(principal instanceof AdhocUserDetails);
         AdhocUserDetails userDetails = (AdhocUserDetails) principal;
 
-        User user = userRepository.getReferenceById(userDetails.getUserId());
+        UserEntity user = userRepository.getReferenceById(userDetails.getUserId());
 
         UUID newToken = RandomUUIDUtils.randomUUID();
         LocalDateTime now = LocalDateTime.now();

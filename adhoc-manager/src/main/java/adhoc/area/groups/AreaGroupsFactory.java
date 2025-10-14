@@ -22,13 +22,13 @@
 
 package adhoc.area.groups;
 
-import adhoc.area.Area;
-import adhoc.region.Region;
+import adhoc.area.AreaEntity;
+import adhoc.region.RegionEntity;
 
 import java.util.List;
 import java.util.Set;
 
 public interface AreaGroupsFactory {
 
-    List<Set<Area>> determineAreaGroups(Region region);
+    List<Set<AreaEntity>> determineAreaGroups(RegionEntity region);
 }

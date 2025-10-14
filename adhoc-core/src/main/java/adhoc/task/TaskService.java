@@ -51,7 +51,7 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Failed to find task " + taskId)));
     }
 
-    TaskDto toDto(Task task) {
+    TaskDto toDto(TaskEntity task) {
         return new TaskDto(
                 task.getId(),
                 task.getVersion(),
@@ -61,6 +61,6 @@ public class TaskService {
                 task.getDomain(),
                 task.getInitiated(),
                 task.getSeen(),
-                task instanceof ServerTask serverTask ? serverTask.getServerId() : null);
+                task instanceof ServerTaskEntity serverTask ? serverTask.getServerId() : null);
     }
 }

@@ -22,10 +22,10 @@
 
 package adhoc.area;
 
-import adhoc.objective.Objective;
-import adhoc.region.Region;
+import adhoc.objective.ObjectiveEntity;
+import adhoc.region.RegionEntity;
 import adhoc.region.RegionRepository;
-import adhoc.server.Server;
+import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,10 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
 @Service
@@ -55,8 +58,8 @@ public class AreaManagerService {
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<AreaDto> updateServerAreas(Long serverId, List<AreaDto> areaDtos) {
-        Server server = serverRepository.getReferenceById(serverId);
-        Region serverRegion = server.getRegion();
+        ServerEntity server = serverRepository.getReferenceById(serverId);
+        RegionEntity serverRegion = server.getRegion();
 
         Set<Integer> areaIndexes = new TreeSet<>();
         for (AreaDto areaDto : areaDtos) {
@@ -67,11 +70,11 @@ public class AreaManagerService {
             Preconditions.checkArgument(unique, "Area index not unique: %s", areaDto.getIndex());
         }
 
-        try (Stream<Area> areasToDelete = areaRepository.streamByRegionAndIndexNotIn(serverRegion, areaIndexes)) {
+        try (Stream<AreaEntity> areasToDelete = areaRepository.streamByRegionAndIndexNotIn(serverRegion, areaIndexes)) {
             areasToDelete.forEach(areaToDelete -> {
                 log.info("Deleting unused area: {}", areaToDelete);
                 // before deleting unused areas we must unlink any objectives that will become orphaned
-                for (Objective orphanedObjective : areaToDelete.getObjectives()) {
+                for (ObjectiveEntity orphanedObjective : areaToDelete.getObjectives()) {
                     orphanedObjective.setArea(null);
                 }
                 areaRepository.delete(areaToDelete);
@@ -80,13 +83,13 @@ public class AreaManagerService {
 
         return areaDtos.stream()
                 .map(areaDto -> toEntity(areaDto,
-                        areaRepository.findByRegionAndIndex(serverRegion, areaDto.getIndex()).orElseGet(Area::new)))
+                        areaRepository.findByRegionAndIndex(serverRegion, areaDto.getIndex()).orElseGet(AreaEntity::new)))
                 .map(areaRepository::save)
                 .map(areaService::toDto)
                 .toList();
     }
 
-    Area toEntity(AreaDto areaDto, Area area) {
+    AreaEntity toEntity(AreaDto areaDto, AreaEntity area) {
         area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
         area.setIndex(areaDto.getIndex());
         area.setName(areaDto.getName());

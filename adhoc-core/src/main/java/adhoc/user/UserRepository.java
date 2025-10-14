@@ -22,7 +22,7 @@
 
 package adhoc.user;
 
-import adhoc.server.Server;
+import adhoc.server.ServerEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -33,13 +33,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    Optional<User> findByNameOrEmail(String name, String email);
+    Optional<UserEntity> findByNameOrEmail(String name, String email);
 
-    Optional<User> findFirstByHumanFalseAndFactionIdAndStateSeenBefore(Long factionId, LocalDateTime seenBefore);
+    Optional<UserEntity> findFirstByHumanFalseAndFactionIdAndStateSeenBefore(Long factionId, LocalDateTime seenBefore);
 
-    Stream<User> streamForWriteByStateServerNotNull();
+    Stream<UserEntity> streamForWriteByStateServerNotNull();
 
     @Query("select u.id from User u where u.created < ?1 and u.state.seen is null and u.password is null and u.pawns is empty")
     List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
@@ -50,7 +50,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select cast(count(1) as boolean) " +
             "from User u " +
             "where u.human and ((u.state.destinationServer = ?1 and u.navigated > ?2) or (u.state.server = ?1))")
-    boolean existsByHumanTrueAnd_DestinationServerAndNavigatedAfterOrServer_(Server server, LocalDateTime navigatedAfter);
+    boolean existsByHumanTrueAnd_DestinationServerAndNavigatedAfterOrServer_(ServerEntity server, LocalDateTime navigatedAfter);
 
     @Modifying
     @Query("update User u set u.version = u.version + 1, u.score = u.score + ?1 where u.id = ?2")

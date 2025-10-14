@@ -20,21 +20,36 @@
  * SOFTWARE.
  */
 
-package adhoc.structure;
+package adhoc.pawn;
 
-import adhoc.faction.Faction;
-import adhoc.region.Region;
-import adhoc.user.User;
-import jakarta.persistence.*;
-import lombok.*;
+import adhoc.faction.FactionEntity;
+import adhoc.server.ServerEntity;
+import adhoc.user.UserEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Version;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Structures are objects that are pre-placed or that users have placed in the world e.g. barriers etc.
+ * A pawn is either a bot or user on an Unreal server.
+ * Pawns are not updated regularly so only gives a recent location
+ * (intended for an "at a glance" location of bots/users in the world).
  */
-@Entity
+@Entity(name = "Pawn")
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
@@ -42,29 +57,32 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-public class Structure {
+public class PawnEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "StructureIdSequence")
-    @SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PawnIdSequence")
+    @SequenceGenerator(name = "PawnIdSequence", initialValue = 1, allocationSize = 50)
     private Long id;
 
     @Version
     @Column(nullable = false)
     private Long version;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private UUID uuid;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private ServerEntity server;
+
+    @Column(nullable = false)
+    private Integer index;
 
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
-    private String type;
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Region region;
+    private String description;
 
     @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal x;
@@ -77,28 +95,18 @@ public class Structure {
     private BigDecimal pitch;
     @Column(precision = 128, scale = 64, nullable = false)
     private BigDecimal yaw;
-    @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal roll;
-
-    @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal scaleX;
-    @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal scaleY;
-    @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal scaleZ;
-
-    @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal sizeX;
-    @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal sizeY;
-    @Column(precision = 128, scale = 64, nullable = false)
-    private BigDecimal sizeZ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Faction faction;
+    private UserEntity user;
+
+    @Column(nullable = false)
+    private boolean human;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    private User user;
+    private FactionEntity faction;
+
+    @Column(nullable = false)
+    private LocalDateTime seen;
 }

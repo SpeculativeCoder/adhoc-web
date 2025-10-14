@@ -22,8 +22,8 @@
 
 package adhoc.pawn;
 
-import adhoc.server.Server;
-import adhoc.user.User;
+import adhoc.server.ServerEntity;
+import adhoc.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -33,15 +33,15 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PawnRepository extends JpaRepository<Pawn, Long> {
+public interface PawnRepository extends JpaRepository<PawnEntity, Long> {
 
-    Optional<Pawn> findByUuid(UUID uuid);
+    Optional<PawnEntity> findByUuid(UUID uuid);
 
-    Optional<Pawn> findFirstByServerAndUserOrderBySeenDescIdDesc(Server server, User user);
+    Optional<PawnEntity> findFirstByServerAndUserOrderBySeenDescIdDesc(ServerEntity server, UserEntity user);
 
     @Modifying
     @Query("delete from Pawn p where p.server = ?1 and p.uuid not in ?2")
-    void deleteByServerAndUuidNotIn(Server server, Collection<UUID> uuidNotIn);
+    void deleteByServerAndUuidNotIn(ServerEntity server, Collection<UUID> uuidNotIn);
 
     @Modifying
     @Query("delete from Pawn p where p.seen < ?1")

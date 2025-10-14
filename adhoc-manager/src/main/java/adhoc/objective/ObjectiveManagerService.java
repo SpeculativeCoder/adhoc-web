@@ -24,9 +24,9 @@ package adhoc.objective;
 
 import adhoc.area.AreaRepository;
 import adhoc.faction.FactionRepository;
-import adhoc.region.Region;
+import adhoc.region.RegionEntity;
 import adhoc.region.RegionRepository;
-import adhoc.server.Server;
+import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,12 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,7 +63,7 @@ public class ObjectiveManagerService {
 
     public ObjectiveDto updateObjective(ObjectiveDto objectiveDto) {
         // NOTE: this is a two stage save to allow linked objectives to be set too
-        Objective objective = toEntityStage1(objectiveDto, objectiveRepository.getReferenceById(objectiveDto.getId()));
+        ObjectiveEntity objective = toEntityStage1(objectiveDto, objectiveRepository.getReferenceById(objectiveDto.getId()));
 
         objective = toEntityStage2(objectiveDto, objective);
 
@@ -68,8 +73,8 @@ public class ObjectiveManagerService {
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public List<ObjectiveDto> updateServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
-        Server server = serverRepository.getReferenceById(serverId);
-        Region serverRegion = server.getRegion();
+        ServerEntity server = serverRepository.getReferenceById(serverId);
+        RegionEntity serverRegion = server.getRegion();
 
         Set<Integer> objectiveIndexes = new TreeSet<>();
         for (ObjectiveDto objectiveDto : objectiveDtos) {
@@ -91,7 +96,7 @@ public class ObjectiveManagerService {
             Preconditions.checkArgument(unique, "Objective index not unique: %s", objectiveDto.getIndex());
         }
 
-        try (Stream<Objective> objectivesToDelete = objectiveRepository.streamByRegionAndIndexNotIn(serverRegion, objectiveIndexes)) {
+        try (Stream<ObjectiveEntity> objectivesToDelete = objectiveRepository.streamByRegionAndIndexNotIn(serverRegion, objectiveIndexes)) {
             objectivesToDelete.forEach(objectiveToDelete -> {
                 log.info("Deleting unused objective: {}", objectiveToDelete);
                 objectiveRepository.delete(objectiveToDelete);
@@ -100,8 +105,8 @@ public class ObjectiveManagerService {
 
         // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveDtos.stream().map(objectiveDto -> {
-            Objective objective = toEntityStage1(objectiveDto,
-                    objectiveRepository.findByRegionAndIndex(serverRegion, objectiveDto.getIndex()).orElseGet(Objective::new));
+            ObjectiveEntity objective = toEntityStage1(objectiveDto,
+                    objectiveRepository.findByRegionAndIndex(serverRegion, objectiveDto.getIndex()).orElseGet(ObjectiveEntity::new));
 
             // set faction to be initial faction if this is a new entity
             if (objective.getId() == null) {
@@ -110,14 +115,14 @@ public class ObjectiveManagerService {
 
             return new AbstractMap.SimpleEntry<>(objectiveDto, objectiveRepository.save(objective));
         }).toList().stream().map(entry -> {
-            Objective objective = toEntityStage2(entry.getKey(), entry.getValue());
+            ObjectiveEntity objective = toEntityStage2(entry.getKey(), entry.getValue());
 
             return objectiveService.toDto(objective);
         }).toList();
     }
 
-    Objective toEntityStage1(ObjectiveDto objectiveDto, Objective objective) {
-        Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
+    ObjectiveEntity toEntityStage1(ObjectiveDto objectiveDto, ObjectiveEntity objective) {
+        RegionEntity region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         objective.setRegion(region);
         objective.setIndex(objectiveDto.getIndex());
@@ -146,10 +151,10 @@ public class ObjectiveManagerService {
         return objective;
     }
 
-    Objective toEntityStage2(ObjectiveDto objectiveDto, Objective objective) {
-        Region region = regionRepository.getReferenceById(objectiveDto.getRegionId());
+    ObjectiveEntity toEntityStage2(ObjectiveDto objectiveDto, ObjectiveEntity objective) {
+        RegionEntity region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
-        Set<Objective> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
+        Set<ObjectiveEntity> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
                 .map(linkedObjectiveIndex ->
                         objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
                 .collect(Collectors.toCollection(LinkedHashSet::new));

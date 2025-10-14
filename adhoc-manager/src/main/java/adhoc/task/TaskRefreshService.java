@@ -38,7 +38,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -55,7 +57,7 @@ public class TaskRefreshService {
 
     /** Query the hosting service for the current state of the tasks. */
     public void refreshTasks() {
-        List<Task> hostedTasks = hostingService.poll();
+        List<TaskEntity> hostedTasks = hostingService.poll();
 
         log.debug("hostedTasks={}", hostedTasks);
         Verify.verifyNotNull(hostedTasks, "hostedTasks is null!");
@@ -67,16 +69,16 @@ public class TaskRefreshService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    void updateTasksInNewTransaction(List<Task> hostedTasks) {
+    void updateTasksInNewTransaction(List<TaskEntity> hostedTasks) {
 
         List<String> taskIdentifiers = new ArrayList<>();
         LocalDateTime seen = LocalDateTime.now();
 
-        for (Task hostedTask : hostedTasks) {
+        for (TaskEntity hostedTask : hostedTasks) {
             Verify.verifyNotNull(hostedTask.getTaskIdentifier(), "hosted task identifier is null! task=%s", hostedTask);
             taskIdentifiers.add(hostedTask.getTaskIdentifier());
 
-            Task task = taskRepository.findByTaskIdentifier(hostedTask.getTaskIdentifier())
+            TaskEntity task = taskRepository.findByTaskIdentifier(hostedTask.getTaskIdentifier())
                     .map(existingTask -> updateExistingTask(existingTask, hostedTask))
                     .orElse(hostedTask); // else will save this as a new task
 
@@ -91,7 +93,7 @@ public class TaskRefreshService {
         taskRepository.deleteByTaskIdentifierNotInAndSeenNotNull(taskIdentifiers);
     }
 
-    private static Task updateExistingTask(Task existingTask, Task hostedTask) {
+    private static TaskEntity updateExistingTask(TaskEntity existingTask, TaskEntity hostedTask) {
 
         if (!Objects.equals(existingTask.getPrivateIp(), hostedTask.getPrivateIp())) {
             existingTask.setPrivateIp(hostedTask.getPrivateIp());
@@ -101,8 +103,8 @@ public class TaskRefreshService {
         }
 
         // TODO
-        if (existingTask instanceof ServerTask existingServerTask
-                && hostedTask instanceof ServerTask hostedServerTask) {
+        if (existingTask instanceof ServerTaskEntity existingServerTask
+                && hostedTask instanceof ServerTaskEntity hostedServerTask) {
 
             if (!Objects.equals(existingServerTask.getPublicWebSocketPort(), hostedServerTask.getPublicWebSocketPort())) {
                 existingServerTask.setPublicWebSocketPort(hostedServerTask.getPublicWebSocketPort());

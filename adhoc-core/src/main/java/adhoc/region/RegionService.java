@@ -22,8 +22,8 @@
 
 package adhoc.region;
 
-import adhoc.area.Area;
-import adhoc.server.Server;
+import adhoc.area.AreaEntity;
+import adhoc.server.ServerEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -51,14 +51,14 @@ public class RegionService {
         return toDto(regionRepository.getReferenceById(regionId));
     }
 
-    RegionDto toDto(Region region) {
+    RegionDto toDto(RegionEntity region) {
         return new RegionDto(
                 region.getId(),
                 region.getVersion(),
                 region.getName(),
                 region.getMapName(),
                 region.getX(), region.getY(), region.getZ(),
-                region.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
-                region.getServers().stream().map(Server::getId).collect(Collectors.toList()));
+                region.getAreas().stream().map(AreaEntity::getId).collect(Collectors.toList()),
+                region.getServers().stream().map(ServerEntity::getId).collect(Collectors.toList()));
     }
 }

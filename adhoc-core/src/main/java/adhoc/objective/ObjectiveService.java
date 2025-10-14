@@ -50,7 +50,7 @@ public class ObjectiveService {
         return toDto(objectiveRepository.getReferenceById(objectiveId));
     }
 
-    ObjectiveDto toDto(Objective objective) {
+    ObjectiveDto toDto(ObjectiveEntity objective) {
         return new ObjectiveDto(
                 objective.getId(),
                 objective.getVersion(),
@@ -62,8 +62,8 @@ public class ObjectiveService {
                 objective.getInitialFaction() == null ? null : objective.getInitialFaction().getIndex(),
                 objective.getFaction() == null ? null : objective.getFaction().getId(),
                 objective.getFaction() == null ? Optional.empty() : Optional.of(objective.getFaction().getIndex()),
-                objective.getLinkedObjectives().stream().map(Objective::getId).collect(Collectors.toList()),
-                objective.getLinkedObjectives().stream().map(Objective::getIndex).collect(Collectors.toList()),
+                objective.getLinkedObjectives().stream().map(ObjectiveEntity::getId).collect(Collectors.toList()),
+                objective.getLinkedObjectives().stream().map(ObjectiveEntity::getIndex).collect(Collectors.toList()),
                 objective.getArea() == null ? null : objective.getArea().getId(),
                 objective.getArea() == null ? null : objective.getArea().getIndex());
     }

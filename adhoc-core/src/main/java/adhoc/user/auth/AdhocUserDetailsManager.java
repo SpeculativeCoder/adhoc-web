@@ -23,7 +23,7 @@
 package adhoc.user.auth;
 
 import adhoc.system.util.RandomUUIDUtils;
-import adhoc.user.User;
+import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +44,7 @@ import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
- * Consults the {@link adhoc.user.User} table for user info as needed by Spring Security.
+ * Consults the {@link UserEntity} table for user info as needed by Spring Security.
  * Also has special support for the "server" user (used by Unreal server when talking to the web server) which is set via properties.
  * TODO: it would be nice to split the "server" user functionality into another user details service.
  */
@@ -80,7 +80,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
 
         log.debug("loadUserByUsername: username={}", username);
 
-        User user = userRepository.findByNameOrEmail(username, username).orElseThrow(() ->
+        UserEntity user = userRepository.findByNameOrEmail(username, username).orElseThrow(() ->
                 new UsernameNotFoundException("Failed to find user with name or email: " + username));
 
         log.debug("loadUserByUsername: user={} user.token={}", user, user.getState().getToken());

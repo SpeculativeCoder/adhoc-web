@@ -54,7 +54,7 @@ public class UserService {
         return toFullDto(userRepository.getReferenceById(userId));
     }
 
-    UserDto toDto(User user) {
+    UserDto toDto(UserEntity user) {
         return new UserDto(
                 user.getId(),
                 user.getVersion(),
@@ -68,7 +68,7 @@ public class UserService {
                 user.getState().getServer() == null ? null : user.getState().getServer().getId());
     }
 
-    public UserFullDto toFullDto(User user) {
+    public UserFullDto toFullDto(UserEntity user) {
         return new UserFullDto(
                 user.getId(),
                 user.getVersion(),

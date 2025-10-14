@@ -22,8 +22,8 @@
 
 package adhoc.area.groups;
 
-import adhoc.area.Area;
-import adhoc.region.Region;
+import adhoc.area.AreaEntity;
+import adhoc.region.RegionEntity;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -43,10 +43,10 @@ public class SimpleAreaGroupsFactory implements AreaGroupsFactory {
     }
 
     @Override
-    public List<Set<Area>> determineAreaGroups(Region region) {
+    public List<Set<AreaEntity>> determineAreaGroups(RegionEntity region) {
         // one area group per area
-        List<Set<Area>> areaGroups = new ArrayList<>();
-        for (Area area : region.getAreas()) {
+        List<Set<AreaEntity>> areaGroups = new ArrayList<>();
+        for (AreaEntity area : region.getAreas()) {
             areaGroups.add(Collections.singleton(area));
         }
         return areaGroups;

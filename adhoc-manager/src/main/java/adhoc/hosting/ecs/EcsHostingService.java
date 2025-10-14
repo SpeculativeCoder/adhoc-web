@@ -22,16 +22,16 @@
 
 package adhoc.hosting.ecs;
 
-import adhoc.area.Area;
+import adhoc.area.AreaEntity;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.ecs.properties.EcsHostingProperties;
-import adhoc.server.Server;
+import adhoc.server.ServerEntity;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
-import adhoc.task.KioskTask;
-import adhoc.task.ManagerTask;
-import adhoc.task.ServerTask;
-import adhoc.task.Task;
+import adhoc.task.KioskTaskEntity;
+import adhoc.task.ManagerTaskEntity;
+import adhoc.task.ServerTaskEntity;
+import adhoc.task.TaskEntity;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,12 @@ import software.amazon.awssdk.services.ecs.model.RunTaskResponse;
 import software.amazon.awssdk.services.ecs.model.StopTaskRequest;
 import software.amazon.awssdk.services.ecs.model.TaskOverride;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -107,13 +112,13 @@ public class EcsHostingService implements HostingService {
                 .build();
     }
 
-    public List<Task> poll() {
+    public List<TaskEntity> poll() {
         log.trace("Polling ECS container service tasks...");
 
         // we will do a lookup of public IPs using the network interface IDs after we have looked through all the tasks
-        Map<String, ManagerTask> managerNetworkInterfaceIds = new LinkedHashMap<>();
-        Map<String, KioskTask> kioskNetworkInterfaceIds = new LinkedHashMap<>();
-        Map<String, ServerTask> serverNetworkInterfaceIds = new LinkedHashMap<>();
+        Map<String, ManagerTaskEntity> managerNetworkInterfaceIds = new LinkedHashMap<>();
+        Map<String, KioskTaskEntity> kioskNetworkInterfaceIds = new LinkedHashMap<>();
+        Map<String, ServerTaskEntity> serverNetworkInterfaceIds = new LinkedHashMap<>();
 
         try (EcsClient ecsClient = ecsClient();
              Ec2Client ec2Client = ec2Client()) {
@@ -168,7 +173,7 @@ public class EcsHostingService implements HostingService {
                     if (managerProperties.getManagerImage().equals(containerName) && networkInterfaceId != null) {
                         log.trace("Found manager. networkInterfaceId={}", networkInterfaceId);
 
-                        ManagerTask managerTask = new ManagerTask();
+                        ManagerTaskEntity managerTask = new ManagerTaskEntity();
                         managerTask.setTaskIdentifier(task.taskArn());
                         managerTask.setPrivateIp(privateIp);
                         managerNetworkInterfaceIds.put(networkInterfaceId, managerTask);
@@ -176,7 +181,7 @@ public class EcsHostingService implements HostingService {
                     } else if (managerProperties.getKioskImage().equals(containerName) && networkInterfaceId != null) {
                         log.trace("Found kiosk. networkInterfaceId={}", networkInterfaceId);
 
-                        KioskTask kioskTask = new KioskTask();
+                        KioskTaskEntity kioskTask = new KioskTaskEntity();
                         kioskTask.setTaskIdentifier(task.taskArn());
                         kioskTask.setPrivateIp(privateIp);
                         kioskNetworkInterfaceIds.put(networkInterfaceId, kioskTask);
@@ -199,7 +204,7 @@ public class EcsHostingService implements HostingService {
                                         throw new RuntimeException("Failed to parse server ID", e);
                                     }
 
-                                    ServerTask serverTask = new ServerTask();
+                                    ServerTaskEntity serverTask = new ServerTaskEntity();
                                     serverTask.setTaskIdentifier(task.taskArn());
                                     serverTask.setPrivateIp(privateIp);
                                     serverTask.setServerId(serverId);
@@ -231,19 +236,19 @@ public class EcsHostingService implements HostingService {
                     log.trace("networkInterfaceId: {}", networkInterfaceId);
                     log.trace("publicIp: {}", publicIp);
 
-                    ManagerTask managerTask = managerNetworkInterfaceIds.get(networkInterfaceId);
+                    ManagerTaskEntity managerTask = managerNetworkInterfaceIds.get(networkInterfaceId);
                     if (managerTask != null) {
                         log.trace("Found manager: publicIp={}", publicIp);
                         managerTask.setPublicIp(publicIp);
                     }
 
-                    KioskTask kioskTask = kioskNetworkInterfaceIds.get(networkInterfaceId);
+                    KioskTaskEntity kioskTask = kioskNetworkInterfaceIds.get(networkInterfaceId);
                     if (kioskTask != null) {
                         log.trace("Found kiosk: publicIp={}", publicIp);
                         kioskTask.setPublicIp(publicIp);
                     }
 
-                    ServerTask serverTask = serverNetworkInterfaceIds.get(networkInterfaceId);
+                    ServerTaskEntity serverTask = serverNetworkInterfaceIds.get(networkInterfaceId);
                     if (serverTask != null) {
                         log.trace("Found server: publicIp={}", publicIp);
                         serverTask.setPublicIp(publicIp);
@@ -260,7 +265,7 @@ public class EcsHostingService implements HostingService {
                 serverNetworkInterfaceIds.values().stream()).toList();
     }
 
-    public ServerTask startServerTask(Server server) {
+    public ServerTaskEntity startServerTask(ServerEntity server) {
         log.debug("Starting task for {}", server);
 
         try (EcsClient ecsClient = ecsClient();
@@ -335,7 +340,7 @@ public class EcsHostingService implements HostingService {
                                     //                .collect(Collectors.joining(","))).build(),
                                     KeyValuePair.builder().name("INITIAL_AREA_INDEXES")
                                             .value(server.getAreas().stream()
-                                                    .map(Area::getIndex)
+                                                    .map(AreaEntity::getIndex)
                                                     .map(Object::toString)
                                                     .collect(Collectors.joining(","))).build(),
                                     KeyValuePair.builder().name("MAX_CONTROLLERS").value(managerProperties.getMaxControllers().toString()).build(),
@@ -370,7 +375,7 @@ public class EcsHostingService implements HostingService {
             String taskArn = runTaskResponse.tasks().getFirst().taskArn();
             log.debug("taskArn={}", taskArn);
 
-            ServerTask serverTask = new ServerTask();
+            ServerTaskEntity serverTask = new ServerTaskEntity();
             serverTask.setTaskIdentifier(taskArn);
             serverTask.setPublicWebSocketPort(8889);
             serverTask.setServerId(server.getId());

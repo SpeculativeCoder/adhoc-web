@@ -22,7 +22,7 @@
 
 package adhoc.faction.score;
 
-import adhoc.faction.Faction;
+import adhoc.faction.FactionEntity;
 import adhoc.faction.FactionRepository;
 import adhoc.objective.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
 
 @Service
 @Transactional
@@ -59,7 +59,7 @@ public class FactionScoreService {
                 objectiveRepository.getFactionObjectiveCounts();
 
         for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
-            Faction faction = factionObjectiveCount.getFaction();
+            FactionEntity faction = factionObjectiveCount.getFaction();
             Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
             BigDecimal scoreAdd = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));

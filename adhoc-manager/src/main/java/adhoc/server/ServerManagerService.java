@@ -22,7 +22,7 @@
 
 package adhoc.server;
 
-import adhoc.area.Area;
+import adhoc.area.AreaEntity;
 import adhoc.area.AreaRepository;
 import adhoc.region.RegionRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,7 +55,7 @@ public class ServerManagerService {
     }
 
     public ServerDto updateServer(ServerDto serverDto) {
-        Server server = toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));
+        ServerEntity server = toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));
 
         return serverService.toDto(server);
     }
@@ -63,7 +63,7 @@ public class ServerManagerService {
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
-        Server server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
+        ServerEntity server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
         // TODO: internal server status?
         server.setActive(true);
@@ -71,7 +71,7 @@ public class ServerManagerService {
         return toServerUpdatedEvent(server);
     }
 
-    Server toEntity(ServerDto serverDto, Server server) {
+    ServerEntity toEntity(ServerDto serverDto, ServerEntity server) {
         server.setRegion(regionRepository.getReferenceById(serverDto.getRegionId()));
         server.setAreas(serverDto.getAreaIds().stream().map(areaRepository::getReferenceById).collect(Collectors.toList())); // TODO
 
@@ -88,13 +88,13 @@ public class ServerManagerService {
         return server;
     }
 
-    ServerUpdatedEvent toServerUpdatedEvent(Server server) {
+    ServerUpdatedEvent toServerUpdatedEvent(ServerEntity server) {
         ServerUpdatedEvent event = new ServerUpdatedEvent(
                 server.getId(),
                 server.getVersion(),
                 server.getRegion().getId(),
-                server.getAreas().stream().map(Area::getId).collect(Collectors.toList()),
-                server.getAreas().stream().map(Area::getIndex).collect(Collectors.toList()),
+                server.getAreas().stream().map(AreaEntity::getId).collect(Collectors.toList()),
+                server.getAreas().stream().map(AreaEntity::getIndex).collect(Collectors.toList()),
                 server.isEnabled(),
                 server.isActive(),
                 server.getPublicIp(),

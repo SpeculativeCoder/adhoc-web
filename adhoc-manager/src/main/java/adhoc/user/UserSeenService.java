@@ -1,6 +1,6 @@
 package adhoc.user;
 
-import adhoc.pawn.Pawn;
+import adhoc.pawn.PawnEntity;
 import adhoc.pawn.PawnRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class UserSeenService {
         log.trace("Managing seen users... now={} leaveUsersSeenBefore={}", now, leaveUsersSeenBefore);
 
         // manage users who we think are currently connected to a server
-        try (Stream<User> users = userRepository.streamForWriteByStateServerNotNull()) {
+        try (Stream<UserEntity> users = userRepository.streamForWriteByStateServerNotNull()) {
             users.forEach(user -> {
                 // users may be moving from one server to another so we are only interested after they have arrived at their desired server
                 if (user.getState().getServer() == user.getState().getDestinationServer()) {
@@ -57,7 +57,7 @@ public class UserSeenService {
         }
     }
 
-    private static void updateUserForPawn(User user, Pawn pawn, LocalDateTime now) {
+    private static void updateUserForPawn(UserEntity user, PawnEntity pawn, LocalDateTime now) {
         user.getState().setX(pawn.getX());
         user.getState().setY(pawn.getY());
         user.getState().setZ(pawn.getZ());
@@ -67,7 +67,7 @@ public class UserSeenService {
         user.getState().setSeen(now);
     }
 
-    private static void leaveUser(User user) {
+    private static void leaveUser(UserEntity user) {
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
                 .addKeyValue("id", user.getId())
                 .addKeyValue("name", user.getName())

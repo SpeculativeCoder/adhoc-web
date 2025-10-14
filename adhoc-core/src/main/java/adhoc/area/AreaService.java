@@ -49,7 +49,7 @@ public class AreaService {
         return toDto(areaRepository.getReferenceById(areaId));
     }
 
-    AreaDto toDto(Area area) {
+    AreaDto toDto(AreaEntity area) {
         return new AreaDto(
                 area.getId(),
                 area.getVersion(),

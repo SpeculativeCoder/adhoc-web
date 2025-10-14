@@ -22,9 +22,9 @@
 
 package adhoc.user;
 
-import adhoc.user.defeated.ServerUserDefeatedEvent;
-import adhoc.user.defeated.UserDefeatedEvent;
-import adhoc.user.defeated.UserDefeatedService;
+import adhoc.user.defeat.ServerUserDefeatEvent;
+import adhoc.user.defeat.UserDefeatEvent;
+import adhoc.user.defeat.UserDefeatService;
 import adhoc.user.join.UserJoinRequest;
 import adhoc.user.join.UserJoinService;
 import adhoc.user.navigate.UserNavigateRequest;
@@ -56,7 +56,7 @@ public class UserManagerController {
     private final UserManagerService userManagerService;
     private final UserJoinService userJoinService;
     private final UserNavigateService userNavigateService;
-    private final UserDefeatedService userDefeatedService;
+    private final UserDefeatService userDefeatService;
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -91,16 +91,16 @@ public class UserManagerController {
         return ResponseEntity.ok(userNavigateService.userNavigate(userNavigateRequest));
     }
 
-    @MessageMapping("ServerUserDefeated")
+    @MessageMapping("ServerUserDefeat")
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public UserDefeatedEvent handleUserDefeated(
-            @Valid @RequestBody ServerUserDefeatedEvent serverUserDefeatedEvent) {
+    public UserDefeatEvent handleUserDefeat(
+            @Valid @RequestBody ServerUserDefeatEvent serverUserDefeatEvent) {
 
-        log.debug("Handling: {}", serverUserDefeatedEvent);
-        UserDefeatedEvent userDefeatedEvent = userDefeatedService.userDefeated(serverUserDefeatedEvent);
+        log.debug("Handling: {}", serverUserDefeatEvent);
+        UserDefeatEvent userDefeatEvent = userDefeatService.userDefeat(serverUserDefeatEvent);
 
-        log.debug("Sending: {}", userDefeatedEvent);
-        return userDefeatedEvent;
+        log.debug("Sending: {}", userDefeatEvent);
+        return userDefeatEvent;
     }
 }

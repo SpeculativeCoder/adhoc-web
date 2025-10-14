@@ -20,42 +20,27 @@
  * SOFTWARE.
  */
 
-import {Injectable} from '@angular/core';
-import {StompService} from '../../system/stomp.service';
-import {User} from '../user';
+package adhoc.user.defeat;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class UserDefeatedEventService {
+import adhoc.Event;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-  constructor(private stomp: StompService) {
+@Value
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class ServerUserDefeatEvent implements Event {
 
-    this.stomp
-      .observeEvent('UserDefeated')
-      .subscribe((body: any) => this.handleUserDefeated(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
-  }
+    @NotNull
+    @Min(1)
+    Long userId;
 
-  userDefeated(user: User, defeatedUser?: User) {
-    this.stomp.send('UserDefeated', {userId: null /*user.id*/, defeatedUserId: defeatedUser?.id || null});
-  }
-
-  handleUserDefeated(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
-    // let user: User;
-    // let defeatedUser: User;
-    // this.users.map(user => {
-    //   if (user.id === userId) {
-    //     user = user;
-    //   }
-    //   if (user.id === defeatedUserId) {
-    //     defeatedUser = user;
-    //   }
-    // });
-    // user.score++;
-
-    // TODO
-    if (userHuman || defeatedUserHuman) {
-      console.log(`User ${userId} defeated user ${defeatedUserId}`);
-    }
-  }
+    @NotNull
+    @Min(1)
+    Long defeatedUserId;
 }

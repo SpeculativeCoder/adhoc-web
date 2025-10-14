@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.defeated;
+package adhoc.user.defeat;
 
 import adhoc.message.MessageService;
 import adhoc.user.UserEntity;
@@ -40,7 +40,7 @@ import java.math.BigDecimal;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserDefeatedService {
+public class UserDefeatService {
 
     private final UserRepository userRepository;
 
@@ -48,9 +48,9 @@ public class UserDefeatedService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserDefeatedEvent userDefeated(ServerUserDefeatedEvent serverUserDefeatedEvent) {
-        UserEntity user = userRepository.getReferenceById(serverUserDefeatedEvent.getUserId());
-        UserEntity defeatedUser = userRepository.getReferenceById(serverUserDefeatedEvent.getDefeatedUserId());
+    public UserDefeatEvent userDefeat(ServerUserDefeatEvent serverUserDefeatEvent) {
+        UserEntity user = userRepository.getReferenceById(serverUserDefeatEvent.getUserId());
+        UserEntity defeatedUser = userRepository.getReferenceById(serverUserDefeatEvent.getDefeatedUserId());
 
         BigDecimal scoreAdd = BigDecimal.valueOf(user.isHuman() ? 1.0f : 0.1f);
         userRepository.updateScoreAddById(scoreAdd, user.getId());
@@ -60,7 +60,7 @@ public class UserDefeatedService {
         }
 
         // TODO
-        return new UserDefeatedEvent(
+        return new UserDefeatEvent(
                 user.getId(), user.getVersion() + 1, user.getName(), user.isHuman(),
                 defeatedUser.getId(), defeatedUser.getVersion(), defeatedUser.getName(), defeatedUser.isHuman());
     }

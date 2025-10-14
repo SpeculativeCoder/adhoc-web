@@ -22,7 +22,7 @@
 
 package adhoc;
 
-import adhoc.user.UserRole;
+import adhoc.user.UserEntity;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ import java.util.List;
  * <p>
  * It receives events via the Artemis cluster to pass on to users.
  * <p>
- * Most of the access to the kiosk will be users with {@link UserRole#USER} role.
+ * Most of the access to the kiosk will be users with {@link UserEntity.Role#USER} role.
  */
 @SpringBootApplication
 @Slf4j

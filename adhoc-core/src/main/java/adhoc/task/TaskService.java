@@ -55,7 +55,7 @@ public class TaskService {
         return new TaskDto(
                 task.getId(),
                 task.getVersion(),
-                task.getTaskType().name(),
+                task.getType().name(),
                 task.getPublicIp(),
                 task.getPublicWebSocketPort(),
                 task.getDomain(),

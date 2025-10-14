@@ -38,7 +38,7 @@ import lombok.ToString;
 public class KioskTaskEntity extends TaskEntity {
 
     @Override
-    public TaskType getTaskType() {
-        return TaskType.KIOSK;
+    public Type getType() {
+        return Type.KIOSK;
     }
 }

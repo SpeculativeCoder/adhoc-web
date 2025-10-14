@@ -106,7 +106,7 @@ public class TaskDomainService {
             task.setDomain(domain);
         }
 
-        messageService.addGlobalMessage(String.format("Task %d (of type %s) mapped to domain %s", task.getId(), task.getTaskType().name(), domain));
+        messageService.addGlobalMessage(String.format("Task %d (of type %s) mapped to domain %s", task.getId(), task.getType().name(), domain));
     }
 
     private String determineDomain(TaskEntity task) {

@@ -88,7 +88,7 @@ public class UserService {
                 user.getNavigated(),
                 user.getLastJoin(),
                 user.getState().getSeen(),
-                user.getRoles().stream().map(UserRole::name).collect(Collectors.toList()),
+                user.getRoles().stream().map(UserEntity.Role::name).collect(Collectors.toList()),
                 user.getState().getToken().toString(),
                 user.getState().getDestinationServer() == null ? null : user.getState().getDestinationServer().getId(),
                 user.getState().getServer() == null ? null : user.getState().getServer().getId());

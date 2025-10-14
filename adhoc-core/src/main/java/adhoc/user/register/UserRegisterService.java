@@ -29,7 +29,6 @@ import adhoc.system.util.RandomUUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserFullDto;
 import adhoc.user.UserRepository;
-import adhoc.user.UserRole;
 import adhoc.user.UserService;
 import adhoc.user.UserStateEntity;
 import adhoc.user.auth.programmatic_login.ProgrammaticLoginService;
@@ -128,7 +127,7 @@ public class UserRegisterService {
         }
 
         user.setScore(BigDecimal.valueOf(0.0));
-        user.setRoles(Sets.newHashSet(UserRole.USER));
+        user.setRoles(Sets.newHashSet(UserEntity.Role.USER));
         user.getState().setToken(RandomUUIDUtils.randomUUID());
 
         user = userRepository.save(user);

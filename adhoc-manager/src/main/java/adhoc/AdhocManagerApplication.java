@@ -23,7 +23,7 @@
 package adhoc;
 
 import adhoc.system.artemis.AdhocArtemisConfiguration;
-import adhoc.user.UserRole;
+import adhoc.user.UserEntity;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ import java.util.List;
  * Servers communicate with the manager to let it know about events occurring in the world.
  * Events are handled by the manager and then emitted in the {@link AdhocArtemisConfiguration} cluster for kiosks to observe.
  * <p>
- * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the manager.
+ * Typically, only {@link UserEntity.Role#SERVER} and {@link UserEntity.Role#ADMIN} users access the manager.
  */
 @SpringBootApplication
 @Slf4j

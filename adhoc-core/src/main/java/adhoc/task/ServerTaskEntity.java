@@ -42,7 +42,7 @@ public class ServerTaskEntity extends TaskEntity {
     private Long serverId;
 
     @Override
-    public TaskType getTaskType() {
-        return TaskType.SERVER;
+    public Type getType() {
+        return Type.SERVER;
     }
 }

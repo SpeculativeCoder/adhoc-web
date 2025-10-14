@@ -33,6 +33,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -82,5 +83,15 @@ public abstract class TaskEntity {
 
     private LocalDateTime seen;
 
-    public abstract TaskType getTaskType();
+    public abstract Type getType();
+
+    @RequiredArgsConstructor
+    public enum Type {
+        MANAGER("Manager"),
+        KIOSK("Kiosk"),
+        SERVER("Server");
+
+        @Getter
+        private final String text;
+    }
 }

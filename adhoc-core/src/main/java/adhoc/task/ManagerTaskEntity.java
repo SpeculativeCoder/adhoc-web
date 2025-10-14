@@ -38,7 +38,7 @@ import lombok.ToString;
 public class ManagerTaskEntity extends TaskEntity {
 
     @Override
-    public TaskType getTaskType() {
-        return TaskType.MANAGER;
+    public Type getType() {
+        return Type.MANAGER;
     }
 }

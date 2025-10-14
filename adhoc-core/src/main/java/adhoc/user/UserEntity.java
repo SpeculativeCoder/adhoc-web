@@ -132,7 +132,7 @@ public class UserEntity {
     @ElementCollection(fetch = FetchType.EAGER) // TODO: can we make the login success handler transactional?
     @CollectionTable(name = "adhoc_user_roles")
     @Enumerated(EnumType.STRING)
-    private Set<UserRole> roles;
+    private Set<Role> roles;
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
@@ -147,5 +147,12 @@ public class UserEntity {
 
     public void setPassword(String password, PasswordEncoder passwordEncoder) {
         this.password = password == null ? null : passwordEncoder.encode(password);
+    }
+
+    public enum Role {
+        ADMIN, // access to administration functions / information (TODO)
+        USER, // normal logged in user
+        SERVER, // unreal server
+        DEBUG, // see non-sensitive but noisy debug information
     }
 }

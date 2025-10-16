@@ -54,8 +54,8 @@ import java.util.Objects;
 public class UserManagerController {
 
     private final UserManagerService userManagerService;
-    private final UserJoinService userJoinService;
     private final UserNavigateService userNavigateService;
+    private final UserJoinService userJoinService;
     private final UserDefeatService userDefeatService;
 
     @PutMapping("/users/{userId}")
@@ -70,6 +70,28 @@ public class UserManagerController {
         return userManagerService.updateUser(userDto);
     }
 
+    @PostMapping("/servers/{serverId}/userNavigate")
+    @PreAuthorize("hasRole('SERVER')")
+    public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
+            @PathVariable("serverId") Long serverId,
+            @Valid @RequestBody UserNavigateRequest request) {
+
+        log.debug("serverUserNavigate: request={}", request);
+
+        // for now, server must specify location so user can be properly placed on arrival
+        Preconditions.checkArgument(request.getX() != null);
+        Preconditions.checkArgument(request.getY() != null);
+        Preconditions.checkArgument(request.getZ() != null);
+        Preconditions.checkArgument(request.getYaw() != null);
+        Preconditions.checkArgument(request.getPitch() != null);
+
+        UserNavigateResponse response = userNavigateService.userNavigate(request);
+
+        log.debug("serverUserNavigate: response={}", response);
+
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/servers/{serverId}/userJoin")
     @PreAuthorize("hasRole('SERVER')")
     public ResponseEntity<UserFullDto> postServerUserJoin(
@@ -79,16 +101,10 @@ public class UserManagerController {
         Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()),
                 "Server ID mismatch: %s != %s", serverId, userJoinRequest.getServerId());
 
+        log.debug("postServerUserJoin: userId={} human={} factionId={} serverId={}",
+                userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
+
         return ResponseEntity.ok(userJoinService.userJoin(userJoinRequest));
-    }
-
-    @PostMapping("/servers/{serverId}/userNavigate")
-    @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
-            @PathVariable("serverId") Long serverId,
-            @Valid @RequestBody UserNavigateRequest userNavigateRequest) {
-
-        return ResponseEntity.ok(userNavigateService.userNavigate(userNavigateRequest));
     }
 
     @MessageMapping("ServerUserDefeat")
@@ -98,9 +114,11 @@ public class UserManagerController {
             @Valid @RequestBody ServerUserDefeatEvent serverUserDefeatEvent) {
 
         log.debug("Handling: {}", serverUserDefeatEvent);
+
         UserDefeatEvent userDefeatEvent = userDefeatService.userDefeat(serverUserDefeatEvent);
 
         log.debug("Sending: {}", userDefeatEvent);
+
         return userDefeatEvent;
     }
 }

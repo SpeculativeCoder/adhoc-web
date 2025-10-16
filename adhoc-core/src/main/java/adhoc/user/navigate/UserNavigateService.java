@@ -37,8 +37,6 @@ import org.hibernate.exception.LockAcquisitionException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,22 +63,11 @@ public class UserNavigateService {
      * If you do not specify a server or area, a random enabled and active server will be chosen.
      * <p>
      * A server can also call this to try to automatically navigate the user to another server
-     * when the user's pawn has moved into an area represented by the other server.
+     * (i.e. when the user's pawn has moved into an area represented by another server).
      */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public UserNavigateResponse userNavigate(UserNavigateRequest request) {
-
-        log.debug("userNavigate: request={}", request);
-
-        // for now, only server may specify location update
-        if (!isAuthenticatedAsServer()) {
-            Preconditions.checkArgument(request.getX() == null);
-            Preconditions.checkArgument(request.getY() == null);
-            Preconditions.checkArgument(request.getZ() == null);
-            Preconditions.checkArgument(request.getYaw() == null);
-            Preconditions.checkArgument(request.getPitch() == null);
-        }
 
         UserEntity user = userRepository.getReferenceById(request.getUserId());
 
@@ -127,21 +114,17 @@ public class UserNavigateService {
         user.getState().setDestinationServer(destinationServer);
         user.setNavigated(LocalDateTime.now());
 
-        UserNavigateResponse response = new UserNavigateResponse(
+        return new UserNavigateResponse(
                 user.getState().getDestinationServer().getPublicIp(),
                 user.getState().getDestinationServer().getPublicWebSocketPort(),
                 user.getState().getDestinationServer().getWebSocketUrl(),
                 user.getState().getDestinationServer().getRegion().getMapName(),
                 user.getState().getX(), user.getState().getY(), user.getState().getZ(), user.getState().getYaw(), user.getState().getPitch());
-
-        log.debug("userNavigate: response={}", response);
-
-        return response;
     }
 
-    private static boolean isAuthenticatedAsServer() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null
-                && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
-    }
+    //private static boolean isAuthenticatedAsServer() {
+    //    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    //    return authentication != null
+    //            && authentication.getAuthorities().stream().anyMatch(authority -> "ROLE_SERVER".equals(authority.getAuthority()));
+    //}
 }

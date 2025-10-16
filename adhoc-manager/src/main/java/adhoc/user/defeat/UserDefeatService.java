@@ -49,6 +49,7 @@ public class UserDefeatService {
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public UserDefeatEvent userDefeat(ServerUserDefeatEvent serverUserDefeatEvent) {
+
         UserEntity user = userRepository.getReferenceById(serverUserDefeatEvent.getUserId());
         UserEntity defeatedUser = userRepository.getReferenceById(serverUserDefeatEvent.getDefeatedUserId());
 

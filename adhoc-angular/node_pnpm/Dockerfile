@@ -1,6 +1,6 @@
 FROM node:trixie
 
-RUN corepack enable pnpm
+RUN npm install --ignore-scripts -g pnpm@latest-10
 
 USER node
 

@@ -51,6 +51,8 @@ public class UserRegisterRequest {
     @ToString.Exclude
     String password;
 
+    Boolean human;
+
     @Min(1)
     Long factionId;
 }

@@ -22,14 +22,13 @@
 
 package adhoc.user.join;
 
-import adhoc.faction.FactionRepository;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.user.UserEntity;
 import adhoc.user.UserFullDto;
 import adhoc.user.UserRepository;
 import adhoc.user.UserService;
-import adhoc.user.UserStateEntity;
+import adhoc.user.register.UserRegisterRequest;
 import adhoc.user.register.UserRegisterService;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -54,7 +53,6 @@ public class UserJoinService {
 
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
-    private final FactionRepository factionRepository;
 
     private final UserService userService;
     private final UserRegisterService userRegisterService;
@@ -62,8 +60,6 @@ public class UserJoinService {
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
     public UserFullDto userJoin(UserJoinRequest userJoinRequest) {
-        log.debug("userJoin: userId={} human={} factionId={} serverId={}",
-                userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
 
         ServerEntity server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
@@ -71,6 +67,7 @@ public class UserJoinService {
         // existing user? verify token
         if (userJoinRequest.getUserId() != null) {
             user = userRepository.getReferenceById(userJoinRequest.getUserId());
+
             Preconditions.checkArgument(Objects.equals(user.getFaction().getId(), userJoinRequest.getFactionId()),
                     "Faction ID mismatch: %s != %s", user.getFaction().getId(), userJoinRequest.getFactionId());
 
@@ -84,7 +81,7 @@ public class UserJoinService {
             }
 
         } else {
-            user = autoRegister(userJoinRequest.getHuman(), userJoinRequest.getFactionId());
+            user = autoRegister(userJoinRequest.getFactionId(), userJoinRequest.getHuman());
         }
 
         user.getState().setRegion(server.getRegion());
@@ -112,7 +109,7 @@ public class UserJoinService {
         return userService.toFullDto(user);
     }
 
-    private UserEntity autoRegister(Boolean human, Long factionId) {
+    private UserEntity autoRegister(Long factionId, Boolean human) {
         Verify.verifyNotNull(human);
 
         UserEntity user = null;
@@ -125,13 +122,13 @@ public class UserJoinService {
         }
 
         if (user == null) {
-            user = new UserEntity();
-            user.setState(new UserStateEntity());
-            user.getState().setUser(user);
-            user.setHuman(human);
-            user.setFaction(factionRepository.getReferenceById(factionId));
 
-            user = userRegisterService.userRegisterInternal(user);
+            UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder()
+                    .factionId(factionId)
+                    .human(human)
+                    .build();
+
+            user = userRegisterService.userRegisterInternal(userRegisterRequest);
         }
 
         return user;

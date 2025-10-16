@@ -41,19 +41,17 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
 
     @ExceptionHandler(EntityNotFoundException.class)
     @Nullable
-    public ResponseEntity<Object> handleEntityNotFoundException(Exception exception, WebRequest webRequest) {
-        EntityNotFoundException entityNotFoundException = (EntityNotFoundException) exception;
+    public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException exception, WebRequest webRequest) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, entityNotFoundException.getMessage(), null, null, webRequest);
+        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, exception.getMessage(), null, null, webRequest);
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @Nullable
-    public ResponseEntity<Object> handleIllegalArgumentException(Exception exception, WebRequest webRequest) {
-        IllegalArgumentException illegalArgumentException = (IllegalArgumentException) exception;
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException exception, WebRequest webRequest) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, illegalArgumentException.getMessage(), null, null, webRequest);
+        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, exception.getMessage(), null, null, webRequest);
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
     }
 

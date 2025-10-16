@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.auth;
+package adhoc.system.auth;
 
 import adhoc.system.util.RandomUUIDUtils;
 import adhoc.user.UserEntity;
@@ -62,6 +62,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
 
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 

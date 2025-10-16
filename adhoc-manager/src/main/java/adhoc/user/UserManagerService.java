@@ -22,6 +22,9 @@
 
 package adhoc.user;
 
+import adhoc.user.defeat.UserDefeatService;
+import adhoc.user.join.UserJoinService;
+import adhoc.user.navigate.UserNavigateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,13 +41,17 @@ public class UserManagerService {
     private final UserRepository userRepository;
 
     private final UserService userService;
+    private final UserNavigateService userNavigateService;
+    private final UserJoinService userJoinService;
+    private final UserDefeatService userDefeatService;
 
     public UserDto updateUser(UserDto userDto) {
+
         return userService.toDto(
                 toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }
 
-    UserEntity toEntity(UserDto userDto, UserEntity user) {
+    public UserEntity toEntity(UserDto userDto, UserEntity user) {
         // TODO
         //user.setName(userDto.getName());
         //user.setFaction(user.getFaction());

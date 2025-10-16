@@ -20,50 +20,54 @@
  * SOFTWARE.
  */
 
-package adhoc.user.auth;
+package adhoc.system.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.csrf.InvalidCsrfTokenException;
+import org.springframework.security.web.csrf.MissingCsrfTokenException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
-public class AdhocAuthenticationFailureHandler implements AuthenticationFailureHandler {
+public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
 
-    //@Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    //private UserAuthService userAuthService;
+    //private final UserAuthService userAuthService;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
 
-        log.debug("onAuthenticationFailure: method={} uri={}",
-                request.getMethod(), request.getRequestURI(), exception);
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
 
-        //userAuthService.onAuthenticationFailure(exception);
+        log.debug("handle: method={} uri={}", method, uri, exception);
 
-        Authentication authentication = exception.getAuthenticationRequest();
-        //Verify.verifyNotNull(authentication);
+        //userAuthService.onAccessDenied(method, uri, exception);
 
-        boolean exceptionTypical = exception instanceof BadCredentialsException;
+        boolean exceptionKnown = exception instanceof MissingCsrfTokenException
+                || exception instanceof InvalidCsrfTokenException;
 
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionTypical ? Level.WARN : Level.INFO);
-        if (!exceptionTypical) {
+        boolean uriApi = uri.startsWith("/adhoc_api/")
+                || uri.startsWith("/adhoc_ws/");
+
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG));
+        if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Authentication failure. authentication={} exception={}",
-                authentication, exception.getClass().getSimpleName());
+        logEvent.log("Access denied. method={} uri={} exception={}",
+                method, uri, exception.getClass().getSimpleName());
 
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
+        response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
     }
 }

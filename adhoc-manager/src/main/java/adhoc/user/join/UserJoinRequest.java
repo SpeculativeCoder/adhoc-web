@@ -32,7 +32,8 @@ import lombok.extern.jackson.Jacksonized;
 import org.hibernate.validator.constraints.Length;
 
 /**
- * When a user joins a server we will either verify they are an existing user (if {@link #userId} is not null) or register a new user (if {@link #userId} is null).
+ * When a user joins a server we will either verify they are an existing user (if {@link #userId} is not null)
+ * or register a new user (if {@link #userId} is null).
  */
 @Data
 @NoArgsConstructor

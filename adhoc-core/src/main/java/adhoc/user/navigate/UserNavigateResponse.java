@@ -34,7 +34,9 @@ import lombok.extern.jackson.Jacksonized;
 import java.math.BigDecimal;
 
 
-/** Navigation response indicating how a user can be connected to a destination server. */
+/**
+ * Navigation response indicating how a user can be connected to a destination server.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -1,4 +1,4 @@
-package adhoc.system.util;
+package adhoc.user.util;
 
 import lombok.experimental.UtilityClass;
 import net.datafaker.Faker;

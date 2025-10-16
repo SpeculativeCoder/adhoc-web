@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.auth;
+package adhoc.system.auth;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

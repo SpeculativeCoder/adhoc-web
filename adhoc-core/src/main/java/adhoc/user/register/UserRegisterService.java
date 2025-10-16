@@ -24,14 +24,14 @@ package adhoc.user.register;
 
 import adhoc.faction.FactionRepository;
 import adhoc.system.properties.CoreProperties;
-import adhoc.system.util.RandomNameUtils;
 import adhoc.system.util.RandomUUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserFullDto;
 import adhoc.user.UserRepository;
 import adhoc.user.UserService;
 import adhoc.user.UserStateEntity;
-import adhoc.user.auth.programmatic_login.ProgrammaticLoginService;
+import adhoc.user.programmatic_login.ProgrammaticLoginService;
+import adhoc.user.util.RandomNameUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +45,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -70,33 +69,33 @@ public class UserRegisterService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserFullDto userRegister(UserRegisterRequest userRegisterRequest) {
-        log.debug("userRegister: name={} password?={} factionId={}",
-                userRegisterRequest.getName(),
-                userRegisterRequest.getPassword() != null,
-                userRegisterRequest.getFactionId());
+    public UserFullDto userRegisterAndLogin(UserRegisterRequest userRegisterRequest) {
 
-        UserEntity user = new UserEntity();
-        user.setState(new UserStateEntity());
-        user.getState().setUser(user);
-        user.setName(userRegisterRequest.getName());
-        user.setEmail(userRegisterRequest.getEmail());
-        user.setPassword(userRegisterRequest.getPassword(), passwordEncoder);
-        user.setHuman(true);
-        user.setFaction(userRegisterRequest.getFactionId() == null ? null : factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
-
-        user = userRegisterInternal(user);
+        UserEntity user = userRegisterInternal(userRegisterRequest);
 
         programmaticLoginService.programmaticLoginInternal(user, userRegisterRequest.getPassword());
 
         return userService.toFullDto(user);
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
-    public UserEntity userRegisterInternal(UserEntity user) {
+    public UserEntity userRegisterInternal(UserRegisterRequest userRegisterRequest) {
+
         String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();
-        log.debug("userRegisterInternal: remoteAddr={} userAgent={}", remoteAddr, userAgent);
+        log.debug("userRegister: remoteAddr={} userAgent={}", remoteAddr, userAgent);
+
+        UserEntity user = new UserEntity();
+        user.setState(new UserStateEntity());
+        user.getState().setUser(user);
+
+        user.setName(userRegisterRequest.getName());
+        user.setEmail(userRegisterRequest.getEmail());
+        user.setPassword(userRegisterRequest.getPassword(), passwordEncoder);
+
+        // assume human user unless specified
+        user.setHuman(userRegisterRequest.getHuman() == null || userRegisterRequest.getHuman());
+
+        user.setFaction(userRegisterRequest.getFactionId() == null ? null : factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
 
         if (!coreProperties.getFeatureFlags().contains("development")) {
             Preconditions.checkArgument(user.getEmail() == null, "Registering with email not allowed yet");

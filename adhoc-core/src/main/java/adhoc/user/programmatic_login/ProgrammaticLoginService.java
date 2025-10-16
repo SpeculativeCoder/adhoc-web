@@ -20,12 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.user.auth.programmatic_login;
+package adhoc.user.programmatic_login;
 
 import adhoc.system.WebSecurityConfiguration;
+import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
 import adhoc.system.util.RandomUUIDUtils;
 import adhoc.user.UserEntity;
-import adhoc.user.auth.AdhocAuthenticationSuccessHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -70,8 +69,8 @@ public class ProgrammaticLoginService {
      * Login the user programmatically (i.e. by invoking necessary Spring Security actions etc.), given a user and password.
      * Used after registering a user (we want them to be automatically logged in).
      */
-    @Transactional(propagation = Propagation.MANDATORY)
     public void programmaticLoginInternal(UserEntity user, String password) {
+
         String tempPassword = null;
         if (user.getPassword() == null) {
             tempPassword = RandomUUIDUtils.randomUUID().toString();

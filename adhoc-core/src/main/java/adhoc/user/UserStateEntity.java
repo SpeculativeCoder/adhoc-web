@@ -55,6 +55,7 @@ public class UserStateEntity {
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")
+    @ToString.Exclude
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)

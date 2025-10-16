@@ -22,7 +22,7 @@
 
 package adhoc.user;
 
-import adhoc.user.auth.AdhocUserDetails;
+import adhoc.system.auth.AdhocUserDetails;
 import adhoc.user.navigate.UserNavigateRequest;
 import adhoc.user.navigate.UserNavigateResponse;
 import adhoc.user.navigate.UserNavigateService;
@@ -86,14 +86,19 @@ public class UserController {
     public ResponseEntity<UserFullDto> postUserRegister(
             @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
 
-        UserFullDto response = userRegisterService.userRegister(userRegisterRequest);
+        log.debug("postUserRegister: name={} password?={} factionId={}",
+                userRegisterRequest.getName(),
+                userRegisterRequest.getPassword() != null,
+                userRegisterRequest.getFactionId());
+
+        UserFullDto response = userRegisterService.userRegisterAndLogin(userRegisterRequest);
 
         return ResponseEntity.created(URI.create("/adhoc_api/users/current")).body(response);
     }
 
     @PostMapping("/users/current/navigate")
     public ResponseEntity<UserNavigateResponse> postCurrentUserNavigate(
-            @Valid @RequestBody UserNavigateRequest userNavigateRequest,
+            @Valid @RequestBody UserNavigateRequest request,
             Authentication authentication) {
 
         Preconditions.checkArgument(authentication != null);
@@ -101,8 +106,21 @@ public class UserController {
 
         AdhocUserDetails adhocUserDetails = (AdhocUserDetails) authentication.getPrincipal();
 
-        userNavigateRequest = userNavigateRequest.toBuilder().userId(adhocUserDetails.getUserId()).build();
+        request = request.toBuilder().userId(adhocUserDetails.getUserId()).build();
 
-        return ResponseEntity.ok(userNavigateService.userNavigate(userNavigateRequest));
+        log.debug("userNavigate: request={}", request);
+
+        // for now, only server navigation may specify location
+        Preconditions.checkArgument(request.getX() == null);
+        Preconditions.checkArgument(request.getY() == null);
+        Preconditions.checkArgument(request.getZ() == null);
+        Preconditions.checkArgument(request.getYaw() == null);
+        Preconditions.checkArgument(request.getPitch() == null);
+
+        UserNavigateResponse response = userNavigateService.userNavigate(request);
+
+        log.debug("userNavigate: response={}", response);
+
+        return ResponseEntity.ok(response);
     }
 }

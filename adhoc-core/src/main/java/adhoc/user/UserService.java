@@ -84,7 +84,7 @@ public class UserService {
         log.debug("Authentication success. id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getState().getToken());
     }
 
-    public UserDto toDto(UserEntity user) {
+    UserDto toDto(UserEntity user) {
         return new UserDto(
                 user.getId(),
                 user.getVersion(),
@@ -98,7 +98,7 @@ public class UserService {
                 user.getState().getServer() == null ? null : user.getState().getServer().getId());
     }
 
-    public UserFullDto toFullDto(UserEntity user) {
+    UserFullDto toFullDto(UserEntity user) {
         return new UserFullDto(
                 user.getId(),
                 user.getVersion(),

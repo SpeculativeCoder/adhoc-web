@@ -22,14 +22,11 @@
 
 package adhoc.user;
 
-import adhoc.user.defeat.ServerUserDefeatEvent;
-import adhoc.user.defeat.UserDefeatEvent;
-import adhoc.user.defeat.UserDefeatService;
-import adhoc.user.join.UserJoinRequest;
-import adhoc.user.join.UserJoinService;
-import adhoc.user.navigate.UserNavigateRequest;
-import adhoc.user.navigate.UserNavigateResponse;
-import adhoc.user.navigate.UserNavigateService;
+import adhoc.user.events.ServerUserDefeatEvent;
+import adhoc.user.events.UserDefeatEvent;
+import adhoc.user.requests.UserJoinRequest;
+import adhoc.user.requests.UserNavigateRequest;
+import adhoc.user.responses.UserNavigateResponse;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -20,33 +20,27 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn.purge;
+package adhoc.user.events;
 
-import adhoc.pawn.PawnRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import adhoc.Event;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-import java.time.LocalDateTime;
+@Value
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class ServerUserDefeatEvent implements Event {
 
-@Service
-@Transactional
-@Slf4j
-@RequiredArgsConstructor
-public class PawnPurgeService {
+    @NotNull
+    @Min(1)
+    Long userId;
 
-    private final PawnRepository pawnRepository;
-
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void purgeOldPawns() {
-        log.trace("Purging old pawns...");
-
-        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
-    }
+    @NotNull
+    @Min(1)
+    Long defeatedUserId;
 }

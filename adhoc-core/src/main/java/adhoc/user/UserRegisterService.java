@@ -20,18 +20,14 @@
  * SOFTWARE.
  */
 
-package adhoc.user.register;
+package adhoc.user;
 
 import adhoc.faction.FactionRepository;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.random_uuid.RandomUUIDUtils;
-import adhoc.user.UserEntity;
-import adhoc.user.UserFullDto;
-import adhoc.user.UserRepository;
-import adhoc.user.UserService;
-import adhoc.user.UserStateEntity;
 import adhoc.user.programmatic_login.ProgrammaticLoginService;
 import adhoc.user.random_name.RandomNameUtils;
+import adhoc.user.requests.UserRegisterRequest;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
@@ -78,7 +74,7 @@ public class UserRegisterService {
         return userService.toFullDto(user);
     }
 
-    public UserEntity userRegisterInternal(UserRegisterRequest userRegisterRequest) {
+    UserEntity userRegisterInternal(UserRegisterRequest userRegisterRequest) {
 
         String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();

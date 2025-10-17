@@ -20,9 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.pawn.events;
 
 import adhoc.Event;
+import adhoc.pawn.PawnDto;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -38,31 +40,13 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerUpdatedEvent implements Event {
+public class ServerPawnsEvent implements Event {
 
     @NotNull
     @Min(1)
     private Long serverId;
 
     @NotNull
-    @Min(0)
-    private Long version;
-
-    @NotNull
-    private Long regionId;
-    @NotNull
-    private List<Long> areaIds;
-    @NotNull
-    private List<Integer> areaIndexes;
-
-    @NotNull
-    private Boolean enabled;
-    @NotNull
-    private Boolean active;
-
-    private String publicIp;
-
-    private Integer publicWebSocketPort;
-
-    private String webSocketUrl;
+    @Valid
+    private List<PawnDto> pawns;
 }

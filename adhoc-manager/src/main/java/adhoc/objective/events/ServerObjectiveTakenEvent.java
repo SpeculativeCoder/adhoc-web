@@ -20,40 +20,29 @@
  * SOFTWARE.
  */
 
-package adhoc.user.navigate;
+package adhoc.objective.events;
 
+import adhoc.Event;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
-import java.math.BigDecimal;
-
-/**
- * Navigation request either from user via web interface to move themselves to a destination area or server,
- * or from the server when the user walks into an area associated with another server (in this case, latest
- * location is also provided so the destination server can properly position the user once they join).
- */
-@Value
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class UserNavigateRequest {
+public class ServerObjectiveTakenEvent implements Event {
 
+    @NotNull
     @Min(1)
-    Long userId;
+    private Long objectiveId;
 
+    @NotNull
     @Min(1)
-    Long destinationAreaId;
-
-    @Min(1)
-    Long destinationServerId;
-
-    BigDecimal x;
-    BigDecimal y;
-    BigDecimal z;
-
-    BigDecimal yaw;
-    BigDecimal pitch;
+    private Long factionId;
 }

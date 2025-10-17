@@ -47,7 +47,7 @@ public class PawnService {
         return toDto(pawnRepository.getReferenceById(pawnId));
     }
 
-    public PawnDto toDto(PawnEntity pawn) {
+    PawnDto toDto(PawnEntity pawn) {
         return new PawnDto(
                 pawn.getId(),
                 pawn.getVersion(),

@@ -20,21 +20,32 @@
  * SOFTWARE.
  */
 
-package adhoc.universe;
+package adhoc.pawn;
 
-import adhoc.Event;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Value
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class UniverseUpdatedEvent implements Event {
+import java.time.LocalDateTime;
 
-    @NotNull
-    UniverseDto universe;
+@Service
+@Transactional
+@Slf4j
+@RequiredArgsConstructor
+public class PawnPurgeService {
+
+    private final PawnRepository pawnRepository;
+
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    public void purgeOldPawns() {
+        log.trace("Purging old pawns...");
+
+        pawnRepository.deleteBySeenBefore(LocalDateTime.now().minusMinutes(1));
+    }
 }

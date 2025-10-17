@@ -20,47 +20,22 @@
  * SOFTWARE.
  */
 
-package adhoc.user.navigate;
+package adhoc.universe.events;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+import adhoc.Event;
+import adhoc.universe.UniverseDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.math.BigDecimal;
-
-
-/**
- * Navigation response indicating how a user can be connected to a destination server.
- */
-@Data
-@NoArgsConstructor
+@Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class UserNavigateResponse {
-
-    @NotEmpty
-    String ip;
+public class UniverseUpdatedEvent implements Event {
 
     @NotNull
-    @Min(0)
-    Integer port;
-
-    @NotEmpty
-    String webSocketUrl;
-
-    @NotEmpty
-    String mapName;
-
-    BigDecimal x;
-    BigDecimal y;
-    BigDecimal z;
-
-    BigDecimal yaw;
-    BigDecimal pitch;
+    UniverseDto universe;
 }

@@ -23,16 +23,16 @@
 package adhoc.system.quartz;
 
 import adhoc.Event;
-import adhoc.faction.score.FactionScoreService;
-import adhoc.pawn.purge.PawnPurgeService;
+import adhoc.faction.FactionScoreService;
+import adhoc.pawn.PawnPurgeService;
 import adhoc.server.ServerAllocateService;
-import adhoc.server.purge.ServerPurgeService;
+import adhoc.server.ServerPurgeService;
 import adhoc.task.ServerTaskAllocateService;
 import adhoc.task.TaskDomainService;
 import adhoc.task.TaskRefreshService;
+import adhoc.user.UserPurgeService;
+import adhoc.user.UserScoreService;
 import adhoc.user.UserSeenService;
-import adhoc.user.purge.UserPurgeService;
-import adhoc.user.score.UserScoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;

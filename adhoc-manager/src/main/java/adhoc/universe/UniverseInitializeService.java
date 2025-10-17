@@ -34,6 +34,7 @@ import adhoc.region.RegionRepository;
 import adhoc.server.ServerRepository;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
+import adhoc.universe.events.UniverseUpdatedEvent;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserStateEntity;

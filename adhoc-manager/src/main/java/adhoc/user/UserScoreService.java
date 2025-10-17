@@ -20,10 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.user.purge;
+package adhoc.user;
 
-import adhoc.user.UserRepository;
-import adhoc.user.UserStateRepository;
+import adhoc.faction.FactionEntity;
+import adhoc.objective.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -33,35 +33,43 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.List;
 
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserPurgeService {
+public class UserScoreService {
 
     private final UserRepository userRepository;
-    private final UserStateRepository userStateRepository;
+    private final ObjectiveRepository objectiveRepository;
 
+    /**
+     * Award user score according to how many objectives the user's faction currently owns.
+     * Also decay all user scores.
+     */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void purgeOldUsers() {
-        log.trace("Purging old users...");
-        Set<Long> oldUserIds = new TreeSet<>();
+    public void awardAndDecayUserScores() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime forUsersSeenAfter = now.minusHours(48);
+        log.trace("Awarding and decaying user scores... now={} forUsersSeenAfter={}", now, forUsersSeenAfter);
 
-        // regular cleanup of anon users who had a temp account created but never were seen in a server
-        oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
-        // regular cleanup of anon users who were last seen in a server a long time ago
-        oldUserIds.addAll(userRepository.findIdsByStateSeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
+        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts = objectiveRepository.getFactionObjectiveCounts();
 
-        if (!oldUserIds.isEmpty()) {
-            log.debug("Purging old users: {}", oldUserIds);
+        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
+            FactionEntity faction = factionObjectiveCount.getFaction();
+            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
 
-            userStateRepository.deleteAllByIdInBatch(oldUserIds);
-            userRepository.deleteAllByIdInBatch(oldUserIds);
+            BigDecimal scoreToAddForHumans = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
+            BigDecimal scoreToAddForNonHumans = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
+
+            userRepository.updateScoreAddByFactionIdAndStateSeenAfter(scoreToAddForHumans, scoreToAddForNonHumans, faction.getId(), forUsersSeenAfter);
         }
+
+        // TODO: multiplier property
+        userRepository.updateScoreMultiply(BigDecimal.valueOf(0.999));
     }
 }

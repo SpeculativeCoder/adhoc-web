@@ -20,10 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.user.score;
+package adhoc.objective;
 
 import adhoc.faction.FactionEntity;
-import adhoc.objective.ObjectiveRepository;
+import adhoc.faction.FactionRepository;
+import adhoc.objective.events.ObjectiveTakenEvent;
+import adhoc.objective.events.ServerObjectiveTakenEvent;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,41 +38,36 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserScoreService {
+public class ObjectiveTakenService {
 
-    private final UserRepository userRepository;
     private final ObjectiveRepository objectiveRepository;
+    private final FactionRepository factionRepository;
+    private final UserRepository userRepository;
 
-    /**
-     * Award user score according to how many objectives the user's faction currently owns.
-     * Also decay all user scores.
-     */
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void awardAndDecayUserScores() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime forUsersSeenAfter = now.minusHours(48);
-        log.trace("Awarding and decaying user scores... now={} forUsersSeenAfter={}", now, forUsersSeenAfter);
+    public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
+        ObjectiveEntity objective = objectiveRepository.getReferenceById(event.getObjectiveId());
+        FactionEntity faction = factionRepository.getReferenceById(event.getFactionId());
 
-        List<ObjectiveRepository.FactionObjectiveCount> factionObjectiveCounts = objectiveRepository.getFactionObjectiveCounts();
+        log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
 
-        for (ObjectiveRepository.FactionObjectiveCount factionObjectiveCount : factionObjectiveCounts) {
-            FactionEntity faction = factionObjectiveCount.getFaction();
-            Integer objectiveCount = factionObjectiveCount.getObjectiveCount();
+        objective.setFaction(faction);
 
-            BigDecimal scoreToAddForHumans = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
-            BigDecimal scoreToAddForNonHumans = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
+        factionRepository.updateScoreAddById(BigDecimal.valueOf(1.0), faction.getId());
 
-            userRepository.updateScoreAddByFactionIdAndStateSeenAfter(scoreToAddForHumans, scoreToAddForNonHumans, faction.getId(), forUsersSeenAfter);
-        }
+        BigDecimal humanScoreAdd = BigDecimal.valueOf(1.0);
+        BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.1);
+        LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
 
-        // TODO: multiplier property
-        userRepository.updateScoreMultiply(BigDecimal.valueOf(0.999));
+        userRepository.updateScoreAddByFactionIdAndStateSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
+
+        // TODO
+        return new ObjectiveTakenEvent(objective.getId(), objective.getVersion(), faction.getId(), faction.getVersion() + 1);
     }
 }

@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-package adhoc.user.defeat;
+package adhoc.user;
 
 import adhoc.message.MessageService;
-import adhoc.user.UserEntity;
-import adhoc.user.UserRepository;
+import adhoc.user.events.ServerUserDefeatEvent;
+import adhoc.user.events.UserDefeatEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;

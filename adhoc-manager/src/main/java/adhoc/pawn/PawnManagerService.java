@@ -23,6 +23,7 @@
 package adhoc.pawn;
 
 import adhoc.faction.FactionRepository;
+import adhoc.pawn.events.ServerPawnsEvent;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.user.UserRepository;

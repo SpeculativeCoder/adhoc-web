@@ -20,32 +20,39 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.user.requests;
 
-import adhoc.Event;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-@Data
-@NoArgsConstructor
+@Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerStartedEvent implements Event {
+public class UserRegisterRequest {
 
-    @NotNull
+    // at the moment we only allow auto-generated name
+    //@NotEmpty
+    //@Pattern(regexp = "Anon[0-9]{1,10}")
+    @Null
+    String name;
+
+    @Email
+    String email;
+
+    @Size(min = 1)
+    @ToString.Exclude
+    String password;
+
+    Boolean human;
+
     @Min(1)
-    private Long serverId;
-
-    @NotEmpty
-    private String privateIp;
-
-    @NotEmpty
-    private String managerHost;
+    Long factionId;
 }

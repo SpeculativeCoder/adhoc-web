@@ -20,39 +20,37 @@
  * SOFTWARE.
  */
 
-package adhoc.user.register;
+package adhoc.objective.events;
 
-import jakarta.validation.constraints.Email;
+import adhoc.Event;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Null;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.ToString;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
-@Value
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class UserRegisterRequest {
+public class ObjectiveTakenEvent implements Event {
 
-    // at the moment we only allow auto-generated name
-    //@NotEmpty
-    //@Pattern(regexp = "Anon[0-9]{1,10}")
-    @Null
-    String name;
-
-    @Email
-    String email;
-
-    @Size(min = 1)
-    @ToString.Exclude
-    String password;
-
-    Boolean human;
-
+    @NotNull
     @Min(1)
-    Long factionId;
+    private Long objectiveId;
+
+    @NotNull
+    @Min(0)
+    private Long objectiveVersion;
+
+    @NotNull
+    @Min(1)
+    private Long factionId;
+
+    @NotNull
+    @Min(0)
+    private Long factionVersion;
 }

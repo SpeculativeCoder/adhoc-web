@@ -20,42 +20,36 @@
  * SOFTWARE.
  */
 
-package adhoc.user.join;
+package adhoc.server;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
-import org.hibernate.validator.constraints.Length;
+import adhoc.system.properties.ManagerProperties;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * When a user joins a server we will either verify they are an existing user (if {@link #userId} is not null)
- * or register a new user (if {@link #userId} is null).
- */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Jacksonized
-public class UserJoinRequest {
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
-    //@NotNull
-    @Min(1)
-    private Long userId;
+@Service
+@Transactional
+@Slf4j
+@RequiredArgsConstructor
+public class ServerPurgeService {
 
-    @Min(1)
-    private Long factionId;
+    private final ManagerProperties managerProperties;
 
-    @NotNull
-    private Boolean human;
+    private final ServerRepository serverRepository;
 
-    @NotNull
-    @Min(1)
-    private Long serverId;
+    public void purgeOldServers() {
+        LocalDateTime seenBefore = LocalDateTime.now().minus(managerProperties.getPurgeOldServersSeenBefore());
 
-    @Length(min = 1)
-    private String token;
+        try (Stream<ServerEntity> oldServers = serverRepository.streamByAreasEmptyAndUserStatesEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
+            oldServers.forEach(oldServer -> {
+                log.debug("Deleting old server {}", oldServer.getId());
+
+                serverRepository.delete(oldServer);
+            });
+        }
+    }
 }

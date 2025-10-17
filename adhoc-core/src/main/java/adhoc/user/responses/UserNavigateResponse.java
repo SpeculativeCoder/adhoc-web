@@ -20,38 +20,47 @@
  * SOFTWARE.
  */
 
-package adhoc.server.purge;
+package adhoc.user.responses;
 
-import adhoc.server.ServerEntity;
-import adhoc.server.ServerRepository;
-import adhoc.system.properties.ManagerProperties;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
+import java.math.BigDecimal;
 
-@Service
-@Transactional
-@Slf4j
-@RequiredArgsConstructor
-public class ServerPurgeService {
 
-    private final ManagerProperties managerProperties;
+/**
+ * Navigation response indicating how a user can be connected to a destination server.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class UserNavigateResponse {
 
-    private final ServerRepository serverRepository;
+    @NotEmpty
+    String ip;
 
-    public void purgeOldServers() {
-        LocalDateTime seenBefore = LocalDateTime.now().minus(managerProperties.getPurgeOldServersSeenBefore());
+    @NotNull
+    @Min(0)
+    Integer port;
 
-        try (Stream<ServerEntity> oldServers = serverRepository.streamByAreasEmptyAndUserStatesEmptyAndPawnsEmptyAndSeenBefore(seenBefore)) {
-            oldServers.forEach(oldServer -> {
-                log.debug("Deleting old server {}", oldServer.getId());
+    @NotEmpty
+    String webSocketUrl;
 
-                serverRepository.delete(oldServer);
-            });
-        }
-    }
+    @NotEmpty
+    String mapName;
+
+    BigDecimal x;
+    BigDecimal y;
+    BigDecimal z;
+
+    BigDecimal yaw;
+    BigDecimal pitch;
 }

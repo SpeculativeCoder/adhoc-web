@@ -20,9 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.objective.taken;
+package adhoc.user.requests;
 
-import adhoc.Event;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -30,19 +29,33 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
+import org.hibernate.validator.constraints.Length;
 
+/**
+ * When a user joins a server we will either verify they are an existing user (if {@link #userId} is not null)
+ * or register a new user (if {@link #userId} is null).
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ServerObjectiveTakenEvent implements Event {
+public class UserJoinRequest {
 
-    @NotNull
+    //@NotNull
     @Min(1)
-    private Long objectiveId;
+    private Long userId;
 
-    @NotNull
     @Min(1)
     private Long factionId;
+
+    @NotNull
+    private Boolean human;
+
+    @NotNull
+    @Min(1)
+    private Long serverId;
+
+    @Length(min = 1)
+    private String token;
 }

@@ -20,15 +20,15 @@
  * SOFTWARE.
  */
 
-package adhoc.user.navigate;
+package adhoc.user;
 
 import adhoc.area.AreaEntity;
 import adhoc.area.AreaRepository;
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.user.UserEntity;
-import adhoc.user.UserRepository;
+import adhoc.user.requests.UserNavigateRequest;
+import adhoc.user.responses.UserNavigateResponse;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;

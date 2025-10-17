@@ -20,48 +20,49 @@
  * SOFTWARE.
  */
 
-package adhoc.user.defeat;
+package adhoc.server.events;
 
 import adhoc.Event;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
-@Value
+import java.util.List;
+
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class UserDefeatEvent implements Event {
+public class ServerUpdatedEvent implements Event {
 
     @NotNull
     @Min(1)
-    Long userId;
+    private Long serverId;
 
     @NotNull
     @Min(0)
-    Long userVersion;
-
-    @NotEmpty
-    String userName;
+    private Long version;
 
     @NotNull
-    Boolean userHuman;
+    private Long regionId;
+    @NotNull
+    private List<Long> areaIds;
+    @NotNull
+    private List<Integer> areaIndexes;
 
     @NotNull
-    @Min(1)
-    Long defeatedUserId;
-
+    private Boolean enabled;
     @NotNull
-    @Min(0)
-    Long defeatedUserVersion;
+    private Boolean active;
 
-    @NotEmpty
-    String defeatedUserName;
+    private String publicIp;
 
-    @NotNull
-    Boolean defeatedUserHuman;
+    private Integer publicWebSocketPort;
+
+    private String webSocketUrl;
 }

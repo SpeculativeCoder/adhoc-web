@@ -20,16 +20,12 @@
  * SOFTWARE.
  */
 
-package adhoc.user.join;
+package adhoc.user;
 
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.user.UserEntity;
-import adhoc.user.UserFullDto;
-import adhoc.user.UserRepository;
-import adhoc.user.UserService;
-import adhoc.user.register.UserRegisterRequest;
-import adhoc.user.register.UserRegisterService;
+import adhoc.user.requests.UserJoinRequest;
+import adhoc.user.requests.UserRegisterRequest;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;

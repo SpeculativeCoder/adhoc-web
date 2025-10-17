@@ -20,10 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.score;
+package adhoc.faction;
 
-import adhoc.faction.FactionEntity;
-import adhoc.faction.FactionRepository;
 import adhoc.objective.ObjectiveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

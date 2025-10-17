@@ -22,6 +22,7 @@
 
 package adhoc.pawn;
 
+import adhoc.pawn.events.ServerPawnsEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -27,6 +27,7 @@ import adhoc.area.AreaEntity;
 import adhoc.area.groups.AreaGroupsFactory;
 import adhoc.region.RegionEntity;
 import adhoc.region.RegionRepository;
+import adhoc.server.events.ServerUpdatedEvent;
 import adhoc.task.ServerTaskEntity;
 import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;

@@ -24,20 +24,11 @@ package adhoc.task;
 
 import adhoc.Event;
 import adhoc.dns.DnsService;
-import adhoc.message.MessageService;
 import adhoc.system.properties.ManagerProperties;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -47,7 +38,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -59,11 +49,9 @@ public class TaskDomainService {
 
     private final TaskRepository taskRepository;
 
-    private final DnsService dnsService;
-    private final MessageService messageService;
+    private final TaskManagerService taskManagerService;
 
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private TaskDomainService self;
+    private final DnsService dnsService;
 
     public List<? extends Event> manageTaskDomains() {
         List<Event> events = new ArrayList<>();
@@ -89,24 +77,10 @@ public class TaskDomainService {
             //log.info("{} -> {}", domain, publicIps);
             dnsService.createOrUpdate(domain, new LinkedHashSet<>(publicIps));
 
-            self.updateTaskDomainInNewTransaction(task.getId(), domain);
+            taskManagerService.updateTaskDomainInNewTransaction(task.getId(), domain);
         }
 
         return events;
-    }
-
-    // NOTE: done in new transaction to avoid retries spamming DNS service due to optimistic locking
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public void updateTaskDomainInNewTransaction(Long taskId, String domain) {
-        TaskEntity task = taskRepository.getReferenceById(taskId);
-
-        if (!Objects.equals(task.getDomain(), domain)) {
-            task.setDomain(domain);
-        }
-
-        messageService.addGlobalMessage(String.format("Task %d (of type %s) mapped to domain %s", task.getId(), task.getType().name(), domain));
     }
 
     private String determineDomain(TaskEntity task) {

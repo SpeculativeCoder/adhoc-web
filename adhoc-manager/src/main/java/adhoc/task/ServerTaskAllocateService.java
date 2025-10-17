@@ -23,21 +23,12 @@
 package adhoc.task;
 
 import adhoc.hosting.HostingService;
-import adhoc.message.MessageService;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -54,11 +45,9 @@ public class ServerTaskAllocateService {
     private final ServerRepository serverRepository;
     private final ServerTaskRepository serverTaskRepository;
 
-    private final HostingService hostingService;
-    private final MessageService messageService;
+    private final ServerTaskManagerService serverTaskManagerService;
 
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private ServerTaskAllocateService self;
+    private final HostingService hostingService;
 
     /**
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.
@@ -72,7 +61,7 @@ public class ServerTaskAllocateService {
                         // no existing server task? start a new one
                         .orElseGet(() -> {
                             ServerTaskEntity serverHostingTask = startHostedServerTask(server);
-                            self.createServerTaskInNewTransaction(serverHostingTask);
+                            serverTaskManagerService.createServerTaskInNewTransaction(serverHostingTask);
                             return serverHostingTask;
                         });
 
@@ -87,7 +76,7 @@ public class ServerTaskAllocateService {
                 if (unusedServerTask.getSeen() != null) {
                     stopHostedServerTask(unusedServerTask);
                 }
-                self.deleteServerTaskInNewTransaction(unusedServerTask.getId());
+                serverTaskManagerService.deleteServerTaskInNewTransaction(unusedServerTask.getId());
             });
         }
     }
@@ -117,27 +106,5 @@ public class ServerTaskAllocateService {
             log.warn("Failed to stop server task for server {}!", serverTask.getServerId(), e);
             throw e;
         }
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    void createServerTaskInNewTransaction(ServerTaskEntity serverTask) {
-
-        serverTask.setInitiated(LocalDateTime.now()); // TODO
-
-        serverTaskRepository.save(serverTask);
-
-        messageService.addGlobalMessage(String.format("Server task %d created", serverTask.getId()));
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    void deleteServerTaskInNewTransaction(Long serverTaskId) {
-
-        serverTaskRepository.deleteById(serverTaskId);
-
-        messageService.addGlobalMessage(String.format("Server task %d deleted", serverTaskId));
     }
 }

@@ -23,7 +23,7 @@
 package adhoc.user;
 
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
-import adhoc.system.util.RandomUUIDUtils;
+import adhoc.system.random_uuid.RandomUUIDUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;

@@ -24,14 +24,14 @@ package adhoc.user.register;
 
 import adhoc.faction.FactionRepository;
 import adhoc.system.properties.CoreProperties;
-import adhoc.system.util.RandomUUIDUtils;
+import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserFullDto;
 import adhoc.user.UserRepository;
 import adhoc.user.UserService;
 import adhoc.user.UserStateEntity;
 import adhoc.user.programmatic_login.ProgrammaticLoginService;
-import adhoc.user.util.RandomNameUtils;
+import adhoc.user.random_name.RandomNameUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;

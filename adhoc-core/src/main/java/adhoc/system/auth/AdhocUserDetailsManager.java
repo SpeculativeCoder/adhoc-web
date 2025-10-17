@@ -22,7 +22,7 @@
 
 package adhoc.system.auth;
 
-import adhoc.system.util.RandomUUIDUtils;
+import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import lombok.RequiredArgsConstructor;

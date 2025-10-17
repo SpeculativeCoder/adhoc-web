@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.util;
+package adhoc.system.random_uuid;
 
 import lombok.experimental.UtilityClass;
 

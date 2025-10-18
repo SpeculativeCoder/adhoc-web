@@ -22,30 +22,32 @@
 
 package adhoc.task;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import adhoc.dns.DnsService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 
-// TODO: common
-public interface ServerTaskRepository extends JpaRepository<ServerTaskEntity, Long> {
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class TaskDomainOrchestrator {
 
-    @Query("select st.taskIdentifier " +
-            "from ServerTask st " +
-            "where st.initiated < ?1 " +
-            "and not exists (from Server s where s.enabled and s.id = st.serverId)")
-    List<String> findTaskIdentifierByInitiatedBeforeAndServerNotEnabled(LocalDateTime initiatedBefore);
+    private final TaskDomainService taskDomainService;
 
-    @Modifying
-    @Query("delete from ServerTask st " +
-            "where st.seen is null " +
-            "and st.initiated < ?1 ")
-    void deleteBySeenIsNullAndInitiatedBefore(LocalDateTime initiatedBefore);
+    private final DnsService dnsService;
 
-    Optional<ServerTaskEntity> findFirstByServerId(Long serverId);
+    public void manageTaskDomains() {
 
-    void deleteByTaskIdentifier(String taskIdentifier);
+        List<TaskDomainService.TaskDomain> taskDomains = taskDomainService.determineTaskDomains();
+
+        for (TaskDomainService.TaskDomain taskDomain : taskDomains) {
+            //log.info("{} -> {}", domain, publicIps);
+            dnsService.createOrUpdate(taskDomain.domain(), new LinkedHashSet<>(taskDomain.publicIps()));
+
+            taskDomainService.updateTaskDomain(taskDomain.taskId(), taskDomain.domain());
+        }
+    }
 }

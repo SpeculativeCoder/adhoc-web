@@ -56,11 +56,17 @@ public class TaskService {
                 task.getId(),
                 task.getVersion(),
                 task.getType().name(),
+                null, // TODO
+                null, // TODO
                 task.getPublicIp(),
                 task.getPublicWebSocketPort(),
                 task.getDomain(),
                 task.getInitiated(),
                 task.getSeen(),
-                task instanceof ServerTaskEntity serverTask ? serverTask.getServerId() : null);
+                task instanceof ServerTaskEntity serverTask ? serverTask.getServerId() : null,
+                // TODO
+                null,
+                null,
+                null);
     }
 }

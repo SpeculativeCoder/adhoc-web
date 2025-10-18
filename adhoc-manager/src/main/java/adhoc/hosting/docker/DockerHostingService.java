@@ -22,15 +22,15 @@
 
 package adhoc.hosting.docker;
 
-import adhoc.area.AreaEntity;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.docker.properties.DockerHostingProperties;
-import adhoc.server.ServerEntity;
+import adhoc.server.ServerDto;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
 import adhoc.task.KioskTaskEntity;
 import adhoc.task.ManagerTaskEntity;
 import adhoc.task.ServerTaskEntity;
+import adhoc.task.TaskDto;
 import adhoc.task.TaskEntity;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
@@ -193,7 +193,7 @@ public class DockerHostingService implements HostingService {
     }
 
     @Override
-    public ServerTaskEntity startServerTask(ServerEntity server) {
+    public TaskDto startServerTask(ServerDto server) {
         log.debug("Starting Docker container for {}", server); // linked to managers {}", managerHosts);
         int publicWebSocketPort = calculatePublicWebSocketPort(server.getId());
 
@@ -207,17 +207,15 @@ public class DockerHostingService implements HostingService {
                         String.format("MANAGER_HOST=%s", "host.docker.internal"), // TODO
                         //String.format("MANAGER_HOST=%s", managerHosts.iterator().next()),
                         //String.format("INITIAL_MANAGER_HOSTS=%s", String.join(",", managerHosts)),
-                        String.format("REGION_ID=%d", server.getRegion().getId()),
+                        String.format("REGION_ID=%d", server.getRegionId()),
                         //String.format("INITIAL_AREA_IDS=%s",
                         //        server.getAreas().stream()
                         //                .map(Area::getId)
                         //                .map(Object::toString)
                         //                .collect(Collectors.joining(","))),
-                        String.format("INITIAL_AREA_INDEXES=%s",
-                                server.getAreas().stream()
-                                        .map(AreaEntity::getIndex)
-                                        .map(Object::toString)
-                                        .collect(Collectors.joining(","))),
+                        String.format("INITIAL_AREA_INDEXES=%s", server.getAreaIndexes().stream()
+                                .map(Object::toString)
+                                .collect(Collectors.joining(","))),
                         String.format("MAX_CONTROLLERS=%d", managerProperties.getMaxControllers()),
                         String.format("MAX_PLAYERS=%d", managerProperties.getMaxPlayers()),
                         String.format("MAX_BOTS=%d", managerProperties.getMaxBots()),
@@ -240,10 +238,11 @@ public class DockerHostingService implements HostingService {
 
         //InspectContainerResponse inspectedContainer = dockerClient.inspectContainerCmd(createdContainer.getId()).exec();
 
-        ServerTaskEntity serverTask = new ServerTaskEntity();
-        serverTask.setTaskIdentifier(createdContainer.getId());
-        serverTask.setPublicWebSocketPort(publicWebSocketPort);
-        serverTask.setServerId(server.getId());
+        TaskDto serverTask = TaskDto.builder()
+                .taskIdentifier(createdContainer.getId())
+                .publicWebSocketPort(publicWebSocketPort)
+                .serverId(server.getId())
+                .build();
 
         return serverTask;
     }

@@ -27,9 +27,9 @@ import adhoc.faction.FactionScoreService;
 import adhoc.pawn.PawnPurgeService;
 import adhoc.server.ServerAllocateService;
 import adhoc.server.ServerPurgeService;
-import adhoc.task.ServerTaskAllocateService;
-import adhoc.task.TaskDomainService;
-import adhoc.task.TaskRefreshService;
+import adhoc.task.ServerTaskManagerOrchestrator;
+import adhoc.task.TaskDomainOrchestrator;
+import adhoc.task.TaskManagerOrchestrator;
 import adhoc.user.UserPurgeService;
 import adhoc.user.UserScoreService;
 import adhoc.user.UserSeenService;
@@ -55,9 +55,9 @@ public class ManagerQuartzJob implements Job {
 
     private final ServerAllocateService serverAllocateService;
     private final ServerPurgeService serverPurgeService;
-    private final TaskRefreshService taskRefreshService;
-    private final TaskDomainService taskDomainService;
-    private final ServerTaskAllocateService serverTaskAllocateService;
+    private final TaskManagerOrchestrator taskManagerOrchestrator;
+    private final TaskDomainOrchestrator taskDomainOrchestrator;
+    private final ServerTaskManagerOrchestrator serverTaskManagerOrchestrator;
     private final FactionScoreService factionScoreService;
     private final UserSeenService userSeenService;
     private final UserScoreService userScoreService;
@@ -80,13 +80,13 @@ public class ManagerQuartzJob implements Job {
                 events = serverAllocateService.allocateServers();
                 break;
             case ManagerQuartzConfiguration.REFRESH_TASKS:
-                taskRefreshService.refreshTasks();
+                taskManagerOrchestrator.refreshTasks();
                 break;
             case ManagerQuartzConfiguration.MANAGE_TASK_DOMAINS:
-                events = taskDomainService.manageTaskDomains();
+                taskDomainOrchestrator.manageTaskDomains();
                 break;
             case ManagerQuartzConfiguration.ALLOCATE_SERVER_TASKS:
-                serverTaskAllocateService.allocateServerTasks();
+                serverTaskManagerOrchestrator.manageServerTasks();
                 break;
             case ManagerQuartzConfiguration.AWARD_AND_DECAY_FACTION_SCORES:
                 factionScoreService.awardAndDecayFactionScores();

@@ -8,10 +8,10 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -21,32 +21,36 @@ public class ServerTaskManagerService {
 
     private final ServerTaskRepository serverTaskRepository;
 
-    private final TaskService taskService;
     private final MessageService messageService;
 
-    //public Optional<TaskDto> findFirstByServerId(Long serverId) {
-    //    return serverTaskRepository.findFirstByServerId(serverId).map(taskService::toDto);
-    //}
+    public List<String> findSeenUnusedServerTasks() {
+        LocalDateTime initiatedBefore = LocalDateTime.now().minusMinutes(1);
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    void createServerTaskInNewTransaction(ServerTaskEntity serverTask) {
+        // TODO
+        serverTaskRepository.deleteBySeenIsNullAndInitiatedBefore(initiatedBefore);
 
-        serverTask.setInitiated(LocalDateTime.now()); // TODO
-
-        serverTaskRepository.save(serverTask);
-
-        messageService.addGlobalMessage(String.format("Server task %d created", serverTask.getId()));
+        return serverTaskRepository.findTaskIdentifierByInitiatedBeforeAndServerNotEnabled(initiatedBefore);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    void deleteServerTaskInNewTransaction(Long serverTaskId) {
+    void createServerTask(TaskDto serverTask) {
 
-        serverTaskRepository.deleteById(serverTaskId);
+        ServerTaskEntity serverTaskEntity = new ServerTaskEntity();
+        serverTaskEntity.setServerId(serverTask.getServerId());
+        serverTaskEntity.setTaskIdentifier(serverTask.getTaskIdentifier());
+        serverTaskEntity.setPublicWebSocketPort(serverTask.getPublicWebSocketPort());
+        serverTaskEntity.setInitiated(LocalDateTime.now()); // TODO
 
-        messageService.addGlobalMessage(String.format("Server task %d deleted", serverTaskId));
+        serverTaskRepository.save(serverTaskEntity);
+
+        messageService.addGlobalMessage(String.format("Server task %d created", serverTaskEntity.getId()));
+    }
+
+    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    void deleteServerTask(String serverTaskIdentifier) {
+
+        serverTaskRepository.deleteByTaskIdentifier(serverTaskIdentifier);
     }
 }

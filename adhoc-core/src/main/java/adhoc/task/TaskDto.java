@@ -29,6 +29,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Value
 @AllArgsConstructor
@@ -44,6 +45,10 @@ public class TaskDto {
 
     String type;
 
+    String taskIdentifier;
+
+    String privateIp;
+
     String publicIp;
 
     Integer publicWebSocketPort;
@@ -55,4 +60,10 @@ public class TaskDto {
     LocalDateTime seen;
 
     Long serverId;
+
+    Long regionId;
+
+    String mapName;
+
+    List<Integer> areaIndexes;
 }

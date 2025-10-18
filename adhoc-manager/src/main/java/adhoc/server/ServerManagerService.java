@@ -27,6 +27,8 @@ import adhoc.area.AreaRepository;
 import adhoc.region.RegionRepository;
 import adhoc.server.events.ServerStartedEvent;
 import adhoc.server.events.ServerUpdatedEvent;
+import adhoc.task.ServerTaskEntity;
+import adhoc.task.ServerTaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -37,8 +39,11 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -47,6 +52,7 @@ import java.util.stream.Collectors;
 public class ServerManagerService {
 
     private final ServerRepository serverRepository;
+    private final ServerTaskRepository serverTaskRepository;
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
 
@@ -71,6 +77,23 @@ public class ServerManagerService {
         server.setActive(true);
 
         return toServerUpdatedEvent(server);
+    }
+
+    public List<ServerDto> findEnabledTasklessServers() {
+        List<ServerDto> enabledTasklessServers = new ArrayList<>();
+
+        try (Stream<ServerEntity> enabledServers = serverRepository.streamByEnabledTrue()) {
+            enabledServers.forEach(enabledServer -> {
+                Optional<ServerTaskEntity> serverTask = serverTaskRepository.findFirstByServerId(enabledServer.getId());
+                if (serverTask.isEmpty()) {
+                    // no existing server task? will need to start a new one
+                    ServerDto enabledTasklessServer = serverService.toDto(enabledServer);
+                    enabledTasklessServers.add(enabledTasklessServer);
+                }
+            });
+        }
+
+        return enabledTasklessServers;
     }
 
     ServerEntity toEntity(ServerDto serverDto, ServerEntity server) {

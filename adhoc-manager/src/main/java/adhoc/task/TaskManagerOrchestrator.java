@@ -27,17 +27,13 @@ import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class TaskRefreshService {
-
-    private final TaskRepository taskRepository;
+public class TaskManagerOrchestrator {
 
     private final TaskManagerService taskManagerService;
 
@@ -50,7 +46,6 @@ public class TaskRefreshService {
         log.debug("hostedTasks={}", hostedTasks);
         Verify.verifyNotNull(hostedTasks, "hostedTasks is null!");
 
-        taskManagerService.updateTasksInNewTransaction(hostedTasks);
+        taskManagerService.updateTasks(hostedTasks);
     }
-
 }

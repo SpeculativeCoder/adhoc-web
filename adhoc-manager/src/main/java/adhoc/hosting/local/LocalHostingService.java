@@ -23,11 +23,13 @@
 package adhoc.hosting.local;
 
 import adhoc.hosting.HostingService;
+import adhoc.server.ServerDto;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.task.KioskTaskEntity;
 import adhoc.task.ManagerTaskEntity;
 import adhoc.task.ServerTaskEntity;
+import adhoc.task.TaskDto;
 import adhoc.task.TaskEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,14 +92,15 @@ public class LocalHostingService implements HostingService {
     }
 
     @Override
-    public ServerTaskEntity startServerTask(ServerEntity server) {
+    public TaskDto startServerTask(ServerDto server) {
         log.debug("Assuming local task for server {}", server);
         serverIds.add(server.getId());
 
-        ServerTaskEntity serverTask = new ServerTaskEntity();
-        serverTask.setTaskIdentifier(server.getId().toString());
-        serverTask.setPublicWebSocketPort(8889);
-        serverTask.setServerId(server.getId());
+        TaskDto serverTask = TaskDto.builder()
+                .taskIdentifier(server.getId().toString())
+                .publicWebSocketPort(8889)
+                .serverId(server.getId())
+                .build();
 
         return serverTask;
     }

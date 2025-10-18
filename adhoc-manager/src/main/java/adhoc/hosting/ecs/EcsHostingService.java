@@ -22,15 +22,15 @@
 
 package adhoc.hosting.ecs;
 
-import adhoc.area.AreaEntity;
 import adhoc.hosting.HostingService;
 import adhoc.hosting.ecs.properties.EcsHostingProperties;
-import adhoc.server.ServerEntity;
+import adhoc.server.ServerDto;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
 import adhoc.task.KioskTaskEntity;
 import adhoc.task.ManagerTaskEntity;
 import adhoc.task.ServerTaskEntity;
+import adhoc.task.TaskDto;
 import adhoc.task.TaskEntity;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
@@ -265,7 +265,7 @@ public class EcsHostingService implements HostingService {
                 serverNetworkInterfaceIds.values().stream()).toList();
     }
 
-    public ServerTaskEntity startServerTask(ServerEntity server) {
+    public TaskDto startServerTask(ServerDto server) {
         log.debug("Starting task for {}", server);
 
         try (EcsClient ecsClient = ecsClient();
@@ -332,15 +332,14 @@ public class EcsHostingService implements HostingService {
                                     //KeyValuePair.builder().name("MANAGER_HOST").value(managerHosts.iterator().next()).build(),
                                     //KeyValuePair.builder().name("INITIAL_MANAGER_HOSTS")
                                     //       .value(String.join(",", managerHosts)).build(),
-                                    KeyValuePair.builder().name("REGION_ID").value(server.getRegion().getId().toString()).build(),
+                                    KeyValuePair.builder().name("REGION_ID").value(server.getRegionId().toString()).build(),
                                     //KeyValuePair.builder().name("INITIAL_AREA_IDS")
                                     //        .value(server.getAreas().stream()
                                     //                .map(Area::getId)
                                     //                .map(Object::toString)
                                     //                .collect(Collectors.joining(","))).build(),
                                     KeyValuePair.builder().name("INITIAL_AREA_INDEXES")
-                                            .value(server.getAreas().stream()
-                                                    .map(AreaEntity::getIndex)
+                                            .value(server.getAreaIndexes().stream()
                                                     .map(Object::toString)
                                                     .collect(Collectors.joining(","))).build(),
                                     KeyValuePair.builder().name("MAX_CONTROLLERS").value(managerProperties.getMaxControllers().toString()).build(),
@@ -375,10 +374,11 @@ public class EcsHostingService implements HostingService {
             String taskArn = runTaskResponse.tasks().getFirst().taskArn();
             log.debug("taskArn={}", taskArn);
 
-            ServerTaskEntity serverTask = new ServerTaskEntity();
-            serverTask.setTaskIdentifier(taskArn);
-            serverTask.setPublicWebSocketPort(8889);
-            serverTask.setServerId(server.getId());
+            TaskDto serverTask = TaskDto.builder()
+                    .taskIdentifier(taskArn)
+                    .publicWebSocketPort(8889)
+                    .serverId(server.getId())
+                    .build();
 
             return serverTask;
         }

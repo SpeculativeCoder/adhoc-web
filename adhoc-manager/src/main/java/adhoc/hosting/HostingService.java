@@ -22,8 +22,8 @@
 
 package adhoc.hosting;
 
-import adhoc.server.ServerEntity;
-import adhoc.task.ServerTaskEntity;
+import adhoc.server.ServerDto;
+import adhoc.task.TaskDto;
 import adhoc.task.TaskEntity;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public interface HostingService {
 
     List<TaskEntity> poll();
 
-    ServerTaskEntity startServerTask(ServerEntity server);
+    TaskDto startServerTask(ServerDto server);
 
     void stopServerTask(String taskIdentifier);
 }

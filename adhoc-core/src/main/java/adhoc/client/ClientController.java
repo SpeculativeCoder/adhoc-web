@@ -192,60 +192,63 @@ public class ClientController {
                 .body(resource);
     }
 
-    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/jquery-2.1.3.min.js", produces = "text/javascript")
+    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/jquery/jquery-2.1.3.min.js", produces = "text/javascript")
     public ResponseEntity<ClassPathResource> getJQueryJs(
             @PathVariable(value = "mapName") String mapName,
             HttpServletResponse response) {
 
-        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/jquery-2.1.3.min.js", mapName));
+        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/jquery/jquery-2.1.3.min.js", mapName));
 
         return ResponseEntity.ok(resource);
     }
 
-    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap.min.css", produces = "text/css")
+    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap/css/bootstrap.min.css", produces = "text/css")
     public ResponseEntity<ClassPathResource> getBootstrapCss(
             @PathVariable(value = "mapName") String mapName,
             HttpServletResponse response) {
 
-        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap.min.css", mapName));
+        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap/css/bootstrap.min.css", mapName));
 
         return ResponseEntity.ok(resource);
     }
 
-    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap.min.js", produces = "text/javascript")
+    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap/js/bootstrap.min.js", produces = "text/javascript")
     public ResponseEntity<ClassPathResource> getBootstrapJs(
             @PathVariable(value = "mapName") String mapName,
             HttpServletResponse response) {
 
-        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap.min.js", mapName));
+        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap/js/bootstrap.min.js", mapName));
 
         return ResponseEntity.ok(resource);
     }
 
     // the font access is from the root of the app - so just get the fonts from first mapName as they are all the same
-    @GetMapping(value = "/HTML5Client/fonts/glyphicons-halflings-regular.ttf", produces = "font/ttf")
+    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap/fonts/glyphicons-halflings-regular.ttf", produces = "font/ttf")
     public ResponseEntity<ClassPathResource> getFontsGlyphiconsHalflingsRegularTtf(
+            @PathVariable(value = "mapName") String mapName,
             HttpServletResponse response) {
 
-        ClassPathResource resource = classPathResource("/HTML5Client/" + firstRegionMap + "/HTML5/fonts/glyphicons-halflings-regular.ttf");
+        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap/fonts/glyphicons-halflings-regular.ttf", mapName));
 
         return ResponseEntity.ok(resource);
     }
 
-    @GetMapping(value = "/HTML5Client/fonts/glyphicons-halflings-regular.woff", produces = "font/woff")
+    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap/fonts/glyphicons-halflings-regular.woff", produces = "font/woff")
     public ResponseEntity<ClassPathResource> getFontsGlyphiconsHalflingsRegularWoff(
+            @PathVariable(value = "mapName") String mapName,
             HttpServletResponse response) {
 
-        ClassPathResource resource = classPathResource("/HTML5Client/" + firstRegionMap + "/HTML5/fonts/glyphicons-halflings-regular.woff");
+        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap/fonts/glyphicons-halflings-regular.woff", mapName));
 
         return ResponseEntity.ok(resource);
     }
 
-    @GetMapping(value = "/HTML5Client/fonts/glyphicons-halflings-regular.woff2", produces = "font/woff2")
+    @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap/fonts/glyphicons-halflings-regular.woff2", produces = "font/woff2")
     public ResponseEntity<ClassPathResource> getFontsGlyphiconsHalflingsRegularWoff2(
+            @PathVariable(value = "mapName") String mapName,
             HttpServletResponse response) {
 
-        ClassPathResource resource = classPathResource("/HTML5Client/" + firstRegionMap + "/HTML5/fonts/glyphicons-halflings-regular.woff2");
+        ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap/fonts/glyphicons-halflings-regular.woff2", mapName));
 
         return ResponseEntity.ok(resource);
     }

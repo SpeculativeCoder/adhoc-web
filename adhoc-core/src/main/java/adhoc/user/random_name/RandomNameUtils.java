@@ -32,9 +32,13 @@ public class RandomNameUtils {
     public String randomName() {
         Faker faker = new Faker();
 
-        return WordUtils.capitalize(faker.word().adjective()) +
+        return onlyAlpha(WordUtils.capitalize(faker.word().adjective()) +
                 WordUtils.capitalize(faker.word().adjective()) +
-                WordUtils.capitalize(faker.word().noun());
+                WordUtils.capitalize(faker.word().noun()));
+    }
+
+    private String onlyAlpha(String str) {
+        return str.replaceAll("[^A-Za-z]", "");
     }
 
     public static void main() {

@@ -47,7 +47,6 @@ public class ServerTaskManagerOrchestrator {
      */
     public void manageServerTasks() {
         List<ServerDto> enabledTasklessServers = serverManagerService.findEnabledTasklessServers();
-
         for (ServerDto enabledTasklessServer : enabledTasklessServers) {
             TaskDto serverTask = startHostedServerTask(enabledTasklessServer);
             serverTaskManagerService.createServerTask(serverTask);

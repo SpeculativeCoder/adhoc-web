@@ -67,8 +67,10 @@ public class TaskManagerService {
             }
         }
 
-        // any tasks we have seen in a previous poll but are no longer running - delete their entry
-        taskRepository.deleteByTaskIdentifierNotInAndSeenNotNull(taskIdentifiers);
+        LocalDateTime initiatedBefore = LocalDateTime.now().minusMinutes(1);
+
+        // any other tasks that are no longer running - delete their entry
+        taskRepository.deleteByTaskIdentifierNotInAndInitiatedBefore(taskIdentifiers, initiatedBefore);
     }
 
     private static TaskEntity updateExistingTask(TaskEntity existingTask, TaskEntity hostedTask) {

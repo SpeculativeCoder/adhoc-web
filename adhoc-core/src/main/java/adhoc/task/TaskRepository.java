@@ -24,6 +24,7 @@ package adhoc.task;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -32,5 +33,5 @@ public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
 
     Optional<TaskEntity> findByTaskIdentifier(String taskIdentifier);
 
-    void deleteByTaskIdentifierNotInAndSeenNotNull(Collection<String> taskIdentifiers);
+    void deleteByTaskIdentifierNotInAndInitiatedBefore(Collection<String> taskIdentifiers, LocalDateTime initiatedBefore);
 }

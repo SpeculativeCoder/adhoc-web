@@ -48,9 +48,6 @@ public class ServerTaskManagerService {
     public List<String> findSeenUnusedServerTasks() {
         LocalDateTime initiatedBefore = LocalDateTime.now().minusMinutes(1);
 
-        // TODO
-        serverTaskRepository.deleteBySeenIsNullAndInitiatedBefore(initiatedBefore);
-
         return serverTaskRepository.findTaskIdentifierByInitiatedBeforeAndServerNotEnabled(initiatedBefore);
     }
 

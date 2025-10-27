@@ -127,7 +127,7 @@ public class UniverseInitializeService {
         FactionEntity team5 = new FactionEntity();
         team5.setIndex(4);
         team5.setName("Epsilon");
-        team5.setColor("#66FFFD");
+        team5.setColor("#96E8FF");
         team5.setScore(BigDecimal.valueOf(0.0));
         team5 = factionRepository.save(team5);
 
@@ -148,7 +148,7 @@ public class UniverseInitializeService {
         FactionEntity team8 = new FactionEntity();
         team8.setIndex(7);
         team8.setName("Theta");
-        team8.setColor("#0F0FFF");
+        team8.setColor("#8480BB");
         team8.setScore(BigDecimal.valueOf(0.0));
         team8 = factionRepository.save(team8);
 

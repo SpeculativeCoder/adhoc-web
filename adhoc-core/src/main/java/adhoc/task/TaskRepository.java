@@ -33,5 +33,7 @@ public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
 
     Optional<TaskEntity> findByTaskIdentifier(String taskIdentifier);
 
+    void deleteByTaskIdentifierNotInAndSeenBefore(Collection<String> taskIdentifiers, LocalDateTime seenBefore);
+
     void deleteByTaskIdentifierNotInAndInitiatedBefore(Collection<String> taskIdentifiers, LocalDateTime initiatedBefore);
 }

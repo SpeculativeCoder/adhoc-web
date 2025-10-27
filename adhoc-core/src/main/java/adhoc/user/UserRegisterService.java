@@ -112,7 +112,7 @@ public class UserRegisterService {
             if (user.isHuman()) {
                 user.setName(RandomNameUtils.randomName()); // TODO
             } else {
-                user.setName("Bot" + System.currentTimeMillis()); // TODO
+                user.setName("Bot" + Long.toString(System.currentTimeMillis()).replaceFirst("^176159", "")); // TODO
             }
         }
 

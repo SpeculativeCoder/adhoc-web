@@ -275,7 +275,9 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       ry: 5 * (1 / this.mapScale!),
       cornerStyle: "circle",
       hoverCursor: 'default',
+      editable: false,
       selectable: false,
+      evented: false
     });
     this.canvas!.add(terrainRect);
 
@@ -292,6 +294,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         hoverCursor: 'default',
         editable: false,
         selectable: false,
+        evented: false
       });
       this.canvas!.add(regionText);
     }
@@ -309,7 +312,9 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         strokeWidth: 1 * (1 / this.mapScale!),
         fill: 'transparent',
         hoverCursor: 'default',
+        editable: false,
         selectable: false,
+        evented: false
       });
       let areaText = new fabric.IText(`${area.name}`, {
         originX: 'center',
@@ -323,6 +328,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         hoverCursor: 'default',
         editable: false,
         selectable: false,
+        evented: false
       });
       this.canvas!.add(areaBox);
       this.canvas!.add(areaText);
@@ -344,7 +350,9 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
               stroke: '#888888',
               strokeWidth: 1 * (1 / this.mapScale!),
               hoverCursor: 'default',
+              editable: false,
               selectable: false,
+              evented: false
             });
             this.canvas!.add(linkLine);
           }
@@ -380,6 +388,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
           fill: '#DDDDDD',
           editable: false,
           selectable: false,
+          evented: false,
           padding: 5,
         });
         let serverRect = new fabric.Rect({
@@ -390,8 +399,9 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
           stroke: '#888888',
           strokeWidth: 2 * (1 / this.mapScale!),
           fill: '#444444DD',
+          editable: false,
           selectable: false,
-          hasControls: false,
+          evented: false
         });
         let serverGroup = new fabric.Group([serverRect, serverText], {
           originX: 'center',
@@ -399,11 +409,12 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
           left: server.x!,
           top: -(server.y!),
           selectable: true,
+          hasControls: false,
+          //evented: false,
           lockMovementX: true,
           lockMovementY: true,
           lockRotation: true,
-          hasControls: false,
-          hoverCursor: 'pointer',
+          hoverCursor: 'pointer'
         });
         serverGroup.on('selected', () => {
           this.router.navigate(['client'], {
@@ -502,7 +513,9 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       strokeWidth: 1 * (1 / this.mapScale!),
       fill: this.getFaction(objective.factionId!)?.color || 'lightgray',
       hoverCursor: 'default',
+      editable: false,
       selectable: false,
+      evented: false
     });
     let objectiveText = new fabric.IText(objective.name!, {
       originX: 'center',
@@ -516,6 +529,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       hoverCursor: 'default',
       editable: false,
       selectable: false,
+      evented: false
     });
     let objectiveGroup = new fabric.Group([objectiveRect, objectiveText], {
       originX: 'center',
@@ -524,8 +538,9 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       top: -(objective.y!) + 0.5 * objectiveRect.get('height'),
       hoverCursor: 'default',
       selectable: false,
-      subTargetCheck: true,
-      // layoutManager: new fabric.LayoutManager(new fabric.FixedLayout())
+      evented: false
+      //subTargetCheck: true,
+      //layoutManager: new fabric.LayoutManager(new fabric.FixedLayout())
     });
     this.canvas!.add(objectiveGroup);
     this.canvas!.requestRenderAll();
@@ -541,7 +556,9 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       strokeWidth: 0.1 * (1 / this.mapScale!),
       fill: this.getFaction(pawn.factionId!)?.color || 'lightgray',
       hoverCursor: 'default',
+      editable: false,
       selectable: false,
+      evented: false
     });
     let pawnText = new fabric.IText(pawn.name!, {
       originX: 'center',
@@ -554,6 +571,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       hoverCursor: 'default',
       editable: false,
       selectable: false,
+      evented: false,
       visible: !!pawn.human, // bot name only visible on mouseover
     });
     let pawnGroup = new fabric.Group([pawnCircle, pawnText], {
@@ -564,17 +582,19 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
       opacity: 0,
       hoverCursor: 'default',
       selectable: false,
-      subTargetCheck: true,
+      evented: false,
+      //subTargetCheck: true,
       //layoutManager: new fabric.LayoutManager(new fabric.FixedLayout())
     });
-    pawnCircle.on('mouseover', () => {
-      pawnText.set('visible', true);
-      this.canvas!.requestRenderAll();
-    });
-    pawnCircle.on('mouseout', () => {
-      pawnText.set('visible', !!pawn.human);
-      this.canvas!.requestRenderAll();
-    });
+    // TODO
+    //pawnCircle.on('mouseover', () => {
+    //  pawnText.set('visible', true);
+    //  this.canvas!.requestRenderAll();
+    //});
+    //pawnCircle.on('mouseout', () => {
+    //  pawnText.set('visible', !!pawn.human);
+    //  this.canvas!.requestRenderAll();
+    //});
     this.canvas!.add(pawnGroup);
     this.canvas!.requestRenderAll();
     this.pawnGroups[pawn.id!] = pawnGroup;

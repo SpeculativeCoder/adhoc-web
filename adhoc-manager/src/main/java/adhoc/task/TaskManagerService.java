@@ -67,10 +67,11 @@ public class TaskManagerService {
             }
         }
 
-        LocalDateTime initiatedBefore = LocalDateTime.now().minusMinutes(1);
+        LocalDateTime initiatedOrSeenBefore = LocalDateTime.now().minusMinutes(1);
 
-        // any other tasks that are no longer running - delete their entry
-        taskRepository.deleteByTaskIdentifierNotInAndInitiatedBefore(taskIdentifiers, initiatedBefore);
+        // any other tasks that are no longer running - delete their entries
+        taskRepository.deleteByTaskIdentifierNotInAndSeenBefore(taskIdentifiers, initiatedOrSeenBefore);
+        taskRepository.deleteByTaskIdentifierNotInAndInitiatedBefore(taskIdentifiers, initiatedOrSeenBefore);
     }
 
     private static TaskEntity updateExistingTask(TaskEntity existingTask, TaskEntity hostedTask) {

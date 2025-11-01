@@ -106,7 +106,8 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "adhoc-angular:build",
-            "proxyConfig": "src/proxy.conf.js"
+            "proxyConfig": "src/proxy.conf.js",
+            "poll": 1000
           },
           "configurations": {
             "production": {

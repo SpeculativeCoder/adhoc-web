@@ -69,45 +69,15 @@
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>build node_pnpm</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <executable>docker</executable>
-              <arguments>
-                <argument>build</argument>
-                <argument>-t</argument>
-                <argument>node_pnpm</argument>
-                <argument>./node_pnpm/.</argument>
-              </arguments>
-            </configuration>
-          </execution>
-          <execution>
             <id>pnpm ci</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>exec</goal>
             </goals>
             <configuration>
-              <executable>docker</executable>
+              <executable>C:/Program Files/Git/bin/bash.exe</executable>
               <arguments>
-                <argument>run</argument>
-                <argument>-v</argument>
-                <argument>./node_modules:/home/node/app/node_modules</argument>
-                <argument>-v</argument>
-                <argument>./package.json:/home/node/app/package.json:ro</argument>
-                <argument>-v</argument>
-                <argument>./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro</argument>
-                <argument>-v</argument>
-                <argument>./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro</argument>
-                <argument>--rm</argument>
-                <argument>node_pnpm</argument>
-                <argument>pnpm</argument>
-                <argument>install</argument>
-                <argument>--frozen-lockfile</argument>
-                <argument>--ignore-scripts</argument>
+                <argument>pnpm_ci.sh</argument>
               </arguments>
             </configuration>
           </execution>
@@ -118,39 +88,13 @@
               <goal>exec</goal>
             </goals>
             <configuration>
-              <executable>docker</executable>
+              <executable>C:/Program Files/Git/bin/bash.exe</executable>
               <arguments>
-                <argument>run</argument>
-                <argument>-v</argument>
-                <argument>./.angular:/home/node/app/.angular:ro</argument>
-                <argument>-v</argument>
-                <argument>./dist:/home/node/app/dist</argument>
-                <argument>-v</argument>
-                <argument>./node_modules:/home/node/app/node_modules:ro</argument>
-                <argument>-v</argument>
-                <argument>./src:/home/node/app/src:ro</argument>
-                <argument>-v</argument>
-                <argument>./angular.json:/home/node/app/angular.json:ro</argument>
-                <argument>-v</argument>
-                <argument>./package.json:/home/node/app/package.json:ro</argument>
-                <argument>-v</argument>
-                <argument>./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro</argument>
-                <argument>-v</argument>
-                <argument>./tsconfig.app.json:/home/node/app/tsconfig.app.json:ro</argument>
-                <argument>-v</argument>
-                <argument>./tsconfig.json:/home/node/app/tsconfig.json:ro</argument>
-                <argument>-v</argument>
-                <argument>./tsconfig.spec.json:/home/node/app/tsconfig.spec.json:ro</argument>
-                <argument>--rm</argument>
-                <argument>node_pnpm</argument>
-                <argument>pnpm</argument>
-                <argument>run</argument>
-                <argument>build</argument>
-                <!-- TODO: remove jsdom_fix when no longer needed -->
-                <argument>--configuration=jsdom_fix,${angular.configuration}${adhoc-angular-customization},en-US</argument>
+                <argument>pnpm_run_build.sh</argument>
               </arguments>
               <environmentVariables>
-                <CI>1</CI>
+                <ANGULAR_CONFIGURATION>${angular.configuration}</ANGULAR_CONFIGURATION>
+                <ANGULAR_CUSTOMIZATION>${adhoc-angular-customization}</ANGULAR_CUSTOMIZATION>
                 <!-- TODO: figure out a way to have analytics on -->
                 <!--<NG_CLI_ANALYTICS>false</NG_CLI_ANALYTICS>-->
               </environmentVariables>

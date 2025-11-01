@@ -31,11 +31,9 @@ docker build -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
--v ./node_modules:/home/node/app/node_modules \
 -v ./package.json:/home/node/app/package.json:ro \
 -v ./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro \
 -v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
--e CI=1 \
 -i --rm \
 node_pnpm \
-pnpm install --frozen-lockfile --ignore-scripts
+pnpm config list

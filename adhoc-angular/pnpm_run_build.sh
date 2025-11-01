@@ -31,11 +31,16 @@ docker build -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
--v ./node_modules:/home/node/app/node_modules \
+-v ./.angular:/home/node/app/.angular \
+-v ./dist:/home/node/app/dist \
+-v ./node_modules:/home/node/app/node_modules:ro \
+-v ./src:/home/node/app/src:ro \
+-v ./angular.json:/home/node/app/angular.json:ro \
 -v ./package.json:/home/node/app/package.json:ro \
--v ./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro \
 -v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
--e CI=1 \
+-v ./tsconfig.app.json:/home/node/app/tsconfig.app.json:ro \
+-v ./tsconfig.json:/home/node/app/tsconfig.json:ro \
+-v ./tsconfig.spec.json:/home/node/app/tsconfig.spec.json:ro \
 -i --rm \
 node_pnpm \
-pnpm install --frozen-lockfile --ignore-scripts
+pnpm run build --configuration=jsdom_fix,${ANGULAR_CONFIGURATION:-development}${ANGULAR_CUSTOMIZATION:-},en-US

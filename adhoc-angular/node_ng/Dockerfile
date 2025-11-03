@@ -20,4 +20,12 @@ RUN pnpm config set minimum-release-age 2880
 
 RUN pnpm --version
 
-CMD ["pnpm", "--version"]
+RUN pnpm init
+
+RUN echo "minimumReleaseAge: 2880" > pnpm-workspace.yaml
+
+RUN pnpm install --save --ignore-scripts @angular/cli
+
+RUN sed -i 's/"test":.*/"ng": "ng"/' package.json
+
+CMD ["pnpm", "run-script", "ng", "version"]

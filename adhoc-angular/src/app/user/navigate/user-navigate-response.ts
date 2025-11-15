@@ -25,6 +25,9 @@ export class UserNavigateResponse {
   port?: number;
   webSocketUrl?: string;
   mapName?: string;
+  userId?: number;
+  factionId?: number;
+  token?: string;
   x?: number;
   y?: number;
   z?: number;

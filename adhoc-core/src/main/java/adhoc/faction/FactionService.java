@@ -29,6 +29,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @Slf4j
@@ -38,13 +40,13 @@ public class FactionService {
     private final FactionRepository factionRepository;
 
     @Transactional(readOnly = true)
-    public Page<FactionDto> getFactions(Pageable pageable) {
+    public Page<FactionDto> findFactions(Pageable pageable) {
         return factionRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public FactionDto getFaction(Long factionId) {
-        return toDto(factionRepository.getReferenceById(factionId));
+    public Optional<FactionDto> findFaction(Long factionId) {
+        return factionRepository.findById(factionId).map(this::toDto);
     }
 
     FactionDto toDto(FactionEntity faction) {

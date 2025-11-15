@@ -41,13 +41,13 @@ public class ObjectiveService {
     private final ObjectiveRepository objectiveRepository;
 
     @Transactional(readOnly = true)
-    public Page<ObjectiveDto> getObjectives(Pageable pageable) {
+    public Page<ObjectiveDto> findObjectives(Pageable pageable) {
         return objectiveRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public ObjectiveDto getObjective(Long objectiveId) {
-        return toDto(objectiveRepository.getReferenceById(objectiveId));
+    public Optional<ObjectiveDto> findObjective(Long objectiveId) {
+        return objectiveRepository.findById(objectiveId).map(this::toDto);
     }
 
     ObjectiveDto toDto(ObjectiveEntity objective) {

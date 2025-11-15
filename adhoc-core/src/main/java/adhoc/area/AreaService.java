@@ -40,13 +40,13 @@ public class AreaService {
     private final AreaRepository areaRepository;
 
     @Transactional(readOnly = true)
-    public Page<AreaDto> getAreas(Pageable pageable) {
+    public Page<AreaDto> findAreas(Pageable pageable) {
         return areaRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public AreaDto getArea(Long areaId) {
-        return toDto(areaRepository.getReferenceById(areaId));
+    public Optional<AreaDto> findArea(Long areaId) {
+        return areaRepository.findById(areaId).map(this::toDto);
     }
 
     AreaDto toDto(AreaEntity area) {

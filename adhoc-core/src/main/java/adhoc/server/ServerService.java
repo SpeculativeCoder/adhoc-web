@@ -30,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,13 +42,13 @@ public class ServerService {
     private final ServerRepository serverRepository;
 
     @Transactional(readOnly = true)
-    public Page<ServerDto> getServers(Pageable pageable) {
+    public Page<ServerDto> findServers(Pageable pageable) {
         return serverRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public ServerDto getServer(Long serverId) {
-        return toDto(serverRepository.getReferenceById(serverId));
+    public Optional<ServerDto> findServer(Long serverId) {
+        return serverRepository.findById(serverId).map(this::toDto);
     }
 
     ServerDto toDto(ServerEntity server) {

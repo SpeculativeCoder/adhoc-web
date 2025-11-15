@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,13 +45,13 @@ public class PawnController {
     public Page<PawnDto> getPawns(
             @SortDefault("serverId") @SortDefault("index") Pageable pageable) {
 
-        return pawnService.getPawns(pageable);
+        return pawnService.findPawns(pageable);
     }
 
     @GetMapping("/pawns/{pawnId}")
-    public PawnDto getPawn(
+    public ResponseEntity<PawnDto> getPawn(
             @PathVariable("pawnId") Long pawnId) {
 
-        return pawnService.getPawn(pawnId);
+        return ResponseEntity.of(pawnService.findPawn(pawnId));
     }
 }

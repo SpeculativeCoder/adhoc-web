@@ -25,6 +25,7 @@ package adhoc.user;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -32,6 +33,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Value
@@ -65,6 +67,10 @@ public class UserDto {
     Long regionId;
 
     LocalDateTime seen;
+
+    @NotNull
+    @Size(min = 1)
+    List<String> roles;
 
     @Min(1)
     Long destinationServerId;

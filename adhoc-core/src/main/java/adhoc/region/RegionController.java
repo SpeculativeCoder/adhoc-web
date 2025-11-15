@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,13 +45,13 @@ public class RegionController {
     public Page<RegionDto> getRegions(
             @SortDefault("id") Pageable pageable) {
 
-        return regionService.getRegions(pageable);
+        return regionService.findRegions(pageable);
     }
 
     @GetMapping("/regions/{regionId}")
-    public RegionDto getRegion(
+    public ResponseEntity<RegionDto> getRegion(
             @PathVariable("regionId") Long regionId) {
 
-        return regionService.getRegion(regionId);
+        return ResponseEntity.of(regionService.findRegion(regionId));
     }
 }

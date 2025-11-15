@@ -28,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,13 +46,13 @@ public class FactionController {
     public Page<FactionDto> getFactions(
             @SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return factionService.getFactions(pageable);
+        return factionService.findFactions(pageable);
     }
 
     @GetMapping("/factions/{factionId}")
-    public FactionDto getFaction(
+    public ResponseEntity<FactionDto> getFaction(
             @PathVariable("factionId") Long factionId) {
 
-        return factionService.getFaction(factionId);
+        return ResponseEntity.of(factionService.findFaction(factionId));
     }
 }

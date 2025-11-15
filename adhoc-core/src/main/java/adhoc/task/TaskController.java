@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,13 +46,13 @@ public class TaskController {
             @SortDefault("id") Pageable pageable) {
 
         // TODO: sorting
-        return taskService.getTasks(pageable);
+        return taskService.findTasks(pageable);
     }
 
     @GetMapping("/tasks/{taskId}")
-    public TaskDto getTask(
+    public ResponseEntity<TaskDto> getTask(
             @PathVariable("taskId") Long taskId) {
 
-        return taskService.getTask(taskId);
+        return ResponseEntity.of(taskService.findTask(taskId));
     }
 }

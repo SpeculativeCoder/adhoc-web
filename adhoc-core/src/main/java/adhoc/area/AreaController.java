@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,13 +45,13 @@ public class AreaController {
     public Page<AreaDto> getAreas(
             @SortDefault("region.id") @SortDefault("index") Pageable pageable) {
 
-        return areaService.getAreas(pageable);
+        return areaService.findAreas(pageable);
     }
 
     @GetMapping("/areas/{areaId}")
-    public AreaDto getArea(
+    public ResponseEntity<AreaDto> getArea(
             @PathVariable("areaId") Long areaId) {
 
-        return areaService.getArea(areaId);
+        return ResponseEntity.of(areaService.findArea(areaId));
     }
 }

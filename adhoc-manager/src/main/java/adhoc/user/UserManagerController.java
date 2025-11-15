@@ -26,6 +26,7 @@ import adhoc.user.events.ServerUserDefeatEvent;
 import adhoc.user.events.UserDefeatEvent;
 import adhoc.user.requests.UserJoinRequest;
 import adhoc.user.requests.UserNavigateRequest;
+import adhoc.user.responses.UserJoinResponse;
 import adhoc.user.responses.UserNavigateResponse;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
@@ -91,7 +92,7 @@ public class UserManagerController {
 
     @PostMapping("/servers/{serverId}/userJoin")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserFullDto> postServerUserJoin(
+    public UserJoinResponse postServerUserJoin(
             @PathVariable("serverId") Long serverId,
             @Valid @RequestBody UserJoinRequest userJoinRequest) {
 
@@ -101,7 +102,7 @@ public class UserManagerController {
         log.debug("postServerUserJoin: userId={} human={} factionId={} serverId={}",
                 userJoinRequest.getUserId(), userJoinRequest.getHuman(), userJoinRequest.getFactionId(), userJoinRequest.getServerId());
 
-        return ResponseEntity.ok(userJoinService.userJoin(userJoinRequest));
+        return userJoinService.userJoin(userJoinRequest);
     }
 
     @MessageMapping("ServerUserDefeat")

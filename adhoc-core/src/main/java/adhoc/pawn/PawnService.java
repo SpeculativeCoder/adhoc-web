@@ -29,6 +29,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @Slf4j
@@ -38,13 +40,13 @@ public class PawnService {
     private final PawnRepository pawnRepository;
 
     @Transactional(readOnly = true)
-    public Page<PawnDto> getPawns(Pageable pageable) {
+    public Page<PawnDto> findPawns(Pageable pageable) {
         return pawnRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public PawnDto getPawn(Long pawnId) {
-        return toDto(pawnRepository.getReferenceById(pawnId));
+    public Optional<PawnDto> findPawn(Long pawnId) {
+        return pawnRepository.findById(pawnId).map(this::toDto);
     }
 
     PawnDto toDto(PawnEntity pawn) {

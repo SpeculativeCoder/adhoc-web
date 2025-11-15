@@ -20,50 +20,34 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.user.responses;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class UserFullDto {
+public class UserJoinResponse {
 
     @NotNull
     @Min(1)
     Long id;
 
-    @Min(0)
-    Long version;
-
     @NotEmpty
     String name;
 
     @NotNull
-    Boolean human;
-
-    @NotNull
     @Min(1)
     Long factionId;
-
-    @NotNull
-    BigDecimal score;
-
-    @NotNull
-    @Min(1)
-    Long regionId;
 
     @NotNull
     BigDecimal x;
@@ -76,25 +60,6 @@ public class UserFullDto {
     BigDecimal pitch;
     @NotNull
     BigDecimal yaw;
-
-    @NotNull
-    LocalDateTime created;
-    @NotNull
-    LocalDateTime updated;
-    LocalDateTime lastLogin;
-    LocalDateTime navigated;
-    LocalDateTime lastJoin;
-    LocalDateTime seen;
-
-    @NotNull
-    @Size(min = 1)
-    List<String> roles;
-
-    @NotEmpty
-    String token;
-
-    @Min(1)
-    Long destinationServerId;
 
     @Min(1)
     Long serverId;

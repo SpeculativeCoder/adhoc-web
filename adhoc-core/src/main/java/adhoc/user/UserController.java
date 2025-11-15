@@ -59,29 +59,29 @@ public class UserController {
     public Page<UserDto> getUsers(
             @SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return userService.getUsers(pageable);
+        return userService.findUsers(pageable);
     }
 
     @GetMapping("/users/{userId}")
-    public UserDto getUser(
+    public ResponseEntity<UserDto> getUser(
             @PathVariable("userId") Long userId) {
 
-        return userService.getUser(userId);
+        return ResponseEntity.of(userService.findUser(userId));
     }
 
     @GetMapping("/users/current")
-    public ResponseEntity<UserFullDto> getCurrentUser(
+    public ResponseEntity<UserDto> getCurrentUser(
             Authentication authentication) {
 
         if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails userDetails)) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(userService.getUserFull(userDetails.getUserId()));
+        return ResponseEntity.of(userService.findUser(userDetails.getUserId()));
     }
 
     @PostMapping("/users/register")
-    public ResponseEntity<UserFullDto> postUserRegister(
+    public ResponseEntity<UserDto> postUserRegister(
             @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
 
         log.debug("postUserRegister: name={} password?={} factionId={}",
@@ -89,7 +89,7 @@ public class UserController {
                 userRegisterRequest.getPassword() != null,
                 userRegisterRequest.getFactionId());
 
-        UserFullDto response = userRegisterService.userRegisterAndLogin(userRegisterRequest);
+        UserDto response = userRegisterService.userRegisterAndLogin(userRegisterRequest);
 
         return ResponseEntity.created(URI.create("/adhoc_api/users/current")).body(response);
     }

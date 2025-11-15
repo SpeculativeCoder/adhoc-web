@@ -31,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,13 +43,13 @@ public class RegionService {
     private final RegionRepository regionRepository;
 
     @Transactional(readOnly = true)
-    public Page<RegionDto> getRegions(Pageable pageable) {
+    public Page<RegionDto> findRegions(Pageable pageable) {
         return regionRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public RegionDto getRegion(Long regionId) {
-        return toDto(regionRepository.getReferenceById(regionId));
+    public Optional<RegionDto> findRegion(Long regionId) {
+        return regionRepository.findById(regionId).map(this::toDto);
     }
 
     RegionDto toDto(RegionEntity region) {

@@ -119,6 +119,9 @@ public class UserNavigateService {
                 user.getState().getDestinationServer().getPublicWebSocketPort(),
                 user.getState().getDestinationServer().getWebSocketUrl(),
                 user.getState().getDestinationServer().getRegion().getMapName(),
+                user.getId(),
+                user.getFaction().getId(),
+                user.getState().getToken().toString(),
                 user.getState().getX(), user.getState().getY(), user.getState().getZ(), user.getState().getYaw(), user.getState().getPitch());
     }
 

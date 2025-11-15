@@ -57,6 +57,17 @@ public class UserNavigateResponse {
     @NotEmpty
     String mapName;
 
+    @NotNull
+    @Min(1)
+    Long userId;
+
+    @NotNull
+    @Min(1)
+    Long factionId;
+
+    @NotEmpty
+    String token;
+
     BigDecimal x;
     BigDecimal y;
     BigDecimal z;

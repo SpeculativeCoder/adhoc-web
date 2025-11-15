@@ -22,7 +22,6 @@
 
 package adhoc.task;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,6 +29,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -40,15 +41,13 @@ public class TaskService {
     private final TaskRepository taskRepository;
 
     @Transactional(readOnly = true)
-    public Page<TaskDto> getTasks(@SortDefault("id") Pageable pageable) {
+    public Page<TaskDto> findTasks(@SortDefault("id") Pageable pageable) {
         return taskRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public TaskDto getTask(Long taskId) {
-        // used findById rather than getReferenceById to ensure correct entity subclass
-        return toDto(taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Failed to find task " + taskId)));
+    public Optional<TaskDto> findTask(Long taskId) {
+        return taskRepository.findById(taskId).map(this::toDto);
     }
 
     TaskDto toDto(TaskEntity task) {

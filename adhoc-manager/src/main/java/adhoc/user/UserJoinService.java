@@ -26,6 +26,7 @@ import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.user.requests.UserJoinRequest;
 import adhoc.user.requests.UserRegisterRequest;
+import adhoc.user.responses.UserJoinResponse;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,7 @@ public class UserJoinService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserFullDto userJoin(UserJoinRequest userJoinRequest) {
+    public UserJoinResponse userJoin(UserJoinRequest userJoinRequest) {
 
         ServerEntity server = serverRepository.getReferenceById(userJoinRequest.getServerId());
 
@@ -102,7 +103,17 @@ public class UserJoinService {
                 .addKeyValue("yaw", user.getState().getYaw())
                 .log("User joined.");
 
-        return userService.toFullDto(user);
+        return UserJoinResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .factionId(user.getFaction().getId())
+                .x(user.getState().getX())
+                .y(user.getState().getY())
+                .z(user.getState().getZ())
+                .pitch(user.getState().getPitch())
+                .yaw(user.getState().getYaw())
+                .serverId(user.getState().getServer().getId())
+                .build();
     }
 
     private UserEntity autoRegister(Long factionId, Boolean human) {

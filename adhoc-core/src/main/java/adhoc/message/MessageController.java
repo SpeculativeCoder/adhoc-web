@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,11 +57,11 @@ public class MessageController {
             optionalUserId = Optional.empty();
         }
 
-        return messageService.getMessages(optionalUserId, pageable);
+        return messageService.findMessages(optionalUserId, pageable);
     }
 
     @GetMapping("/messages/{messageId}")
-    public MessageDto getMessage(
+    public ResponseEntity<MessageDto> getMessage(
             @PathVariable("messageId") Long messageId,
             Authentication authentication) {
 
@@ -71,6 +72,6 @@ public class MessageController {
             optionalUserId = Optional.empty();
         }
 
-        return messageService.getMessage(messageId, optionalUserId);
+        return ResponseEntity.of(messageService.findMessage(messageId, optionalUserId));
     }
 }

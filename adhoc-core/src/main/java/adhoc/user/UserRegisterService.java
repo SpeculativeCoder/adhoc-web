@@ -65,13 +65,13 @@ public class UserRegisterService {
 
     @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
-    public UserFullDto userRegisterAndLogin(UserRegisterRequest userRegisterRequest) {
+    public UserDto userRegisterAndLogin(UserRegisterRequest userRegisterRequest) {
 
         UserEntity user = userRegisterInternal(userRegisterRequest);
 
         programmaticLoginService.programmaticLoginInternal(user, userRegisterRequest.getPassword());
 
-        return userService.toFullDto(user);
+        return userService.toDto(user);
     }
 
     UserEntity userRegisterInternal(UserRegisterRequest userRegisterRequest) {

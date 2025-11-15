@@ -41,15 +41,15 @@ public class MessageService {
     private final MessageRepository messageRepository;
 
     @Transactional(readOnly = true)
-    public Page<MessageDto> getMessages(Optional<Long> optionalUserId, Pageable pageable) {
+    public Page<MessageDto> findMessages(Optional<Long> optionalUserId, Pageable pageable) {
         // TODO
         return messageRepository.findByUserNullOrUserId(optionalUserId.orElse(null), pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public MessageDto getMessage(Long id, Optional<Long> optionalUserId) {
+    public Optional<MessageDto> findMessage(Long id, Optional<Long> optionalUserId) {
         // TODO
-        return toDto(messageRepository.findByIdAnd_UserNullOrUserId_(id, optionalUserId.orElse(null)));
+        return messageRepository.findByIdAnd_UserNullOrUserId_(id, optionalUserId.orElse(null)).map(this::toDto);
     }
 
     public void addGlobalMessage(String text) {

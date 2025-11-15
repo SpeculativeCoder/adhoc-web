@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,21 +49,15 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Page<UserDto> getUsers(Pageable pageable) {
+    public Page<UserDto> findUsers(Pageable pageable) {
 
         return userRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
-    public UserDto getUser(Long userId) {
+    public Optional<UserDto> findUser(Long userId) {
 
-        return toDto(userRepository.getReferenceById(userId));
-    }
-
-    @Transactional(readOnly = true)
-    public UserFullDto getUserFull(Long userId) {
-
-        return toFullDto(userRepository.getReferenceById(userId));
+        return userRepository.findById(userId).map(this::toDto);
     }
 
     /**
@@ -94,32 +89,7 @@ public class UserService {
                 user.getScore(),
                 user.getState().getRegion() == null ? null : user.getState().getRegion().getId(),
                 user.getState().getSeen(),
-                user.getState().getDestinationServer() == null ? null : user.getState().getDestinationServer().getId(),
-                user.getState().getServer() == null ? null : user.getState().getServer().getId());
-    }
-
-    UserFullDto toFullDto(UserEntity user) {
-        return new UserFullDto(
-                user.getId(),
-                user.getVersion(),
-                user.getName(),
-                user.isHuman(),
-                user.getFaction().getId(),
-                user.getScore(),
-                user.getState().getRegion() == null ? null : user.getState().getRegion().getId(),
-                user.getState().getX(),
-                user.getState().getY(),
-                user.getState().getZ(),
-                user.getState().getPitch(),
-                user.getState().getYaw(),
-                user.getCreated(),
-                user.getUpdated(),
-                user.getLastLogin(),
-                user.getNavigated(),
-                user.getLastJoin(),
-                user.getState().getSeen(),
                 user.getRoles().stream().map(UserEntity.Role::name).collect(Collectors.toList()),
-                user.getState().getToken().toString(),
                 user.getState().getDestinationServer() == null ? null : user.getState().getDestinationServer().getId(),
                 user.getState().getServer() == null ? null : user.getState().getServer().getId());
     }

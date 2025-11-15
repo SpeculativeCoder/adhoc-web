@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,13 +45,13 @@ public class ObjectiveController {
     public Page<ObjectiveDto> getObjectives(
             @SortDefault("region.id") @SortDefault("index") Pageable pageable) {
 
-        return objectiveService.getObjectives(pageable);
+        return objectiveService.findObjectives(pageable);
     }
 
     @GetMapping("/objectives/{objectiveId}")
-    public ObjectiveDto getObjective(
+    public ResponseEntity<ObjectiveDto> getObjective(
             @PathVariable("objectiveId") Long objectiveId) {
 
-        return objectiveService.getObjective(objectiveId);
+        return ResponseEntity.of(objectiveService.findObjective(objectiveId));
     }
 }

@@ -104,8 +104,8 @@ export class ClientComponent implements OnInit {
         }
 
         let unrealEngineCommandLine = navigation.ip + ":" + navigation.port;
-        if (user && (typeof user.id) === 'number' && (typeof user.factionId) === 'number' && user.token) {
-          unrealEngineCommandLine += '?UserID=' + user.id + '?FactionID=' + user.factionId + '?Token=' + user.token;
+        if (navigation && (typeof navigation.userId) === 'number' && (typeof navigation.factionId) === 'number' && navigation.token) {
+          unrealEngineCommandLine += '?UserID=' + navigation.userId + '?FactionID=' + navigation.factionId + '?Token=' + navigation.token;
         }
 
         // try to start their initial spectator location where they may be immediately spawned at

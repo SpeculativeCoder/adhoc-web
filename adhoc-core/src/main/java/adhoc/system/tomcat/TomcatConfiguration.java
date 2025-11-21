@@ -25,7 +25,7 @@ package adhoc.system.tomcat;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Connector;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +49,7 @@ public class TomcatConfiguration {
     @Bean
     WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer(Connector httpConnector) {
         return (TomcatServletWebServerFactory factory) -> {
-            factory.addAdditionalTomcatConnectors(httpConnector);
+            factory.addAdditionalConnectors(httpConnector);
         };
     }
 }

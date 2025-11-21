@@ -30,8 +30,7 @@ import org.hibernate.exception.LockAcquisitionException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,8 +63,8 @@ public class UserService {
      * Called by {@link AdhocAuthenticationSuccessHandler}. Sets a new "token" every time a user logs in.
      * The "token" will need to be provided to the Unreal server so we can make sure the user is who they say they are.
      */
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
     public void authenticationSuccess(Long userId) {
 
         UserEntity user = userRepository.getReferenceById(userId);

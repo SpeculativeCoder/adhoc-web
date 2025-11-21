@@ -25,7 +25,7 @@ package adhoc.system;
 import adhoc.system.exception.AdhocExceptionHandlerExceptionResolver;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;

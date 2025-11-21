@@ -56,7 +56,7 @@ ARG MANAGER_IMAGE=adhoc_dev_manager
 ARG KIOSK_IMAGE=adhoc_dev_kiosk
 ARG SERVER_IMAGE=adhoc_dev_server
 
-ARG SPRING_PROFILES_ACTIVE=db-h2postgres
+ARG SPRING_PROFILES_ACTIVE=db-h2
 
 ENV ADHOC_NAME=${ADHOC_NAME}
 

@@ -24,15 +24,10 @@ package adhoc;
 
 import adhoc.system.artemis.AdhocArtemisConfiguration;
 import adhoc.user.UserEntity;
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.StandardEnvironment;
-
-import java.util.List;
 
 /**
  * When running as a manager, this application talks to a {@link adhoc.hosting.HostingService}
@@ -61,24 +56,26 @@ public class AdhocManagerApplication extends AbstractAdhocApplication {
      * </ul>
      */
     public static void main(String[] args) {
-        // rather than rely on spring.profiles.default we will just pick default profiles as needed
-        ConfigurableEnvironment environment = new StandardEnvironment();
-        List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
+        //// rather than rely on spring.profiles.default we will just pick default profiles as needed
+        //ConfigurableEnvironment environment = new StandardEnvironment();
+        //List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
+        //
+        //if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
+        //    activeProfiles.add("db-h2"); // postgres");
+        //}
+        //if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("hosting-"))) {
+        //    activeProfiles.add("hosting-local");
+        //}
+        //if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("dns-"))) {
+        //    activeProfiles.add("dns-local");
+        //}
+        //
+        //environment.setActiveProfiles(activeProfiles.toArray(new String[activeProfiles.size()]));
+        //
+        //SpringApplication application = new SpringApplication(AdhocManagerApplication.class);
+        //application.setEnvironment(environment);
+        //application.run(args);
 
-        if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
-            activeProfiles.add("db-h2postgres");
-        }
-        if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("hosting-"))) {
-            activeProfiles.add("hosting-local");
-        }
-        if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("dns-"))) {
-            activeProfiles.add("dns-local");
-        }
-
-        environment.setActiveProfiles(activeProfiles.toArray(new String[activeProfiles.size()]));
-
-        SpringApplication application = new SpringApplication(AdhocManagerApplication.class);
-        application.setEnvironment(environment);
-        application.run(args);
+        SpringApplication.run(AdhocManagerApplication.class, args);
     }
 }

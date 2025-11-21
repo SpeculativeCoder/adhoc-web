@@ -32,8 +32,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
 import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,8 +54,8 @@ public class AreaManagerService {
 
     private final AreaService areaService;
 
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
     public List<AreaDto> updateServerAreas(Long serverId, List<AreaDto> areaDtos) {
         ServerEntity server = serverRepository.getReferenceById(serverId);
         RegionEntity serverRegion = server.getRegion();

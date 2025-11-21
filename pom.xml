@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.7</version>
+        <version>4.0.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -49,10 +49,10 @@
     <properties>
         <java.version>25</java.version>
         <guava.version>33.5.0-jre</guava.version>
-        <awssdk.version>2.36.1</awssdk.version>
-        <docker-java.version>3.6.0</docker-java.version>
+        <awssdk.version>2.39.1</awssdk.version>
+        <docker-java.version>3.7.0</docker-java.version>
         <exec-maven-plugin.version>3.6.2</exec-maven-plugin.version>
-        <datafaker.version>2.5.2</datafaker.version>
+        <datafaker.version>2.5.3</datafaker.version>
 
         <maven.compiler.debug>true</maven.compiler.debug>
         <angular.configuration>development</angular.configuration>
@@ -73,6 +73,7 @@
                 <scope>import</scope>
             </dependency>
 
+            <!--
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
@@ -105,16 +106,19 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            -->
 
         </dependencies>
     </dependencyManagement>
 
     <build>
+        <!--
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
+        -->
 
         <pluginManagement>
             <plugins>

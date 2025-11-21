@@ -22,27 +22,29 @@
 
 package adhoc.system.retry;
 
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.event.Level;
-import org.springframework.retry.RetryContext;
-import org.springframework.retry.interceptor.MethodInvocationRetryCallback;
-import org.springframework.retry.listener.MethodInvocationRetryListenerSupport;
-import org.springframework.stereotype.Component;
+// TODO: logging for retry
 
-@Component
-@Slf4j
-public class AdhocRetryListener extends MethodInvocationRetryListenerSupport {
-
-    @Override
-    protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
-        Level level;
-        if (context.getRetryCount() >= 3) {
-            level = Level.WARN;
-        } else if (context.getRetryCount() >= 2) {
-            level = Level.INFO;
-        } else {
-            level = Level.DEBUG;
-        }
-        log.atLevel(level).log("Retry: label={} context={}", callback.getLabel(), context);
-    }
-}
+//import lombok.extern.slf4j.Slf4j;
+//import org.slf4j.event.Level;
+//import org.springframework.retry.RetryContext;
+//import org.springframework.retry.interceptor.MethodInvocationRetryCallback;
+//import org.springframework.retry.listener.MethodInvocationRetryListenerSupport;
+//import org.springframework.stereotype.Component;
+//
+//@Component
+//@Slf4j
+//public class AdhocRetryListener extends MethodInvocationRetryListenerSupport {
+//
+//    @Override
+//    protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
+//        Level level;
+//        if (context.getRetryCount() >= 3) {
+//            level = Level.WARN;
+//        } else if (context.getRetryCount() >= 2) {
+//            level = Level.INFO;
+//        } else {
+//            level = Level.DEBUG;
+//        }
+//        log.atLevel(level).log("Retry: label={} context={}", callback.getLabel(), context);
+//    }
+//}

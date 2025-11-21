@@ -35,8 +35,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
 import org.springframework.dao.TransientDataAccessException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,8 +64,8 @@ public class UserNavigateService {
      * A server can also call this to try to automatically navigate the user to another server
      * (i.e. when the user's pawn has moved into an area represented by another server).
      */
-    @Retryable(retryFor = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxAttempts = 3, backoff = @Backoff(delay = 100, maxDelay = 1000))
+    @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
+            maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
     public UserNavigateResponse userNavigate(UserNavigateRequest request) {
 
         UserEntity user = userRepository.getReferenceById(request.getUserId());

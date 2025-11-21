@@ -25,13 +25,12 @@ package adhoc;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.requests.UserRegisterRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,6 +38,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 
@@ -57,7 +57,7 @@ public class AdhocManagerApplicationTest {
     private MockMvcTester mvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Autowired
     private UserRepository userRepository;
@@ -76,7 +76,7 @@ public class AdhocManagerApplicationTest {
 
         MvcTestResult result = mvc.post().uri("/adhoc_api/users/register")
                 .contentType(MediaType.APPLICATION_JSON).with(csrf())
-                .content(objectMapper.writeValueAsBytes(request))
+                .content(jsonMapper.writeValueAsBytes(request))
                 .exchange();
 
         assertThat(result)

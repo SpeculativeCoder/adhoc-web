@@ -90,7 +90,7 @@ public class DockerHostingService implements HostingService {
                 .withDockerHost(dockerHostingProperties.getDockerHost())
                 .withRegistryUsername("")
                 .withRegistryUrl("")
-                .withApiVersion("1.41")
+                //.withApiVersion("1.44")
                 .build();
     }
 

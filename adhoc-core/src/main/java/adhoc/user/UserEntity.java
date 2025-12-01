@@ -25,12 +25,8 @@ package adhoc.user;
 import adhoc.faction.FactionEntity;
 import adhoc.pawn.PawnEntity;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -57,7 +53,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -129,17 +127,27 @@ public class UserEntity {
 
     private LocalDateTime lastJoin;
 
-    @ElementCollection(fetch = FetchType.EAGER) // TODO: can we make the login success handler transactional?
-    @CollectionTable(name = "adhoc_user_roles")
-    @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    @Column(nullable = false)
+    private String roles;
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
     private List<PawnEntity> pawns;
 
+    public void setUserRoles(Set<UserRole> userRoles) {
+        roles = userRoles.stream()
+                .map(UserRole::name)
+                .collect(Collectors.joining(","));
+    }
+
+    public Set<UserRole> getUserRoles() {
+        return Arrays.stream(roles.split(",", -1))
+                .map(UserRole::valueOf)
+                .collect(Collectors.toCollection(HashSet::new));
+    }
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
+        return getUserRoles().stream()
                 .map(role -> "ROLE_" + role.name())
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toUnmodifiableSet());
@@ -149,10 +157,4 @@ public class UserEntity {
         this.password = password == null ? null : passwordEncoder.encode(password);
     }
 
-    public enum Role {
-        ADMIN, // access to administration functions / information (TODO)
-        USER, // normal logged in user
-        SERVER, // unreal server
-        DEBUG, // see non-sensitive but noisy debug information
-    }
 }

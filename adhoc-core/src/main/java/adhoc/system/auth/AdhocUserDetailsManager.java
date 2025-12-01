@@ -25,6 +25,7 @@ package adhoc.system.auth;
 import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
+import adhoc.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,7 +75,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
                     serverBasicAuthUsername.get(),
                     passwordEncoder.encode(serverBasicAuthPassword.get()),
                     true, true, true, true,
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserEntity.Role.SERVER.name())),
+                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserRole.SERVER.name())),
                     null);
         }
 

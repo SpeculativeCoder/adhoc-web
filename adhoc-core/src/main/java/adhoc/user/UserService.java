@@ -88,7 +88,7 @@ public class UserService {
                 user.getScore(),
                 user.getState().getRegion() == null ? null : user.getState().getRegion().getId(),
                 user.getState().getSeen(),
-                user.getRoles().stream().map(UserEntity.Role::name).collect(Collectors.toList()),
+                user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
                 user.getState().getDestinationServer() == null ? null : user.getState().getDestinationServer().getId(),
                 user.getState().getServer() == null ? null : user.getState().getServer().getId());
     }

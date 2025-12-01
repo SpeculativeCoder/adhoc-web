@@ -37,6 +37,7 @@ import adhoc.system.properties.ManagerProperties;
 import adhoc.universe.events.UniverseUpdatedEvent;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
+import adhoc.user.UserRole;
 import adhoc.user.UserStateEntity;
 import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
@@ -307,7 +308,7 @@ public class UniverseInitializeService {
             adminUser.setCreated(userCreated);
             adminUser.setUpdated(userCreated);
             adminUser.getState().setSeen(userSeen);
-            adminUser.setRoles(Sets.newHashSet(UserEntity.Role.USER, UserEntity.Role.DEBUG)); // TODO: restore User.Role.ADMIN,
+            adminUser.setUserRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG)); // TODO: restore User.Role.ADMIN,
             adminUser = userRepository.save(adminUser);
 
             UserEntity alphaUser = new UserEntity();
@@ -322,7 +323,7 @@ public class UniverseInitializeService {
             alphaUser.setCreated(userCreated);
             alphaUser.setUpdated(userCreated);
             alphaUser.getState().setSeen(userSeen);
-            alphaUser.setRoles(Sets.newHashSet(UserEntity.Role.USER, UserEntity.Role.DEBUG));
+            alphaUser.setUserRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             alphaUser = userRepository.save(alphaUser);
 
             UserEntity betaUser = new UserEntity();
@@ -337,7 +338,7 @@ public class UniverseInitializeService {
             betaUser.setCreated(userCreated);
             betaUser.setUpdated(userCreated);
             betaUser.getState().setSeen(userSeen);
-            betaUser.setRoles(Sets.newHashSet(UserEntity.Role.USER, UserEntity.Role.DEBUG));
+            betaUser.setUserRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             betaUser = userRepository.save(betaUser);
 
             UserEntity gammaUser = new UserEntity();
@@ -352,7 +353,7 @@ public class UniverseInitializeService {
             gammaUser.setCreated(userCreated);
             gammaUser.setUpdated(userCreated);
             //gammaUser.setSeen(seen);
-            gammaUser.setRoles(Sets.newHashSet(UserEntity.Role.USER, UserEntity.Role.DEBUG));
+            gammaUser.setUserRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             gammaUser = userRepository.save(gammaUser);
 
             //User deltaUser = new User();

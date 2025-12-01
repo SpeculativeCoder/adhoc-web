@@ -77,6 +77,8 @@
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="last_join"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="roles"
+                    type="VARCHAR(255)"/>
         </createTable>
 
         <!-- NOTE: deliberately no foreign keys for adhoc_user on faction -
@@ -99,20 +101,6 @@
             <column name="created"/>
         </createIndex>
 
-        <createTable tableName="adhoc_user_roles">
-            <column name="user_id"
-                    type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="roles"
-                    type="VARCHAR(255)"/>
-        </createTable>
-
-        <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="adhoc_user_roles"
-                                 constraintName="fk_adhocuserroles_on_adhocuser"
-                                 referencedColumnNames="id"
-                                 referencedTableName="adhoc_user"/>
     </changeSet>
 
 </databaseChangeLog>

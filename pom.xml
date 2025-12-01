@@ -57,7 +57,6 @@
         <maven.compiler.debug>true</maven.compiler.debug>
         <angular.configuration>development</angular.configuration>
         <unreal.configuration>Development</unreal.configuration>
-        <liquibase.propertyFile>liquibase.properties</liquibase.propertyFile>
 
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
     </properties>
@@ -126,6 +125,16 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>${exec-maven-plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.liquibase</groupId>
+                    <artifactId>liquibase-maven-plugin</artifactId>
+                    <version>${liquibase.version}</version>
+                    <configuration>
+                        <!--<propertyFile>liquibase.properties</propertyFile>-->
+                        <driverPropertiesFile>../env/liquibase-driver.properties</driverPropertiesFile>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

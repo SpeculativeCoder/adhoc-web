@@ -83,9 +83,9 @@ public class UserNavigateService {
 
         if (destinationServer != null) {
             Preconditions.checkState(destinationServer.isEnabled(),
-                    "User {} tried to navigate to server {} which is not enabled!", user.getId(), destinationServer.getId());
+                    "User %s tried to navigate to server %s which is not enabled!", user.getId(), destinationServer.getId());
             Preconditions.checkState(destinationServer.isActive(),
-                    "User {} tried to navigate to server {} which is not active!", user.getId(), destinationServer.getId());
+                    "User %s tried to navigate to server %s which is not active!", user.getId(), destinationServer.getId());
         }
 
         // if no server specified (or server from area above) then just pick a random active/enabled server

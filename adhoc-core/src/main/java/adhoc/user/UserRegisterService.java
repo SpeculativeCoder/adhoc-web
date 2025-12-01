@@ -121,7 +121,7 @@ public class UserRegisterService {
         }
 
         user.setScore(BigDecimal.valueOf(0.0));
-        user.setRoles(Sets.newHashSet(UserEntity.Role.USER));
+        user.setUserRoles(Sets.newHashSet(UserRole.USER));
         user.getState().setToken(RandomUUIDUtils.randomUUID());
 
         user = userRepository.save(user);

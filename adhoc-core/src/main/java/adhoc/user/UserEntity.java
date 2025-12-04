@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
  * the same account. A user is also automatically created on joining an Unreal server if there was no logged-in user.
  */
 @Entity(name = "User")
-@Table(name = "adhoc_user", indexes = {
+@Table(name = "user_", indexes = {
         @Index(name = "idx_user_name", columnList = "name"),
         @Index(name = "idx_user_email", columnList = "email"),
         @Index(name = "idx_user_faction_id", columnList = "faction_id"),

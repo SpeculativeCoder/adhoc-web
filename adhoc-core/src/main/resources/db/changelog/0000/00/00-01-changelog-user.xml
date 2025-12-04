@@ -32,12 +32,12 @@
                         startValue="1"
                         incrementBy="50"/>
 
-        <createTable tableName="adhoc_user">
+        <createTable tableName="user_">
             <column name="id"
                     type="BIGINT">
                 <constraints nullable="false"
                              primaryKey="true"
-                             primaryKeyName="pk_adhocuser"/>
+                             primaryKeyName="pk_user"/>
             </column>
             <column name="version"
                     type="BIGINT">
@@ -81,23 +81,23 @@
                     type="VARCHAR(255)"/>
         </createTable>
 
-        <!-- NOTE: deliberately no foreign keys for adhoc_user on faction -
-        this is so we can nuke all tables except adhoc_user during development process (for now) -->
+        <!-- NOTE: deliberately no foreign keys for user_ on faction -
+        this is so we can nuke all tables except user_ during development process (for now) -->
 
-        <createIndex indexName="idx_adhoc_user_name"
-                     tableName="adhoc_user">
+        <createIndex indexName="idx_user_name"
+                     tableName="user_">
             <column name="name"/>
         </createIndex>
-        <createIndex indexName="idx_adhoc_user_email"
-                     tableName="adhoc_user">
+        <createIndex indexName="idx_user_email"
+                     tableName="user_">
             <column name="email"/>
         </createIndex>
-        <createIndex indexName="idx_adhoc_user_faction_id"
-                     tableName="adhoc_user">
+        <createIndex indexName="idx_user_faction_id"
+                     tableName="user_">
             <column name="faction_id"/>
         </createIndex>
-        <createIndex indexName="idx_adhoc_user_created"
-                     tableName="adhoc_user">
+        <createIndex indexName="idx_user_created"
+                     tableName="user_">
             <column name="created"/>
         </createIndex>
 

@@ -52,11 +52,11 @@ import java.util.UUID;
  * Long term important information about the user (login details, score etc.) should not be kept in here and should be elsewhere i.e. in {@link UserEntity}
  */
 @Entity(name = "UserState")
-@Table(name = "adhoc_user_state", indexes = {
-        @Index(name = "idx_user_region_id", columnList = "region_id"),
-        @Index(name = "idx_user_created", columnList = "created"),
-        @Index(name = "idx_user_seen", columnList = "seen"),
-        @Index(name = "idx_user_server_id", columnList = "server_id")
+@Table(indexes = {
+        @Index(name = "idx_user_state_region_id", columnList = "region_id"),
+        @Index(name = "idx_user_state_created", columnList = "created"),
+        @Index(name = "idx_user_state_seen", columnList = "seen"),
+        @Index(name = "idx_user_state_server_id", columnList = "server_id")
 })
 //@DynamicInsert
 //@DynamicUpdate

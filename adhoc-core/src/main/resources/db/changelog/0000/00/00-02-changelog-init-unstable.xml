@@ -464,7 +464,7 @@
                                  baseTableName="pawn"
                                  constraintName="fk_pawn_on_user"
                                  referencedColumnNames="id"
-                                 referencedTableName="adhoc_user"/>
+                                 referencedTableName="user_"/>
 
         <addForeignKeyConstraint baseColumnNames="faction_id"
                                  baseTableName="pawn"
@@ -472,12 +472,12 @@
                                  referencedColumnNames="id"
                                  referencedTableName="faction"/>
 
-        <createTable tableName="adhoc_user_state">
+        <createTable tableName="user_state">
             <column name="id"
                     type="BIGINT">
                 <constraints nullable="false"
                              primaryKey="true"
-                             primaryKeyName="pk_adhocuserstate"/>
+                             primaryKeyName="pk_userstate"/>
             </column>
             <column name="version"
                     type="BIGINT">
@@ -513,34 +513,34 @@
                     type="BIGINT"/>
         </createTable>
 
-        <createIndex indexName="idx_adhoc_user_state_region_id"
-                     tableName="adhoc_user_state">
+        <createIndex indexName="idx_user_state_region_id"
+                     tableName="user_state">
             <column name="region_id"/>
         </createIndex>
-        <createIndex indexName="idx_adhoc_state_user_created"
-                     tableName="adhoc_user_state">
+        <createIndex indexName="idx_user_state_created"
+                     tableName="user_state">
             <column name="created"/>
         </createIndex>
-        <createIndex indexName="idx_adhoc_user_state_seen"
-                     tableName="adhoc_user_state">
+        <createIndex indexName="idx_user_state_seen"
+                     tableName="user_state">
             <column name="seen"/>
         </createIndex>
-        <createIndex indexName="idx_adhoc_user_state_server_id"
-                     tableName="adhoc_user_state">
+        <createIndex indexName="idx_user_state_server_id"
+                     tableName="user_state">
             <column name="server_id"/>
         </createIndex>
 
         <addForeignKeyConstraint baseColumnNames="id"
-                                 baseTableName="adhoc_user_state"
-                                 constraintName="fk_adhocuserstate_on_adhocuser"
+                                 baseTableName="user_state"
+                                 constraintName="fk_userstate_on_user"
                                  referencedColumnNames="id"
-                                 referencedTableName="adhoc_user"/>
+                                 referencedTableName="user_"/>
 
         <addForeignKeyConstraint baseColumnNames="server_id"
-                                 baseTableName="adhoc_user_state"
-                                 constraintName="fk_adhocuserstate_on_server"
+                                 baseTableName="user_state"
+                                 constraintName="fk_userstate_on_server"
                                  referencedColumnNames="id"
-                                 referencedTableName="adhoc_user"/>
+                                 referencedTableName="user_"/>
 
         <createSequence sequenceName="structure_id_sequence"
                         startValue="1"
@@ -643,7 +643,7 @@
                                  baseTableName="structure"
                                  constraintName="fk_structure_on_user"
                                  referencedColumnNames="id"
-                                 referencedTableName="adhoc_user"/>
+                                 referencedTableName="user_"/>
 
         <createSequence sequenceName="task_id_sequence"
                         startValue="1"
@@ -784,7 +784,7 @@
                                  baseTableName="message"
                                  constraintName="fk_message_on_user"
                                  referencedColumnNames="id"
-                                 referencedTableName="adhoc_user"/>
+                                 referencedTableName="user_"/>
 
     </changeSet>
 

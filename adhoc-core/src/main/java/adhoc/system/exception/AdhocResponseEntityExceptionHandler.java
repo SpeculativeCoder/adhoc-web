@@ -77,7 +77,7 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
     //        uri = request.getRequestURI();
     //    }
     //    log.debug("handleExceptionInternal: exception={} method={} uri={}",
-    //            exception.getClass().getSimpleName(), method, uri, exception);
+    //            exception.getClass().getName(), method, uri, exception);
     //
     //    ResponseEntity<Object> responseEntity = super.handleExceptionInternal(exception, body, httpHeaders, statusCode, webRequest);
     //

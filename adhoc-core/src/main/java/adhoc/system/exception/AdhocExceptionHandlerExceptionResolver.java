@@ -56,7 +56,7 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
             logEvent = logEvent.setCause(exception);
         }
         logEvent.log("Request failure. method={} uri={} status={} exception={}",
-                request.getMethod(), request.getRequestURI(), response.getStatus(), exception.getClass().getSimpleName());
+                request.getMethod(), request.getRequestURI(), response.getStatus(), exception.getClass().getName());
 
         return modelAndView;
     }

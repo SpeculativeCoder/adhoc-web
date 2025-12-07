@@ -28,6 +28,7 @@ import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.user.programmatic_login.ProgrammaticLoginService;
 import adhoc.user.random_name.RandomNameUtils;
 import adhoc.user.requests.UserRegisterRequest;
+import adhoc.user.responses.UserRegisterResponse;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
@@ -64,48 +65,63 @@ public class UserRegisterService {
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
-    public UserDto userRegisterAndLogin(UserRegisterRequest userRegisterRequest) {
+    public UserRegisterResponse userRegisterAndLogin(UserRegisterRequest userRegisterRequest) {
 
-        UserEntity user = userRegisterInternal(userRegisterRequest);
+        UserRegisterInternalResult registerResult = userRegisterInternal(userRegisterRequest);
 
-        programmaticLoginService.programmaticLoginInternal(user, userRegisterRequest.getPassword());
+        programmaticLoginService.programmaticLoginInternal(registerResult.user, userRegisterRequest.getPassword());
 
-        return userService.toDto(user);
+        return UserRegisterResponse.builder()
+                .id(registerResult.user.getId())
+                .name(registerResult.user.getName())
+                .loginCode(registerResult.loginCode)
+                .build();
     }
 
-    UserEntity userRegisterInternal(UserRegisterRequest userRegisterRequest) {
+    record UserRegisterInternalResult(
+            UserEntity user,
+            String loginCode
+    ) {
+    }
+
+    UserRegisterInternalResult userRegisterInternal(UserRegisterRequest userRegisterRequest) {
 
         String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();
         log.debug("userRegister: remoteAddr={} userAgent={}", remoteAddr, userAgent);
 
+        if (!coreProperties.getFeatureFlags().contains("development")) {
+            Preconditions.checkArgument(userRegisterRequest.getEmail() == null, "Registering with email not allowed yet");
+            Preconditions.checkArgument(userRegisterRequest.getPassword() == null, "Registering with password not allowed yet");
+            Preconditions.checkArgument(userRegisterRequest.getName() == null, "Registering with name not allowed yet");
+        }
+
+        // TODO: think about existing name/email check before allowing name/email input
+        if (userRegisterRequest.getName() != null || userRegisterRequest.getEmail() != null) {
+            Optional<UserEntity> existingUser = userRepository.findByNameOrEmail(userRegisterRequest.getName(), userRegisterRequest.getEmail());
+            if (existingUser.isPresent()) {
+                log.warn("User name or email already in use. name={} email={}", userRegisterRequest.getName(), userRegisterRequest.getEmail());
+                throw new IllegalArgumentException("User name or email already in use");
+            }
+        }
+
+        // a login code is available as a fallback in case no password is set
+        String loginCode = RandomUUIDUtils.randomUUID().toString().replaceAll("-", "");
+
+        // assume human user unless specified false
+        boolean human = userRegisterRequest.getHuman() == null || userRegisterRequest.getHuman();
+
         UserEntity user = new UserEntity();
+
         user.setState(new UserStateEntity());
         user.getState().setUser(user);
 
         user.setName(userRegisterRequest.getName());
         user.setEmail(userRegisterRequest.getEmail());
         user.setPassword(userRegisterRequest.getPassword(), passwordEncoder);
-
-        // assume human user unless specified
-        user.setHuman(userRegisterRequest.getHuman() == null || userRegisterRequest.getHuman());
-
+        user.setLoginCode(loginCode, passwordEncoder);
+        user.setHuman(human);
         user.setFaction(userRegisterRequest.getFactionId() == null ? null : factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
-
-        if (!coreProperties.getFeatureFlags().contains("development")) {
-            Preconditions.checkArgument(user.getEmail() == null, "Registering with email not allowed yet");
-            Preconditions.checkArgument(user.getPassword() == null, "Registering with password not allowed yet");
-            Preconditions.checkArgument(user.getName() == null, "Registering with name not allowed yet");
-        }
-
-        // TODO: think about existing name/email check before allowing name/email input
-        if (user.getName() != null || user.getEmail() != null) {
-            Optional<UserEntity> existingUser = userRepository.findByNameOrEmail(user.getName(), user.getEmail());
-            if (existingUser.isPresent()) {
-                log.warn("User name or email already in use. name={} email={}", user.getName(), user.getEmail());
-                throw new IllegalArgumentException("User name or email already in use");
-            }
-        }
 
         if (user.getName() == null) {
             if (user.isHuman()) {
@@ -122,6 +138,7 @@ public class UserRegisterService {
 
         user.setScore(BigDecimal.valueOf(0.0));
         user.setUserRoles(Sets.newHashSet(UserRole.USER));
+
         user.getState().setToken(RandomUUIDUtils.randomUUID());
 
         user = userRepository.save(user);
@@ -130,6 +147,7 @@ public class UserRegisterService {
                 .addKeyValue("id", user.getId())
                 .addKeyValue("name", user.getName())
                 .addKeyValue("password?", user.getPassword() != null)
+                .addKeyValue("loginCode?", user.getLoginCode() != null)
                 .addKeyValue("human", user.isHuman())
                 .addKeyValue("factionIndex", user.getFaction().getIndex())
                 .addKeyValue("factionId", user.getFaction().getId())
@@ -137,7 +155,7 @@ public class UserRegisterService {
                 .addKeyValue("userAgent", userAgent)
                 .log("User registered.");
 
-        return user;
+        return new UserRegisterInternalResult(user, loginCode);
     }
 
     private @Nullable String determineRemoteAddr() {

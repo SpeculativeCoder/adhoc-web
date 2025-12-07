@@ -51,6 +51,8 @@
                     type="VARCHAR(255)"/>
             <column name="password"
                     type="VARCHAR(255)"/>
+            <column name="login_code"
+                    type="VARCHAR(255)"/>
             <column name="human"
                     type="BOOLEAN">
                 <constraints nullable="false"/>

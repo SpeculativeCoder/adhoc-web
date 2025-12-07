@@ -134,7 +134,7 @@ public class UserJoinService {
                     .human(human)
                     .build();
 
-            user = userRegisterService.userRegisterInternal(userRegisterRequest);
+            user = userRegisterService.userRegisterInternal(userRegisterRequest).user();
         }
 
         return user;

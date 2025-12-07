@@ -103,6 +103,10 @@ public class UserEntity {
     @Setter(AccessLevel.NONE)
     private String password;
 
+    @ToString.Exclude
+    @Setter(AccessLevel.NONE)
+    private String loginCode;
+
     @Column(nullable = false)
     private boolean human;
 
@@ -157,4 +161,7 @@ public class UserEntity {
         this.password = password == null ? null : passwordEncoder.encode(password);
     }
 
+    public void setLoginCode(String loginCode, PasswordEncoder passwordEncoder) {
+        this.loginCode = loginCode == null ? null : passwordEncoder.encode(loginCode);
+    }
 }

@@ -66,7 +66,7 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
             logEvent = logEvent.setCause(exception);
         }
         logEvent.log("Access denied. method={} uri={} exception={}",
-                method, uri, exception.getClass().getSimpleName());
+                method, uri, exception.getClass().getName());
 
         response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
     }

@@ -92,10 +92,25 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         //}
 
         String name = user.getName();
-        // TODO
-        String password = user.getPassword() == null ? RandomUUIDUtils.randomUUID().toString() : user.getPassword();
-        // NOTE: password null means user is not to be logged in to (i.e. temporary users) so we mark as not "enabled"
-        boolean enabled = user.getPassword() != null;
+
+        String password;
+        boolean enabled;
+
+        if (user.getPassword() != null) {
+            password = user.getPassword();
+            enabled = true;
+
+        } else if (user.getLoginCode() != null) {
+            // if no password set yet - allow user to use the login code instead
+            password = user.getLoginCode();
+            enabled = false;
+            //enabled = true; // TODO: enable login code logins
+
+        } else {
+            // else account is not enabled
+            password = RandomUUIDUtils.randomUUID().toString(); // TODO
+            enabled = false;
+        }
 
         return new AdhocUserDetails(
                 name,

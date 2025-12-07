@@ -26,8 +26,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.hibernate.validator.constraints.Length;
 
@@ -35,8 +34,7 @@ import org.hibernate.validator.constraints.Length;
  * When a user joins a server we will either verify they are an existing user (if {@link #userId} is not null)
  * or register a new user (if {@link #userId} is null).
  */
-@Data
-@NoArgsConstructor
+@Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized

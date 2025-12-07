@@ -20,10 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.objective.events;
+package adhoc.user.responses;
 
-import adhoc.Event;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,21 +34,15 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
-public class ObjectiveTakenEvent implements Event {
+public class UserRegisterResponse {
 
     @NotNull
     @Min(1)
-    private Long objectiveId;
+    Long id;
 
-    @NotNull
-    @Min(0)
-    private Long objectiveVersion;
+    @NotEmpty
+    String name;
 
-    @NotNull
-    @Min(1)
-    private Long factionId;
-
-    @NotNull
-    @Min(0)
-    private Long factionVersion;
+    @NotEmpty
+    String loginCode;
 }

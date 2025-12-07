@@ -26,6 +26,7 @@ import adhoc.system.auth.AdhocUserDetails;
 import adhoc.user.requests.UserNavigateRequest;
 import adhoc.user.requests.UserRegisterRequest;
 import adhoc.user.responses.UserNavigateResponse;
+import adhoc.user.responses.UserRegisterResponse;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -81,7 +82,7 @@ public class UserController {
     }
 
     @PostMapping("/users/register")
-    public ResponseEntity<UserDto> postUserRegister(
+    public ResponseEntity<UserRegisterResponse> postUserRegister(
             @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
 
         log.debug("postUserRegister: name={} password?={} factionId={}",
@@ -89,7 +90,7 @@ public class UserController {
                 userRegisterRequest.getPassword() != null,
                 userRegisterRequest.getFactionId());
 
-        UserDto response = userRegisterService.userRegisterAndLogin(userRegisterRequest);
+        UserRegisterResponse response = userRegisterService.userRegisterAndLogin(userRegisterRequest);
 
         return ResponseEntity.created(URI.create("/adhoc_api/users/current")).body(response);
     }

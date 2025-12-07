@@ -30,6 +30,7 @@ import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -55,14 +56,15 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
         Authentication authentication = exception.getAuthenticationRequest();
         //Verify.verifyNotNull(authentication);
 
-        boolean exceptionTypical = exception instanceof BadCredentialsException;
+        boolean exceptionTypical = exception instanceof BadCredentialsException
+                || exception instanceof DisabledException;
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionTypical ? Level.WARN : Level.INFO);
         if (!exceptionTypical) {
             logEvent = logEvent.setCause(exception);
         }
         logEvent.log("Authentication failure. authentication={} exception={}",
-                authentication, exception.getClass().getSimpleName());
+                authentication, exception.getClass().getName());
 
         response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
     }

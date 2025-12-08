@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JpaLiquibaseChangesConfig">
+    <exclude-change idName="qrtz_blob_triggers_sched_name_trigger_name_trigger_group_fkey" tagName="dropForeignKeyConstraint" />
+    <exclude-change idName="qrtz_cron_triggers_sched_name_trigger_name_trigger_group_fkey" tagName="dropForeignKeyConstraint" />
+    <exclude-change idName="qrtz_simple_triggers_sched_name_trigger_name_trigger_group_fkey" tagName="dropForeignKeyConstraint" />
+    <exclude-change idName="qrtz_simprop_triggers_sched_name_trigger_name_trigger_grou_fkey" tagName="dropForeignKeyConstraint" />
+    <exclude-change idName="qrtz_triggers_sched_name_job_name_job_group_fkey" tagName="dropForeignKeyConstraint" />
+    <exclude-change idName="spring_session_attributes_fk" tagName="dropForeignKeyConstraint" />
+    <exclude-change idName="qrtz_blob_triggers" tagName="dropTable" />
+    <exclude-change idName="qrtz_calendars" tagName="dropTable" />
+    <exclude-change idName="qrtz_cron_triggers" tagName="dropTable" />
+    <exclude-change idName="qrtz_fired_triggers" tagName="dropTable" />
+    <exclude-change idName="qrtz_job_details" tagName="dropTable" />
+    <exclude-change idName="qrtz_locks" tagName="dropTable" />
+    <exclude-change idName="qrtz_paused_trigger_grps" tagName="dropTable" />
+    <exclude-change idName="qrtz_scheduler_state" tagName="dropTable" />
+    <exclude-change idName="qrtz_simple_triggers" tagName="dropTable" />
+    <exclude-change idName="qrtz_simprop_triggers" tagName="dropTable" />
+    <exclude-change idName="qrtz_triggers" tagName="dropTable" />
+    <exclude-change idName="spring_session" tagName="dropTable" />
+    <exclude-change idName="spring_session_attributes" tagName="dropTable" />
+  </component>
+</project>

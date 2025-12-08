@@ -82,11 +82,8 @@ public class ServerEntity {
     @Column(nullable = false)
     private String mapName;
 
-    @Column(precision = 128, scale = 64)
     private BigDecimal x;
-    @Column(precision = 128, scale = 64)
     private BigDecimal y;
-    @Column(precision = 128, scale = 64)
     private BigDecimal z;
 
     @Column(nullable = false)

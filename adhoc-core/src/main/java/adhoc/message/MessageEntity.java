@@ -52,7 +52,7 @@ public class MessageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MessageIdSequence")
-    @SequenceGenerator(name = "MessageIdSequence", initialValue = 1, allocationSize = 50)
+    @SequenceGenerator(name = "MessageIdSequence", initialValue = 1, allocationSize = 1)
     private Long id;
 
     @Version

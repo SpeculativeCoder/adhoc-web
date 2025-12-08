@@ -27,7 +27,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,6 +43,9 @@ import java.math.BigDecimal;
  * Each user is associated with a faction.
  */
 @Entity(name = "Faction")
+@Table(indexes = {
+        @Index(name = "idx_faction_score", columnList = "score")
+})
 //@DynamicInsert
 //@DynamicUpdate
 @NoArgsConstructor
@@ -52,7 +57,7 @@ public class FactionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FactionIdSequence")
-    @SequenceGenerator(name = "FactionIdSequence", initialValue = 1, allocationSize = 50)
+    @SequenceGenerator(name = "FactionIdSequence", initialValue = 1, allocationSize = 1)
     private Long id;
 
     @Version
@@ -62,12 +67,12 @@ public class FactionEntity {
     @Column(nullable = false, unique = true)
     private Integer index;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String color;
 
-    @Column(precision = 128, scale = 32, nullable = false)
+    @Column(nullable = false)
     private BigDecimal score;
 }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="0000000000006-1" author="adhoc" runAlways="true">
+
+        <createSequence sequenceName="area_id_sequence"
+                        startValue="1"
+                        incrementBy="1"/>
+
+        <createTable tableName="area">
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_area"/>
+            </column>
+            <column name="version"
+                    type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region_id"
+                    type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="index"
+                    type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x"
+                    type="DECIMAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="y"
+                    type="DECIMAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="z"
+                    type="DECIMAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sizex"
+                    type="DECIMAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sizey"
+                    type="DECIMAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sizez"
+                    type="DECIMAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="server_id"
+                    type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="region_id"
+                                 baseTableName="area"
+                                 constraintName="fk_area_on_region"
+                                 referencedColumnNames="id"
+                                 referencedTableName="region"/>
+
+        <addForeignKeyConstraint baseColumnNames="server_id"
+                                 baseTableName="area"
+                                 constraintName="fk_area_on_server"
+                                 referencedColumnNames="id"
+                                 referencedTableName="server"/>
+
+        <addUniqueConstraint columnNames="region_id, index"
+                             constraintName="uc_area_region_id_index"
+                             tableName="area"/>
+
+    </changeSet>
+
+</databaseChangeLog>

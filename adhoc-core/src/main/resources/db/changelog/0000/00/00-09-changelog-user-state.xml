@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="0000000000009-1" author="adhoc" runAlways="true">
+
+        <createTable tableName="user_state">
+            <column name="id"
+                    type="BIGINT">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="pk_userstate"/>
+            </column>
+            <column name="version"
+                    type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region_id"
+                    type="BIGINT"/>
+            <column name="x"
+                    type="DECIMAL"/>
+            <column name="y"
+                    type="DECIMAL"/>
+            <column name="z"
+                    type="DECIMAL"/>
+            <column name="pitch"
+                    type="DECIMAL"/>
+            <column name="yaw"
+                    type="DECIMAL"/>
+            <column name="created"
+                    type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated"
+                    type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seen"
+                    type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="token"
+                    type="UUID"/>
+            <column name="destination_server_id"
+                    type="BIGINT"/>
+            <column name="server_id"
+                    type="BIGINT"/>
+        </createTable>
+
+        <createIndex indexName="idx_user_state_region_id"
+                     tableName="user_state">
+            <column name="region_id"/>
+        </createIndex>
+        <createIndex indexName="idx_user_state_created"
+                     tableName="user_state">
+            <column name="created"/>
+        </createIndex>
+        <createIndex indexName="idx_user_state_seen"
+                     tableName="user_state">
+            <column name="seen"/>
+        </createIndex>
+        <createIndex indexName="idx_user_state_server_id"
+                     tableName="user_state">
+            <column name="server_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="id"
+                                 baseTableName="user_state"
+                                 constraintName="fk_userstate_on_user"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user_"/>
+
+        <addForeignKeyConstraint baseColumnNames="region_id"
+                                 baseTableName="user_state"
+                                 constraintName="fk_userstate_on_region"
+                                 referencedColumnNames="id"
+                                 referencedTableName="region"/>
+
+        <addForeignKeyConstraint baseColumnNames="server_id"
+                                 baseTableName="user_state"
+                                 constraintName="fk_userstate_on_server"
+                                 referencedColumnNames="id"
+                                 referencedTableName="server"/>
+
+        <addForeignKeyConstraint baseColumnNames="destination_server_id"
+                                 baseTableName="user_state"
+                                 constraintName="fk_userstate_on_destinationserver"
+                                 referencedColumnNames="id"
+                                 referencedTableName="server"/>
+    </changeSet>
+
+</databaseChangeLog>

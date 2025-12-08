@@ -51,7 +51,7 @@ public class UniverseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UniverseIdSequence")
-    @SequenceGenerator(name = "UniverseIdSequence", initialValue = 1, allocationSize = 50)
+    @SequenceGenerator(name = "UniverseIdSequence", initialValue = 1, allocationSize = 1)
     private Long id;
 
     @Version

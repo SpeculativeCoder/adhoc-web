@@ -64,7 +64,7 @@ public class AreaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AreaIdSequence")
-    @SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 50)
+    @SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 1)
     private Long id;
 
     @Version
@@ -81,18 +81,18 @@ public class AreaEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal x;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal y;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal z;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal sizeX;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal sizeY;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal sizeZ;
 
     @OneToMany(mappedBy = "area")

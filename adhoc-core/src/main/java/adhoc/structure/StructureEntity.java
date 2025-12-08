@@ -58,7 +58,7 @@ public class StructureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "StructureIdSequence")
-    @SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 50)
+    @SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 1)
     private Long id;
 
     @Version
@@ -78,32 +78,32 @@ public class StructureEntity {
     @ToString.Exclude
     private RegionEntity region;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal x;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal y;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal z;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal pitch;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal yaw;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal roll;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal scaleX;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal scaleY;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal scaleZ;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal sizeX;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal sizeY;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal sizeZ;
 
     @ManyToOne(fetch = FetchType.LAZY)

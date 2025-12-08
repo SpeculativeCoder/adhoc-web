@@ -66,9 +66,8 @@ import java.util.stream.Collectors;
  */
 @Entity(name = "User")
 @Table(name = "user_", indexes = {
-        @Index(name = "idx_user_name", columnList = "name"),
         @Index(name = "idx_user_email", columnList = "email"),
-        @Index(name = "idx_user_faction_id", columnList = "faction_id"),
+        @Index(name = "idx_user_score", columnList = "score"),
         @Index(name = "idx_user_created", columnList = "created")
 })
 // TODO: unique constraint(s)
@@ -83,7 +82,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UserIdSequence")
-    @SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 50)
+    @SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 1)
     private Long id;
 
     @Version
@@ -94,7 +93,7 @@ public class UserEntity {
     @PrimaryKeyJoinColumn
     private UserStateEntity state;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String email;
@@ -114,7 +113,7 @@ public class UserEntity {
     @ToString.Exclude
     private FactionEntity faction;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal score;
 
     @CreationTimestamp

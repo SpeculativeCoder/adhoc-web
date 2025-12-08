@@ -84,16 +84,11 @@ public class UserStateEntity {
     @ToString.Exclude
     private RegionEntity region;
 
-    @Column(precision = 128, scale = 64)
     private BigDecimal x;
-    @Column(precision = 128, scale = 64)
     private BigDecimal y;
-    @Column(precision = 128, scale = 64)
     private BigDecimal z;
 
-    @Column(precision = 128, scale = 64)
     private BigDecimal pitch;
-    @Column(precision = 128, scale = 64)
     private BigDecimal yaw;
 
     @CreationTimestamp

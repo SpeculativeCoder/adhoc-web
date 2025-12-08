@@ -59,7 +59,7 @@ public class RegionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RegionIdSequence")
-    @SequenceGenerator(name = "RegionIdSequence", initialValue = 1, allocationSize = 50)
+    @SequenceGenerator(name = "RegionIdSequence", initialValue = 1, allocationSize = 1)
     private Long id;
 
     @Version
@@ -73,11 +73,11 @@ public class RegionEntity {
     @Column(nullable = false)
     private String mapName;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal x;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal y;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal z;
 
     @OneToMany(mappedBy = "region")

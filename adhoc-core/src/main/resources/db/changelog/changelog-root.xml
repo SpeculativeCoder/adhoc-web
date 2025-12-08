@@ -26,24 +26,21 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="0000000000099-1" author="adhoc" runAlways="true">
-
-        <!-- TODO: during early development we are restarting the scheduled activities every time the manager starts -->
-        <sql dbms="postgresql">
-            truncate
-                qrtz_simple_triggers,
-                qrtz_cron_triggers,
-                qrtz_simprop_triggers,
-                qrtz_blob_triggers,
-                qrtz_triggers,
-                qrtz_job_details,
-                qrtz_calendars,
-                qrtz_paused_trigger_grps,
-                qrtz_fired_triggers,
-                qrtz_scheduler_state,
-                qrtz_locks;
-        </sql>
-
-    </changeSet>
+    <include file="/db/changelog/0000/00/00-00-changelog-drop.xml"/>
+    <include file="/db/changelog/0000/00/00-01-changelog-universe.xml"/>
+    <include file="/db/changelog/0000/00/00-02-changelog-faction.xml"/>
+    <include file="/db/changelog/0000/00/00-03-changelog-user.xml"/>
+    <include file="/db/changelog/0000/00/00-04-changelog-region.xml"/>
+    <include file="/db/changelog/0000/00/00-05-changelog-server.xml"/>
+    <include file="/db/changelog/0000/00/00-06-changelog-area.xml"/>
+    <include file="/db/changelog/0000/00/00-07-changelog-objective.xml"/>
+    <include file="/db/changelog/0000/00/00-08-changelog-pawn.xml"/>
+    <include file="/db/changelog/0000/00/00-09-changelog-user-state.xml"/>
+    <include file="/db/changelog/0000/00/00-10-changelog-structure.xml"/>
+    <include file="/db/changelog/0000/00/00-11-changelog-task.xml"/>
+    <include file="/db/changelog/0000/00/00-12-changelog-message.xml"/>
+    <include file="/db/changelog/0000/00/00-91-changelog-spring-session.xml"/>
+    <include file="/db/changelog/0000/00/00-95-changelog-quartz.xml"/>
+    <include file="/db/changelog/0000/00/00-99-changelog-truncate.xml"/>
 
 </databaseChangeLog>

@@ -26,24 +26,4 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="0000000000099-1" author="adhoc" runAlways="true">
-
-        <!-- TODO: during early development we are restarting the scheduled activities every time the manager starts -->
-        <sql dbms="postgresql">
-            truncate
-                qrtz_simple_triggers,
-                qrtz_cron_triggers,
-                qrtz_simprop_triggers,
-                qrtz_blob_triggers,
-                qrtz_triggers,
-                qrtz_job_details,
-                qrtz_calendars,
-                qrtz_paused_trigger_grps,
-                qrtz_fired_triggers,
-                qrtz_scheduler_state,
-                qrtz_locks;
-        </sql>
-
-    </changeSet>
-
 </databaseChangeLog>

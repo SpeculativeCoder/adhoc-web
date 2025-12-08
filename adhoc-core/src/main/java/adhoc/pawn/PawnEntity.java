@@ -61,7 +61,7 @@ public class PawnEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PawnIdSequence")
-    @SequenceGenerator(name = "PawnIdSequence", initialValue = 1, allocationSize = 50)
+    @SequenceGenerator(name = "PawnIdSequence", initialValue = 1, allocationSize = 100)
     private Long id;
 
     @Version
@@ -84,16 +84,16 @@ public class PawnEntity {
     @Column(nullable = false)
     private String description;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal x;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal y;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal z;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal pitch;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal yaw;
 
     @ManyToOne(fetch = FetchType.LAZY)

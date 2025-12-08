@@ -62,7 +62,7 @@ public class ObjectiveEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ObjectiveIdSequence")
-    @SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 50)
+    @SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 1)
     private Long id;
 
     @Version
@@ -79,11 +79,11 @@ public class ObjectiveEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal x;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal y;
-    @Column(precision = 128, scale = 64, nullable = false)
+    @Column(nullable = false)
     private BigDecimal z;
 
     @ManyToOne(fetch = FetchType.LAZY)

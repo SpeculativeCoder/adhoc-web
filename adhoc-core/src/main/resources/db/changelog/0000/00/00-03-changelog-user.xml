@@ -21,16 +21,16 @@
   ~ SOFTWARE.
   -->
 
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="0000000000000-1" author="adhoc">
+    <changeSet id="0000000000001-1" author="adhoc">
 
         <createSequence sequenceName="user_id_sequence"
                         startValue="1"
-                        incrementBy="50"/>
+                        incrementBy="1"/>
 
         <createTable tableName="user_">
             <column name="id"
@@ -45,7 +45,9 @@
             </column>
             <column name="name"
                     type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="false"
+                             unique="true"
+                             uniqueConstraintName="uc_user_name"/>
             </column>
             <column name="email"
                     type="VARCHAR(255)"/>
@@ -62,7 +64,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="score"
-                    type="DECIMAL(128,32)">
+                    type="DECIMAL">
                 <constraints nullable="false"/>
             </column>
             <column name="created"
@@ -80,23 +82,24 @@
             <column name="last_join"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="roles"
-                    type="VARCHAR(255)"/>
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
-        <!-- NOTE: deliberately no foreign keys for user_ on faction -
-        this is so we can nuke all tables except user_ during development process (for now) -->
+        <addForeignKeyConstraint baseColumnNames="faction_id"
+                                 baseTableName="user_"
+                                 constraintName="fk_user_on_faction"
+                                 referencedColumnNames="id"
+                                 referencedTableName="faction"/>
 
-        <createIndex indexName="idx_user_name"
-                     tableName="user_">
-            <column name="name"/>
-        </createIndex>
         <createIndex indexName="idx_user_email"
                      tableName="user_">
             <column name="email"/>
         </createIndex>
-        <createIndex indexName="idx_user_faction_id"
+        <createIndex indexName="idx_user_score"
                      tableName="user_">
-            <column name="faction_id"/>
+            <column name="score"/>
         </createIndex>
         <createIndex indexName="idx_user_created"
                      tableName="user_">

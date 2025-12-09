@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Component
 @Profile("db-hsqldb")
@@ -52,6 +53,8 @@ public class ManagerHsqldbProperties {
                 throw new RuntimeException(e);
             }
         }
+
+        hsqldbDir = Paths.get(hsqldbDir).toAbsolutePath().toString();
 
         log.info("hsqldbDir={}", hsqldbDir);
     }

@@ -64,10 +64,6 @@
                              constraintName="uc_managertask_task_identifier"
                              tableName="manager_task"/>
 
-    </changeSet>
-
-    <changeSet id="0000000000011-2" author="adhoc" runAlways="true">
-
         <createTable tableName="kiosk_task">
             <column name="id"
                     type="BIGINT">
@@ -99,10 +95,6 @@
         <addUniqueConstraint columnNames="task_identifier"
                              constraintName="uc_kiosktask_task_identifier"
                              tableName="kiosk_task"/>
-
-    </changeSet>
-
-    <changeSet id="0000000000011-3" author="adhoc" runAlways="true">
 
         <createTable tableName="server_task">
             <column name="id"

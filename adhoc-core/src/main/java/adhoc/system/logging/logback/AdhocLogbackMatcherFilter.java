@@ -48,11 +48,11 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
             }
         }
 
-        if ("org.hibernate.engine.jdbc.spi.SqlExceptionHelper".equals(loggerName)
+        if ("org.hibernate.orm.jdbc.warn".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 
             // suppress no data warnings from UPDATEs etc. which don't update any columns
-            if ("SQL Warning Code: -1100, SQLState: 02000".equals(message)
+            if ("HHH000247: ErrorCode: -1100, SQLState: 02000".equals(message)
                     || "no data".equals(message)) {
                 return FilterReply.DENY;
             }

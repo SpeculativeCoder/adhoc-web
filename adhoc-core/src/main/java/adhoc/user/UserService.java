@@ -22,6 +22,8 @@
 
 package adhoc.user;
 
+import adhoc.region.RegionEntity;
+import adhoc.server.ServerEntity;
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
 import adhoc.system.random_uuid.RandomUUIDUtils;
 import lombok.RequiredArgsConstructor;
@@ -86,10 +88,10 @@ public class UserService {
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
-                user.getState().getRegion() == null ? null : user.getState().getRegion().getId(),
-                user.getState().getSeen(),
+                Optional.ofNullable(user.getState()).map(UserStateEntity::getRegion).map(RegionEntity::getId).orElse(null),
+                Optional.ofNullable(user.getState()).map(UserStateEntity::getSeen).orElse(null),
                 user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
-                user.getState().getDestinationServer() == null ? null : user.getState().getDestinationServer().getId(),
-                user.getState().getServer() == null ? null : user.getState().getServer().getId());
+                Optional.ofNullable(user.getState()).map(UserStateEntity::getDestinationServer).map(ServerEntity::getId).orElse(null),
+                Optional.ofNullable(user.getState()).map(UserStateEntity::getServer).map(ServerEntity::getId).orElse(null));
     }
 }

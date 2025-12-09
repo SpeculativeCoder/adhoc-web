@@ -295,7 +295,7 @@ public class UniverseInitializeService {
 
         // admin user and some faction specific users for testing
 
-        if (coreProperties.getFeatureFlags().contains("development")) {
+        if (coreProperties.getFeatureFlags().contains("development") && userRepository.count() == 0) {
             UserEntity adminUser = new UserEntity();
             adminUser.setState(new UserStateEntity());
             adminUser.getState().setUser(adminUser);

@@ -22,6 +22,7 @@
 
 package adhoc.db.hsqldb;
 
+import adhoc.db.hsqldb.properties.ManagerHsqldbProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hsqldb.server.Server;
@@ -32,7 +33,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
-import java.nio.file.Files;
 
 @Configuration
 @Profile("db-hsqldb")
@@ -40,7 +40,10 @@ import java.nio.file.Files;
 @RequiredArgsConstructor
 public class ManagerHsqldbConfiguration {
 
+    private final ManagerHsqldbProperties managerHsqldbProperties;
+
     private final DataSourceProperties dataSourceProperties;
+
 
     static {
         System.setProperty("hsqldb.reconfig_logging", "false");
@@ -52,7 +55,7 @@ public class ManagerHsqldbConfiguration {
 
         //server.setAddress("localhost"); //"0.0.0.0");
         server.setDatabaseName(0, "adhoc");
-        server.setDatabasePath(0, "file:" + Files.createTempFile("adhoc_hsqldb_", ".dat").toString() +
+        server.setDatabasePath(0, "file:" + managerHsqldbProperties.getHsqldbDir() +
                 ";user=" + dataSourceProperties.getUsername() + ";password=" + dataSourceProperties.getPassword() +
                 // TODO: back to mvcc when hsqldb issue fixed
                 ";hsqldb.tx=locks" + // locks/mvlocks/mvcc

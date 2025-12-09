@@ -29,24 +29,171 @@
     <!-- TODO: until the schema / architecture settles down we are nuking most tables/data (except e.g. user information) -->
 
     <changeSet id="0000000000000-1" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="message"/>
+        </preConditions>
+        <dropTable tableName="message"/>
+    </changeSet>
 
+    <changeSet id="0000000000000-2" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="server_task"/>
+        </preConditions>
+        <dropTable tableName="server_task"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-3" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="kiosk_task"/>
+        </preConditions>
+        <dropTable tableName="kiosk_task"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-4" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="manager_task"/>
+        </preConditions>
+        <dropTable tableName="manager_task"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-5" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="structure"/>
+        </preConditions>
+        <dropTable tableName="structure"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-6" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="user_state"/>
+        </preConditions>
+        <dropTable tableName="user_state"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-7" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="pawn"/>
+        </preConditions>
+        <dropTable tableName="pawn"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-8" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="objective_linked_objectives"/>
+        </preConditions>
+        <dropTable tableName="objective_linked_objectives"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-9" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="objective"/>
+        </preConditions>
+        <dropTable tableName="objective"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-10" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="area"/>
+        </preConditions>
+        <dropTable tableName="area"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-11" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="server"/>
+        </preConditions>
+        <dropTable tableName="server"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-12" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="region"/>
+        </preConditions>
+        <dropTable tableName="region"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-13" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="faction"/>
+        </preConditions>
+        <dropTable tableName="faction"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-14" author="adhoc" runAlways="true">
         <preConditions onFail="CONTINUE">
             <tableExists tableName="universe"/>
         </preConditions>
+        <dropTable tableName="universe"/>
+    </changeSet>
 
-        <dropTable tableName="message"/>
-        <dropTable tableName="server_task"/>
-        <dropTable tableName="kiosk_task"/>
-        <dropTable tableName="manager_task"/>
-        <dropTable tableName="structure"/>
-        <dropTable tableName="user_state"/>
-        <dropTable tableName="pawn"/>
-        <dropTable tableName="objective_linked_objectives"/>
-        <dropTable tableName="objective"/>
-        <dropTable tableName="area"/>
-        <dropTable tableName="server"/>
-        <dropTable tableName="region"/>
+    <changeSet id="0000000000000-15" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sequenceExists sequenceName="message_id_sequence"/>
+        </preConditions>
+        <dropSequence sequenceName="message_id_sequence"/>
+    </changeSet>
 
+    <changeSet id="0000000000000-16" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sequenceExists sequenceName="task_id_sequence"/>
+        </preConditions>
+        <dropSequence sequenceName="task_id_sequence"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-17" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sequenceExists sequenceName="structure_id_sequence"/>
+        </preConditions>
+        <dropSequence sequenceName="structure_id_sequence"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-18" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sequenceExists sequenceName="pawn_id_sequence"/>
+        </preConditions>
+        <dropSequence sequenceName="pawn_id_sequence"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-19" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sequenceExists sequenceName="objective_id_sequence"/>
+        </preConditions>
+        <dropSequence sequenceName="objective_id_sequence"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-20" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sequenceExists sequenceName="area_id_sequence"/>
+        </preConditions>
+        <dropSequence sequenceName="area_id_sequence"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-21" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sequenceExists sequenceName="server_id_sequence"/>
+        </preConditions>
+        <dropSequence sequenceName="server_id_sequence"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-22" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sequenceExists sequenceName="region_id_sequence"/>
+        </preConditions>
+        <dropSequence sequenceName="region_id_sequence"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-23" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sequenceExists sequenceName="faction_id_sequence"/>
+        </preConditions>
+        <dropSequence sequenceName="faction_id_sequence"/>
+    </changeSet>
+
+    <changeSet id="0000000000000-24" author="adhoc" runAlways="true">
+        <preConditions onFail="CONTINUE">
+            <sequenceExists sequenceName="universe_id_sequence"/>
+        </preConditions>
+        <dropSequence sequenceName="universe_id_sequence"/>
     </changeSet>
 
 </databaseChangeLog>

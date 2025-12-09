@@ -27,9 +27,9 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="/db/changelog/0000/00/00-00-changelog-drop.xml"/>
-    <include file="/db/changelog/0000/00/00-01-changelog-universe.xml"/>
-    <include file="/db/changelog/0000/00/00-02-changelog-faction.xml"/>
-    <include file="/db/changelog/0000/00/00-03-changelog-user.xml"/>
+    <include file="/db/changelog/0000/00/00-01-changelog-user.xml"/>
+    <include file="/db/changelog/0000/00/00-02-changelog-universe.xml"/>
+    <include file="/db/changelog/0000/00/00-03-changelog-faction.xml"/>
     <include file="/db/changelog/0000/00/00-04-changelog-region.xml"/>
     <include file="/db/changelog/0000/00/00-05-changelog-server.xml"/>
     <include file="/db/changelog/0000/00/00-06-changelog-area.xml"/>

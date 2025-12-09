@@ -87,12 +87,6 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseColumnNames="faction_id"
-                                 baseTableName="user_"
-                                 constraintName="fk_user_on_faction"
-                                 referencedColumnNames="id"
-                                 referencedTableName="faction"/>
-
         <createIndex indexName="idx_user_email"
                      tableName="user_">
             <column name="email"/>

@@ -24,15 +24,15 @@ terraform {
   required_providers {
     local = {
       source  = "hashicorp/local"
-      version = "~> 2.5"
+      version = "~> 2.6"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.6"
+      version = "~> 3.7"
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.68"
+      version = "~> 6.25"
     }
   }
   required_version = "~> 1.9"
@@ -291,7 +291,7 @@ resource "aws_subnet" "adhoc_b" {
   cidr_block      = "10.0.0.0/24"
   ipv6_cidr_block = cidrsubnet(aws_vpc.adhoc.ipv6_cidr_block, 8, 0)
   # TODO: multi subnets / zones
-  availability_zone               = "${data.aws_region.region.name}b"
+  availability_zone               = "${data.aws_region.region.region}b"
   map_public_ip_on_launch         = true
   assign_ipv6_address_on_creation = true
   tags = {
@@ -741,9 +741,9 @@ resource "aws_service_discovery_service" "adhoc_manager" {
     }
     routing_policy = "MULTIVALUE"
   }
-  health_check_custom_config {
-    failure_threshold = 1
-  }
+  //health_check_custom_config {
+  //  failure_threshold = 1
+  //}
 }
 
 resource "aws_service_discovery_service" "adhoc_kiosk" {
@@ -756,9 +756,9 @@ resource "aws_service_discovery_service" "adhoc_kiosk" {
     }
     routing_policy = "MULTIVALUE"
   }
-  health_check_custom_config {
-    failure_threshold = 1
-  }
+  //health_check_custom_config {
+  //  failure_threshold = 1
+  //}
 }
 
 resource "aws_cloudwatch_log_group" "adhoc_manager" {
@@ -894,7 +894,7 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
         options = {
           awslogs-create-group      = "true"
           awslogs-group             = "/ecs/${local.adhoc_name}_${terraform.workspace}_manager"
-          awslogs-region            = data.aws_region.region.name
+          awslogs-region            = data.aws_region.region.region
           awslogs-stream-prefix     = "ecs"
           awslogs-multiline-pattern = "^(ERROR|WARN|INFO|DEBUG|TRACE)"
         },
@@ -1011,7 +1011,7 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
         options = {
           awslogs-create-group      = "true"
           awslogs-group             = "/ecs/${local.adhoc_name}_${terraform.workspace}_kiosk"
-          awslogs-region            = data.aws_region.region.name
+          awslogs-region            = data.aws_region.region.region
           awslogs-stream-prefix     = "ecs"
           awslogs-multiline-pattern = "^(ERROR|WARN|INFO|DEBUG|TRACE)"
         },
@@ -1087,7 +1087,7 @@ resource "aws_ecs_task_definition" "adhoc_server" {
         options = {
           awslogs-create-group  = "true"
           awslogs-group         = "/ecs/${local.adhoc_name}_${terraform.workspace}_server"
-          awslogs-region        = data.aws_region.region.name
+          awslogs-region        = data.aws_region.region.region
           awslogs-stream-prefix = "ecs"
         }
       }

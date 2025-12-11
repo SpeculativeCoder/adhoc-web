@@ -22,13 +22,13 @@
 
 package adhoc.system.auth;
 
+import adhoc.system.properties.CoreProperties;
 import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 
 /**
  * Consults the {@link UserEntity} table for user info as needed by Spring Security.
@@ -54,10 +53,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AdhocUserDetailsManager implements UserDetailsManager {
 
-    @Value("${adhoc.server.basic-auth.username:#{null}}")
-    private Optional<String> serverBasicAuthUsername;
-    @Value("${adhoc.server.basic-auth.password:#{null}}")
-    private Optional<String> serverBasicAuthPassword;
+    private final CoreProperties coreProperties;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -67,13 +63,13 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        if (serverBasicAuthUsername.isPresent()
-                && serverBasicAuthPassword.isPresent()
-                && serverBasicAuthUsername.get().equals(username)) {
+        if (coreProperties.getServerBasicAuthUsername().isPresent()
+                && coreProperties.getServerBasicAuthPassword().isPresent()
+                && coreProperties.getServerBasicAuthUsername().get().equals(username)) {
 
             return new AdhocUserDetails(
-                    serverBasicAuthUsername.get(),
-                    passwordEncoder.encode(serverBasicAuthPassword.get()),
+                    coreProperties.getServerBasicAuthUsername().get(),
+                    passwordEncoder.encode(coreProperties.getServerBasicAuthPassword().get()),
                     true, true, true, true,
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserRole.SERVER.name())),
                     null);

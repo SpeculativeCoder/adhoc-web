@@ -29,9 +29,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @Slf4j
@@ -79,8 +85,35 @@ public class CoreProperties {
     @Value("${adhoc.unreal-project-region-maps}")
     private List<String> unrealProjectRegionMaps;
 
+    // TODO: move back into manager properties once we no longer are using these in core filters etc.
+    @Value("${adhoc.server.basic-auth.username:#{null}}")
+    private Optional<String> serverBasicAuthUsername;
+    @Value("${adhoc.server.basic-auth.password:#{null}}")
+    private Optional<String> serverBasicAuthPassword;
+
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
+        // TODO: also find region maps
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        try {
+            String classpathPattern = "/HTML5Client/" + unrealProjectRegionMaps.getFirst() + "/HTML5/*.UE4.js";
+            log.info("classpathPattern={}", classpathPattern);
+            Resource[] resources = resolver.getResources(classpathPattern);
+            for (Resource resource : resources) {
+                log.info("resource={}", resource);
+                String filename = resource.getFilename();
+                Pattern pattern = Pattern.compile("^[A-Za-z]+");
+                Matcher matcher = pattern.matcher(filename);
+                if (matcher.find()) {
+                    unrealProjectName = matcher.group();
+                    log.info("unrealProjectName={}", unrealProjectName);
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         log.info("serverPort={} serverPort2={}", serverProperties.getPort(), serverPortHttp);
         log.info("featureFlags={}", featureFlags);
         log.info("messageBrokerHost={} messageBrokerStompPort={} messageBrokerCorePort={}", messageBrokerHost, messageBrokerStompPort, messageBrokerCorePort);
@@ -89,5 +122,6 @@ public class CoreProperties {
         log.info("managerHost={} kioskHost={}", managerHost, kioskHost);
         log.info("adhocDomain={}", adhocDomain);
         log.info("unrealProjectName={} unrealProjectRegionMaps={}", unrealProjectName, unrealProjectRegionMaps);
+        log.info("serverBasicAuthUsername={} serverBasicAuthPassword?={}", serverBasicAuthUsername, serverBasicAuthPassword.isPresent());
     }
 }

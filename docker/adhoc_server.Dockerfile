@@ -28,15 +28,15 @@ RUN apt-get update -y && apt-get dist-upgrade -y
 ARG ADHOC_NAME=adhoc
 
 ARG SERVER_UNREAL_CONFIGURATION=Development
+
+ARG SSL_ENABLED=false
 ARG FEATURE_FLAGS=development
-
 ARG MANAGER_HOST=host.docker.internal
-
 ARG UNREAL_PROJECT_NAME=MyProject
-
 ARG SERVER_BASIC_AUTH_PASSWORD
 
 ENV ADHOC_NAME=${ADHOC_NAME}
+ENV SSL_ENABLED=${SSL_ENABLED}
 ENV FEATURE_FLAGS=${FEATURE_FLAGS}
 ENV MANAGER_HOST=${MANAGER_HOST}
 ENV UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME}
@@ -68,4 +68,4 @@ RUN chown -R adhoc /LinuxServer
 
 USER adhoc
 
-ENTRYPOINT ./adhoc_container_init.sh && cat /etc/hosts && ./${UNREAL_PROJECT_NAME}Server.sh ${MAP_NAME}?MaxPlayers=${MAX_PLAYERS} MaxControllers=${MAX_CONTROLLERS} MaxBots=${MAX_BOTS} ServerID=${SERVER_ID} RegionID=${REGION_ID} InitialAreaIndexes=${INITIAL_AREA_INDEXES} PrivateIP=$(cat /etc/hosts | tail -1 | awk {'print $1'}) ManagerHost=${MANAGER_HOST} FeatureFlags=${FEATURE_FLAGS} FORCELOGFLUSH=1
+ENTRYPOINT ./adhoc_container_init.sh && cat /etc/hosts && ./${UNREAL_PROJECT_NAME}Server.sh ${MAP_NAME}?MaxPlayers=${MAX_PLAYERS} MaxControllers=${MAX_CONTROLLERS} MaxBots=${MAX_BOTS} ServerID=${SERVER_ID} RegionID=${REGION_ID} InitialAreaIndexes=${INITIAL_AREA_INDEXES} PrivateIP=$(cat /etc/hosts | tail -1 | awk {'print $1'}) ManagerHost=${MANAGER_HOST} FeatureFlags=${FEATURE_FLAGS} FORCELOGFLUSH=1 -ini:Engine:[/Script/WebSocketNetworking.WebSocketNetworkingSettings]:bEnableSSL=${SSL_ENABLED}

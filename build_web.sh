@@ -73,7 +73,7 @@ export MAX_BOTS=${MAX_BOTS:-32}
 
 mvn clean verify -Dangular.configuration=${ANGULAR_CONFIGURATION} -Dunreal.configuration=${CLIENT_UNREAL_CONFIGURATION}
 
-docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
+docker build --tag ${MANAGER_IMAGE} --tag adhoc_${ADHOC_ENV}_manager -f docker/adhoc_manager.Dockerfile \
   --build-arg ADHOC_NAME=${ADHOC_NAME} \
   --build-arg SSL_ENABLED=${SSL_ENABLED} \
   --build-arg FEATURE_FLAGS=${FEATURE_FLAGS} \
@@ -102,7 +102,7 @@ docker build --tag ${MANAGER_IMAGE} -f docker/adhoc_manager.Dockerfile \
   --build-arg MAX_BOTS=${MAX_BOTS} \
   .
 
-docker build --tag ${KIOSK_IMAGE} -f docker/adhoc_kiosk.Dockerfile \
+docker build --tag ${KIOSK_IMAGE} --tag adhoc_${ADHOC_ENV}_kiosk -f docker/adhoc_kiosk.Dockerfile \
   --build-arg ADHOC_NAME=${ADHOC_NAME} \
   --build-arg SSL_ENABLED=${SSL_ENABLED} \
   --build-arg FEATURE_FLAGS=${FEATURE_FLAGS} \

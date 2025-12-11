@@ -35,6 +35,7 @@ export ADHOC_ENV=${ADHOC_ENV:-dev}
 export ADHOC_NAME=${ADHOC_NAME:-adhoc}
 
 export SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION:-Development}
+export SSL_ENABLED=${SSL_ENABLED:-false}
 export FEATURE_FLAGS=${FEATURE_FLAGS:-development}
 
 export MANAGER_HOST=${MANAGER_HOST:-${ADHOC_NAME}-${ADHOC_ENV}-manager.${ADHOC_NAME}-${ADHOC_ENV}}
@@ -67,9 +68,10 @@ ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
 #debug_filepath=${package_dir}/${SERVER_UNREAL_CONFIGURATION}/LinuxServer/${UNREAL_PROJECT_NAME}/Binaries/Linux/${UNREAL_PROJECT_NAME}Server.debug
 #rm -v $debug_filepath
 
-docker build --tag ${SERVER_IMAGE} -f docker/adhoc_server.Dockerfile \
+docker build --tag ${SERVER_IMAGE} --tag adhoc_${ADHOC_ENV}_server -f docker/adhoc_server.Dockerfile \
   --build-arg ADHOC_NAME=${ADHOC_NAME} \
   --build-arg SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION} \
+  --build-arg SSL_ENABLED=${SSL_ENABLED} \
   --build-arg FEATURE_FLAGS=${FEATURE_FLAGS} \
   --build-arg MANAGER_HOST=${MANAGER_HOST} \
   --build-arg UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME} \

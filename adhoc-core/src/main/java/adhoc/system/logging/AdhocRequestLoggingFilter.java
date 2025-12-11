@@ -22,6 +22,7 @@
 
 package adhoc.system.logging;
 
+import adhoc.system.properties.CoreProperties;
 import com.google.common.base.Verify;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
@@ -31,7 +32,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggingEventBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -43,7 +43,6 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 /**
  * Logging component to enable logging of POSTs/PUTs etc.
@@ -55,15 +54,13 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
     private static final Logger userLogger = LoggerFactory.getLogger(AdhocRequestLoggingFilter.class.getName() + ".USER");
     private static final Logger serverLogger = LoggerFactory.getLogger(AdhocRequestLoggingFilter.class.getName() + ".SERVER");
 
-    @Value("${adhoc.server.basic-auth.username:#{null}}")
-    private Optional<String> serverBasicAuthUsername;
-
-    @Value("${adhoc.server.basic-auth.password:#{null}}")
-    private Optional<String> serverBasicAuthPassword;
+    private final CoreProperties coreProperties;
 
     private String encodedServerBasicAuth;
 
-    public AdhocRequestLoggingFilter() {
+    public AdhocRequestLoggingFilter(CoreProperties coreProperties) {
+        this.coreProperties = coreProperties;
+
         setIncludeQueryString(true);
         setIncludeHeaders(true);
         setIncludePayload(true);
@@ -76,8 +73,11 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
     @PostConstruct
     public void postConstruct() {
-        if (serverBasicAuthUsername.isPresent() && serverBasicAuthPassword.isPresent()) {
-            encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(serverBasicAuthUsername.get(), serverBasicAuthPassword.get(), null);
+        if (coreProperties.getServerBasicAuthUsername().isPresent() && coreProperties.getServerBasicAuthPassword().isPresent()) {
+            encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(
+                    coreProperties.getServerBasicAuthUsername().get(),
+                    coreProperties.getServerBasicAuthPassword().get(),
+                    null);
         }
     }
 

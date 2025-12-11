@@ -36,11 +36,6 @@ import java.time.Duration;
 @Getter
 public class ManagerProperties {
 
-    @Value("${adhoc.server.basic-auth.username}")
-    private String serverBasicAuthUsername;
-    @Value("${adhoc.server.basic-auth.password}")
-    private String serverBasicAuthPassword;
-
     @Value("${adhoc.default-user-password}")
     private String defaultUserPassword;
     @Value("${adhoc.default-admin-password}")
@@ -72,7 +67,6 @@ public class ManagerProperties {
 
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
-        log.info("serverBasicAuthUsername={} serverBasicAuthPassword={}", serverBasicAuthUsername, serverBasicAuthPassword == null ? null : "***");
         log.info("defaultUserPassword={} defaultAdminPassword={}", defaultUserPassword, defaultAdminPassword == null ? null : "***");
         log.info("managerDomain={} kioskDomain={} serverDomain={}", managerDomain, kioskDomain, serverDomain);
         log.info("managerImage={} kioskImage={} serverImage={}", managerImage, kioskImage, serverImage);

@@ -201,7 +201,9 @@ public class DockerHostingService implements HostingService {
 
         CreateContainerResponse createdContainer = dockerClient
                 .createContainerCmd(managerProperties.getServerImage() + ":latest")
+                //.withName(server.getId() + "-" + managerProperties.getServerImage())
                 .withEnv(Arrays.asList(
+                        String.format("UNREAL_PROJECT_NAME=%s", coreProperties.getUnrealProjectName()),
                         String.format("MAP_NAME=%s", server.getMapName()),
                         String.format("SERVER_ID=%d", server.getId()),
                         String.format("MANAGER_HOST=%s", "host.docker.internal"), // TODO
@@ -220,10 +222,11 @@ public class DockerHostingService implements HostingService {
                         String.format("MAX_PLAYERS=%d", managerProperties.getMaxPlayers()),
                         String.format("MAX_BOTS=%d", managerProperties.getMaxBots()),
                         String.format("FEATURE_FLAGS=%s", coreProperties.getFeatureFlags()),
+                        String.format("SSL_ENABLED=%s", serverProperties.getSsl().isEnabled()),
                         String.format("CA_CERTIFICATE=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getTrustCertificate()) : "unused"),
                         String.format("SERVER_CERTIFICATE=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getCertificate()) : "unused"),
                         String.format("PRIVATE_KEY=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getCertificatePrivateKey()) : "unused"),
-                        String.format("SERVER_BASIC_AUTH_PASSWORD=%s", managerProperties.getServerBasicAuthPassword())))
+                        String.format("SERVER_BASIC_AUTH_PASSWORD=%s", coreProperties.getServerBasicAuthPassword().get())))
                 .withHostConfig(
                         HostConfig.newHostConfig()
                                 .withPortBindings(

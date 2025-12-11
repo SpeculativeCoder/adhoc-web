@@ -22,36 +22,35 @@
 
 package adhoc.system.auth;
 
+import adhoc.system.properties.CoreProperties;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 /**
  * This matcher provides a way to identify server requests.
  * Used by {@link adhoc.system.WebSecurityConfiguration#securityFilterChain} to ignore CSRF checking on web requests from Unreal server.
  */
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class AdhocServerBasicAuthRequestMatcher implements RequestMatcher {
 
-    @Value("${adhoc.server.basic-auth.username:#{null}}")
-    private Optional<String> serverBasicAuthUsername;
-
-    @Value("${adhoc.server.basic-auth.password:#{null}}")
-    private Optional<String> serverBasicAuthPassword;
+    private final CoreProperties coreProperties;
 
     private String encodedServerBasicAuth;
 
     @PostConstruct
     public void postConstruct() {
-        if (serverBasicAuthUsername.isPresent() && serverBasicAuthPassword.isPresent()) {
-            encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(serverBasicAuthUsername.get(), serverBasicAuthPassword.get(), null);
+        if (coreProperties.getServerBasicAuthUsername().isPresent() && coreProperties.getServerBasicAuthPassword().isPresent()) {
+            encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(
+                    coreProperties.getServerBasicAuthUsername().get(),
+                    coreProperties.getServerBasicAuthPassword().get(),
+                    null);
         }
     }
 

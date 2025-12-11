@@ -29,14 +29,20 @@ set -e # bail on ANY error
 
 [[ -v ADHOC_NAME ]] || echo "missing ADHOC_NAME"
 
-[[ -v CA_CERTIFICATE ]] || echo "missing CA_CERTIFICATE"
-[[ -v SERVER_CERTIFICATE ]] || echo "missing SERVER_CERTIFICATE"
-[[ -v PRIVATE_KEY ]] || echo "missing PRIVATE_KEY"
+echo "SSL_ENABLED is ${SSL_ENABLED}"
 
-# TODO
-echo -e "${CA_CERTIFICATE}" > certs/${ADHOC_NAME}-ca.cer
-echo -e "${SERVER_CERTIFICATE}" > certs/${ADHOC_NAME}.cer
-echo -e "${PRIVATE_KEY}" > certs/${ADHOC_NAME}.key
+if [[ ${SSL_ENABLED} == true ]]; then
+
+    [[ -v CA_CERTIFICATE ]] || echo "missing CA_CERTIFICATE"
+    [[ -v SERVER_CERTIFICATE ]] || echo "missing SERVER_CERTIFICATE"
+    [[ -v PRIVATE_KEY ]] || echo "missing PRIVATE_KEY"
+
+    # TODO
+    echo -e "${CA_CERTIFICATE}" > certs/${ADHOC_NAME}-ca.cer
+    echo -e "${SERVER_CERTIFICATE}" > certs/${ADHOC_NAME}.cer
+    echo -e "${PRIVATE_KEY}" > certs/${ADHOC_NAME}.key
+
+fi
 
 ls -al certs
 

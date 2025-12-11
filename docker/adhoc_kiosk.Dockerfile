@@ -45,8 +45,8 @@ ARG SERVER_SECURITY_GROUP_NAME=adhoc_dev_server
 ARG ECS_CLUSTER=adhoc_dev
 ARG ADHOC_DOMAIN=localhost
 ARG ROUTE53_ZONE=localhost
-ARG MANAGER_DOMAIN=manager-dev.localhost
-ARG SERVER_DOMAIN=server-dev.localhost
+ARG MANAGER_DOMAIN=manager-local.localhost
+ARG SERVER_DOMAIN=server-local.localhost
 ARG KIOSK_DOMAIN=dev.localhost
 
 ARG UNREAL_PROJECT_NAME=MyProject

@@ -226,7 +226,7 @@ public class DockerHostingService implements HostingService {
                         String.format("CA_CERTIFICATE=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getTrustCertificate()) : "unused"),
                         String.format("SERVER_CERTIFICATE=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getCertificate()) : "unused"),
                         String.format("PRIVATE_KEY=%s", serverProperties.getSsl().isEnabled() ? multilineEnvironmentVariable(serverProperties.getSsl().getCertificatePrivateKey()) : "unused"),
-                        String.format("SERVER_BASIC_AUTH_PASSWORD=%s", coreProperties.getServerBasicAuthPassword().get())))
+                        String.format("SERVER_BASIC_AUTH_PASSWORD=%s", coreProperties.getServerBasicAuthPassword())))
                 .withHostConfig(
                         HostConfig.newHostConfig()
                                 .withPortBindings(

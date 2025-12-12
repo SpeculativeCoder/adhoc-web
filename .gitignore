@@ -7,6 +7,8 @@ env/
 
 /httpRequests/
 
+/h2
+/h2postgres
 /hsqldb
 
 .idea/

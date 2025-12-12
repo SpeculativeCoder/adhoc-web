@@ -22,6 +22,7 @@
 
 package adhoc.system.properties;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,10 +86,10 @@ public class CoreProperties {
     private List<String> unrealProjectRegionMaps;
 
     // TODO: move back into manager properties once we no longer are using these in core filters etc.
-    @Value("${adhoc.server.basic-auth.username:#{null}}")
-    private Optional<String> serverBasicAuthUsername;
-    @Value("${adhoc.server.basic-auth.password:#{null}}")
-    private Optional<String> serverBasicAuthPassword;
+    @Value("${adhoc.server.basic-auth.username}")
+    private String serverBasicAuthUsername;
+    @Value("${adhoc.server.basic-auth.password}")
+    private String serverBasicAuthPassword;
 
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
@@ -122,6 +122,6 @@ public class CoreProperties {
         log.info("managerHost={} kioskHost={}", managerHost, kioskHost);
         log.info("adhocDomain={}", adhocDomain);
         log.info("unrealProjectName={} unrealProjectRegionMaps={}", unrealProjectName, unrealProjectRegionMaps);
-        log.info("serverBasicAuthUsername={} serverBasicAuthPassword?={}", serverBasicAuthUsername, serverBasicAuthPassword.isPresent());
+        log.info("serverBasicAuthUsername={} serverBasicAuthPassword?={}", serverBasicAuthUsername, !Strings.isNullOrEmpty(serverBasicAuthPassword));
     }
 }

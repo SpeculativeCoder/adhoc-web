@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.db.hsqldb.properties;
+package adhoc.db.h2postgres.properties;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +29,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("db-hsqldb")
+@Profile({"db-h2postgres"})
 @Slf4j
 @Getter
-public class ManagerHsqldbProperties {
+public class ManagerH2PostgresProperties {
 
-    @Value("${adhoc.hsqldbPath}")
-    private String hsqldbPath;
+    @Value("${adhoc.h2PostgresPath}")
+    private String h2PostgresPath;
 }

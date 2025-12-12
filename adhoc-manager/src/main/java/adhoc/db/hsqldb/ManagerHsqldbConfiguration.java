@@ -23,6 +23,7 @@
 package adhoc.db.hsqldb;
 
 import adhoc.db.hsqldb.properties.ManagerHsqldbProperties;
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hsqldb.server.Server;
@@ -33,6 +34,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Configuration
 @Profile("db-hsqldb")
@@ -51,14 +54,28 @@ public class ManagerHsqldbConfiguration {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     Server hsqldbServer() throws IOException {
-        Server server = new Server();
 
+        String hsqldbPath = managerHsqldbProperties.getHsqldbPath();
+
+        if (Strings.isNullOrEmpty(hsqldbPath)) {
+            try {
+                hsqldbPath = Files.createTempDirectory("adhoc_hsqldb_").toString() + "/adhoc";
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        hsqldbPath = Paths.get(hsqldbPath).toAbsolutePath().normalize().toString();
+
+        log.info("hsqldbPath={}", hsqldbPath);
+
+        Server server = new Server();
         //server.setAddress("localhost"); //"0.0.0.0");
         server.setDatabaseName(0, "adhoc");
-        server.setDatabasePath(0, "file:" + managerHsqldbProperties.getHsqldbDir() +
+        server.setDatabasePath(0, "file:" + hsqldbPath +
                 ";user=" + dataSourceProperties.getUsername() + ";password=" + dataSourceProperties.getPassword() +
                 // TODO: back to mvcc when hsqldb issue fixed
-                ";hsqldb.tx=locks" + // locks/mvlocks/mvcc
+                ";hsqldb.tx=mvcc" + // locks/mvlocks/mvcc
                 ";check_props=true" +
                 ";sql.restrict_exec=true" +
                 ";sql.enforce_names=true" +

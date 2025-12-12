@@ -23,6 +23,7 @@
 package adhoc.system.auth;
 
 import adhoc.system.properties.CoreProperties;
+import com.google.common.base.Strings;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -46,10 +47,11 @@ public class AdhocServerBasicAuthRequestMatcher implements RequestMatcher {
 
     @PostConstruct
     public void postConstruct() {
-        if (coreProperties.getServerBasicAuthUsername().isPresent() && coreProperties.getServerBasicAuthPassword().isPresent()) {
+        if (!Strings.isNullOrEmpty(coreProperties.getServerBasicAuthUsername())
+                && !Strings.isNullOrEmpty(coreProperties.getServerBasicAuthPassword())) {
             encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(
-                    coreProperties.getServerBasicAuthUsername().get(),
-                    coreProperties.getServerBasicAuthPassword().get(),
+                    coreProperties.getServerBasicAuthUsername(),
+                    coreProperties.getServerBasicAuthPassword(),
                     null);
         }
     }

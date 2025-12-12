@@ -22,6 +22,8 @@
 
 package adhoc.db.h2;
 
+import adhoc.db.h2.properties.ManagerH2Properties;
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.h2.tools.Server;
@@ -33,7 +35,7 @@ import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 
 @Configuration
@@ -42,18 +44,30 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public class ManagerH2Configuration {
 
-    private final DataSourceProperties dataSourceProperties;
+    private final ManagerH2Properties managerH2Properties;
 
-    private Path h2Dir;
+    private final DataSourceProperties dataSourceProperties;
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     Server h2Server() throws SQLException, IOException {
-        h2Dir = Files.createTempDirectory("adhoc_h2_");
-        log.info("h2Dir={}", h2Dir);
+
+        String h2Path = managerH2Properties.getH2Path();
+
+        if (Strings.isNullOrEmpty(h2Path)) {
+            try {
+                h2Path = Files.createTempDirectory("adhoc_h2_").toString() + "/adhoc";
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        h2Path = Paths.get(h2Path).toAbsolutePath().normalize().toString();
+
+        log.info("h2Path={}", h2Path);
 
         Server server = Server.createTcpServer(
-                "-baseDir", h2Dir.toString(),
-                //"-ifNotExists",
+                "-baseDir", h2Path,
+                "-ifNotExists",
                 "-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
 
         return server;
@@ -65,7 +79,7 @@ public class ManagerH2Configuration {
 
             @Override
             public String getJdbcUrl() {
-                return "jdbc:h2:file:" + h2Dir.toString() + "/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
+                return "jdbc:h2:tcp://localhost:9092/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
             }
 
             @Override

@@ -23,6 +23,7 @@
 package adhoc.system.logging;
 
 import adhoc.system.properties.CoreProperties;
+import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
@@ -73,10 +74,11 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
     @PostConstruct
     public void postConstruct() {
-        if (coreProperties.getServerBasicAuthUsername().isPresent() && coreProperties.getServerBasicAuthPassword().isPresent()) {
+        if (!Strings.isNullOrEmpty(coreProperties.getServerBasicAuthUsername())
+                && !Strings.isNullOrEmpty(coreProperties.getServerBasicAuthPassword())) {
             encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(
-                    coreProperties.getServerBasicAuthUsername().get(),
-                    coreProperties.getServerBasicAuthPassword().get(),
+                    coreProperties.getServerBasicAuthUsername(),
+                    coreProperties.getServerBasicAuthPassword(),
                     null);
         }
     }

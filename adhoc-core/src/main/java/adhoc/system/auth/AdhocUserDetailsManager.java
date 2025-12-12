@@ -27,6 +27,7 @@ import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -63,13 +64,13 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        if (coreProperties.getServerBasicAuthUsername().isPresent()
-                && coreProperties.getServerBasicAuthPassword().isPresent()
-                && coreProperties.getServerBasicAuthUsername().get().equals(username)) {
+        if (!Strings.isNullOrEmpty(coreProperties.getServerBasicAuthUsername())
+                && !Strings.isNullOrEmpty(coreProperties.getServerBasicAuthPassword())
+                && coreProperties.getServerBasicAuthUsername().equals(username)) {
 
             return new AdhocUserDetails(
-                    coreProperties.getServerBasicAuthUsername().get(),
-                    passwordEncoder.encode(coreProperties.getServerBasicAuthPassword().get()),
+                    coreProperties.getServerBasicAuthUsername(),
+                    passwordEncoder.encode(coreProperties.getServerBasicAuthPassword()),
                     true, true, true, true,
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserRole.SERVER.name())),
                     null);

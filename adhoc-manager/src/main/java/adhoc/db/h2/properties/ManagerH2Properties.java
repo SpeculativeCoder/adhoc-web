@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.db.hsqldb.properties;
+package adhoc.db.h2.properties;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +29,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("db-hsqldb")
+@Profile({"db-h2"})
 @Slf4j
 @Getter
-public class ManagerHsqldbProperties {
+public class ManagerH2Properties {
 
-    @Value("${adhoc.hsqldbPath}")
-    private String hsqldbPath;
+    @Value("${adhoc.h2Path}")
+    private String h2Path;
 }

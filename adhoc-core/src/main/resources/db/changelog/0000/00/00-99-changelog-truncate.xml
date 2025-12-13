@@ -29,20 +29,17 @@
     <changeSet id="0000000000099-1" author="adhoc" runAlways="true">
 
         <!-- TODO: during early development we are restarting the scheduled activities every time the manager starts -->
-        <sql dbms="postgresql">
-            truncate
-                qrtz_simple_triggers,
-                qrtz_cron_triggers,
-                qrtz_simprop_triggers,
-                qrtz_blob_triggers,
-                qrtz_triggers,
-                qrtz_job_details,
-                qrtz_calendars,
-                qrtz_paused_trigger_grps,
-                qrtz_fired_triggers,
-                qrtz_scheduler_state,
-                qrtz_locks;
-        </sql>
+        <delete tableName="qrtz_simple_triggers"/>
+        <delete tableName="qrtz_cron_triggers"/>
+        <delete tableName="qrtz_simprop_triggers"/>
+        <delete tableName="qrtz_blob_triggers"/>
+        <delete tableName="qrtz_triggers"/>
+        <delete tableName="qrtz_job_details"/>
+        <delete tableName="qrtz_calendars"/>
+        <delete tableName="qrtz_paused_trigger_grps"/>
+        <delete tableName="qrtz_fired_triggers"/>
+        <delete tableName="qrtz_scheduler_state"/>
+        <delete tableName="qrtz_locks"/>
 
     </changeSet>
 

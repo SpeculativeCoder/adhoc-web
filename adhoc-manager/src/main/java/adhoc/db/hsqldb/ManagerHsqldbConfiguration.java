@@ -47,7 +47,6 @@ public class ManagerHsqldbConfiguration {
 
     private final DataSourceProperties dataSourceProperties;
 
-
     static {
         System.setProperty("hsqldb.reconfig_logging", "false");
     }
@@ -72,7 +71,7 @@ public class ManagerHsqldbConfiguration {
         Server server = new Server();
         //server.setAddress("localhost"); //"0.0.0.0");
         server.setDatabaseName(0, "adhoc");
-        server.setDatabasePath(0, "file:" + hsqldbPath +
+        server.setDatabasePath(0, "file:" + hsqldbPath + "/adhoc" +
                 ";user=" + dataSourceProperties.getUsername() + ";password=" + dataSourceProperties.getPassword() +
                 // TODO: back to mvcc when hsqldb issue fixed
                 ";hsqldb.tx=mvcc" + // locks/mvlocks/mvcc

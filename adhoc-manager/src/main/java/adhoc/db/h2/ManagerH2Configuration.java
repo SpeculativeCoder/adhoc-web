@@ -79,7 +79,7 @@ public class ManagerH2Configuration {
 
             @Override
             public String getJdbcUrl() {
-                return "jdbc:h2:tcp://localhost:9092/adhoc;MODE=strict;MV_STORE=true;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
+                return "jdbc:h2:tcp://localhost:9092/adhoc;MODE=strict;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
             }
 
             @Override

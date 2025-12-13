@@ -73,13 +73,14 @@ public class ManagerH2Configuration {
         return server;
     }
 
+    /** Make the JDBC connection details (will be provided to Spring) dependent on the DB server being started first. */
     @Bean
     public JdbcConnectionDetails dataSourceProperties(Server h2Server) {
         return new JdbcConnectionDetails() {
 
             @Override
             public String getJdbcUrl() {
-                return "jdbc:h2:tcp://localhost:9092/adhoc;MODE=strict;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
+                return dataSourceProperties.getUrl();
             }
 
             @Override

@@ -73,13 +73,14 @@ public class ManagerH2PostgresConfiguration {
         return server;
     }
 
+    /** Make the JDBC connection details (will be provided to Spring) dependent on the DB server being started first. */
     @Bean
     public JdbcConnectionDetails dataSourceProperties(Server h2PostgresServer) {
         return new JdbcConnectionDetails() {
 
             @Override
             public String getJdbcUrl() {
-                return "jdbc:h2:tcp://localhost:9092/adhoc;MODE=PostgreSQL;DATABASE_TO_LOWER=true;DEFAULT_NULL_ORDERING=HIGH;DEFAULT_LOCK_TIMEOUT=10000;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false";
+                return dataSourceProperties.getUrl();
             }
 
             @Override

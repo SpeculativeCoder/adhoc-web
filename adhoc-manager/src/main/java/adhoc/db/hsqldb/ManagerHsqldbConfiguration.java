@@ -89,13 +89,14 @@ public class ManagerHsqldbConfiguration {
         return server;
     }
 
+    /** Make the JDBC connection details (will be provided to Spring) dependent on the DB server being started first. */
     @Bean
     public JdbcConnectionDetails dataSourceProperties(Server hsqldbServer) {
         return new JdbcConnectionDetails() {
 
             @Override
             public String getJdbcUrl() {
-                return "jdbc:hsqldb:hsql://localhost:9001/adhoc";
+                return dataSourceProperties.getUrl();
             }
 
             @Override

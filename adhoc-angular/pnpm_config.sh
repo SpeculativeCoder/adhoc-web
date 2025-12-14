@@ -27,13 +27,13 @@ set -u # error on undefined variables
 set -e # bail on ANY error
 
 MSYS_NO_PATHCONV=1 \
-docker build -t node_pnpm ./node_pnpm/. \
+docker build --progress plain -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
 -v ./package.json:/home/node/app/package.json:ro \
 -v ./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro \
 -v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
--i --rm \
+--rm \
 node_pnpm \
 pnpm config list

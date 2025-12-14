@@ -27,7 +27,7 @@ set -u # error on undefined variables
 set -e # bail on ANY error
 
 MSYS_NO_PATHCONV=1 \
-docker build -t node_pnpm ./node_pnpm/. \
+docker build --progress plain -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \

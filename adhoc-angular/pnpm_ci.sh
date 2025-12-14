@@ -27,7 +27,7 @@ set -u # error on undefined variables
 set -e # bail on ANY error
 
 MSYS_NO_PATHCONV=1 \
-docker build -t node_pnpm ./node_pnpm/. \
+docker build --progress plain -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
@@ -35,7 +35,6 @@ docker run \
 -v ./package.json:/home/node/app/package.json:ro \
 -v ./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro \
 -v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
--e CI=1 \
--i --rm \
+--rm \
 node_pnpm \
 pnpm install --frozen-lockfile --ignore-scripts

@@ -27,7 +27,7 @@ set -u # error on undefined variables
 set -e # bail on ANY error
 
 MSYS_NO_PATHCONV=1 \
-docker build -t node_pnpm ./node_pnpm/. \
+docker build --progress plain -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
@@ -41,6 +41,6 @@ docker run \
 -v ./tsconfig.app.json:/home/node/app/tsconfig.app.json:ro \
 -v ./tsconfig.json:/home/node/app/tsconfig.json:ro \
 -v ./tsconfig.spec.json:/home/node/app/tsconfig.spec.json:ro \
--i --rm \
+--rm \
 node_pnpm \
 pnpm run build --configuration=jsdom_fix,${ANGULAR_CONFIGURATION:-development}${ANGULAR_CUSTOMIZATION:-},en-US

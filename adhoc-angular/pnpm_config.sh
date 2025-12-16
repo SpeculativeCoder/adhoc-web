@@ -31,9 +31,9 @@ docker build --progress plain -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
--v ./package.json:/home/node/app/package.json:ro \
--v ./pnpm-lock.yaml:/home/node/app/pnpm-lock.yaml:ro \
--v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
+--mount type=bind,src=./package.json,dst=/home/node/app/package.json,ro \
+--mount type=bind,src=./pnpm-lock.yaml,dst=/home/node/app/pnpm-lock.yaml,ro \
+--mount type=bind,src=./pnpm-workspace.yaml,dst=/home/node/app/pnpm-workspace.yaml,ro \
 --rm \
 node_pnpm \
 pnpm config list

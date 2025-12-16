@@ -31,16 +31,16 @@ docker build --progress plain -t node_pnpm ./node_pnpm/. \
 && \
 MSYS_NO_PATHCONV=1 \
 docker run \
--v ./.angular:/home/node/app/.angular \
--v ./dist:/home/node/app/dist \
--v ./node_modules:/home/node/app/node_modules:ro \
--v ./src:/home/node/app/src:ro \
--v ./angular.json:/home/node/app/angular.json:ro \
--v ./package.json:/home/node/app/package.json:ro \
--v ./pnpm-workspace.yaml:/home/node/app/pnpm-workspace.yaml:ro \
--v ./tsconfig.app.json:/home/node/app/tsconfig.app.json:ro \
--v ./tsconfig.json:/home/node/app/tsconfig.json:ro \
--v ./tsconfig.spec.json:/home/node/app/tsconfig.spec.json:ro \
+--mount type=bind,src=./.angular,dst=/home/node/app/.angular \
+--mount type=bind,src=./dist,dst=/home/node/app/dist \
+--mount type=bind,src=./node_modules,dst=/home/node/app/node_modules,ro \
+--mount type=bind,src=./src,dst=/home/node/app/src,ro \
+--mount type=bind,src=./angular.json,dst=/home/node/app/angular.json,ro \
+--mount type=bind,src=./package.json,dst=/home/node/app/package.json,ro \
+--mount type=bind,src=./pnpm-workspace.yaml,dst=/home/node/app/pnpm-workspace.yaml,ro \
+--mount type=bind,src=./tsconfig.app.json,dst=/home/node/app/tsconfig.app.json,ro \
+--mount type=bind,src=./tsconfig.json,dst=/home/node/app/tsconfig.json,ro \
+--mount type=bind,src=./tsconfig.spec.json,dst=/home/node/app/tsconfig.spec.json,ro \
 -p 127.0.0.1:4200:4200/tcp \
 -i -t --rm \
 node_pnpm \

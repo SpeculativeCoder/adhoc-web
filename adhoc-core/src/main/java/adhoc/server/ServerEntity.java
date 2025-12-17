@@ -108,6 +108,10 @@ public class ServerEntity {
 
     private LocalDateTime seen;
 
+    @OneToMany(mappedBy = "destinationServer")
+    @ToString.Exclude
+    private List<UserStateEntity> destinedUserStates;
+
     @OneToMany(mappedBy = "server")
     @ToString.Exclude
     private List<UserStateEntity> userStates;

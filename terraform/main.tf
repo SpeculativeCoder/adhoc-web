@@ -131,6 +131,14 @@ data "aws_iam_role" "ecs_task_execution_role" {
   name = "ecsTaskExecutionRole"
 }
 
+#data "aws_iam_instance_profile" "ecs_instance_profile" {
+#  name = "ecsInstanceRole"
+#}
+
+#data "aws_iam_role" "ecs_infrastructure_role" {
+#  name = "ecsInfrastructureRoleForManagedInstances"
+#}
+
 data "local_sensitive_file" "adhoc_ca_certificate" {
   count = var.route53_zone == null ? 0 : 1
   #filename = fileexists("${path.root}/../certs/adhoc-ca.cer") ? "${path.root}/../certs/adhoc-ca.cer" : "${path.root}/empty_file"
@@ -738,6 +746,7 @@ resource "aws_service_discovery_service" "adhoc_manager" {
     dns_records {
       ttl  = 60
       type = "A"
+      #type = "SRV"
     }
     routing_policy = "MULTIVALUE"
   }
@@ -917,8 +926,10 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
     }
   ])
   network_mode = "awsvpc"
+  #network_mode = "host"
   requires_compatibilities = [
     "FARGATE"
+    #"MANAGED_INSTANCES"
   ]
   cpu    = "512"
   memory = "1024"
@@ -1123,16 +1134,46 @@ resource "aws_ecs_cluster" "adhoc" {
   name = "${local.adhoc_name}_${terraform.workspace}"
 }
 
+#resource "aws_ecs_capacity_provider" "adhoc" {
+#  name    = "${local.adhoc_name}_${terraform.workspace}"
+#  cluster = aws_ecs_cluster.adhoc.name
+#
+#  managed_instances_provider {
+#    infrastructure_role_arn = data.aws_iam_role.ecs_infrastructure_role.arn
+#    propagate_tags          = "CAPACITY_PROVIDER"
+#
+#    instance_launch_template {
+#      ec2_instance_profile_arn = data.aws_iam_instance_profile.ecs_instance_profile.arn
+#      monitoring               = "BASIC"
+#
+#      network_configuration {
+#        subnets = [
+#          aws_subnet.adhoc_b.id,
+#        ]
+#        security_groups = [
+#          aws_security_group.adhoc_manager.id
+#        ]
+#      }
+#
+#      storage_configuration {
+#        storage_size_gib = 30
+#      }
+#    }
+#  }
+#}
+
 resource "aws_ecs_cluster_capacity_providers" "adhoc" {
   cluster_name = aws_ecs_cluster.adhoc.name
   capacity_providers = [
     "FARGATE_SPOT"
+    #aws_ecs_capacity_provider.adhoc.name
   ]
 
   default_capacity_provider_strategy {
     base              = 0
     weight            = 100
     capacity_provider = "FARGATE_SPOT"
+    #capacity_provider = aws_ecs_capacity_provider.adhoc.name
   }
 }
 
@@ -1144,10 +1185,12 @@ resource "aws_ecs_service" "adhoc_manager" {
   desired_count                      = 0
   deployment_minimum_healthy_percent = 0
   deployment_maximum_percent         = 100
+  force_new_deployment               = true
   capacity_provider_strategy {
     base              = 0
     weight            = 100
     capacity_provider = "FARGATE_SPOT"
+    #capacity_provider = aws_ecs_capacity_provider.adhoc.name
   }
   network_configuration {
     security_groups = [
@@ -1160,6 +1203,8 @@ resource "aws_ecs_service" "adhoc_manager" {
   }
   service_registries {
     registry_arn = aws_service_discovery_service.adhoc_manager.arn
+    #container_name = "${local.adhoc_name}_${terraform.workspace}_manager"
+    #container_port = 80
   }
   lifecycle {
     ignore_changes = [
@@ -1176,6 +1221,7 @@ resource "aws_ecs_service" "adhoc_kiosk" {
   desired_count                      = 0
   deployment_minimum_healthy_percent = 0
   deployment_maximum_percent         = 100
+  force_new_deployment               = true
   capacity_provider_strategy {
     base              = 0
     weight            = 100

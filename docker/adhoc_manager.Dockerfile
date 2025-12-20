@@ -111,6 +111,8 @@ EXPOSE 443 80
 
 #RUN useradd -ms /bin/bash adhoc
 
+RUN mkdir /db
+
 RUN mkdir certs
 #ADD certs/adhoc-ca.cer certs/adhoc-ca.cer
 #ADD certs/adhoc.cer certs/adhoc.cer
@@ -122,5 +124,4 @@ ADD adhoc-manager/target/adhoc-manager-0.0.1-SNAPSHOT.jar adhoc-manager.jar
 
 #USER adhoc
 
-#-DMESSAGE_BROKER_HOST=$(cat /etc/hosts | tail -1 | awk {'print $1'})
-ENTRYPOINT ../adhoc_container_init.sh && cat /etc/hosts && echo ${SPRING_PROFILES_ACTIVE} && java -jar adhoc-manager.jar
+ENTRYPOINT ../adhoc_container_init.sh && cat /etc/hosts && echo ${SPRING_PROFILES_ACTIVE} && java -DMESSAGE_BROKER_HOST=$(cat /etc/hosts | tail -1 | awk {'print $1'}) -jar adhoc-manager.jar

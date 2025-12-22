@@ -76,12 +76,17 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
                     null);
         }
 
-        log.debug("loadUserByUsername: username={}", username);
+        log.atDebug()
+                .addKeyValue("username", username)
+                .log("loadUserByUsername:");
 
         UserEntity user = userRepository.findByNameOrEmail(username, username).orElseThrow(() ->
                 new UsernameNotFoundException("Failed to find user with name or email: " + username));
 
-        log.debug("loadUserByUsername: user={} user.token={}", user, user.getState().getToken());
+        log.atDebug()
+                .addKeyValue("user", user)
+                .addKeyValue("user.token", user.getState().getToken())
+                .log("loadUserByUsername:");
 
         Collection<GrantedAuthority> authorities = new LinkedHashSet<>(user.getAuthorities());
         //if (coreProperties.getFeatureFlags().contains("development")) {

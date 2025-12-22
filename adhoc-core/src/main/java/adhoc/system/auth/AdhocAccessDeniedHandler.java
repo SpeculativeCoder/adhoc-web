@@ -51,7 +51,10 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
         String method = request.getMethod();
         String uri = request.getRequestURI();
 
-        log.debug("handle: method={} uri={}", method, uri, exception);
+        log.atDebug()
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri)
+                .log("handle:", exception);
 
         //userAuthService.onAccessDenied(method, uri, exception);
 
@@ -61,12 +64,14 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
         boolean uriApi = uri.startsWith("/adhoc_api/")
                 || uri.startsWith("/adhoc_ws/");
 
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG));
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
+                .addKeyValue("exception.class", exception.getClass().getName())
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri);
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Access denied. method={} uri={} exception={}",
-                method, uri, exception.getClass().getName());
+        logEvent.log("Access denied.");
 
         response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
     }

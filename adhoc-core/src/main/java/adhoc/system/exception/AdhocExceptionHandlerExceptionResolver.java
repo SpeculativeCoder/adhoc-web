@@ -37,11 +37,20 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @Slf4j
 public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExceptionResolver {
 
+    // TODO
+    @Override
+    public void setWarnLogCategory(String loggerName) {
+        // we do our own warn logging so should not be enabled
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {
 
-        log.debug("resolveException: method={} uri={}",
-                request.getMethod(), request.getRequestURI(), exception);
+        log.atDebug()
+                .addKeyValue("method", request.getMethod())
+                .addKeyValue("uri", request.getRequestURI())
+                .log("resolveException:", exception);
 
         ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
@@ -51,12 +60,15 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
         boolean uriApi = request.getRequestURI().startsWith("/adhoc_api/")
                 || request.getRequestURI().startsWith("/adhoc_ws/");
 
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG));
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
+                .addKeyValue("status", response.getStatus())
+                .addKeyValue("exception.class", exception.getClass().getName())
+                .addKeyValue("method", request.getMethod())
+                .addKeyValue("uri", request.getRequestURI());
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Request failure. method={} uri={} status={} exception={}",
-                request.getMethod(), request.getRequestURI(), response.getStatus(), exception.getClass().getName());
+        logEvent.log("Request failure.");
 
         return modelAndView;
     }

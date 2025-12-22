@@ -78,7 +78,7 @@ public class AdhocColorLogbackConverter extends CompositeConverter<ILoggingEvent
         Map<Integer, AnsiElement> adhocLogLevelElements = new HashMap<>();
         adhocLogLevelElements.put(Level.ERROR_INTEGER, AnsiColor.RED);
         adhocLogLevelElements.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
-        adhocLogLevelElements.put(Level.INFO_INTEGER, AnsiColor.DEFAULT);
+        adhocLogLevelElements.put(Level.INFO_INTEGER, AnsiColor.GREEN);
         adhocLogLevelElements.put(Level.DEBUG_INTEGER, AnsiColor.DEFAULT);
         adhocLogLevelElements.put(Level.TRACE_INTEGER, AnsiColor.DEFAULT);
         ADHOC_LOG_LEVEL_ELEMENTS = Collections.unmodifiableMap(adhocLogLevelElements);

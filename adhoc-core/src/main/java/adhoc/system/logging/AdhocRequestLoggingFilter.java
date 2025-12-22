@@ -136,33 +136,37 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
             Logger logger = authServer ? serverLogger : userLogger;
 
-            LoggingEventBuilder builder = null;
+            LoggingEventBuilder logEvent = null;
 
             if (logger.isErrorEnabled() && statusServerError && uriApi) {
-                builder = logger.atError();
+                logEvent = logger.atError();
 
             } else if (logger.isWarnEnabled() && statusBadRequest && uriApi) {
-                builder = logger.atWarn();
+                logEvent = logger.atWarn();
 
             } else if (logger.isInfoEnabled() && !statusSuccess && !statusInfo && uriApi) {
-                builder = logger.atInfo();
+                logEvent = logger.atInfo();
 
             } else if (logger.isDebugEnabled() && !methodGet) {
-                builder = logger.atDebug();
+                logEvent = logger.atDebug();
 
             } else if (logger.isTraceEnabled()) {
-                builder = logger.atTrace();
+                logEvent = logger.atTrace();
             }
 
-            if (builder != null) {
-                String body = null;
+            if (logEvent != null) {
+
+                // TODO
+                logEvent = logEvent
+                        .addKeyValue("request", createMessage(requestWrapper != null ? requestWrapper : request, "", ""))
+                        .addKeyValue("responseStatus", response.getStatus());
+
                 if (responseWrapper != null) {
-                    body = getResponseBody(responseWrapper);
+                    logEvent = logEvent.addKeyValue("responseBody", getResponseBody(responseWrapper));
                 }
 
-                builder.log("{}, status={}, response={}",
-                        createMessage(requestWrapper != null ? requestWrapper : request, "", ""),
-                        response.getStatus(), body);
+                // TODO
+                logEvent.log("");
             }
 
             Verify.verify(!isAsyncStarted(request)); // not properly supported by this logger

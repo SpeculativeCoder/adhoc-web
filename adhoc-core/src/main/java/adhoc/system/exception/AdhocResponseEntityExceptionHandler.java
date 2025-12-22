@@ -42,7 +42,7 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
     @ExceptionHandler(EntityNotFoundException.class)
     @Nullable
     public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException exception, WebRequest webRequest) {
-        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_CONTENT;
         ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, exception.getMessage(), null, null, webRequest);
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
     }

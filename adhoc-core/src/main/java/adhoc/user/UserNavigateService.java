@@ -27,6 +27,7 @@ import adhoc.area.AreaRepository;
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
+import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.user.requests.UserNavigateRequest;
 import adhoc.user.responses.UserNavigateResponse;
 import com.google.common.base.Preconditions;
@@ -42,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -112,6 +114,9 @@ public class UserNavigateService {
 
         user.getState().setDestinationServer(destinationServer);
         user.setNavigated(LocalDateTime.now());
+
+        UUID newToken = RandomUUIDUtils.randomUUID();
+        user.getState().setToken(newToken);
 
         return new UserNavigateResponse(
                 user.getState().getDestinationServer().getPublicIp(),

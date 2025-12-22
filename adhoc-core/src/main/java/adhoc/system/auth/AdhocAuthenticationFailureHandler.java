@@ -48,23 +48,31 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
-        log.debug("onAuthenticationFailure: method={} uri={}",
-                request.getMethod(), request.getRequestURI(), exception);
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+
+        log.atDebug()
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri)
+                .log("onAuthenticationFailure:", exception);
 
         //userAuthService.onAuthenticationFailure(exception);
 
         Authentication authentication = exception.getAuthenticationRequest();
         //Verify.verifyNotNull(authentication);
 
-        boolean exceptionTypical = exception instanceof BadCredentialsException
+        boolean exceptionKnown = exception instanceof BadCredentialsException
                 || exception instanceof DisabledException;
 
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionTypical ? Level.WARN : Level.INFO);
-        if (!exceptionTypical) {
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
+                .addKeyValue("authentication", authentication)
+                .addKeyValue("exception.class", exception.getClass().getName())
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri);
+        if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Authentication failure. authentication={} exception={}",
-                authentication, exception.getClass().getName());
+        logEvent.log("Authentication failure.");
 
         response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
     }

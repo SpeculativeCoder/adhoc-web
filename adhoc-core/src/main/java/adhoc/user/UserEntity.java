@@ -137,6 +137,14 @@ public class UserEntity {
     @ToString.Exclude
     private List<PawnEntity> pawns;
 
+    public UserStateEntity getState() {
+        if (state == null) {
+            state = new UserStateEntity();
+            state.setUser(this);
+        }
+        return state;
+    }
+
     public void setUserRoles(Set<UserRole> userRoles) {
         roles = userRoles.stream()
                 .map(UserRole::name)

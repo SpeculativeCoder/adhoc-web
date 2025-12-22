@@ -100,6 +100,7 @@ variable "adhoc_name_prod" {
 }
 
 locals {
+  aws_account_id = data.aws_caller_identity.current.account_id
   aws_region = (terraform.workspace == "prod" ? var.adhoc_region_prod :
     (terraform.workspace == "qa" ? var.adhoc_region_qa :
   (terraform.workspace == "dev" ? var.adhoc_region_dev : "us-east-1")))
@@ -117,6 +118,9 @@ provider "random" {
 provider "aws" {
   region  = local.aws_region
   profile = "adhoc_admin"
+}
+
+data "aws_caller_identity" "current" {
 }
 
 data "aws_region" "region" {
@@ -284,6 +288,34 @@ resource "aws_iam_access_key" "adhoc_manager" {
   user = aws_iam_user.adhoc_manager.name
 }
 
+resource "aws_iam_role" "adhoc_ecs_task_manager_role" {
+  name = "${local.adhoc_name}_${terraform.workspace}_ecs_task_manager.${local.aws_region}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "0"
+        Effect = "Allow"
+        Action = [
+          "sts:AssumeRole"
+        ]
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Condition = {
+          ArnLike = {
+            "aws:SourceArn" = "arn:aws:ecs:${data.aws_region.region.region}:${local.aws_account_id}:*"
+          }
+          StringEquals = {
+            "aws:SourceAccount" = local.aws_account_id
+          }
+        }
+      }
+    ]
+  })
+}
+
 resource "aws_vpc" "adhoc" {
   cidr_block                       = "10.0.0.0/16"
   enable_dns_hostnames             = true
@@ -328,6 +360,11 @@ resource "aws_route" "adhoc_ipv6" {
 #  route_table_id = aws_vpc.adhoc.default_route_table_id
 #}
 
+resource "aws_security_group" "adhoc_efs_db" {
+  name   = "${local.adhoc_name}_${terraform.workspace}_efs_db"
+  vpc_id = aws_vpc.adhoc.id
+}
+
 resource "aws_security_group" "adhoc_manager" {
   name   = "${local.adhoc_name}_${terraform.workspace}_manager"
   vpc_id = aws_vpc.adhoc.id
@@ -341,6 +378,15 @@ resource "aws_security_group" "adhoc_kiosk" {
 resource "aws_security_group" "adhoc_server" {
   name   = "${local.adhoc_name}_${terraform.workspace}_server"
   vpc_id = aws_vpc.adhoc.id
+}
+
+resource "aws_security_group_rule" "adhoc_efs_db_ingress_nfs" {
+  security_group_id        = aws_security_group.adhoc_efs_db.id
+  type                     = "ingress"
+  from_port                = 2049
+  to_port                  = 2049
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.adhoc_manager.id
 }
 
 // TODO: restrict
@@ -477,6 +523,93 @@ resource "aws_security_group_rule" "adhoc_server_egress" {
 #  protocol                 = "tcp"
 #  source_security_group_id = aws_security_group.adhoc_manager.id
 #}
+
+resource "aws_efs_file_system" "adhoc_efs_db" {
+  #creation_token = "adhoc"
+  encrypted = true
+
+  #lifecycle_policy {
+  #transition_to_ia = "AFTER_30_DAYS"
+  #transition_to_archive = "AFTER_90_DAYS"
+  #transition_to_primary_storage_class = "AFTER_1_ACCESS"
+  #}
+
+  throughput_mode = "elastic"
+
+  protection {
+    replication_overwrite = "ENABLED"
+  }
+}
+
+resource "aws_efs_file_system_policy" "adhoc_efs_db" {
+  file_system_id = aws_efs_file_system.adhoc_efs_db.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "0"
+        Effect = "Allow"
+        Principal = {
+          AWS = "*"
+        }
+        Action = [
+          ""
+        ]
+        Resource = aws_efs_file_system.adhoc_efs_db.arn
+        Condition = {
+          Bool = {
+            "elasticfilesystem:AccessedViaMountTarget" = true
+          }
+        }
+      },
+      {
+        Sid    = "1",
+        Effect = "Deny"
+        Principal = {
+          "AWS" = "*"
+        }
+        Action = [
+          "*"
+        ]
+        Resource = aws_efs_file_system.adhoc_efs_db.arn
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = false
+          }
+        }
+      },
+      {
+        Sid    = "2"
+        Effect = "Allow"
+        Principal = {
+          AWS = aws_iam_role.adhoc_ecs_task_manager_role.arn
+        }
+        Action = [
+          "elasticfilesystem:ClientRootAccess",
+          "elasticfilesystem:ClientWrite",
+          "elasticfilesystem:ClientMount"
+        ]
+        Resource = aws_efs_file_system.adhoc_efs_db.arn
+        Condition = {
+          Bool = {
+            "elasticfilesystem:AccessedViaMountTarget" = true
+            "aws:SecureTransport"                      = true
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_efs_access_point" "adhoc_efs_db" {
+  file_system_id = aws_efs_file_system.adhoc_efs_db.id
+}
+
+resource "aws_efs_mount_target" "adhoc_efs_db_b" {
+  file_system_id  = aws_efs_file_system.adhoc_efs_db.id
+  subnet_id       = aws_subnet.adhoc_b.id
+  security_groups = [aws_security_group.adhoc_efs_db.id]
+}
 
 resource "aws_ecr_repository" "adhoc_manager" {
   name         = "${local.adhoc_name}_${terraform.workspace}_manager"
@@ -834,6 +967,11 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
       environmentFiles = [
       ],
       mountPoints = [
+        {
+          containerPath = "/db"
+          readOnly      = false
+          sourceVolume  = "db"
+        }
       ],
       volumesFrom = [
       ],
@@ -925,6 +1063,19 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
       }
     }
   ])
+  volume {
+    name = "db"
+    efs_volume_configuration {
+      file_system_id          = aws_efs_file_system.adhoc_efs_db.id
+      root_directory          = "/"
+      transit_encryption      = "ENABLED"
+      transit_encryption_port = 2049
+      authorization_config {
+        access_point_id = aws_efs_access_point.adhoc_efs_db.id
+        iam             = "ENABLED"
+      }
+    }
+  }
   network_mode = "awsvpc"
   #network_mode = "host"
   requires_compatibilities = [
@@ -934,7 +1085,7 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
   cpu    = "512"
   memory = "1024"
   // TODO
-  #task_role_arn            = data.aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn      = aws_iam_role.adhoc_ecs_task_manager_role.arn
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   runtime_platform {
     cpu_architecture        = "X86_64"

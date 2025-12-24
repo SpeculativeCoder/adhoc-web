@@ -26,6 +26,7 @@ import {mergeMap, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current-user.service';
 import {CsrfService} from '../../system/csrf.service';
+import {UserRegisterResponse} from './user-register-response';
 
 @Injectable({
   providedIn: 'root'
@@ -48,8 +49,10 @@ export class RegisterService {
         'remember-me': userRegisterRequest.rememberMe || false
       }
     }).pipe(
-        mergeMap(user => {
+        mergeMap((user: UserRegisterResponse) => {
           this.csrfService.clearCsrf();
+          // for only this login session - the quick login code is available
+          this.currentUserService.setQuickLoginCode(user.loginCode);
           return this.currentUserService.refreshCurrentUser();
         }));
   }

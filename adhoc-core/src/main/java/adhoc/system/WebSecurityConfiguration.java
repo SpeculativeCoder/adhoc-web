@@ -25,6 +25,7 @@ package adhoc.system;
 import adhoc.system.auth.AdhocAccessDeniedHandler;
 import adhoc.system.auth.AdhocAuthenticationFailureHandler;
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
+import adhoc.system.auth.AdhocLogoutSuccessHandler;
 import adhoc.system.auth.AdhocServerBasicAuthRequestMatcher;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -72,6 +73,7 @@ public class WebSecurityConfiguration<S extends Session> {
             AdhocServerBasicAuthRequestMatcher adhocServerBasicAuthRequestMatcher,
             AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler,
             AdhocAuthenticationFailureHandler adhocAuthenticationFailureHandler,
+            AdhocLogoutSuccessHandler adhocLogoutSuccessHandler,
             AdhocAccessDeniedHandler adhocAccessDeniedHandler) throws Exception {
 
         return http
@@ -127,6 +129,10 @@ public class WebSecurityConfiguration<S extends Session> {
                         .loginProcessingUrl("/adhoc_api/login")
                         .failureHandler(adhocAuthenticationFailureHandler)
                         .successHandler(adhocAuthenticationSuccessHandler))
+
+                .logout(logout -> logout
+                        .logoutUrl("/adhoc_api/logout")
+                        .logoutSuccessHandler(adhocLogoutSuccessHandler))
 
                 // allow basic auth (Authorization header) - used by the server
                 .httpBasic(withDefaults())

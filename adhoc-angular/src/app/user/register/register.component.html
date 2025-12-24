@@ -81,13 +81,13 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="factionId">Select Faction</label>
+          <label class="form-label" for="traditionalRegisterFactionId">Select Faction</label>
           <div ngbDropdown>
-            <button type="button" class="btn btn-outline-secondary" id="factionId" ngbDropdownToggle>
+            <button type="button" class="btn btn-outline-secondary" id="traditionalRegisterFactionId" ngbDropdownToggle>
               <span [ngStyle]="{'color': getFaction(traditionalRegisterRequest.factionId!)?.color}"><span class="oi oi-media-stop"></span></span>
               <span class="text-body"> {{ getFaction(traditionalRegisterRequest.factionId!)?.name }}</span>
             </button>
-            <div ngbDropdownMenu aria-labelledby="factionId">
+            <div ngbDropdownMenu aria-labelledby="traditionalRegisterFactionId">
               <button type="button" ngbDropdownItem
                       *ngFor="let faction of factions "
                       [ngClass]="{ active: faction.id === traditionalRegisterRequest.factionId }"
@@ -100,8 +100,8 @@
         </div>
         <div class="mb-3">
           <div class="form-check">
-            <input class="form-check-input" id="rememberMe" name="rememberMe" type="checkbox" required [(ngModel)]="traditionalRegisterRequest.rememberMe">
-            <label class="form-check-label" for="rememberMe">Remember Me</label>
+            <input class="form-check-input" id="traditionalRegisterRememberMe" name="traditionalRegisterRememberMe" type="checkbox" required [(ngModel)]="traditionalRegisterRequest.rememberMe">
+            <label class="form-check-label" for="traditionalRegisterRememberMe">Remember Me</label>
             <small class="text-secondary"> (stay logged in for this browser - don't select this on a public computer)</small>
           </div>
         </div>

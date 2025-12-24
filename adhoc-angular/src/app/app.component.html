@@ -75,14 +75,10 @@
     </a>
   </li>
   <li class="nav-item" *ngIf="currentUser">
-    <a class="nav-link disabled text-nowrap">
-      <small>{{ currentUser.name }} </small>
-      <span [ngStyle]="{'color': currentUserFaction?.color}">
-        <small><span class="small oi oi-person"></span></small>
-      </span>
-    </a>
+    <app-current-user/>
   </li>
-  <li class="nav-item dropdown" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
+  <!-- TODO -->
+  <li class="nav-item dropdown" *ngIf="!currentUser && featureFlags.indexOf('development') != -1 && false">
     <a class="nav-link text-body dropdown-toggle" data-bs-toggle="dropdown">
       <span class="oi oi-sun"></span>
     </a>

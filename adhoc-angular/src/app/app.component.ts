@@ -29,6 +29,7 @@ import {Faction} from "./faction/faction";
 import {customization} from "./customization";
 import {CommonModule} from "@angular/common";
 import {CurrentUserService} from './user/current-user.service';
+import {CurrentUserComponent} from './user/current-user.component';
 
 @Component({
   selector: 'app-root',
@@ -38,7 +39,8 @@ import {CurrentUserService} from './user/current-user.service';
     CommonModule,
     RouterOutlet,
     RouterLink,
-    RouterLinkActive
+    RouterLinkActive,
+    CurrentUserComponent
   ],
   templateUrl: './app.component.html'
 })

@@ -21,56 +21,37 @@
  */
 
 import {Inject, Injectable} from '@angular/core';
-import {User} from './user';
+import {mergeMap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, mergeMap, take} from 'rxjs';
+import {CurrentUserService} from '../current-user.service';
+import {CsrfService} from '../../system/csrf.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CurrentUserService {
+export class LogoutService {
 
-  private readonly currentUserUrl: string;
-
-  private currentUser$: BehaviorSubject<User | undefined> = new BehaviorSubject<User | undefined>(undefined);
-
-  private quickLoginCode$: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined);
+  private readonly logoutUrl: string;
 
   constructor(@Inject('BASE_URL') baseUrl: string,
-              private http: HttpClient) {
+              private http: HttpClient,
+              private currentUserService: CurrentUserService,
+              private csrfService: CsrfService) {
 
-    this.currentUserUrl = `${baseUrl}/adhoc_api/users/current`;
+    this.logoutUrl = `${baseUrl}/adhoc_api/logout`;
   }
 
-  getCurrentUser$() {
-    return this.currentUser$.value ? this.currentUser$ : this.refreshCurrentUser$();
-  }
+  logout() {
+    console.log("logout");
+    const formData: FormData = new FormData();
 
-  refreshCurrentUser$() {
-    return this.http.get<User>(this.currentUserUrl).pipe(
-        mergeMap(currentUser => {
-          this.currentUser$.next(currentUser);
-          return this.currentUser$;
+    return this.http.post(`${this.logoutUrl}`, FormData, {
+      //responseType: 'text',
+      //params: {}
+    }).pipe(
+        mergeMap(logoutResponse => {
+          this.csrfService.clearCsrf();
+          return this.currentUserService.refreshCurrentUser();
         }));
-  }
-
-  getCurrentUser() {
-    return this.getCurrentUser$().pipe(take(1));
-  }
-
-  refreshCurrentUser() {
-    return this.refreshCurrentUser$().pipe(take(1));
-  }
-
-  getQuickLoginCode$() {
-    return this.quickLoginCode$;
-  }
-
-  getQuickLoginCode() {
-    return this.quickLoginCode$.pipe(take(1));
-  }
-
-  setQuickLoginCode(code?: string) {
-    this.quickLoginCode$.next(code);
   }
 }

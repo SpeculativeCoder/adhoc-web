@@ -114,3 +114,7 @@ $nav-link-font-weight: $font-weight-semibold;
 .map-container {
   margin: 0 auto;
 }
+
+.current-user-popover {
+  --bs-popover-max-width: 1024px !important;
+}

@@ -100,7 +100,7 @@ export class RegisterComponent implements OnInit {
     }
     this.registerService.register(this.quickRegisterRequest).subscribe(user => {
       this.router.navigate(['']);
-      //window.location.href = '/';
+      //window.location.href = '';
       //this.router.navigateByUrl(`/users/${users.userId}`)
     }, error => {
       this.quickRegisterErrorMessage = 'Failed to register';
@@ -119,7 +119,7 @@ export class RegisterComponent implements OnInit {
     }
     this.registerService.register(this.traditionalRegisterRequest).subscribe(user => {
       this.router.navigate(['']);
-      //window.location.href = '/';
+      //window.location.href = '';
       //this.router.navigateByUrl(`/users/${users.userId}`)
     }, error => {
       this.traditionalRegisterErrorMessage = 'Failed to register';

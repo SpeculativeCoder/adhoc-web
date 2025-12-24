@@ -82,7 +82,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.loginService.login(this.loginName, this.loginCode, this.loginRememberMe).subscribe(
         output => {
           this.router.navigate(['']);
-          // window.location.href = '/';
+          // window.location.href = '';
         },
         error => {
           this.quickLoginErrorMessage = 'Failed to login';
@@ -93,7 +93,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.loginService.login(this.loginNameOrEmail, this.loginPassword, this.loginRememberMe).subscribe(
         output => {
           this.router.navigate(['']);
-          // window.location.href = '/';
+          // window.location.href = '';
         },
         error => {
           this.traditionalLoginErrorMessage = 'Failed to login';

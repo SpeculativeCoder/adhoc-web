@@ -23,12 +23,38 @@
 <div class="container-xxl">
   <div class="row">
 
-    <div class="col-md-6">
-      <h2>Existing User</h2>
-      <p>Login using an existing user name (or email) and password</p>
+    <div class="offset-md-3 col-md-6">
+      <h2>Quick Login</h2>
+      <form>
+        <div class="mb-3" hidden="hidden">
+          <label class="form-label" for="loginName">Name</label>
+          <input class="form-control" id="loginName" name="loginName" type="password" required [(ngModel)]="loginName">
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="loginCode">Login Code</label>
+          <input class="form-control" id="loginCode" name="loginCode" type="password" required [(ngModel)]="loginCode">
+        </div>
+        <div class="mb-3">
+          <div class="form-check">
+            <input class="form-check-input" id="loginRememberMe" name="loginRememberMe" type="checkbox" required [(ngModel)]="loginRememberMe">
+            <label class="form-check-label" for="loginRememberMe">Remember Me</label>
+            <small class="text-secondary"> (stay logged in for this browser - don't select this on a public computer)</small>
+          </div>
+        </div>
+        <div class="mb-3">
+          <button type="button" class="btn btn-primary" (click)="quickLogin()">Login</button>
+        </div>
+        <div class="mb-3">
+          <p class="text-danger">{{ quickLoginErrorMessage }}</p>
+        </div>
+      </form>
+    </div>
+
+    <div class="offset-md-3 col-md-6 mt-4" *ngIf="featureFlags.indexOf('development') != -1">
+      <h2>Traditional Login</h2>
       <form>
         <div class="mb-3">
-          <label class="form-label" for="loginNameOrEmail">Name or Email</label>
+          <label class="form-label" for="loginNameOrEmail">User Name or Email</label>
           <!-- autofocus -->
           <input class="form-control" id="loginNameOrEmail" name="loginNameOrEmail" type="text" required #loginNameOrEmailInput [(ngModel)]="loginNameOrEmail">
         </div>
@@ -40,68 +66,14 @@
           <div class="form-check">
             <input class="form-check-input" id="loginRememberMe" name="loginRememberMe" type="checkbox" required [(ngModel)]="loginRememberMe">
             <label class="form-check-label" for="loginRememberMe">Remember Me</label>
-            <small class="text-secondary"> (remember login in this browser - don't select this on a public computer)</small>
+            <small class="text-secondary"> (stay logged in for this browser - don't select this on a public computer)</small>
           </div>
         </div>
         <div class="mb-3">
-          <button type="button" class="btn btn-primary" (click)="login()">Login</button>
+          <button type="button" class="btn btn-primary" (click)="traditionalLogin()">Login</button>
         </div>
         <div class="mb-3">
-          <p class="text-danger">{{ loginErrorMessage }}</p>
-        </div>
-      </form>
-    </div>
-
-    <div class="col-md-6">
-      <h2>New User</h2>
-      <p>Register as a new user</p>
-      <form>
-        <div class="mb-3">
-          <label class="form-label" for="email">Email</label><small> (optional)</small>
-          <input class="form-control" id="email" name="email" type="email" [(ngModel)]="userRegisterRequest.email"/>
-        </div>
-        <div class="mb-3">
-          <label class="form-label" for="password">Password</label><small> (optional)</small>
-          <input class="form-control" id="password" name="password" type="password" [(ngModel)]="userRegisterRequest.password"/>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="name">User Name</label>
-          <small class="text-secondary"> (this will be seen by other users)</small>
-          <input class="form-control" id="name" name="name" type="text" disabled placeholder="(auto-generated e.g. AnonXXX)"/>
-          <!-- [(ngModel)]="user.name" -->
-          <small class="text-secondary">NOTE: auto-generated for now - in future you may be allowed to choose/change your name</small>
-        </div>
-        <div class="mb-3">
-          <label class="form-label" for="factionId">Faction</label>
-          <div ngbDropdown>
-            <button type="button" class="btn btn-outline-secondary" id="factionId" ngbDropdownToggle>
-              <span [ngStyle]="{'color': getFaction(userRegisterRequest.factionId!)?.color}"><span class="oi oi-media-stop"></span></span>
-              <span class="text-body"> {{ getFaction(userRegisterRequest.factionId!)?.name }}</span>
-            </button>
-            <div ngbDropdownMenu aria-labelledby="factionId">
-              <button type="button" ngbDropdownItem
-                      *ngFor="let faction of factions "
-                      [ngClass]="{ active: faction.id === userRegisterRequest.factionId }"
-                      (click)="userRegisterRequest.factionId = faction.id">
-                <span [ngStyle]="{'color': faction.color}"><span class="oi oi-media-stop"></span></span>
-                <span class="text-body"> {{ faction.name }}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="mb-3">
-          <div class="form-check">
-            <input class="form-check-input" id="rememberMe" name="rememberMe" type="checkbox" required [(ngModel)]="userRegisterRequest.rememberMe">
-            <label class="form-check-label" for="rememberMe">Remember Me</label>
-            <small class="text-secondary"> (remember login in this browser - don't select this on a public computer)</small>
-          </div>
-        </div>
-        <div class="mb-3">
-          <button type="button" class="btn btn-primary" (click)="register()">Register and Login</button>
-        </div>
-        <div class="mb-3">
-          <p class="text-danger">{{ registerErrorMessage }}</p>
+          <p class="text-danger">{{ traditionalLoginErrorMessage }}</p>
         </div>
       </form>
     </div>

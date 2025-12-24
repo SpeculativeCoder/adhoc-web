@@ -35,6 +35,10 @@ import java.util.stream.Stream;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
+    boolean existsByName(String name);
+
+    boolean existsByEmail(String name);
+
     Optional<UserEntity> findByNameOrEmail(String name, String email);
 
     Optional<UserEntity> findFirstByHumanFalseAndFactionIdAndStateSeenBefore(Long factionId, LocalDateTime seenBefore);

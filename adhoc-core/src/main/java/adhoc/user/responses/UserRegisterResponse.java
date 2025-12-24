@@ -27,6 +27,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.ToString;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -44,5 +45,6 @@ public class UserRegisterResponse {
     String name;
 
     @NotEmpty
+    @ToString.Exclude
     String loginCode;
 }

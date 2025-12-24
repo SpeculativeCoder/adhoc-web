@@ -22,15 +22,13 @@
 
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {Faction} from '../../faction/faction';
-import {User} from '../user';
 import {FactionService} from '../../faction/faction.service';
-import {UserRegisterRequest} from "../register/user-register-request";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {NgbDropdownModule} from "@ng-bootstrap/ng-bootstrap";
 import {LoginService} from './login.service';
 import {RegisterService} from '../register/register.service';
+import {MetaService} from '../../system/meta.service';
 
 @Component({
   selector: 'app-login',
@@ -44,16 +42,16 @@ import {RegisterService} from '../register/register.service';
 })
 export class LoginComponent implements OnInit, AfterViewInit {
 
+  featureFlags: string = '';
+
+  loginName: string = '';
+  loginCode: string = '';
   loginNameOrEmail: string = '';
   loginPassword: string = '';
   loginRememberMe: boolean = false;
 
-  loginErrorMessage?: string;
-  registerErrorMessage?: string;
-
-  userRegisterRequest: UserRegisterRequest = {};
-
-  factions: Faction[] = [];
+  quickLoginErrorMessage?: string;
+  traditionalLoginErrorMessage?: string;
 
   @ViewChild('loginNameOrEmailInput')
   loginNameOrEmailInput?: ElementRef;
@@ -61,57 +59,45 @@ export class LoginComponent implements OnInit, AfterViewInit {
   constructor(private registerService: RegisterService,
               private loginService: LoginService,
               private factionService: FactionService,
+              private metaService: MetaService,
               private router: Router) {
-    this.userRegisterRequest.name = undefined; // 'Anon' + Math.floor(Math.random() * 1000000000);
-    this.userRegisterRequest.email = undefined; // this.users.email = `${this.users.name}@localhost`;
-    this.userRegisterRequest.password = undefined;
-    this.userRegisterRequest.factionId = undefined;
-    this.userRegisterRequest.rememberMe = false;
-    this.userRegisterRequest.human = true;
   }
 
   ngOnInit(): void {
-    this.factionService.getCachedFactions().subscribe(factions => {
-      this.factions = factions;
-      this.userRegisterRequest.factionId = 1 + Math.floor(Math.random() * this.factions.length);
-    });
+    this.featureFlags = this.metaService.getFeatureFlags();
   }
 
   ngAfterViewInit(): void {
     this.loginNameOrEmailInput?.nativeElement.focus();
   }
 
-  getFaction(factionId: number) {
-    return this.factions.find(faction => faction.id === factionId);
+  quickLogin(): void {
+    let hyphenIdx = (this.loginCode || '').indexOf('-');
+    if (hyphenIdx == -1) {
+      this.quickLoginErrorMessage = 'Invalid Login Code';
+      return;
+    }
+    this.loginName = this.loginCode.substring(0, hyphenIdx);
+
+    this.loginService.login(this.loginName, this.loginCode, this.loginRememberMe).subscribe(
+        output => {
+          this.router.navigate(['']);
+          // window.location.href = '/';
+        },
+        error => {
+          this.quickLoginErrorMessage = 'Failed to login';
+        });
   }
 
-  login(): void {
+  traditionalLogin(): void {
     this.loginService.login(this.loginNameOrEmail, this.loginPassword, this.loginRememberMe).subscribe(
-      output => {
-        this.router.navigate(['']);
-        // window.location.href = '/';
-      },
-      error => {
-        this.loginErrorMessage = 'Failed to login';
-      });
+        output => {
+          this.router.navigate(['']);
+          // window.location.href = '/';
+        },
+        error => {
+          this.traditionalLoginErrorMessage = 'Failed to login';
+        });
   }
 
-  register(): void {
-    if (this.userRegisterRequest.name === '') {
-      this.userRegisterRequest.name = undefined;
-    }
-    if (this.userRegisterRequest.email === '') {
-      this.userRegisterRequest.email = undefined;
-    }
-    if (this.userRegisterRequest.password === '') {
-      this.userRegisterRequest.password = undefined;
-    }
-    this.registerService.register(this.userRegisterRequest).subscribe(user => {
-      this.router.navigate(['']);
-      //window.location.href = '/';
-      //this.router.navigateByUrl(`/users/${users.userId}`)
-    }, error => {
-      this.registerErrorMessage = 'Failed to register';
-    });
-  }
 }

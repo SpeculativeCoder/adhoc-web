@@ -44,4 +44,4 @@ docker run \
 -p 127.0.0.1:4200:4200/tcp \
 -i -t --rm \
 node_pnpm \
-pnpm run start --host 0.0.0.0
+pnpm run start --host 0.0.0.0 --configuration=${ANGULAR_CONFIGURATION:-development}${ANGULAR_CUSTOMIZATION:-},en-US

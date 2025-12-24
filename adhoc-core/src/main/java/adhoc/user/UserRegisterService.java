@@ -44,7 +44,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -97,16 +96,15 @@ public class UserRegisterService {
         }
 
         // TODO: think about existing name/email check before allowing name/email input
-        if (userRegisterRequest.getName() != null || userRegisterRequest.getEmail() != null) {
-            Optional<UserEntity> existingUser = userRepository.findByNameOrEmail(userRegisterRequest.getName(), userRegisterRequest.getEmail());
-            if (existingUser.isPresent()) {
-                log.warn("User name or email already in use. name={} email={}", userRegisterRequest.getName(), userRegisterRequest.getEmail());
-                throw new IllegalArgumentException("User name or email already in use");
-            }
-        }
+        boolean nameExists = userRegisterRequest.getName() != null && userRepository.existsByName(userRegisterRequest.getName());
+        boolean emailExists = userRegisterRequest.getEmail() != null && userRepository.existsByEmail(userRegisterRequest.getEmail());
 
-        // a login code is available as a fallback in case no password is set
-        String loginCode = RandomUUIDUtils.randomUUID().toString().replaceAll("-", "");
+        if (nameExists || emailExists) {
+            log.warn("User name or email already in use. name={} nameExists={} email={} emailExists={}",
+                    userRegisterRequest.getName(), nameExists,
+                    userRegisterRequest.getEmail(), emailExists);
+            throw new IllegalArgumentException("User name or email already in use");
+        }
 
         // assume human user unless specified false
         boolean human = userRegisterRequest.getHuman() == null || userRegisterRequest.getHuman();
@@ -119,7 +117,6 @@ public class UserRegisterService {
         user.setName(userRegisterRequest.getName());
         user.setEmail(userRegisterRequest.getEmail());
         user.setPassword(userRegisterRequest.getPassword(), passwordEncoder);
-        user.setLoginCode(loginCode, passwordEncoder);
         user.setHuman(human);
         user.setFaction(userRegisterRequest.getFactionId() == null ? null : factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
 
@@ -138,6 +135,10 @@ public class UserRegisterService {
 
         user.setScore(BigDecimal.valueOf(0.0));
         user.setUserRoles(Sets.newHashSet(UserRole.USER));
+
+        // a login code is available as a fallback in case no password is set
+        String loginCode = user.getName() + "-" + RandomUUIDUtils.randomUUID().toString().replaceAll("-", "");
+        user.setLoginCode(loginCode, passwordEncoder);
 
         user.getState().setToken(RandomUUIDUtils.randomUUID());
 

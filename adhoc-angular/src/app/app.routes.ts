@@ -44,6 +44,7 @@ import {LoginComponent} from "./user/login/login.component";
 import {InfoComponent} from "./info/info.component";
 import {ClientComponent} from "./client/client.component";
 import {MessagesComponent} from "./message/messages.component";
+import {RegisterComponent} from './user/register/register.component';
 
 export const routes: Routes = [
   {path: '', title: '', component: MapComponent},
@@ -67,6 +68,7 @@ export const routes: Routes = [
   {path: 'users', title: 'Users', component: UsersComponent},
   {path: 'users/:id', title: 'User', component: UserComponent},
   {path: 'messages', title: 'Messages', component: MessagesComponent},
+  {path: 'register', title: 'Register', component: RegisterComponent},
   {path: 'login', title: 'Login', component: LoginComponent},
   {path: 'info/:page', title: '', component: InfoComponent},
   {path: 'client', title: 'Client', component: ClientComponent},

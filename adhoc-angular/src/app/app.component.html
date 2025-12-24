@@ -64,18 +64,25 @@
   <li class="nav-item">
     <a class="nav-link" routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Messages</a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
-      <em>Login/Register</em>
+  <li class="nav-item" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
+    <a class="nav-link" routerLink="/register" routerLinkActive="active" ariaCurrentWhenActive="page">
+      <em>Register</em>
     </a>
-    <a class="nav-link disabled text-nowrap" *ngIf="currentUser">
+  </li>
+  <li class="nav-item" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
+    <a class="nav-link" routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">
+      <em>Login</em>
+    </a>
+  </li>
+  <li class="nav-item" *ngIf="currentUser">
+    <a class="nav-link disabled text-nowrap">
       <small>{{ currentUser.name }} </small>
       <span [ngStyle]="{'color': currentUserFaction?.color}">
         <small><span class="small oi oi-person"></span></small>
       </span>
     </a>
   </li>
-  <li class="nav-item dropdown">
+  <li class="nav-item dropdown" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
     <a class="nav-link text-body dropdown-toggle" data-bs-toggle="dropdown">
       <span class="oi oi-sun"></span>
     </a>

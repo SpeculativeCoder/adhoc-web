@@ -24,7 +24,7 @@ package adhoc.user.requests;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,10 +38,9 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class UserRegisterRequest {
 
-    // at the moment we only allow auto-generated name
-    //@NotEmpty
-    //@Pattern(regexp = "Anon[0-9]{1,10}")
-    @Null
+
+    @Size(min = 1, max = 50)
+    @Pattern(regexp = "[A-Za-z0-9]+")
     String name;
 
     @Email

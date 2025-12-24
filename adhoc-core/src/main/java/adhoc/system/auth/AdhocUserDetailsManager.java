@@ -81,7 +81,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
                 .log("loadUserByUsername:");
 
         UserEntity user = userRepository.findByNameOrEmail(username, username).orElseThrow(() ->
-                new UsernameNotFoundException("Failed to find user with name or email: " + username));
+                UsernameNotFoundException.fromUsername(username));
 
         log.atDebug()
                 .addKeyValue("user", user)
@@ -93,8 +93,6 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         //    authorities.add(new SimpleGrantedAuthority("ROLE_" + UserRole.DEBUG.name()));
         //}
 
-        String name = user.getName();
-
         String password;
         boolean enabled;
 
@@ -105,8 +103,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         } else if (user.getLoginCode() != null) {
             // if no password set yet - allow user to use the login code instead
             password = user.getLoginCode();
-            enabled = false;
-            //enabled = true; // TODO: enable login code logins
+            enabled = true;
 
         } else {
             // else account is not enabled
@@ -115,7 +112,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         }
 
         return new AdhocUserDetails(
-                name,
+                user.getName(),
                 password,
                 enabled,
                 true,

@@ -37,10 +37,6 @@
   <name>adhoc-angular</name>
   <description>adhoc-angular</description>
 
-  <properties>
-    <adhoc-angular-customization/>
-  </properties>
-
   <build>
     <resources>
       <resource>
@@ -94,7 +90,7 @@
               </arguments>
               <environmentVariables>
                 <ANGULAR_CONFIGURATION>${angular.configuration}</ANGULAR_CONFIGURATION>
-                <ANGULAR_CUSTOMIZATION>${adhoc-angular-customization}</ANGULAR_CUSTOMIZATION>
+                <ADHOC_ANGULAR_CUSTOMIZATION>${adhoc.angular.customization}</ADHOC_ANGULAR_CUSTOMIZATION>
                 <!-- TODO: figure out a way to have analytics on -->
                 <!--<NG_CLI_ANALYTICS>false</NG_CLI_ANALYTICS>-->
               </environmentVariables>
@@ -106,17 +102,20 @@
   </build>
 
   <profiles>
+
+    <!-- profile to switch off angular customization if the relevant file is missing -->
     <profile>
-      <id>adhoc-angular-customization</id>
+      <id>adhoc.angular.customization</id>
       <activation>
         <file>
-          <exists>src/customization/customization.ts</exists>
+          <missing>src/customization/customization.ts</missing>
         </file>
       </activation>
       <properties>
-        <adhoc-angular-customization>,customization</adhoc-angular-customization>
+        <adhoc.angular.customization/>
       </properties>
     </profile>
+
   </profiles>
 
 </project>

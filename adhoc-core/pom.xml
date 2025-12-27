@@ -260,7 +260,7 @@
 
             <resource>
                 <directory>
-                    ../Package/${unreal.configuration}/HTML5Client
+                    ../Package/${unreal.client.configuration}/HTML5Client
                 </directory>
                 <targetPath>HTML5Client</targetPath>
             </resource>

@@ -34,7 +34,7 @@ export ADHOC_ENV=${ADHOC_ENV:-dev}
 
 export ADHOC_NAME=${ADHOC_NAME:-adhoc}
 
-export SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION:-Development}
+export UNREAL_SERVER_CONFIGURATION=${UNREAL_SERVER_CONFIGURATION:-Development}
 export SSL_ENABLED=${SSL_ENABLED:-false}
 export FEATURE_FLAGS=${FEATURE_FLAGS:-development}
 
@@ -52,15 +52,15 @@ export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_${ADHOC_ENV}_server}
 web_project_dir=$(realpath -e $(dirname "$0"))
 package_dir=${web_project_dir}/Package
 
-mkdir -p ${package_dir}/${SERVER_UNREAL_CONFIGURATION}
+mkdir -p ${package_dir}/${UNREAL_SERVER_CONFIGURATION}
 
 # TODO: array join on maps
 ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
  -Project=${UNREAL_PROJECT_DIR}/${UNREAL_PROJECT_NAME}.uproject \
- -Target=${UNREAL_PROJECT_NAME}Server -TargetPlatform=Linux -ServerConfig=${SERVER_UNREAL_CONFIGURATION} \
+ -Target=${UNREAL_PROJECT_NAME}Server -TargetPlatform=Linux -ServerConfig=${UNREAL_SERVER_CONFIGURATION} \
  -Build -Cook -Stage -Package -Archive \
  -MapsToCook=${UNREAL_PROJECT_REGION_MAPS}+${UNREAL_PROJECT_TRANSITION_MAP} -Map=${UNREAL_PROJECT_TRANSITION_MAP} \
- -ArchiveDirectory=${package_dir}/${SERVER_UNREAL_CONFIGURATION} \
+ -ArchiveDirectory=${package_dir}/${UNREAL_SERVER_CONFIGURATION} \
  -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
  -NoP4 -UTF8Output -NoDebugInfo
 
@@ -70,7 +70,7 @@ ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
 
 docker build --tag ${SERVER_IMAGE} --tag adhoc_${ADHOC_ENV}_server -f docker/adhoc_server.Dockerfile \
   --build-arg ADHOC_NAME=${ADHOC_NAME} \
-  --build-arg SERVER_UNREAL_CONFIGURATION=${SERVER_UNREAL_CONFIGURATION} \
+  --build-arg UNREAL_SERVER_CONFIGURATION=${UNREAL_SERVER_CONFIGURATION} \
   --build-arg SSL_ENABLED=${SSL_ENABLED} \
   --build-arg FEATURE_FLAGS=${FEATURE_FLAGS} \
   --build-arg MANAGER_HOST=${MANAGER_HOST} \

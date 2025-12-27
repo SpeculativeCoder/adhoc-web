@@ -30,7 +30,7 @@ set -a
 source ./env/common.env || true
 set +a
 
-export CLIENT_UNREAL_CONFIGURATION=${CLIENT_UNREAL_CONFIGURATION:-Development}
+export UNREAL_CLIENT_CONFIGURATION=${UNREAL_CLIENT_CONFIGURATION:-Development}
 
 export UNREAL_PROJECT_NAME=${UNREAL_PROJECT_NAME:-MyProject}
 export UNREAL_PROJECT_REGION_MAPS=${UNREAL_PROJECT_REGION_MAPS:-Region0001}
@@ -44,14 +44,14 @@ web_project_dir=$(realpath -e $(dirname "$0"))
 # TODO: array split
 for map in ${UNREAL_PROJECT_REGION_MAPS}
 do
-  package_dir=${web_project_dir}/Package/${CLIENT_UNREAL_CONFIGURATION}/HTML5Client/${map}
+  package_dir=${web_project_dir}/Package/${UNREAL_CLIENT_CONFIGURATION}/HTML5Client/${map}
 
   mkdir -p ${package_dir}
 
   # ASTC
   ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
    -Project=${UNREAL_PROJECT_DIR}/${UNREAL_PROJECT_NAME}.uproject \
-   -Target=${UNREAL_PROJECT_NAME}Client -TargetPlatform=HTML5 -ClientConfig=${CLIENT_UNREAL_CONFIGURATION} \
+   -Target=${UNREAL_PROJECT_NAME}Client -TargetPlatform=HTML5 -ClientConfig=${UNREAL_CLIENT_CONFIGURATION} \
    -CookFlavor=ASTC \
    -Build -Cook -Stage -Package -Archive \
    -MapsToCook=${map}+${UNREAL_PROJECT_TRANSITION_MAP} -Map=${UNREAL_PROJECT_TRANSITION_MAP} \
@@ -62,7 +62,7 @@ do
   # DXT (default)
   ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
    -Project=${UNREAL_PROJECT_DIR}/${UNREAL_PROJECT_NAME}.uproject \
-   -Target=${UNREAL_PROJECT_NAME}Client -TargetPlatform=HTML5 -ClientConfig=${CLIENT_UNREAL_CONFIGURATION} \
+   -Target=${UNREAL_PROJECT_NAME}Client -TargetPlatform=HTML5 -ClientConfig=${UNREAL_CLIENT_CONFIGURATION} \
    -Build -Cook -Stage -Package -Archive \
    -MapsToCook=${map}+${UNREAL_PROJECT_TRANSITION_MAP} -Map=${UNREAL_PROJECT_TRANSITION_MAP} \
    -ArchiveDirectory=${package_dir} \

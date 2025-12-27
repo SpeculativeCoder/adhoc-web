@@ -57,10 +57,17 @@
         <!--<quartz.version>2.5.2</quartz.version>-->
 
         <maven.compiler.debug>true</maven.compiler.debug>
-        <angular.configuration>development</angular.configuration>
-        <unreal.configuration>Development</unreal.configuration>
-
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+
+        <unreal.client.configuration>Development</unreal.client.configuration>
+        <!--<unreal.client.configuration>Production</unreal.client.configuration>-->
+
+        <angular.configuration>development</angular.configuration>
+        <!--<angular.configuration>production</angular.configuration>-->
+
+        <!--<adhoc.angular.customization/>-->
+        <adhoc.angular.customization>,customization</adhoc.angular.customization>
+
     </properties>
 
     <dependencyManagement>
@@ -141,5 +148,35 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+
+        <!--
+        <profile>
+            <id>angular.configuration</id>
+            <activation>
+                <property>
+                    <name>env.ANGULAR_CONFIGURATION</name>
+                </property>
+            </activation>
+            <properties>
+                <angular.configuration>${env.ANGULAR_CONFIGURATION}</angular.configuration>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>unreal.client.configuration</id>
+            <activation>
+                <property>
+                    <name>env.UNREAL_CLIENT_CONFIGURATION</name>
+                </property>
+            </activation>
+            <properties>
+                <unreal.client.configuration>${env.UNREAL_CLIENT_CONFIGURATION}</unreal.client.configuration>
+            </properties>
+        </profile>
+        -->
+
+    </profiles>
 
 </project>

@@ -37,7 +37,7 @@ export ADHOC_NAME=${ADHOC_NAME:-adhoc}
 export SSL_ENABLED=${SSL_ENABLED:-false}
 
 export ANGULAR_CONFIGURATION=${ANGULAR_CONFIGURATION:-development}
-export CLIENT_UNREAL_CONFIGURATION=${CLIENT_UNREAL_CONFIGURATION:-Development}
+export UNREAL_CLIENT_CONFIGURATION=${UNREAL_CLIENT_CONFIGURATION:-Development}
 export FEATURE_FLAGS=${FEATURE_FLAGS:-development}
 
 export POSTGRES_HOST=${POSTGRES_HOST:-${ADHOC_NAME}-${ADHOC_ENV}-manager.${ADHOC_NAME}-${ADHOC_ENV}}
@@ -71,7 +71,7 @@ export MAX_CONTROLLERS=${MAX_CONTROLLERS:-32}
 export MAX_PLAYERS=${MAX_PLAYERS:-32}
 export MAX_BOTS=${MAX_BOTS:-32}
 
-mvn clean verify -Dangular.configuration=${ANGULAR_CONFIGURATION} -Dunreal.configuration=${CLIENT_UNREAL_CONFIGURATION}
+mvn clean verify -Dangular.configuration=${ANGULAR_CONFIGURATION} -Dunreal.client.configuration=${UNREAL_CLIENT_CONFIGURATION}
 
 docker build --tag ${MANAGER_IMAGE} --tag adhoc_${ADHOC_ENV}_manager -f docker/adhoc_manager.Dockerfile \
   --build-arg ADHOC_NAME=${ADHOC_NAME} \

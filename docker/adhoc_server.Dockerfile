@@ -27,7 +27,7 @@ RUN apt-get update -y && apt-get dist-upgrade -y
 
 ARG ADHOC_NAME=adhoc
 
-ARG SERVER_UNREAL_CONFIGURATION=Development
+ARG UNREAL_SERVER_CONFIGURATION=Development
 
 ARG SSL_ENABLED=false
 ARG FEATURE_FLAGS=development
@@ -63,7 +63,7 @@ RUN mkdir certs
 ADD docker/adhoc_container_init.sh .
 RUN chmod +x adhoc_container_init.sh
 
-ADD Package/${SERVER_UNREAL_CONFIGURATION}/LinuxServer/ /LinuxServer/
+ADD Package/${UNREAL_SERVER_CONFIGURATION}/LinuxServer/ /LinuxServer/
 RUN chown -R adhoc /LinuxServer
 
 USER adhoc

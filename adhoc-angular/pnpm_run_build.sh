@@ -43,4 +43,4 @@ docker run \
 --mount type=bind,src=./tsconfig.spec.json,dst=/home/node/app/tsconfig.spec.json,ro \
 --rm \
 node_pnpm \
-pnpm run build --configuration=jsdom_fix,${ANGULAR_CONFIGURATION:-development}${ANGULAR_CUSTOMIZATION:-},en-US
+pnpm run build --configuration=jsdom_fix,${ANGULAR_CONFIGURATION:-development}${ADHOC_ANGULAR_CUSTOMIZATION:-},en-US

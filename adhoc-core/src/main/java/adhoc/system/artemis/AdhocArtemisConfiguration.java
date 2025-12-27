@@ -85,10 +85,10 @@ public class AdhocArtemisConfiguration {
                 configuration.addAddressSetting("/queue/server_emissions", emissionsAddressSettings());
 
                 configuration.addAcceptorConfiguration(
-                        new TransportConfiguration(NettyAcceptorFactory.class.getName(), stompConnectorProps(), "stomp-acceptor"));
+                        new TransportConfiguration(NettyAcceptorFactory.class.getName(), coreConnectorProps(), "core-acceptor"));
 
                 configuration.addAcceptorConfiguration(
-                        new TransportConfiguration(NettyAcceptorFactory.class.getName(), coreConnectorProps(), "core-acceptor"));
+                        new TransportConfiguration(NettyAcceptorFactory.class.getName(), stompConnectorProps(), "stomp-acceptor"));
 
                 configuration.addConnectorConfiguration("core-connector",
                         new TransportConfiguration(NettyConnectorFactory.class.getName(), coreConnectorProps()));

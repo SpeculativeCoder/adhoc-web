@@ -38,11 +38,11 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExceptionResolver {
 
     // TODO
-    @Override
-    public void setWarnLogCategory(String loggerName) {
-        // we do our own warn logging so should not be enabled
-        throw new UnsupportedOperationException();
-    }
+    //@Override
+    //public void setWarnLogCategory(String loggerName) {
+    //    // we do our own warn logging so does not need to be enabled
+    //    throw new UnsupportedOperationException();
+    //}
 
     @Override
     public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {

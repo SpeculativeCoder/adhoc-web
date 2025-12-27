@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="AdhocManagerApplication db-hsqldb,hosting-docker,dns-local" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="db-hsqldb,hosting-docker,dns-local" />
+  <configuration default="false" name="AdhocManagerApplication db-h2postgres,hosting-docker" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="db-h2postgres,hosting-docker" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="adhoc-manager" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="adhoc.AdhocManagerApplication" />

@@ -23,10 +23,15 @@
 package adhoc;
 
 import adhoc.user.UserRole;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.StandardEnvironment;
+
+import java.util.List;
 
 /**
  * When running as a kiosk this application is for access by users (i.e. the "public" facing variant of the application).
@@ -42,20 +47,20 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AdhocKioskApplication extends AbstractAdhocApplication {
 
     public static void main(String[] args) {
-        //// rather than rely on spring.profiles.default we will just pick some extra default profiles as needed
-        //ConfigurableEnvironment environment = new StandardEnvironment();
-        //List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
-        //
-        //if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
-        //    activeProfiles.add("db-h2"); // postgres");
-        //}
-        //
-        //environment.setActiveProfiles(activeProfiles.toArray(new String[activeProfiles.size()]));
-        //
-        //SpringApplication application = new SpringApplication(AdhocKioskApplication.class);
-        //application.setEnvironment(environment);
-        //application.run(args);
+        // rather than rely on spring.profiles.default we will just pick some extra default profiles as needed
+        ConfigurableEnvironment environment = new StandardEnvironment();
+        List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
 
-        SpringApplication.run(AdhocKioskApplication.class, args);
+        if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
+            activeProfiles.add("db-hsqldb");
+        }
+
+        environment.setActiveProfiles(activeProfiles.toArray(new String[0]));
+
+        SpringApplication application = new SpringApplication(AdhocKioskApplication.class);
+        application.setEnvironment(environment);
+        application.run(args);
+
+        //SpringApplication.run(AdhocKioskApplication.class, args);
     }
 }

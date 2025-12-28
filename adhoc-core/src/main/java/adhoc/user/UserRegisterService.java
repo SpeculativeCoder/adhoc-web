@@ -73,13 +73,13 @@ public class UserRegisterService {
         return UserRegisterResponse.builder()
                 .id(registerResult.user.getId())
                 .name(registerResult.user.getName())
-                .loginCode(registerResult.loginCode)
+                .quickLoginCode(registerResult.quickLoginCode)
                 .build();
     }
 
     record UserRegisterInternalResult(
             UserEntity user,
-            String loginCode
+            String quickLoginCode
     ) {
     }
 
@@ -137,8 +137,9 @@ public class UserRegisterService {
         user.setUserRoles(Sets.newHashSet(UserRole.USER));
 
         // a login code is available as a fallback in case no password is set
-        String loginCode = user.getName() + "-" + RandomUUIDUtils.randomUUID().toString().replaceAll("-", "");
-        user.setLoginCode(loginCode, passwordEncoder);
+        String quickLoginPassword = RandomUUIDUtils.randomUUID().toString().replaceAll("-", "");
+        String quickLoginCode = user.getName() + "-" + quickLoginPassword;
+        user.setQuickLoginPassword(quickLoginPassword, passwordEncoder);
 
         user.getState().setToken(RandomUUIDUtils.randomUUID());
 
@@ -148,7 +149,7 @@ public class UserRegisterService {
                 .addKeyValue("id", user.getId())
                 .addKeyValue("name", user.getName())
                 .addKeyValue("password?", user.getPassword() != null)
-                .addKeyValue("loginCode?", user.getLoginCode() != null)
+                .addKeyValue("quickLoginPassword?", user.getQuickLoginPassword() != null)
                 .addKeyValue("human", user.isHuman())
                 .addKeyValue("factionIndex", user.getFaction().getIndex())
                 .addKeyValue("factionId", user.getFaction().getId())
@@ -156,7 +157,7 @@ public class UserRegisterService {
                 .addKeyValue("userAgent", userAgent)
                 .log("User registered.");
 
-        return new UserRegisterInternalResult(user, loginCode);
+        return new UserRegisterInternalResult(user, quickLoginCode);
     }
 
     private @Nullable String determineRemoteAddr() {

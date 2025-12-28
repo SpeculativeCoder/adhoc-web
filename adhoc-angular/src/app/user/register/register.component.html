@@ -29,13 +29,13 @@
       <p>After quick registration, you will be given a Login Code which you can use to log back into the account in future.</p>
       <form>
         <div class="mb-3">
-          <label class="form-label" for="factionId">Select Faction</label>
+          <label class="form-label" for="quickRegisterFactionId">Select Faction</label>
           <div ngbDropdown>
-            <button type="button" class="btn btn-outline-secondary" id="factionId" ngbDropdownToggle>
+            <button type="button" class="btn btn-outline-secondary" id="quickRegisterFactionId" ngbDropdownToggle>
               <span [ngStyle]="{'color': getFaction(quickRegisterRequest.factionId!)?.color}"><span class="oi oi-media-stop"></span></span>
               <span class="text-body"> {{ getFaction(quickRegisterRequest.factionId!)?.name }}</span>
             </button>
-            <div ngbDropdownMenu aria-labelledby="factionId">
+            <div ngbDropdownMenu aria-labelledby="quickRegisterFactionId">
               <button type="button" ngbDropdownItem
                       *ngFor="let faction of factions "
                       [ngClass]="{ active: faction.id === quickRegisterRequest.factionId }"
@@ -48,8 +48,8 @@
         </div>
         <div class="mb-3">
           <div class="form-check">
-            <input class="form-check-input" id="rememberMe" name="rememberMe" type="checkbox" required [(ngModel)]="quickRegisterRequest.rememberMe">
-            <label class="form-check-label" for="rememberMe">Remember Me</label>
+            <input class="form-check-input" id="quickRegisterRememberMe" name="quickRegisterRememberMe" type="checkbox" required [(ngModel)]="quickRegisterRequest.rememberMe">
+            <label class="form-check-label" for="quickRegisterRememberMe">Remember Me</label>
             <small class="text-secondary"> (stay logged in for this browser - don't select this on a public computer)</small>
           </div>
         </div>
@@ -68,30 +68,30 @@
 
         <div class="mb-3">
           <label class="form-label" for="email">Email</label>
-          <input class="form-control" id="email" name="email" type="email" required [(ngModel)]="traditionalRegisterRequest.email"/>
+          <input class="form-control" id="email" name="email" type="email" required [(ngModel)]="registerRequest.email"/>
         </div>
         <div class="mb-3">
           <label class="form-label" for="password">Password</label>
-          <input class="form-control" id="password" name="password" type="password" required [(ngModel)]="traditionalRegisterRequest.password"/>
+          <input class="form-control" id="password" name="password" type="password" required [(ngModel)]="registerRequest.password"/>
         </div>
         <div class="mb-3">
           <label class="form-label" for="name">Name</label>
           <small class="text-secondary"> (this is public and will be your name seen by other users)</small>
-          <input class="form-control" id="name" name="name" type="text" [(ngModel)]="traditionalRegisterRequest.name"/>
+          <input class="form-control" id="name" name="name" type="text" [(ngModel)]="registerRequest.name"/>
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="traditionalRegisterFactionId">Select Faction</label>
+          <label class="form-label" for="factionId">Select Faction</label>
           <div ngbDropdown>
-            <button type="button" class="btn btn-outline-secondary" id="traditionalRegisterFactionId" ngbDropdownToggle>
-              <span [ngStyle]="{'color': getFaction(traditionalRegisterRequest.factionId!)?.color}"><span class="oi oi-media-stop"></span></span>
-              <span class="text-body"> {{ getFaction(traditionalRegisterRequest.factionId!)?.name }}</span>
+            <button type="button" class="btn btn-outline-secondary" id="factionId" ngbDropdownToggle>
+              <span [ngStyle]="{'color': getFaction(registerRequest.factionId!)?.color}"><span class="oi oi-media-stop"></span></span>
+              <span class="text-body"> {{ getFaction(registerRequest.factionId!)?.name }}</span>
             </button>
-            <div ngbDropdownMenu aria-labelledby="traditionalRegisterFactionId">
+            <div ngbDropdownMenu aria-labelledby="factionId">
               <button type="button" ngbDropdownItem
                       *ngFor="let faction of factions "
-                      [ngClass]="{ active: faction.id === traditionalRegisterRequest.factionId }"
-                      (click)="traditionalRegisterRequest.factionId = faction.id">
+                      [ngClass]="{ active: faction.id === registerRequest.factionId }"
+                      (click)="registerRequest.factionId = faction.id">
                 <span [ngStyle]="{'color': faction.color}"><span class="oi oi-media-stop"></span></span>
                 <span class="text-body"> {{ faction.name }}</span>
               </button>
@@ -100,16 +100,16 @@
         </div>
         <div class="mb-3">
           <div class="form-check">
-            <input class="form-check-input" id="traditionalRegisterRememberMe" name="traditionalRegisterRememberMe" type="checkbox" required [(ngModel)]="traditionalRegisterRequest.rememberMe">
-            <label class="form-check-label" for="traditionalRegisterRememberMe">Remember Me</label>
+            <input class="form-check-input" id="rememberMe" name="rememberMe" type="checkbox" required [(ngModel)]="registerRequest.rememberMe">
+            <label class="form-check-label" for="rememberMe">Remember Me</label>
             <small class="text-secondary"> (stay logged in for this browser - don't select this on a public computer)</small>
           </div>
         </div>
         <div class="mb-3">
-          <button type="button" class="btn btn-primary" (click)="traditionalRegister()">Register</button>
+          <button type="button" class="btn btn-primary" (click)="register()">Register</button>
         </div>
         <div class="mb-3">
-          <p class="text-danger">{{ traditionalRegisterErrorMessage }}</p>
+          <p class="text-danger">{{ registerErrorMessage }}</p>
         </div>
       </form>
     </div>

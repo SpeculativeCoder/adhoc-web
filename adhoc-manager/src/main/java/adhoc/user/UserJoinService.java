@@ -83,8 +83,8 @@ public class UserJoinService {
         user.getState().setRegion(server.getRegion());
         user.getState().setServer(server);
         user.getState().setDestinationServer(server);
-        user.setLastJoin(LocalDateTime.now());
-        user.getState().setSeen(user.getLastJoin());
+        user.getState().setLastJoin(LocalDateTime.now());
+        user.getState().setSeen(user.getState().getLastJoin());
 
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
                 .addKeyValue("id", user.getId())

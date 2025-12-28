@@ -91,16 +91,6 @@ public class UserStateEntity {
     private BigDecimal pitch;
     private BigDecimal yaw;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime created;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updated;
-
-    private LocalDateTime seen;
-
     private UUID token;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -110,4 +100,18 @@ public class UserStateEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private ServerEntity server;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime created;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime updated;
+
+    private LocalDateTime navigated;
+
+    private LocalDateTime lastJoin;
+
+    private LocalDateTime seen;
 }

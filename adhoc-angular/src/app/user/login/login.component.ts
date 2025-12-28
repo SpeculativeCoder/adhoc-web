@@ -44,14 +44,17 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   featureFlags: string = '';
 
-  loginName: string = '';
-  loginCode: string = '';
+  quickLoginName: string = '';
+  quickLoginCode: string = '';
+  quickLoginRememberMe: boolean = false;
+
+  quickLoginErrorMessage?: string;
+
   loginNameOrEmail: string = '';
   loginPassword: string = '';
   loginRememberMe: boolean = false;
 
-  quickLoginErrorMessage?: string;
-  traditionalLoginErrorMessage?: string;
+  loginErrorMessage?: string;
 
   @ViewChild('loginNameOrEmailInput')
   loginNameOrEmailInput?: ElementRef;
@@ -72,14 +75,17 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   quickLogin(): void {
-    let hyphenIdx = (this.loginCode || '').indexOf('-');
+    let hyphenIdx = (this.quickLoginCode || '').indexOf('-');
     if (hyphenIdx == -1) {
       this.quickLoginErrorMessage = 'Invalid Login Code';
       return;
     }
-    this.loginName = this.loginCode.substring(0, hyphenIdx);
+    this.quickLoginName = this.quickLoginCode.substring(0, hyphenIdx);
 
-    this.loginService.login(this.loginName, this.loginCode, this.loginRememberMe).subscribe(
+    let quickLoginUsername = this.quickLoginCode.substring(0, hyphenIdx + 1);
+    let quickLoginPassword = this.quickLoginCode.substring(hyphenIdx + 1);
+
+    this.loginService.login(quickLoginUsername, quickLoginPassword, this.quickLoginRememberMe).subscribe(
         output => {
           this.router.navigate(['']);
           // window.location.href = '';
@@ -89,14 +95,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
         });
   }
 
-  traditionalLogin(): void {
+  login(): void {
     this.loginService.login(this.loginNameOrEmail, this.loginPassword, this.loginRememberMe).subscribe(
         output => {
           this.router.navigate(['']);
           // window.location.href = '';
         },
         error => {
-          this.traditionalLoginErrorMessage = 'Failed to login';
+          this.loginErrorMessage = 'Failed to login';
         });
   }
 

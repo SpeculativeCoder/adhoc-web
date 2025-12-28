@@ -80,7 +80,18 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
                 .addKeyValue("username", username)
                 .log("loadUserByUsername:");
 
-        UserEntity user = userRepository.findByNameOrEmail(username, username).orElseThrow(() ->
+        boolean quickLogin;
+        String nameOrEmail;
+
+        if (username.endsWith("-")) {
+            nameOrEmail = username.substring(0, username.length() - 1);
+            quickLogin = true;
+        } else {
+            nameOrEmail = username;
+            quickLogin = false;
+        }
+
+        UserEntity user = userRepository.findByNameOrEmail(nameOrEmail, nameOrEmail).orElseThrow(() ->
                 UsernameNotFoundException.fromUsername(username));
 
         log.atDebug()
@@ -96,13 +107,13 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         String password;
         boolean enabled;
 
-        if (user.getPassword() != null) {
+        if (!quickLogin && user.getPassword() != null) {
             password = user.getPassword();
             enabled = true;
 
-        } else if (user.getLoginCode() != null) {
+        } else if (quickLogin && user.getQuickLoginPassword() != null) {
             // if no password set yet - allow user to use the login code instead
-            password = user.getLoginCode();
+            password = user.getQuickLoginPassword();
             enabled = true;
 
         } else {

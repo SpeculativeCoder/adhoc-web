@@ -27,17 +27,17 @@
       <h2>Quick Login</h2>
       <form>
         <div class="mb-3" hidden="hidden">
-          <label class="form-label" for="loginName">Name</label>
-          <input class="form-control" id="loginName" name="loginName" type="password" required [(ngModel)]="loginName">
+          <label class="form-label" for="quickLoginName">Name</label>
+          <input class="form-control" id="quickLoginName" name="quickLoginName" type="password" required [(ngModel)]="quickLoginName">
         </div>
         <div class="mb-3">
-          <label class="form-label" for="loginCode">Login Code</label>
-          <input class="form-control" id="loginCode" name="loginCode" type="password" required [(ngModel)]="loginCode">
+          <label class="form-label" for="quickLoginCode">Login Code</label>
+          <input class="form-control" id="quickLoginCode" name="quickLoginCode" type="password" required [(ngModel)]="quickLoginCode">
         </div>
         <div class="mb-3">
           <div class="form-check">
-            <input class="form-check-input" id="loginRememberMe" name="loginRememberMe" type="checkbox" required [(ngModel)]="loginRememberMe">
-            <label class="form-check-label" for="loginRememberMe">Remember Me</label>
+            <input class="form-check-input" id="quickLoginRememberMe" name="quickLoginRememberMe" type="checkbox" required [(ngModel)]="quickLoginRememberMe">
+            <label class="form-check-label" for="quickLoginRememberMe">Remember Me</label>
             <small class="text-secondary"> (stay logged in for this browser - don't select this on a public computer)</small>
           </div>
         </div>
@@ -64,16 +64,16 @@
         </div>
         <div class="mb-3">
           <div class="form-check">
-            <input class="form-check-input" id="traditionalLoginRememberMe" name="traditionalLoginRememberMe" type="checkbox" required [(ngModel)]="loginRememberMe">
-            <label class="form-check-label" for="traditionalLoginRememberMe">Remember Me</label>
+            <input class="form-check-input" id="loginRememberMe" name="loginRememberMe" type="checkbox" required [(ngModel)]="loginRememberMe">
+            <label class="form-check-label" for="loginRememberMe">Remember Me</label>
             <small class="text-secondary"> (stay logged in for this browser - don't select this on a public computer)</small>
           </div>
         </div>
         <div class="mb-3">
-          <button type="button" class="btn btn-primary" (click)="traditionalLogin()">Login</button>
+          <button type="button" class="btn btn-primary" (click)="login()">Login</button>
         </div>
         <div class="mb-3">
-          <p class="text-danger">{{ traditionalLoginErrorMessage }}</p>
+          <p class="text-danger">{{ loginErrorMessage }}</p>
         </div>
       </form>
     </div>

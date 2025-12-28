@@ -53,7 +53,7 @@
                     type="VARCHAR(255)"/>
             <column name="password"
                     type="VARCHAR(255)"/>
-            <column name="login_code"
+            <column name="quick_login_password"
                     type="VARCHAR(255)"/>
             <column name="human"
                     type="BOOLEAN">
@@ -67,6 +67,10 @@
                     type="DECIMAL">
                 <constraints nullable="false"/>
             </column>
+            <column name="roles"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="created"
                     type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
@@ -77,14 +81,6 @@
             </column>
             <column name="last_login"
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="navigated"
-                    type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="last_join"
-                    type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="roles"
-                    type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
 
         <createIndex indexName="idx_user_email"
@@ -99,7 +95,14 @@
                      tableName="user_">
             <column name="created"/>
         </createIndex>
-
+        <createIndex indexName="idx_user_updated"
+                     tableName="user_">
+            <column name="updated"/>
+        </createIndex>
+        <createIndex indexName="idx_user_last_login"
+                     tableName="user_">
+            <column name="last_login"/>
+        </createIndex>
     </changeSet>
 
 </databaseChangeLog>

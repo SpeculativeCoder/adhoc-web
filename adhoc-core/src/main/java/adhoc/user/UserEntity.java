@@ -104,7 +104,7 @@ public class UserEntity {
 
     @ToString.Exclude
     @Setter(AccessLevel.NONE)
-    private String loginCode;
+    private String quickLoginPassword;
 
     @Column(nullable = false)
     private boolean human;
@@ -116,6 +116,9 @@ public class UserEntity {
     @Column(nullable = false)
     private BigDecimal score;
 
+    @Column(nullable = false)
+    private String roles;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime created;
@@ -125,13 +128,6 @@ public class UserEntity {
     private LocalDateTime updated;
 
     private LocalDateTime lastLogin;
-
-    private LocalDateTime navigated;
-
-    private LocalDateTime lastJoin;
-
-    @Column(nullable = false)
-    private String roles;
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
@@ -168,7 +164,7 @@ public class UserEntity {
         this.password = password == null ? null : passwordEncoder.encode(password);
     }
 
-    public void setLoginCode(String loginCode, PasswordEncoder passwordEncoder) {
-        this.loginCode = loginCode == null ? null : passwordEncoder.encode(loginCode);
+    public void setQuickLoginPassword(String quickLoginPassword, PasswordEncoder passwordEncoder) {
+        this.quickLoginPassword = quickLoginPassword == null ? null : passwordEncoder.encode(quickLoginPassword);
     }
 }

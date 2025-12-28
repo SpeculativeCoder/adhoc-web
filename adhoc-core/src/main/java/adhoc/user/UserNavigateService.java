@@ -113,7 +113,7 @@ public class UserNavigateService {
         }
 
         user.getState().setDestinationServer(destinationServer);
-        user.setNavigated(LocalDateTime.now());
+        user.getState().setNavigated(LocalDateTime.now());
 
         UUID newToken = RandomUUIDUtils.randomUUID();
         user.getState().setToken(newToken);

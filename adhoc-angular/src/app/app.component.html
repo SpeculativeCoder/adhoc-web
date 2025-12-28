@@ -64,12 +64,12 @@
   <li class="nav-item">
     <a class="nav-link" routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Messages</a>
   </li>
-  <li class="nav-item" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
+  <li class="nav-item" *ngIf="!currentUser">
     <a class="nav-link" routerLink="/register" routerLinkActive="active" ariaCurrentWhenActive="page">
       <em>Register</em>
     </a>
   </li>
-  <li class="nav-item" *ngIf="!currentUser && featureFlags.indexOf('development') != -1">
+  <li class="nav-item" *ngIf="!currentUser">
     <a class="nav-link" routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">
       <em>Login</em>
     </a>

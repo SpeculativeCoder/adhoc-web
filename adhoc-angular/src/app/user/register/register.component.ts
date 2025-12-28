@@ -46,10 +46,12 @@ export class RegisterComponent implements OnInit {
   featureFlags: string = '';
 
   quickRegisterRequest: UserRegisterRequest = {};
-  traditionalRegisterRequest: UserRegisterRequest = {};
 
   quickRegisterErrorMessage?: string;
-  traditionalRegisterErrorMessage?: string;
+
+  registerRequest: UserRegisterRequest = {};
+
+  registerErrorMessage?: string;
 
   factions: Faction[] = [];
 
@@ -65,12 +67,12 @@ export class RegisterComponent implements OnInit {
     this.quickRegisterRequest.rememberMe = false;
     this.quickRegisterRequest.human = true;
 
-    this.traditionalRegisterRequest.name = undefined; // 'Anon' + Math.floor(Math.random() * 1000000000);
-    this.traditionalRegisterRequest.email = undefined; // this.users.email = `${this.users.name}@localhost`;
-    this.traditionalRegisterRequest.password = undefined;
-    this.traditionalRegisterRequest.factionId = undefined;
-    this.traditionalRegisterRequest.rememberMe = false;
-    this.traditionalRegisterRequest.human = true;
+    this.registerRequest.name = undefined; // 'Anon' + Math.floor(Math.random() * 1000000000);
+    this.registerRequest.email = undefined; // this.users.email = `${this.users.name}@localhost`;
+    this.registerRequest.password = undefined;
+    this.registerRequest.factionId = undefined;
+    this.registerRequest.rememberMe = false;
+    this.registerRequest.human = true;
   }
 
   ngOnInit(): void {
@@ -79,7 +81,7 @@ export class RegisterComponent implements OnInit {
     this.factionService.getCachedFactions().subscribe(factions => {
       this.factions = factions;
       this.quickRegisterRequest.factionId =
-          this.traditionalRegisterRequest.factionId =
+          this.registerRequest.factionId =
               1 + Math.floor(Math.random() * this.factions.length);
     });
   }
@@ -107,22 +109,22 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  traditionalRegister(): void {
-    if (this.traditionalRegisterRequest.name === '') {
-      this.traditionalRegisterRequest.name = undefined;
+  register(): void {
+    if (this.registerRequest.name === '') {
+      this.registerRequest.name = undefined;
     }
-    if (this.traditionalRegisterRequest.email === '') {
-      this.traditionalRegisterRequest.email = undefined;
+    if (this.registerRequest.email === '') {
+      this.registerRequest.email = undefined;
     }
-    if (this.traditionalRegisterRequest.password === '') {
-      this.traditionalRegisterRequest.password = undefined;
+    if (this.registerRequest.password === '') {
+      this.registerRequest.password = undefined;
     }
-    this.registerService.register(this.traditionalRegisterRequest).subscribe(user => {
+    this.registerService.register(this.registerRequest).subscribe(user => {
       this.router.navigate(['']);
       //window.location.href = '';
       //this.router.navigateByUrl(`/users/${users.userId}`)
     }, error => {
-      this.traditionalRegisterErrorMessage = 'Failed to register';
+      this.registerErrorMessage = 'Failed to register';
     });
   }
 }

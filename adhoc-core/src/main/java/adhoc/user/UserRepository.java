@@ -53,7 +53,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("select cast(count(1) as boolean) " +
             "from User u " +
-            "where u.human and ((u.state.destinationServer = ?1 and u.navigated > ?2) or (u.state.server = ?1))")
+            "where u.human and ((u.state.destinationServer = ?1 and u.state.navigated > ?2) or (u.state.server = ?1))")
     boolean existsByHumanTrueAnd_DestinationServerAndNavigatedAfterOrServer_(ServerEntity server, LocalDateTime navigatedAfter);
 
     @Modifying

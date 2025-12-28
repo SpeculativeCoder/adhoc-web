@@ -26,7 +26,7 @@
     <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
   </ng-template>
   <ng-template #currentUserPopContent>
-    @if (quickLoginCode && featureFlags.indexOf('development') != -1) {
+    @if (quickLoginCode) {
       <div class="mb-3">
         <label class="form-label" for="quickLoginCode">Quick Login Code</label>
         <input class="form-control" id="quickLoginCode" name="quickLoginCode" type="password" [(ngModel)]="quickLoginCode">

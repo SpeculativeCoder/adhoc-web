@@ -46,5 +46,5 @@ public class UserRegisterResponse {
 
     @NotEmpty
     @ToString.Exclude
-    String loginCode;
+    String quickLoginCode;
 }

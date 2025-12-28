@@ -53,6 +53,7 @@ public class IndexController {
             "/factions/**",
             "/users/**",
             "/messages/**",
+            "/register/**",
             "/login/**",
             "/client/**"
     })

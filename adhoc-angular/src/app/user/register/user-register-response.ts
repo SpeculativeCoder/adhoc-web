@@ -23,5 +23,5 @@
 export class UserRegisterResponse {
   id?: number;
   name?: string;
-  loginCode?: string;
+  quickLoginCode?: string;
 }

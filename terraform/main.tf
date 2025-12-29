@@ -727,6 +727,10 @@ resource "random_password" "adhoc_hsqldb_password" {
   length = 50
 }
 
+resource "random_password" "adhoc_quick_login_password_encryption_key" {
+  length = 50
+}
+
 resource "aws_ssm_parameter" "adhoc_ca_certificate" {
   name  = "${local.adhoc_name}_${terraform.workspace}_ca_certificate"
   type  = "SecureString"
@@ -860,6 +864,19 @@ resource "aws_ssm_parameter" "adhoc_postgres_host" {
   tier = "Standard"
   // TODO
   value = "localhost"
+  lifecycle {
+    ignore_changes = [
+      value
+    ]
+  }
+}
+
+resource "aws_ssm_parameter" "adhoc_quick_login_password_encryption_key" {
+  name  = "${local.adhoc_name}_${terraform.workspace}_quick_login_password_encryption_key"
+  type  = "SecureString"
+  tier  = "Standard"
+  value = random_password.adhoc_quick_login_password_encryption_key.result
+  // TODO
   lifecycle {
     ignore_changes = [
       value
@@ -1027,6 +1044,10 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
         {
           name      = "POSTGRES_HOST"
           valueFrom = "${local.adhoc_name}_${terraform.workspace}_postgres_host"
+        },
+        {
+          name      = "QUICK_LOGIN_PASSWORD_ENCRYPTION_KEY"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_quick_login_password_encryption_key"
         }
       ],
       dnsServers       = []
@@ -1159,6 +1180,10 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
         {
           name      = "POSTGRES_HOST"
           valueFrom = "${local.adhoc_name}_${terraform.workspace}_postgres_host"
+        },
+        {
+          name      = "QUICK_LOGIN_PASSWORD_ENCRYPTION_KEY"
+          valueFrom = "${local.adhoc_name}_${terraform.workspace}_quick_login_password_encryption_key"
         }
       ],
       dnsServers       = []

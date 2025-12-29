@@ -25,6 +25,8 @@ package adhoc.user;
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
+import adhoc.system.auth.AdhocUserDetails;
+import adhoc.system.properties.CoreProperties;
 import adhoc.system.random_uuid.RandomUUIDUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,7 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.resilience.annotation.Retryable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +50,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final CoreProperties coreProperties;
+
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
@@ -59,6 +64,16 @@ public class UserService {
     public Optional<UserDto> findUser(Long userId) {
 
         return userRepository.findById(userId).map(this::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<CurrentUserDto> findCurrentUser(Authentication authentication) {
+
+        if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails currentUserDetails)) {
+            return Optional.empty();
+        }
+
+        return userRepository.findById(currentUserDetails.getUserId()).map(this::toCurrentUserDto);
     }
 
     /**
@@ -90,6 +105,24 @@ public class UserService {
                 user.getScore(),
                 Optional.ofNullable(user.getState()).map(UserStateEntity::getRegion).map(RegionEntity::getId).orElse(null),
                 Optional.ofNullable(user.getState()).map(UserStateEntity::getSeen).orElse(null),
+                user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
+                Optional.ofNullable(user.getState()).map(UserStateEntity::getDestinationServer).map(ServerEntity::getId).orElse(null),
+                Optional.ofNullable(user.getState()).map(UserStateEntity::getServer).map(ServerEntity::getId).orElse(null));
+    }
+
+    CurrentUserDto toCurrentUserDto(UserEntity user) {
+
+        String quickLoginCode = user.getName() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey());
+
+        return new CurrentUserDto(
+                user.getId(),
+                user.getVersion(),
+                user.getName(),
+                quickLoginCode,
+                user.isHuman(),
+                user.getFaction().getId(),
+                user.getScore(),
+                Optional.ofNullable(user.getState()).map(UserStateEntity::getRegion).map(RegionEntity::getId).orElse(null),
                 user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
                 Optional.ofNullable(user.getState()).map(UserStateEntity::getDestinationServer).map(ServerEntity::getId).orElse(null),
                 Optional.ofNullable(user.getState()).map(UserStateEntity::getServer).map(ServerEntity::getId).orElse(null));

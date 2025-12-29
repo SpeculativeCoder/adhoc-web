@@ -26,11 +26,11 @@ import {FormsModule} from "@angular/forms";
 import {FactionService} from '../faction/faction.service';
 import {CurrentUserService} from './current-user.service';
 import {MetaService} from '../system/meta.service';
-import {User} from './user';
 import {Faction} from '../faction/faction';
 import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
 import {LogoutService} from './logout/logout.service';
 import {Router} from '@angular/router';
+import {CurrentUser} from './current-user';
 
 @Component({
   selector: 'app-current-user',
@@ -46,10 +46,8 @@ export class CurrentUserComponent implements OnInit {
 
   featureFlags: string = '';
 
-  currentUser?: User;
+  currentUser?: CurrentUser;
   currentUserFaction?: Faction;
-
-  quickLoginCode?: string;
 
   @ViewChild('currentUserPopover')
   currentUserPopover?: NgbPopover;
@@ -66,18 +64,14 @@ export class CurrentUserComponent implements OnInit {
   ngOnInit(): void {
     this.featureFlags = this.metaService.getFeatureFlags();
 
-    this.currentUserService.getQuickLoginCode$().subscribe(quickLoginCode => {
-      this.quickLoginCode = quickLoginCode;
-
-      this.currentUserService.getCurrentUser$().subscribe(currentUser => {
-        // TODO
-        if (currentUser) {
-          this.currentUser = currentUser;
-          this.factionService.getCachedFaction(currentUser.factionId!).subscribe(faction => {
-            this.currentUserFaction = faction
-          });
-        }
-      });
+    this.currentUserService.getCurrentUser$().subscribe(currentUser => {
+      // TODO
+      if (currentUser) {
+        this.currentUser = currentUser;
+        this.factionService.getCachedFaction(currentUser.factionId!).subscribe(faction => {
+          this.currentUserFaction = faction
+        });
+      }
     });
   }
 
@@ -97,8 +91,10 @@ export class CurrentUserComponent implements OnInit {
   }
 
   copyToClipboard() {
-    navigator.clipboard.writeText(this.quickLoginCode!);
-    this.copyToClipboardSuccessText = "Copied!";
+    if (this.currentUser && this.currentUser.quickLoginCode) {
+      navigator.clipboard.writeText(this.currentUser.quickLoginCode);
+      this.copyToClipboardSuccessText = "Copied!";
+    }
   }
 
   close() {

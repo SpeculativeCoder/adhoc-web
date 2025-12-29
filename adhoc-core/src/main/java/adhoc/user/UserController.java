@@ -71,14 +71,12 @@ public class UserController {
     }
 
     @GetMapping("/users/current")
-    public ResponseEntity<UserDto> getCurrentUser(
+    public ResponseEntity<CurrentUserDto> getCurrentUser(
             Authentication authentication) {
 
-        if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails userDetails)) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.of(userService.findUser(userDetails.getUserId()));
+        return userService.findCurrentUser(authentication)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PostMapping("/users/register")

@@ -51,8 +51,6 @@ export class RegisterService {
     }).pipe(
         mergeMap((user: UserRegisterResponse) => {
           this.csrfService.clearCsrf();
-          // for only this login session - the quick login code is available
-          this.currentUserService.setQuickLoginCode(user.quickLoginCode);
           return this.currentUserService.refreshCurrentUser();
         }));
   }

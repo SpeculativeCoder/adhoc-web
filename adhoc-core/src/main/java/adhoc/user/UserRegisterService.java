@@ -66,24 +66,17 @@ public class UserRegisterService {
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
     public UserRegisterResponse userRegisterAndLogin(UserRegisterRequest userRegisterRequest) {
 
-        UserRegisterInternalResult registerResult = userRegisterInternal(userRegisterRequest);
+        UserEntity user = userRegisterInternal(userRegisterRequest);
 
-        programmaticLoginService.programmaticLoginInternal(registerResult.user, userRegisterRequest.getPassword());
+        programmaticLoginService.programmaticLoginInternal(user, userRegisterRequest.getPassword());
 
         return UserRegisterResponse.builder()
-                .id(registerResult.user.getId())
-                .name(registerResult.user.getName())
-                .quickLoginCode(registerResult.quickLoginCode)
+                .id(user.getId())
+                .name(user.getName())
                 .build();
     }
 
-    record UserRegisterInternalResult(
-            UserEntity user,
-            String quickLoginCode
-    ) {
-    }
-
-    UserRegisterInternalResult userRegisterInternal(UserRegisterRequest userRegisterRequest) {
+    UserEntity userRegisterInternal(UserRegisterRequest userRegisterRequest) {
 
         String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();
@@ -136,10 +129,9 @@ public class UserRegisterService {
         user.setScore(BigDecimal.valueOf(0.0));
         user.setUserRoles(Sets.newHashSet(UserRole.USER));
 
-        // a login code is available as a fallback in case no password is set
         String quickLoginPassword = RandomUUIDUtils.randomUUID().toString().replaceAll("-", "");
-        String quickLoginCode = user.getName() + "-" + quickLoginPassword;
-        user.setQuickLoginPassword(quickLoginPassword, passwordEncoder);
+
+        user.setQuickLoginPassword(quickLoginPassword, coreProperties.getQuickLoginPasswordEncryptionKey());
 
         user.getState().setToken(RandomUUIDUtils.randomUUID());
 
@@ -157,7 +149,7 @@ public class UserRegisterService {
                 .addKeyValue("userAgent", userAgent)
                 .log("User registered.");
 
-        return new UserRegisterInternalResult(user, quickLoginCode);
+        return user;
     }
 
     private @Nullable String determineRemoteAddr() {

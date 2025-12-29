@@ -91,6 +91,9 @@ public class CoreProperties {
     @Value("${adhoc.server.basic-auth.password}")
     private String serverBasicAuthPassword;
 
+    @Value("${adhoc.quick-login-password-encryption-key}")
+    private String quickLoginPasswordEncryptionKey;
+
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
         // TODO: also find region maps
@@ -123,5 +126,6 @@ public class CoreProperties {
         log.info("adhocDomain={}", adhocDomain);
         log.info("unrealProjectName={} unrealProjectRegionMaps={}", unrealProjectName, unrealProjectRegionMaps);
         log.info("serverBasicAuthUsername={} serverBasicAuthPassword?={}", serverBasicAuthUsername, !Strings.isNullOrEmpty(serverBasicAuthPassword));
+        log.info("quickLoginPasswordEncryptionKey?={}", !Strings.isNullOrEmpty(quickLoginPasswordEncryptionKey));
     }
 }

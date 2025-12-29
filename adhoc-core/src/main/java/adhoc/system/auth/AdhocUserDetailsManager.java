@@ -112,8 +112,8 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
             enabled = true;
 
         } else if (quickLogin && user.getQuickLoginPassword() != null) {
-            // if no password set yet - allow user to use the login code instead
-            password = user.getQuickLoginPassword();
+            String quickLoginPassword = user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey());
+            password = passwordEncoder.encode(quickLoginPassword);
             enabled = true;
 
         } else {

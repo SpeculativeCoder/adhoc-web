@@ -49,6 +49,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
@@ -164,7 +167,31 @@ public class UserEntity {
         this.password = password == null ? null : passwordEncoder.encode(password);
     }
 
-    public void setQuickLoginPassword(String quickLoginPassword, PasswordEncoder passwordEncoder) {
-        this.quickLoginPassword = quickLoginPassword == null ? null : passwordEncoder.encode(quickLoginPassword);
+
+    public String getQuickLoginPassword(String quickLoginPasswordEncryptionKey) {
+
+        if (quickLoginPasswordEncryptionKey == null) {
+            return null;
+
+        } else {
+            String quickLoginPasswordEncryptionSalt = quickLoginPassword.substring(0, 16);
+            TextEncryptor textEncryptor = Encryptors.text(quickLoginPasswordEncryptionKey, quickLoginPasswordEncryptionSalt);
+
+            return textEncryptor.decrypt(quickLoginPassword.substring(quickLoginPasswordEncryptionSalt.length()));
+        }
+    }
+
+    public void setQuickLoginPassword(String quickLoginPassword, String quickLoginPasswordEncryptionKey) {
+
+        if (quickLoginPassword == null) {
+            this.quickLoginPassword = null;
+
+        } else {
+            //new String(Hex.encode(KeyGenerators.secureRandom().generateKey()), StandardCharsets.UTF_8);
+            String quickLoginPasswordSalt = KeyGenerators.string().generateKey();
+            TextEncryptor textEncryptor = Encryptors.text(quickLoginPasswordEncryptionKey, quickLoginPasswordSalt);
+
+            this.quickLoginPassword = quickLoginPasswordSalt + textEncryptor.encrypt(quickLoginPassword);
+        }
     }
 }

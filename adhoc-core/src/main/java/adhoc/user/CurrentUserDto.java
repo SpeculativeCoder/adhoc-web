@@ -20,44 +20,61 @@
  * SOFTWARE.
  */
 
-import {Inject, Injectable} from '@angular/core';
-import {User} from './user';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, mergeMap, take} from 'rxjs';
-import {CurrentUser} from './current-user';
+package adhoc.user;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class CurrentUserService {
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-  private readonly currentUserUrl: string;
+import java.math.BigDecimal;
+import java.util.List;
 
-  private currentUser$: BehaviorSubject<CurrentUser | undefined> = new BehaviorSubject<User | undefined>(undefined);
 
-  constructor(@Inject('BASE_URL') baseUrl: string,
-              private http: HttpClient) {
+@Value
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+public class CurrentUserDto {
 
-    this.currentUserUrl = `${baseUrl}/adhoc_api/users/current`;
-  }
+    @NotNull
+    @Min(1)
+    Long id;
 
-  getCurrentUser$() {
-    return this.currentUser$.value ? this.currentUser$ : this.refreshCurrentUser$();
-  }
+    @Min(0)
+    Long version;
 
-  refreshCurrentUser$() {
-    return this.http.get<CurrentUser>(this.currentUserUrl).pipe(
-        mergeMap(currentUser => {
-          this.currentUser$.next(currentUser);
-          return this.currentUser$;
-        }));
-  }
+    @NotEmpty
+    String name;
 
-  getCurrentUser() {
-    return this.getCurrentUser$().pipe(take(1));
-  }
+    @NotEmpty
+    String quickLoginCode;
 
-  refreshCurrentUser() {
-    return this.refreshCurrentUser$().pipe(take(1));
-  }
+    @NotNull
+    Boolean human;
+
+    @NotNull
+    @Min(1)
+    Long factionId;
+
+    @NotNull
+    BigDecimal score;
+
+    @NotNull
+    @Min(1)
+    Long regionId;
+
+    @NotNull
+    @Size(min = 1)
+    List<String> roles;
+
+    @Min(1)
+    Long destinationServerId;
+
+    @Min(1)
+    Long serverId;
 }

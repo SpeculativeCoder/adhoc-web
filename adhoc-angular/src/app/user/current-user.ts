@@ -20,44 +20,16 @@
  * SOFTWARE.
  */
 
-import {Inject, Injectable} from '@angular/core';
-import {User} from './user';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, mergeMap, take} from 'rxjs';
-import {CurrentUser} from './current-user';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class CurrentUserService {
-
-  private readonly currentUserUrl: string;
-
-  private currentUser$: BehaviorSubject<CurrentUser | undefined> = new BehaviorSubject<User | undefined>(undefined);
-
-  constructor(@Inject('BASE_URL') baseUrl: string,
-              private http: HttpClient) {
-
-    this.currentUserUrl = `${baseUrl}/adhoc_api/users/current`;
-  }
-
-  getCurrentUser$() {
-    return this.currentUser$.value ? this.currentUser$ : this.refreshCurrentUser$();
-  }
-
-  refreshCurrentUser$() {
-    return this.http.get<CurrentUser>(this.currentUserUrl).pipe(
-        mergeMap(currentUser => {
-          this.currentUser$.next(currentUser);
-          return this.currentUser$;
-        }));
-  }
-
-  getCurrentUser() {
-    return this.getCurrentUser$().pipe(take(1));
-  }
-
-  refreshCurrentUser() {
-    return this.refreshCurrentUser$().pipe(take(1));
-  }
+export class CurrentUser {
+  id?: number;
+  version?: number;
+  name?: string;
+  quickLoginCode?: string;
+  human?: boolean;
+  factionId?: number;
+  score?: number;
+  regionId?: number;
+  roles?: string[];
+  destinationServerId?: number;
+  serverId?: number;
 }

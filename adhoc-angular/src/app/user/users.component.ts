@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UserService} from './user.service';
 import {User} from './user';
 import {Faction} from '../faction/faction';
@@ -52,7 +52,7 @@ import {UserDefeatEventService} from './defeated/user-defeat-event.service';
 })
 export class UsersComponent implements OnInit {
 
-  users: Page<User> = new Page();
+  users?: Page<User>;
   private paging: Paging = new Paging();
 
   factions: Faction[] = [];
@@ -60,7 +60,8 @@ export class UsersComponent implements OnInit {
 
   constructor(private userService: UserService,
               private userDefeatEventService: UserDefeatEventService,
-              private factionService: FactionService) {
+              private factionService: FactionService,
+              private ref: ChangeDetectorRef) {
   }
 
   getFaction(factionId: number) {
@@ -79,6 +80,7 @@ export class UsersComponent implements OnInit {
       this.factionService.getCachedFactions()
     ]).subscribe(data => {
       [this.users, this.factions] = data;
+      this.ref.markForCheck();
     });
   }
 

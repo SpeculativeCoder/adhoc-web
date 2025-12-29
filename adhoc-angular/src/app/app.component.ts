@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {FactionService} from './faction/faction.service';
 import {User} from './user/user';
@@ -56,7 +56,8 @@ export class AppComponent implements OnInit {
 
   constructor(private factionService: FactionService,
               private currentUserService: CurrentUserService,
-              private metaService: MetaService) {
+              private metaService: MetaService,
+              private ref: ChangeDetectorRef) {
 
     // TODO
     this.extra = !!customization.extra;
@@ -69,8 +70,11 @@ export class AppComponent implements OnInit {
       // TODO
       if (currentUser) {
         this.currentUser = currentUser;
+        this.ref.markForCheck();
+
         this.factionService.getCachedFaction(currentUser.factionId!).subscribe(faction => {
-          this.currentUserFaction = faction
+          this.currentUserFaction = faction;
+          this.ref.markForCheck();
         });
       }
     });

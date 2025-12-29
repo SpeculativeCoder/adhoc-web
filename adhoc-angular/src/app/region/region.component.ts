@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {forkJoin} from "rxjs";
 import {Region} from "./region";
@@ -42,21 +42,24 @@ export class RegionComponent implements OnInit {
   region: Region = {};
 
   constructor(
-    private route: ActivatedRoute,
-    private regionService: RegionService,
-    private router: Router) {
+      private route: ActivatedRoute,
+      private regionService: RegionService,
+      private router: Router,
+      private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     const objectiveId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.regionService.getRegion(objectiveId)]).subscribe(data => {
       [this.region] = data;
+      this.ref.markForCheck();
     });
   }
 
   save() {
     this.regionService.updateRegion(this.region).subscribe(region => {
       this.region = region;
+      this.ref.markForCheck();
     });
   }
 

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {MessageService} from './message.service';
 import {CommonModule} from "@angular/common";
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
@@ -48,11 +48,12 @@ import {Sort} from "../shared/paging/sort";
 })
 export class MessagesComponent implements OnInit {
 
-  messages: Page<Message> = new Page();
+  messages?: Page<Message>;
   private paging: Paging = new Paging();
 
   constructor(private messageService: MessageService,
-              private router: Router) {
+              private router: Router,
+              private ref: ChangeDetectorRef) {
     this.paging.sort = [new Sort('id', 'desc')];
   }
 
@@ -65,6 +66,7 @@ export class MessagesComponent implements OnInit {
       this.messageService.getMessages(this.paging)
     ]).subscribe(data => {
       [this.messages] = data;
+      this.ref.markForCheck();
     });
   }
 

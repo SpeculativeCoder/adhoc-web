@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
@@ -50,14 +50,15 @@ import {NavigateService} from '../user/navigate/navigate.service';
 })
 export class ServersComponent implements OnInit {
 
-  servers: Page<Server> = new Page();
+  servers?: Page<Server>;
   private paging: Paging = new Paging();
 
   constructor(private serverService: ServerService,
               private registerService: RegisterService,
               private navigateService: NavigateService,
               private metaService: MetaService,
-              private router: Router) {
+              private router: Router,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -69,6 +70,7 @@ export class ServersComponent implements OnInit {
       this.serverService.getServers(this.paging)
     ]).subscribe(data => {
       [this.servers] = data;
+      this.ref.markForCheck();
     });
   }
 

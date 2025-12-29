@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Faction} from './faction';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FactionService} from './faction.service';
@@ -44,17 +44,22 @@ export class FactionComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private factionService: FactionService,
-              private router: Router) {
+              private router: Router,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     const factionId = +(this.route.snapshot.paramMap.get('id')!);
-    this.factionService.getFaction(factionId).subscribe(faction => (this.faction = faction));
+    this.factionService.getFaction(factionId).subscribe(faction => {
+      this.faction = faction;
+      this.ref.markForCheck();
+    });
   }
 
   save() {
     this.factionService.updateFaction(this.faction).subscribe(faction => {
       this.faction = faction;
+      this.ref.markForCheck();
     });
   }
 

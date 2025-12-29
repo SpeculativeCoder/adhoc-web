@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {FactionService} from '../faction/faction.service';
@@ -58,7 +58,8 @@ export class CurrentUserComponent implements OnInit {
               private currentUserService: CurrentUserService,
               private logoutService: LogoutService,
               private metaService: MetaService,
-              private router: Router) {
+              private router: Router,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -68,8 +69,11 @@ export class CurrentUserComponent implements OnInit {
       // TODO
       if (currentUser) {
         this.currentUser = currentUser;
+        this.ref.markForCheck();
+
         this.factionService.getCachedFaction(currentUser.factionId!).subscribe(faction => {
           this.currentUserFaction = faction
+          this.ref.markForCheck();
         });
       }
     });

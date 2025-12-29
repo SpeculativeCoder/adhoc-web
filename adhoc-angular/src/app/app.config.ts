@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-import {ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection} from '@angular/core';
-import {provideRouter, TitleStrategy, withComponentInputBinding} from '@angular/router';
+import {ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection} from '@angular/core';
+import {provideRouter, TitleStrategy} from '@angular/router';
 
 import {routes} from './app.routes';
 import {environment} from "../environments/environment";
@@ -33,8 +33,9 @@ import {ErrorInterceptor} from "./system/error-interceptor";
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({eventCoalescing: true}),
-    provideRouter(routes, withComponentInputBinding()),
+    provideZonelessChangeDetection(),
+    //provideZoneChangeDetection({eventCoalescing: true}),
+    provideRouter(routes), //, withComponentInputBinding()),
     provideHttpClient(withInterceptorsFromDi()), // TODO
     {provide: HTTP_INTERCEPTORS, useExisting: CsrfInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useExisting: ErrorInterceptor, multi: true},

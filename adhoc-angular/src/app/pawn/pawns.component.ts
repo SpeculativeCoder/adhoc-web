@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {PawnService} from './pawn.service';
 import {Pawn} from './pawn';
 import {Faction} from '../faction/faction';
@@ -51,13 +51,14 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 })
 export class PawnsComponent implements OnInit {
 
-  pawns: Page<Pawn> = new Page();
+  pawns?: Page<Pawn>;
   private paging: Paging = new Paging();
 
   private factions: Faction[] = [];
 
   constructor(private pawnService: PawnService,
-              private factionService: FactionService) {
+              private factionService: FactionService,
+              private ref: ChangeDetectorRef) {
   }
 
   getFaction(factionId: number) {
@@ -74,6 +75,7 @@ export class PawnsComponent implements OnInit {
       this.factionService.getCachedFactions(),
     ]).subscribe(data => {
       [this.pawns, this.factions] = data;
+      this.ref.markForCheck();
     });
   }
 

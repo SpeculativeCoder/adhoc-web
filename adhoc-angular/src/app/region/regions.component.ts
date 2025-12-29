@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {forkJoin} from "rxjs";
 import {RegionService} from "./region.service";
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
@@ -47,10 +47,11 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 })
 export class RegionsComponent implements OnInit {
 
-  regions: Page<Region> = new Page();
+  regions?: Page<Region>;
   private paging: Paging = new Paging();
 
-  constructor(private regionService: RegionService) {
+  constructor(private regionService: RegionService,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -62,6 +63,7 @@ export class RegionsComponent implements OnInit {
       this.regionService.getRegions(this.paging)
     ]).subscribe(data => {
       [this.regions] = data;
+      this.ref.markForCheck();
     });
   }
 

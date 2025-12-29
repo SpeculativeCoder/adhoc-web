@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {StructureService} from './structure.service';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
@@ -49,13 +49,14 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 })
 export class StructuresComponent implements OnInit {
 
-  structures: Page<Structure> = new Page();
+  structures?: Page<Structure>;
   private paging: Paging = new Paging();
 
   factions: Faction[] = [];
 
   constructor(private structureService: StructureService,
-              private factionService: FactionService) {
+              private factionService: FactionService,
+              private ref: ChangeDetectorRef) {
   }
 
   getFaction(factionId: number) {
@@ -72,6 +73,7 @@ export class StructuresComponent implements OnInit {
       this.factionService.getCachedFactions()
     ]).subscribe(data => {
       [this.structures, this.factions] = data;
+      this.ref.markForCheck();
     });
   }
 

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Area} from "./area";
 import {AreaService} from "./area.service";
@@ -42,19 +42,22 @@ export class AreaComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private areaService: AreaService,
-              private router: Router) {
+              private router: Router,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     const objectiveId = +this.route.snapshot.paramMap.get('id')!;
     this.areaService.getArea(objectiveId).subscribe(data => {
       this.area = data;
+      this.ref.markForCheck();
     });
   }
 
   save() {
     this.areaService.updateArea(this.area).subscribe(area => {
       this.area = area;
+      this.ref.markForCheck();
     });
   }
 

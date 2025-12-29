@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Server} from './server';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ServerService} from './server.service';
@@ -45,19 +45,22 @@ export class ServerComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private serverService: ServerService,
-              private router: Router) {
+              private router: Router,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     const serverId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.serverService.getServer(serverId)]).subscribe(data => {
       [this.server] = data;
+      this.ref.markForCheck();
     });
   }
 
   save() {
     this.serverService.updateServer(this.server).subscribe(server => {
       this.server = server;
+      this.ref.markForCheck();
     });
   }
 

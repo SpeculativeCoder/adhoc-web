@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Pawn} from './pawn';
 import {ActivatedRoute, Router} from '@angular/router';
 import {PawnService} from './pawn.service';
@@ -47,16 +47,18 @@ export class PawnComponent implements OnInit {
   factions: Faction[] = [];
 
   constructor(
-    private route: ActivatedRoute,
-    private pawnService: PawnService,
-    private factionService: FactionService,
-    private router: Router) {
+      private route: ActivatedRoute,
+      private pawnService: PawnService,
+      private factionService: FactionService,
+      private router: Router,
+      private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     const pawnId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.pawnService.getPawn(pawnId), this.factionService.getCachedFactions()]).subscribe(data => {
       [this.pawn, this.factions] = data;
+      this.ref.markForCheck();
     });
   }
 
@@ -67,6 +69,7 @@ export class PawnComponent implements OnInit {
   save() {
     this.pawnService.updatePawn(this.pawn).subscribe(pawn => {
       this.pawn = pawn;
+      this.ref.markForCheck();
     });
   }
 

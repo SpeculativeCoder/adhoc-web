@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {TaskService} from './task.service';
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
@@ -49,10 +49,11 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 })
 export class TasksComponent implements OnInit {
 
-  tasks: Page<Task> = new Page();
+  tasks?: Page<Task>;
   private paging: Paging = new Paging();
 
-  constructor(private taskService: TaskService) {
+  constructor(private taskService: TaskService,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -64,6 +65,7 @@ export class TasksComponent implements OnInit {
       this.taskService.getTasks(this.paging)
     ]).subscribe(data => {
       [this.tasks] = data;
+      this.ref.markForCheck();
     });
   }
 

@@ -40,7 +40,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let region of regions.content">
+      <tr *ngFor="let region of regions?.content">
         <th scope="row"><a routerLink="/regions/{{ region.id }}">{{ region.id }}</a></th>
         <td>{{ region.name }}</td>
         <td>{{ region.mapName }}</td>
@@ -52,7 +52,7 @@
       </tbody>
     </table>
   </div>
-  <div class="d-flex justify-content-end" *ngIf="regions?.page?.totalElements">
+  <div class="d-flex justify-content-end" *ngIf="regions && regions.page?.totalElements">
     <div class="mt-2 me-4 text-nowrap">{{ (regions.page!.number! * regions.page!.size!) + 1 }} - {{ (regions.page!.number! * regions.page!.size!) + regions.content!.length }} of {{ regions.page!.totalElements }}</div>
     <ngb-pagination [page]="regions.page!.number! + 1"
                     [pageSize]="regions.page!.size!"

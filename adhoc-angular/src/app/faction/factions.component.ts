@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FactionService} from './faction.service';
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
 import {CommonModule} from "@angular/common";
@@ -46,10 +46,11 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 })
 export class FactionsComponent implements OnInit {
 
-  factions: Page<Faction> = new Page();
+  factions?: Page<Faction>;
   private paging: Paging = new Paging();
 
-  constructor(private factionService: FactionService) {
+  constructor(private factionService: FactionService,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -58,7 +59,10 @@ export class FactionsComponent implements OnInit {
 
   private refreshFactions() {
     this.factionService.getFactions(this.paging)
-      .subscribe(factionsPage => this.factions = factionsPage);
+        .subscribe(factionsPage => {
+          this.factions = factionsPage;
+          this.ref.markForCheck();
+        });
   }
 
   onPageChange(pageIndex: number) {

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Structure} from './structure';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StructureService} from './structure.service';
@@ -47,13 +47,15 @@ export class StructureComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private structureService: StructureService,
               private factionService: FactionService,
-              private router: Router) {
+              private router: Router,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     const structureId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.structureService.getStructure(structureId), this.factionService.getCachedFactions()]).subscribe(data => {
       [this.structure, this.factions] = data;
+      this.ref.markForCheck();
     });
   }
 
@@ -64,6 +66,7 @@ export class StructureComponent implements OnInit {
   save() {
     this.structureService.updateStructure(this.structure).subscribe(structure => {
       this.structure = structure;
+      this.ref.markForCheck();
     });
   }
 

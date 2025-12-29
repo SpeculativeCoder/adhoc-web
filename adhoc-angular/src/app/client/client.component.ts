@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {MetaService} from "../system/meta.service";
@@ -53,7 +53,8 @@ export class ClientComponent implements OnInit {
       private sanitizer: DomSanitizer,
       private metaService: MetaService,
       private registerService: RegisterService,
-      private navigateService: NavigateService) {
+      private navigateService: NavigateService,
+      private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -146,6 +147,8 @@ export class ClientComponent implements OnInit {
         // NOTE: mapName as part of clientUrl was sanitized above via regex to be only alphanumeric/underscores
         this.clientUrl = this.sanitizer.bypassSecurityTrustResourceUrl(clientUrl);
         this.showClient = true;
+
+        this.ref.markForCheck();
       });
     });
   }

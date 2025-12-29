@@ -41,7 +41,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let task of tasks.content">
+      <tr *ngFor="let task of tasks?.content">
         <th scope="row"><a routerLink="/tasks/{{ task.id }}">{{ task.id }}</a></th>
         <td>{{ task.type }}</td>
         <!--<td>{{ task.privateIp }}</td>-->
@@ -55,7 +55,7 @@
       </tbody>
     </table>
   </div>
-  <div class="d-flex justify-content-end" *ngIf="tasks?.page?.totalElements">
+  <div class="d-flex justify-content-end" *ngIf="tasks && tasks.page?.totalElements">
     <div class="mt-2 me-4 text-nowrap">{{ (tasks.page!.number! * tasks.page!.size!) + 1 }} - {{ (tasks.page!.number! * tasks.page!.size!) + tasks.content!.length }} of {{ tasks!.page!.totalElements }}</div>
     <ngb-pagination [page]="tasks.page!.number! + 1"
                     [pageSize]="tasks.page!.size!"

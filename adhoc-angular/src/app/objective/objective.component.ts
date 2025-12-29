@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Objective} from './objective';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ObjectiveService} from './objective.service';
@@ -47,13 +47,15 @@ export class ObjectiveComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private objectiveService: ObjectiveService,
               private factionService: FactionService,
-              private router: Router) {
+              private router: Router,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     const objectiveId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.objectiveService.getObjective(objectiveId), this.factionService.getCachedFactions()]).subscribe(data => {
       [this.objective, this.factions] = data;
+      this.ref.markForCheck();
     });
   }
 
@@ -64,6 +66,7 @@ export class ObjectiveComponent implements OnInit {
   save() {
     this.objectiveService.updateObjective(this.objective).subscribe(objective => {
       this.objective = objective;
+      this.ref.markForCheck();
     });
   }
 

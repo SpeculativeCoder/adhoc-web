@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {forkJoin} from "rxjs";
 import {AreaService} from "./area.service";
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
@@ -47,10 +47,11 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 })
 export class AreasComponent implements OnInit {
 
-  areas: Page<Area> = new Page();
+  areas?: Page<Area>;
   private paging: Paging = new Paging();
 
-  constructor(private areaService: AreaService) {
+  constructor(private areaService: AreaService,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -62,6 +63,7 @@ export class AreasComponent implements OnInit {
       this.areaService.getAreas(this.paging)
     ]).subscribe(data => {
       [this.areas] = data;
+      this.ref.markForCheck();
     });
   }
 

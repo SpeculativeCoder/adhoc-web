@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Task} from './task';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TaskService} from './task.service';
@@ -43,23 +43,24 @@ export class TaskComponent implements OnInit {
 
   task: Task = {};
 
-  constructor(
-    private route: ActivatedRoute,
-    private taskService: TaskService,
-    private router: Router
-  ) {
+  constructor(private route: ActivatedRoute,
+              private taskService: TaskService,
+              private router: Router,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     const taskId = +(this.route.snapshot.paramMap.get('id')!);
     forkJoin([this.taskService.getTask(taskId)]).subscribe(data => {
       [this.task] = data;
+      this.ref.markForCheck();
     });
   }
 
   save() {
     this.taskService.updateTask(this.task).subscribe(task => {
       this.task = task;
+      this.ref.markForCheck();
     });
   }
 

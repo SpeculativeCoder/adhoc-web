@@ -51,7 +51,7 @@ public class ServerManagerController {
     @PutMapping("/servers/{serverId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ServerDto putServer(
-            @PathVariable("serverId") Long serverId,
+            @PathVariable Long serverId,
             @Valid @RequestBody ServerDto serverDto) {
 
         Preconditions.checkArgument(Objects.equals(serverId, serverDto.getId()),

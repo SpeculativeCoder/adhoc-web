@@ -52,18 +52,18 @@ public class ClientController {
 
     private final CoreProperties coreProperties;
 
-    private String firstRegionMap;
+    //private String firstRegionMap;
 
     @PostConstruct
     private void postConstruct() {
         // TODO: nicer error handling
-        firstRegionMap = coreProperties.getUnrealProjectRegionMaps().get(0);
+        //firstRegionMap = coreProperties.getUnrealProjectRegionMaps().get(0);
     }
 
     // the Angular app sends user to e.g. /HTML5Client.html (for now) so try to give them Shipping/Test variant if available
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/HTML5Client.html", produces = MimeTypeUtils.TEXT_HTML_VALUE)
     public ResponseEntity<?> getClientHtml(
-            @PathVariable(value = "mapName") String mapName,
+            @PathVariable String mapName,
             HttpServletResponse response) {
 
         // TODO: would be better to have available variant set via property rather than checking for existence of each
@@ -89,8 +89,8 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".css", produces = "text/css")
     public ResponseEntity<ClassPathResource> getClientCss(
-            @PathVariable(value = "mapName") String mapName,
-            @PathVariable(value = "variant") String variant,
+            @PathVariable String mapName,
+            @PathVariable String variant,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%s%s.css.gz", mapName, coreProperties.getUnrealProjectName(), variant));
@@ -102,8 +102,8 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + ".UE4.js", produces = "text/javascript")
     public ResponseEntity<ClassPathResource> getClientUE4Js(
-            @PathVariable(value = "mapName") String mapName,
-            @PathVariable(value = "variant") String variant,
+            @PathVariable String mapName,
+            @PathVariable String variant,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%s%s.UE4.js.gz", mapName, coreProperties.getUnrealProjectName(), variant));
@@ -115,9 +115,9 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + DATA_FLAVOR + ".data.js.gz", produces = "text/javascript")
     public ResponseEntity<ClassPathResource> getClientDataJsGz(
-            @PathVariable(value = "mapName") String mapName,
-            @PathVariable(value = "variant") String variant,
-            @PathVariable(value = "dataFlavor") String dataFlavor,
+            @PathVariable String mapName,
+            @PathVariable String variant,
+            @PathVariable String dataFlavor,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%s%s%s.data.js.gz", mapName, coreProperties.getUnrealProjectName(), variant, dataFlavor));
@@ -129,9 +129,9 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + VARIANT + DATA_FLAVOR + ".data.gz", produces = MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<ClassPathResource> getClientDataGz(
-            @PathVariable(value = "mapName") String mapName,
-            @PathVariable(value = "variant") String variant,
-            @PathVariable(value = "dataFlavor") String dataFlavor,
+            @PathVariable String mapName,
+            @PathVariable String variant,
+            @PathVariable String dataFlavor,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%s%s%s.data.gz", mapName, coreProperties.getUnrealProjectName(), variant, dataFlavor));
@@ -143,8 +143,8 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".js.gz", produces = "text/javascript")
     public ResponseEntity<ClassPathResource> getClientClientJsGz(
-            @PathVariable(value = "mapName") String mapName,
-            @PathVariable(value = "variant") String variant,
+            @PathVariable String mapName,
+            @PathVariable String variant,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%sClient%s.js.gz", mapName, coreProperties.getUnrealProjectName(), variant));
@@ -156,8 +156,8 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".js.symbols.gz", produces = "text/javascript")
     public ResponseEntity<ClassPathResource> getClientClientJsSymbolsGz(
-            @PathVariable(value = "mapName") String mapName,
-            @PathVariable(value = "variant") String variant,
+            @PathVariable String mapName,
+            @PathVariable String variant,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%sClient%s.js.symbols.gz", mapName, coreProperties.getUnrealProjectName(), variant));
@@ -169,8 +169,8 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/" + PROJECT_NAME + "Client" + VARIANT + ".wasm.gz", produces = "application/wasm")
     public ResponseEntity<ClassPathResource> getClientClientWasmGz(
-            @PathVariable(value = "mapName") String mapName,
-            @PathVariable(value = "variant") String variant,
+            @PathVariable String mapName,
+            @PathVariable String variant,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/%sClient%s.wasm.gz", mapName, coreProperties.getUnrealProjectName(), variant));
@@ -182,7 +182,7 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/Utility.js.gz", produces = "text/javascript")
     public ResponseEntity<ClassPathResource> getUtilityJsGz(
-            @PathVariable(value = "mapName") String mapName,
+            @PathVariable String mapName,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/Utility.js.gz", mapName));
@@ -194,7 +194,7 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/jquery/jquery-2.1.3.min.js", produces = "text/javascript")
     public ResponseEntity<ClassPathResource> getJQueryJs(
-            @PathVariable(value = "mapName") String mapName,
+            @PathVariable String mapName,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/jquery/jquery-2.1.3.min.js", mapName));
@@ -204,7 +204,7 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap/css/bootstrap.min.css", produces = "text/css")
     public ResponseEntity<ClassPathResource> getBootstrapCss(
-            @PathVariable(value = "mapName") String mapName,
+            @PathVariable String mapName,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap/css/bootstrap.min.css", mapName));
@@ -214,7 +214,7 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap/js/bootstrap.min.js", produces = "text/javascript")
     public ResponseEntity<ClassPathResource> getBootstrapJs(
-            @PathVariable(value = "mapName") String mapName,
+            @PathVariable String mapName,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap/js/bootstrap.min.js", mapName));
@@ -225,7 +225,7 @@ public class ClientController {
     // the font access is from the root of the app - so just get the fonts from first mapName as they are all the same
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap/fonts/glyphicons-halflings-regular.ttf", produces = "font/ttf")
     public ResponseEntity<ClassPathResource> getFontsGlyphiconsHalflingsRegularTtf(
-            @PathVariable(value = "mapName") String mapName,
+            @PathVariable String mapName,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap/fonts/glyphicons-halflings-regular.ttf", mapName));
@@ -235,7 +235,7 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap/fonts/glyphicons-halflings-regular.woff", produces = "font/woff")
     public ResponseEntity<ClassPathResource> getFontsGlyphiconsHalflingsRegularWoff(
-            @PathVariable(value = "mapName") String mapName,
+            @PathVariable String mapName,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap/fonts/glyphicons-halflings-regular.woff", mapName));
@@ -245,7 +245,7 @@ public class ClientController {
 
     @GetMapping(value = "/HTML5Client/" + MAP_NAME + "/bootstrap/fonts/glyphicons-halflings-regular.woff2", produces = "font/woff2")
     public ResponseEntity<ClassPathResource> getFontsGlyphiconsHalflingsRegularWoff2(
-            @PathVariable(value = "mapName") String mapName,
+            @PathVariable String mapName,
             HttpServletResponse response) {
 
         ClassPathResource resource = classPathResource(String.format("/HTML5Client/%s/HTML5/bootstrap/fonts/glyphicons-halflings-regular.woff2", mapName));

@@ -50,7 +50,7 @@ public class ObjectiveController {
 
     @GetMapping("/objectives/{objectiveId}")
     public ResponseEntity<ObjectiveDto> getObjective(
-            @PathVariable("objectiveId") Long objectiveId) {
+            @PathVariable Long objectiveId) {
 
         return ResponseEntity.of(objectiveService.findObjective(objectiveId));
     }

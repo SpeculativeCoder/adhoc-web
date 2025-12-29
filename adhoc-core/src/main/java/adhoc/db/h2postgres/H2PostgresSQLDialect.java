@@ -29,6 +29,7 @@ import org.hibernate.dialect.sql.ast.PostgreSQLSqlAstTranslator;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolutionInfo;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.sql.ast.SqlAstTranslator;
+import org.hibernate.sql.ast.SqlAstTranslatorFactory;
 import org.hibernate.sql.ast.spi.StandardSqlAstTranslatorFactory;
 import org.hibernate.sql.ast.tree.Statement;
 import org.hibernate.sql.exec.spi.JdbcOperation;
@@ -55,7 +56,7 @@ public class H2PostgresSQLDialect extends PostgreSQLDialect {
     }
 
     @Override
-    public H2PostgresSqlAstTranslatorFactory getSqlAstTranslatorFactory() {
+    public SqlAstTranslatorFactory getSqlAstTranslatorFactory() {
         return new H2PostgresSqlAstTranslatorFactory();
     }
 

@@ -59,7 +59,7 @@ public class UserManagerController {
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public UserDto putUser(
-            @PathVariable("userId") Long userId,
+            @PathVariable Long userId,
             @Valid @RequestBody UserDto userDto) {
 
         Preconditions.checkArgument(Objects.equals(userId, userDto.getId()),
@@ -71,7 +71,7 @@ public class UserManagerController {
     @PostMapping("/servers/{serverId}/userNavigate")
     @PreAuthorize("hasRole('SERVER')")
     public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
-            @PathVariable("serverId") Long serverId,
+            @PathVariable Long serverId,
             @Valid @RequestBody UserNavigateRequest request) {
 
         log.debug("serverUserNavigate: request={}", request);
@@ -93,7 +93,7 @@ public class UserManagerController {
     @PostMapping("/servers/{serverId}/userJoin")
     @PreAuthorize("hasRole('SERVER')")
     public UserJoinResponse postServerUserJoin(
-            @PathVariable("serverId") Long serverId,
+            @PathVariable Long serverId,
             @Valid @RequestBody UserJoinRequest userJoinRequest) {
 
         Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()),

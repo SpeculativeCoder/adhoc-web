@@ -48,7 +48,7 @@ public class FactionManagerController {
     @PutMapping("/factions/{factionId}")
     @PreAuthorize("hasRole('ADMIN')")
     public FactionDto putFaction(
-            @PathVariable("factionId") Long factionId,
+            @PathVariable Long factionId,
             @Valid @RequestBody FactionDto factionDto) {
 
         Preconditions.checkArgument(Objects.equals(factionId, factionDto.getId()),

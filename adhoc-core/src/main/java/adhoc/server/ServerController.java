@@ -50,7 +50,7 @@ public class ServerController {
 
     @GetMapping("/servers/{serverId}")
     public ResponseEntity<ServerDto> getServer(
-            @PathVariable("serverId") Long serverId) {
+            @PathVariable Long serverId) {
 
         return ResponseEntity.of(serverService.findServer(serverId));
     }

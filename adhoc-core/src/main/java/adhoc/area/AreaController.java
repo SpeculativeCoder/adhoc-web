@@ -50,7 +50,7 @@ public class AreaController {
 
     @GetMapping("/areas/{areaId}")
     public ResponseEntity<AreaDto> getArea(
-            @PathVariable("areaId") Long areaId) {
+            @PathVariable Long areaId) {
 
         return ResponseEntity.of(areaService.findArea(areaId));
     }

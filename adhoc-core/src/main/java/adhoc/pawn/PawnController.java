@@ -50,7 +50,7 @@ public class PawnController {
 
     @GetMapping("/pawns/{pawnId}")
     public ResponseEntity<PawnDto> getPawn(
-            @PathVariable("pawnId") Long pawnId) {
+            @PathVariable Long pawnId) {
 
         return ResponseEntity.of(pawnService.findPawn(pawnId));
     }

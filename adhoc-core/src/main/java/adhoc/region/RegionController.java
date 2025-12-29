@@ -50,7 +50,7 @@ public class RegionController {
 
     @GetMapping("/regions/{regionId}")
     public ResponseEntity<RegionDto> getRegion(
-            @PathVariable("regionId") Long regionId) {
+            @PathVariable Long regionId) {
 
         return ResponseEntity.of(regionService.findRegion(regionId));
     }

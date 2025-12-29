@@ -51,7 +51,7 @@ public class FactionController {
 
     @GetMapping("/factions/{factionId}")
     public ResponseEntity<FactionDto> getFaction(
-            @PathVariable("factionId") Long factionId) {
+            @PathVariable Long factionId) {
 
         return ResponseEntity.of(factionService.findFaction(factionId));
     }

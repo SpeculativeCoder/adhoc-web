@@ -53,7 +53,7 @@ public class ObjectiveManagerController {
     @PutMapping("/objectives/{objectiveId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ObjectiveDto putObjective(
-            @PathVariable("objectiveId") Long objectiveId,
+            @PathVariable Long objectiveId,
             @Valid @RequestBody ObjectiveDto objectiveDto) {
 
         Preconditions.checkArgument(Objects.equals(objectiveId, objectiveDto.getId()),

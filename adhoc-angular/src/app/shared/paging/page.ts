@@ -23,6 +23,8 @@
 import {PageMetadata} from "./page-metadata";
 
 export class Page<T> {
-  content?: T[];
-  page?: PageMetadata;
+
+  constructor(public content: T[],
+              public page: PageMetadata) {
+  }
 }

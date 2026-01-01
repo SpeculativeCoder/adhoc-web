@@ -21,8 +21,10 @@
  */
 
 export class PageMetadata {
-  size?: number;
-  number?: number;
-  totalElements?: number;
-  totalPages?: number;
+
+  constructor(public size: number,
+              public number: number,
+              public totalElements: number,
+              public totalPages: number) {
+  }
 }

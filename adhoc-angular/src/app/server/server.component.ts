@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Server} from './server';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ServerService} from './server.service';
@@ -31,7 +31,7 @@ import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 
 @Component({
   selector: 'app-server',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule,

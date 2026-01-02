@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
@@ -38,7 +38,7 @@ import {NavigateService} from '../user/navigate/navigate.service';
 
 @Component({
   selector: 'app-servers',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterLink,

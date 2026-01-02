@@ -20,13 +20,13 @@
  * SOFTWARE.
  */
 
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {customization} from '../../customization';
 import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-eula',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule
   ],

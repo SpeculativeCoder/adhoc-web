@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FactionService} from './faction.service';
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
 import {CommonModule} from "@angular/common";
@@ -34,7 +34,7 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-factions',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterLink,

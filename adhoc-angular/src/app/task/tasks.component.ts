@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {TaskService} from './task.service';
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
@@ -36,7 +36,7 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-tasks',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterLink,

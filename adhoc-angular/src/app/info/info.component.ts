@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {AboutComponent} from "./about/about.component";
@@ -28,7 +28,7 @@ import {EulaComponent} from "./eula/eula.component";
 
 @Component({
   selector: 'info-page',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     AboutComponent,

@@ -20,19 +20,19 @@
  * SOFTWARE.
  */
 
-import {Component, EventEmitter, HostListener, Input, Output,} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output,} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {SortDirection} from "../paging/sort-direction";
 import {Sort} from "../paging/sort";
 
 @Component({
   selector: 'th[sortable]',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule
   ],
   template:
-    '<ng-content></ng-content><span class="position-fixed" *ngIf="direction">&nbsp;<span class="small oi {{openIconicIconClass}}"></span></span>'
+      '<ng-content></ng-content><span class="position-fixed" *ngIf="direction">&nbsp;<span class="small oi {{openIconicIconClass}}"></span></span>'
 })
 export class HeaderSortComponent {
 

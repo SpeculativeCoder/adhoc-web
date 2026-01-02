@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Faction} from './faction';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FactionService} from './faction.service';
@@ -29,7 +29,7 @@ import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-faction',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule

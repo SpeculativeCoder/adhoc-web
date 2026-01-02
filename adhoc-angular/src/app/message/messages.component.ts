@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {MessageService} from './message.service';
 import {CommonModule} from "@angular/common";
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
@@ -36,7 +36,7 @@ import {Sort} from "../shared/paging/sort";
 
 @Component({
   selector: 'app-messages',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     SimpleDatePipe,

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Structure} from './structure';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StructureService} from './structure.service';
@@ -32,7 +32,7 @@ import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-structure',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule

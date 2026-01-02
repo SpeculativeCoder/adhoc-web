@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UserService} from './user.service';
 import {User} from './user';
 import {Faction} from '../faction/faction';
@@ -39,7 +39,7 @@ import {UserDefeatEventService} from './defeated/user-defeat-event.service';
 
 @Component({
   selector: 'app-users',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterLink,

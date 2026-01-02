@@ -21,7 +21,7 @@
  */
 
 import {ServerService} from '../server/server.service';
-import {Component, DoCheck, Inject, Injector, IterableDiffers, KeyValueDiffers, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DoCheck, Inject, Injector, IterableDiffers, KeyValueDiffers, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {Objective} from '../objective/objective';
 import {Faction} from '../faction/faction';
 import {ObjectiveService} from '../objective/objective.service';
@@ -49,7 +49,7 @@ import {NavigateService} from '../user/navigate/navigate.service';
 
 @Component({
   selector: 'app-map',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule
   ],

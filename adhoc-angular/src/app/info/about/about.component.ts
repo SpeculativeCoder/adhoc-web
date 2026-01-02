@@ -20,14 +20,14 @@
  * SOFTWARE.
  */
 
-import {Component, SecurityContext} from '@angular/core';
+import {ChangeDetectionStrategy, Component, SecurityContext} from '@angular/core';
 import {customization} from "../../customization";
-import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
+import {DomSanitizer} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-about',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule
   ],

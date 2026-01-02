@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Objective} from './objective';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ObjectiveService} from './objective.service';
@@ -32,7 +32,7 @@ import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-objective',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule

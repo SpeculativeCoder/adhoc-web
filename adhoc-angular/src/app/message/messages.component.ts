@@ -20,11 +20,10 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal} from '@angular/core';
 import {MessageService} from './message.service';
 import {CommonModule} from "@angular/common";
 import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {Router} from "@angular/router";
 import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
@@ -33,6 +32,7 @@ import {Message} from "./message";
 import {Paging} from "../shared/paging/paging";
 import {forkJoin} from "rxjs";
 import {Sort} from "../shared/paging/sort";
+import {Pagination} from '../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-messages',
@@ -42,13 +42,13 @@ import {Sort} from "../shared/paging/sort";
     SimpleDatePipe,
     TableSortDirective,
     HeaderSortComponent,
-    NgbPagination
+    Pagination
   ],
   templateUrl: './messages.component.html'
 })
 export class MessagesComponent implements OnInit {
 
-  messages?: Page<Message>;
+  messages = signal<Page<Message> | undefined>(undefined);
   private paging: Paging = new Paging();
 
   constructor(private messageService: MessageService,
@@ -65,12 +65,11 @@ export class MessagesComponent implements OnInit {
     forkJoin([
       this.messageService.getMessages(this.paging)
     ]).subscribe(data => {
-      [this.messages] = data;
-      this.ref.markForCheck();
+      this.messages.set(data[0]);
     });
   }
 
-  onPageChange(pageIndex: number) {
+  onPageChanged(pageIndex: number) {
     this.paging.page = pageIndex;
     this.refreshMessages();
   }

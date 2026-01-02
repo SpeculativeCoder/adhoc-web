@@ -1,14 +1,34 @@
-target/
-certs/
-env/
+/certs
+/env
 
-/Package/
-/adhoc-web-extra/
+/Package
 
-/httpRequests/
+/adhoc-angular/node_modules
+/adhoc-angular/.angular/cache
+/adhoc-angular/dist
+/adhoc-angular/target
 
-/db/
+/adhoc-angular/temp-angular
 
-.idea/
-.jpb/
+/adhoc-core/target
+
+/adhoc-manager/target
+
+/adhoc-kiosk/target
+
+/terraform/.terraform
+/terraform/terraform.tfstate.d
+
+/terraform/.terraform.lock.hcl
+/terraform/terraform.tfstate
+/terraform/terraform.tfstate.backup
+/terraform/terraform.tfvars
+
+/httpRequests
+
+/db
+
+/.idea
+/.jpb
+
 *.iml

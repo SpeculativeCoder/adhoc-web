@@ -25,8 +25,8 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {User} from "../user/user";
 import {Area} from "./area";
-import {Paging} from "../shared/paging/paging";
-import {Page} from "../shared/paging/page";
+import {Paging} from "../shared/paging";
+import {Page} from "../shared/page";
 
 @Injectable({
   providedIn: 'root'

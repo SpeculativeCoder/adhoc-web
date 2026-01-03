@@ -21,7 +21,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
-import {Page} from '../paging/page';
+import {Page} from '../page';
 import {NgbPagination} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({

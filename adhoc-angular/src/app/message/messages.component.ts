@@ -23,15 +23,15 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal} from '@angular/core';
 import {MessageService} from './message.service';
 import {CommonModule} from "@angular/common";
-import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
+import {TableHeaderSortableComponent} from "../shared/table/table-header-sortable.component";
 import {Router} from "@angular/router";
-import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
+import {TableSortDirective} from "../shared/table/table-sort.directive";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
-import {Page} from "../shared/paging/page";
+import {Page} from "../shared/page";
 import {Message} from "./message";
-import {Paging} from "../shared/paging/paging";
+import {Paging} from "../shared/paging";
 import {forkJoin} from "rxjs";
-import {Sort} from "../shared/paging/sort";
+import {Sort} from "../shared/sort";
 import {Pagination} from '../shared/pagination/pagination.component';
 import {TableComponent} from '../shared/table/table.component';
 
@@ -43,7 +43,7 @@ import {TableComponent} from '../shared/table/table.component';
     SimpleDatePipe,
     TableComponent,
     TableSortDirective,
-    HeaderSortComponent,
+    TableHeaderSortableComponent,
     Pagination
   ],
   templateUrl: './messages.component.html'

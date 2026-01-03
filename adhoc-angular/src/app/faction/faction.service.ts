@@ -25,8 +25,8 @@ import {Faction} from './faction';
 import {Observable, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {map} from "rxjs/operators";
-import {Paging} from "../shared/paging/paging";
-import {Page} from "../shared/paging/page";
+import {Paging} from "../shared/paging";
+import {Page} from "../shared/page";
 
 @Injectable({
   providedIn: 'root'

@@ -20,33 +20,33 @@
  * SOFTWARE.
  */
 
-import {AfterContentInit, ContentChildren, Directive, EventEmitter, Output, QueryList,} from '@angular/core';
-import {HeaderSortComponent} from './header-sort.component';
-import {Sort} from "../paging/sort";
+import {AfterContentInit, contentChildren, Directive, output} from '@angular/core';
+import {TableHeaderSortableComponent} from './table-header-sortable.component';
+import {Sort} from "../sort";
 
 @Directive({
   selector: 'table[sort], app-table[sort]'
 })
 export class TableSortDirective implements AfterContentInit {
 
-  @ContentChildren(HeaderSortComponent, {descendants: true}) headers?: QueryList<HeaderSortComponent>;
+  headers = contentChildren(TableHeaderSortableComponent, {descendants: true});
 
-  @Output('sort') sortEvent$ = new EventEmitter<Sort>();
+  sortChanged = output<Sort>({alias: 'sort'});
 
   ngAfterContentInit() {
-    this.headers?.forEach(header => {
-      header.sortEvent$.subscribe((sortEvent: Sort) => {
-        this.onSort(sortEvent);
+    this.headers().forEach(header => {
+      header.sortChanged.subscribe(sort => {
+        this.onSort(sort);
       });
     });
   }
 
   onSort(sortEvent: Sort) {
     // clear the sort direction on the other headers
-    this.headers
-        ?.filter(header => header.column !== sortEvent.column)
+    this.headers()
+        .filter(header => header.column() !== sortEvent.column)
         .forEach(header => header.direction = undefined);
 
-    this.sortEvent$.emit(sortEvent);
+    this.sortChanged.emit(sortEvent);
   }
 }

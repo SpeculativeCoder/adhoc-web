@@ -22,9 +22,9 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Paging} from "../shared/paging/paging";
+import {Paging} from "../shared/paging";
 import {Observable} from "rxjs";
-import {Page} from "../shared/paging/page";
+import {Page} from "../shared/page";
 import {Message} from "./message";
 
 @Injectable({

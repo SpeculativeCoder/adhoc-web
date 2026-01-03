@@ -20,10 +20,10 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output,} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {SortDirection} from "../paging/sort-direction";
-import {Sort} from "../paging/sort";
+import {SortDirection} from "../sort-direction";
+import {Sort} from "../sort";
 
 @Component({
   selector: 'th[sortable]',
@@ -31,15 +31,16 @@ import {Sort} from "../paging/sort";
   imports: [
     CommonModule
   ],
-  template:
-      '<ng-content></ng-content><span class="position-fixed" *ngIf="direction">&nbsp;<span class="small oi {{openIconicIconClass}}"></span></span>'
+  templateUrl: './table-header-sortable.component.html',
+  host: {
+    '(click)': 'click($event)'
+  }
 })
-export class HeaderSortComponent {
+export class TableHeaderSortableComponent {
 
-  // tslint:disable-next-line: no-input-rename
-  @Input('sortable') column?: string;
+  column = input<string>(undefined, {alias: 'sortable'});
 
-  @Output('sort') sortEvent$ = new EventEmitter<Sort>();
+  sortChanged = output<Sort>({alias: 'sort'});
 
   direction?: SortDirection;
 
@@ -47,9 +48,10 @@ export class HeaderSortComponent {
     return this.direction === 'asc' ? 'oi-sort-ascending' : 'oi-sort-descending';
   }
 
-  @HostListener('click', ['$event'])
   click(event: MouseEvent) {
-    this.direction = this.direction === 'asc' ? 'desc' : 'asc';
-    this.sortEvent$.emit({column: this.column!, direction: this.direction});
+    if (this.column()) {
+      this.direction = this.direction === 'asc' ? 'desc' : 'asc';
+      this.sortChanged.emit(new Sort(this.column()!, this.direction));
+    }
   }
 }

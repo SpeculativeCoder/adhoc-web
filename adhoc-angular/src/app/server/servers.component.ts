@@ -25,13 +25,13 @@ import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
 import {MetaService} from "../system/meta.service";
-import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
+import {TableHeaderSortableComponent} from "../shared/table/table-header-sortable.component";
 import {Router, RouterLink} from "@angular/router";
 import {CommonModule} from "@angular/common";
-import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
-import {Page} from "../shared/paging/page";
-import {Paging} from "../shared/paging/paging";
-import {Sort} from "../shared/paging/sort";
+import {TableSortDirective} from "../shared/table/table-sort.directive";
+import {Page} from "../shared/page";
+import {Paging} from "../shared/paging";
+import {Sort} from "../shared/sort";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {RegisterService} from '../user/register/register.service';
 import {NavigateService} from '../user/navigate/navigate.service';
@@ -43,7 +43,7 @@ import {NavigateService} from '../user/navigate/navigate.service';
     CommonModule,
     RouterLink,
     TableSortDirective,
-    HeaderSortComponent,
+    TableHeaderSortableComponent,
     NgbPagination
   ],
   templateUrl: './servers.component.html'

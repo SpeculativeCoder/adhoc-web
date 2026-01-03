@@ -23,14 +23,14 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {TaskService} from './task.service';
-import {HeaderSortComponent} from "../shared/table-sort/header-sort.component";
+import {TableHeaderSortableComponent} from "../shared/table/table-header-sortable.component";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
-import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
-import {Page} from "../shared/paging/page";
-import {Paging} from "../shared/paging/paging";
-import {Sort} from "../shared/paging/sort";
+import {TableSortDirective} from "../shared/table/table-sort.directive";
+import {Page} from "../shared/page";
+import {Paging} from "../shared/paging";
+import {Sort} from "../shared/sort";
 import {Task} from './task';
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 
@@ -41,7 +41,7 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
     CommonModule,
     RouterLink,
     SimpleDatePipe,
-    HeaderSortComponent,
+    TableHeaderSortableComponent,
     TableSortDirective,
     NgbPagination
   ],

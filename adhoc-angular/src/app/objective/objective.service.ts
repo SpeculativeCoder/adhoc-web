@@ -28,8 +28,8 @@ import {Faction} from '../faction/faction';
 import {StompService} from '../system/stomp.service';
 import {map} from 'rxjs/operators';
 import {FactionService} from '../faction/faction.service';
-import {Paging} from "../shared/paging/paging";
-import {Page} from "../shared/paging/page";
+import {Paging} from "../shared/paging";
+import {Page} from "../shared/page";
 
 @Injectable({
   providedIn: 'root'

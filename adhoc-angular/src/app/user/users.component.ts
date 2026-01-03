@@ -26,14 +26,14 @@ import {User} from './user';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
-import {HeaderSortComponent} from '../shared/table-sort/header-sort.component';
+import {TableHeaderSortableComponent} from '../shared/table/table-header-sortable.component';
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
-import {TableSortDirective} from "../shared/table-sort/table-sort.directive";
-import {Page} from "../shared/paging/page";
-import {Paging} from "../shared/paging/paging";
-import {Sort} from "../shared/paging/sort";
+import {TableSortDirective} from "../shared/table/table-sort.directive";
+import {Page} from "../shared/page";
+import {Paging} from "../shared/paging";
+import {Sort} from "../shared/sort";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {UserDefeatEventService} from './defeated/user-defeat-event.service';
 
@@ -45,7 +45,7 @@ import {UserDefeatEventService} from './defeated/user-defeat-event.service';
     RouterLink,
     SimpleDatePipe,
     TableSortDirective,
-    HeaderSortComponent,
+    TableHeaderSortableComponent,
     NgbPagination
   ],
   templateUrl: './users.component.html'

@@ -33,6 +33,7 @@ import {Paging} from "../shared/paging/paging";
 import {forkJoin} from "rxjs";
 import {Sort} from "../shared/paging/sort";
 import {Pagination} from '../shared/pagination/pagination.component';
+import {TableComponent} from '../shared/table/table.component';
 
 @Component({
   selector: 'app-messages',
@@ -40,6 +41,7 @@ import {Pagination} from '../shared/pagination/pagination.component';
   imports: [
     CommonModule,
     SimpleDatePipe,
+    TableComponent,
     TableSortDirective,
     HeaderSortComponent,
     Pagination

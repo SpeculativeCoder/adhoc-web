@@ -24,28 +24,26 @@
   <h2>
     Messages
   </h2>
-  <div class="table-responsive">
-    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="onSort($event)">
-      <!--<caption>{{messages.length}} messages</caption>-->
-      <thead>
-      <tr>
-        <th scope="col" sortable="id">ID</th>
-        <th scope="col" sortable="timestamp">Timestamp</th>
-        <th scope="col" width="80%" sortable="text">Text</th>
-        <!--<th scope="col" sortable="userId">User</th>-->
-      </tr>
-      </thead>
-      <tbody>
-        @for (message of messages()?.content; track message.id) {
-          <tr>
-            <th scope="row"><!--<a routerLink="/messages/{{ message.id }}">-->{{ message.id }}<!--</a>--></th>
-            <td>{{ message.timestamp | simpleDate }}</td>
-            <td>{{ message.text }}</td>
-            <!--<td>{{ message.userId }}</td>-->
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+  <app-table (sort)="onSort($event)">
+    <!--<caption>{{messages.length}} messages</caption>-->
+    <thead>
+    <tr>
+      <th scope="col" sortable="id">ID</th>
+      <th scope="col" sortable="timestamp">Timestamp</th>
+      <th scope="col" width="80%" sortable="text">Text</th>
+      <!--<th scope="col" sortable="userId">User</th>-->
+    </tr>
+    </thead>
+    <tbody>
+      @for (message of messages()?.content; track message.id) {
+        <tr>
+          <th scope="row"><!--<a routerLink="/messages/{{ message.id }}">-->{{ message.id }}<!--</a>--></th>
+          <td>{{ message.timestamp | simpleDate }}</td>
+          <td>{{ message.text }}</td>
+          <!--<td>{{ message.userId }}</td>-->
+        </tr>
+      }
+    </tbody>
+  </app-table>
   <app-pagination [data]="messages()" (pageChanged)="onPageChanged($event)"/>
 </div>

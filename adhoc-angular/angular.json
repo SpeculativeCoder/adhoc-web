@@ -5,6 +5,15 @@
     "packageManager": "pnpm"
   },
   "newProjectRoot": "projects",
+  "schematics": {
+    "@schematics/angular:component": {
+      "addTypeToClassName": true,
+      "changeDetection": "OnPush",
+      "skipTests": true,
+      "style": "none",
+      "type": "component"
+    }
+  },
   "projects": {
     "adhoc-angular": {
       "projectType": "application",

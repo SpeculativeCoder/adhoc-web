@@ -20,16 +20,14 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {FactionService} from './faction/faction.service';
-import {User} from './user/user';
 import {MetaService} from "./system/meta.service";
-import {Faction} from "./faction/faction";
 import {customization} from "./customization";
 import {CommonModule} from "@angular/common";
 import {CurrentUserService} from './user/current-user.service';
 import {CurrentUserComponent} from './user/current-user.component';
+import {CurrentUser} from './user/current-user';
 
 @Component({
   selector: 'app-root',
@@ -46,37 +44,21 @@ import {CurrentUserComponent} from './user/current-user.component';
 })
 export class AppComponent implements OnInit {
 
-  title = customization.title;
+  title = signal(customization.title);
+  featureFlags = signal('');
+  showExtraFeatures = signal(!!customization.extra);
 
-  featureFlags: string = '';
-  extra: boolean;
+  currentUser = signal<CurrentUser | undefined>(undefined);
 
-  currentUser?: User;
-  currentUserFaction?: Faction;
-
-  constructor(private factionService: FactionService,
-              private currentUserService: CurrentUserService,
-              private metaService: MetaService,
-              private ref: ChangeDetectorRef) {
-
-    // TODO
-    this.extra = !!customization.extra;
+  constructor(private currentUserService: CurrentUserService,
+              private metaService: MetaService) {
   }
 
   ngOnInit() {
-    this.featureFlags = this.metaService.getFeatureFlags();
+    this.featureFlags.set(this.metaService.getFeatureFlags());
 
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
-      // TODO
-      if (currentUser) {
-        this.currentUser = currentUser;
-        this.ref.markForCheck();
-
-        this.factionService.getCachedFaction(currentUser.factionId!).subscribe(faction => {
-          this.currentUserFaction = faction;
-          this.ref.markForCheck();
-        });
-      }
+      this.currentUser.set(currentUser)
     });
   }
 

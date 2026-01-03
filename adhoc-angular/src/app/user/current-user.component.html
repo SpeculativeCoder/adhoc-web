@@ -21,32 +21,52 @@
   -->
 
 <div>
+
+  <button type="button" class="nav-link text-nowrap"
+          #currentUserPopover="ngbPopover"
+          (click)="popoverButtonClicked()"
+          [ngbPopover]="currentUserPopContent"
+          [popoverTitle]="currentUserPopTitle"
+          popoverClass="current-user-popover"
+          [autoClose]="'outside'">
+
+    <small>{{ currentUser()?.name }} </small>
+    <span [ngStyle]="{'color': currentUserFaction()?.color}">
+      <small><span class="small oi oi-person"></span></small>
+    </span>
+
+  </button>
+
   <ng-template #currentUserPopTitle>
-    Current user: {{ currentUser?.name }}
+
+    Current user: {{ currentUser()?.name }}
     <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+
   </ng-template>
+
   <ng-template #currentUserPopContent>
-    @if (currentUser?.quickLoginCode) {
+
+    @if (currentUser()?.quickLoginCode) {
       <div class="mb-3">
         <label class="form-label" for="quickLoginCode">Quick Login Code</label>
-        <input class="form-control" id="quickLoginCode" name="quickLoginCode" type="password" disabled [value]="currentUser?.quickLoginCode">
+        <input class="form-control" id="quickLoginCode" name="quickLoginCode" type="password" disabled [value]="currentUser()?.quickLoginCode">
       </div>
       <div class="mb-3">
-        <button type="button" class="btn btn-primary" (click)="copyToClipboard()">Copy to Clipboard</button>
-        &nbsp;
-        <span class="text-success">{{ copyToClipboardSuccessText }}</span>
+        <button type="button" class="btn btn-primary me-2" (click)="copyToClipboard()">Copy to Clipboard</button>
+        @if (copyToClipboardSuccessText()) {
+          <span class="text-success">{{ copyToClipboardSuccessText() }}</span>
+        }
       </div>
     }
-    <p>Score: {{ currentUser?.score }}</p>
+
+    <p>Score: {{ currentUser()?.score }}</p>
+
     <div class="mb-3">
       <button type="button" class="btn btn-warning" (click)="logout()">Logout</button>
     </div>
+
   </ng-template>
-  <button type="button" class="nav-link text-nowrap" #currentUserPopover="ngbPopover"
-          [ngbPopover]="currentUserPopContent" [popoverTitle]="currentUserPopTitle" popoverClass="current-user-popover" [autoClose]="'outside'">
-    <small>{{ currentUser?.name }} </small>
-    <span [ngStyle]="{'color': currentUserFaction?.color}">
-      <small><span class="small oi oi-person"></span></small>
-    </span>
-  </button>
+
 </div>
+
+

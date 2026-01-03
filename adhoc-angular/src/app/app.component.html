@@ -22,7 +22,7 @@
 
 <ul class="nav">
   <li class="nav-item">
-    <a class="nav-link" routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page"><strong>{{ title }}</strong></a>
+    <a class="nav-link" routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page"><strong>{{ title() }}</strong></a>
   </li>
   <li class="nav-item">
     <a class="nav-link" routerLink="/map" routerLinkActive="active" ariaCurrentWhenActive="page">Map</a>
@@ -39,7 +39,6 @@
   <li class="nav-item">
     <a class="nav-link" routerLink="/tasks" routerLinkActive="active" ariaCurrentWhenActive="page">Tasks</a>
   </li>
-  <!-- *ngIf="currentUser && currentUser.roles.indexOf('ADMIN') != -1" -->
   <li class="nav-item">
     <a class="nav-link" routerLink="/regions" routerLinkActive="active" ariaCurrentWhenActive="page">Regions</a>
   </li>
@@ -49,9 +48,11 @@
   <li class="nav-item">
     <a class="nav-link" routerLink="/objectives" routerLinkActive="active" ariaCurrentWhenActive="page">Objectives</a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/structures" routerLinkActive="active" ariaCurrentWhenActive="page" *ngIf="extra">Structures</a>
-  </li>
+  @if (showExtraFeatures()) {
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/structures" routerLinkActive="active" ariaCurrentWhenActive="page">Structures</a>
+    </li>
+  }
   <li class="nav-item">
     <a class="nav-link" routerLink="/pawns" routerLinkActive="active" ariaCurrentWhenActive="page">Pawns</a>
   </li>
@@ -64,33 +65,38 @@
   <li class="nav-item">
     <a class="nav-link" routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Messages</a>
   </li>
-  <li class="nav-item" *ngIf="!currentUser">
-    <a class="nav-link" routerLink="/register" routerLinkActive="active" ariaCurrentWhenActive="page">
-      <em>Register</em>
-    </a>
-  </li>
-  <li class="nav-item" *ngIf="!currentUser">
-    <a class="nav-link" routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">
-      <em>Login</em>
-    </a>
-  </li>
-  <li class="nav-item" *ngIf="currentUser">
-    <app-current-user/>
-  </li>
+  @if (!currentUser()) {
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/register" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <em>Register</em>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <em>Login</em>
+      </a>
+    </li>
+  } @else {
+    <li class="nav-item">
+      <app-current-user/>
+    </li>
+  }
   <!-- TODO -->
-  <li class="nav-item dropdown" *ngIf="!currentUser && featureFlags.indexOf('development') != -1 && false">
-    <a class="nav-link text-body dropdown-toggle" data-bs-toggle="dropdown">
-      <span class="oi oi-sun"></span>
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end" style="--bs-dropdown-min-width: 5rem;">
-      <li>
-        <a class="dropdown-item text-center" onclick="document.documentElement.setAttribute('data-bs-theme', 'light')">Light</a>
-      </li>
-      <li>
-        <a class="dropdown-item text-center" onclick="document.documentElement.setAttribute('data-bs-theme', 'dark')">Dark</a>
-      </li>
-    </ul>
-  </li>
+  @if (featureFlags().indexOf("development") != -1) {
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+        <span class="oi oi-sun"></span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" style="--bs-dropdown-min-width: 5rem;">
+        <li>
+          <a class="dropdown-item text-center" onclick="document.documentElement.setAttribute('data-bs-theme', 'light')">Light</a>
+        </li>
+        <li>
+          <a class="dropdown-item text-center" onclick="document.documentElement.setAttribute('data-bs-theme', 'dark')">Dark</a>
+        </li>
+      </ul>
+    </li>
+  }
 </ul>
 
 <router-outlet></router-outlet>

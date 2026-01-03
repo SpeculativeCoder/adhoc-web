@@ -42,7 +42,6 @@ export class LogoutService {
   }
 
   logout() {
-    console.log("logout");
     const formData: FormData = new FormData();
 
     return this.http.post(`${this.logoutUrl}`, FormData, {
@@ -51,6 +50,9 @@ export class LogoutService {
     }).pipe(
         mergeMap(logoutResponse => {
           this.csrfService.clearCsrf();
+          // immediately clear user
+          this.currentUserService.clearCurrentUser();
+          // then refresh for good measure
           return this.currentUserService.refreshCurrentUser();
         }));
   }

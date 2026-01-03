@@ -60,4 +60,8 @@ export class CurrentUserService {
   refreshCurrentUser() {
     return this.refreshCurrentUser$().pipe(take(1));
   }
+
+  clearCurrentUser() {
+    this.currentUser$.next(undefined);
+  }
 }

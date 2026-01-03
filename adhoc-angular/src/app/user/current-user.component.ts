@@ -20,17 +20,18 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal, viewChild} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-import {FactionService} from '../faction/faction.service';
 import {CurrentUserService} from './current-user.service';
 import {MetaService} from '../system/meta.service';
 import {Faction} from '../faction/faction';
 import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
 import {LogoutService} from './logout/logout.service';
 import {Router} from '@angular/router';
+import {Observable, of} from 'rxjs';
 import {CurrentUser} from './current-user';
+import {FactionService} from '../faction/faction.service';
 
 @Component({
   selector: 'app-current-user',
@@ -44,64 +45,71 @@ import {CurrentUser} from './current-user';
 })
 export class CurrentUserComponent implements OnInit {
 
-  featureFlags: string = '';
+  featureFlags = signal<string>('');
 
-  currentUser?: CurrentUser;
-  currentUserFaction?: Faction;
+  currentUser = signal<CurrentUser | undefined>(undefined);
+  currentUserFaction = signal<Faction | undefined>(undefined);
 
-  @ViewChild('currentUserPopover')
-  currentUserPopover?: NgbPopover;
+  copyToClipboardSuccessText = signal('');
 
-  copyToClipboardSuccessText?: string;
+  currentUserPopover = viewChild.required<NgbPopover>('currentUserPopover');
 
-  constructor(private factionService: FactionService,
-              private currentUserService: CurrentUserService,
+  constructor(private currentUserService: CurrentUserService,
+              private factionService: FactionService,
               private logoutService: LogoutService,
               private metaService: MetaService,
-              private router: Router,
-              private ref: ChangeDetectorRef) {
+              private router: Router) {
   }
 
   ngOnInit(): void {
-    this.featureFlags = this.metaService.getFeatureFlags();
+    this.featureFlags.set(this.metaService.getFeatureFlags());
 
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
-      // TODO
-      if (currentUser) {
-        this.currentUser = currentUser;
-        this.ref.markForCheck();
 
-        this.factionService.getCachedFaction(currentUser.factionId!).subscribe(faction => {
-          this.currentUserFaction = faction
-          this.ref.markForCheck();
-        });
+      let faction$: Observable<Faction | undefined> =
+          (currentUser && currentUser.factionId)
+              ? this.factionService.getCachedFaction(currentUser.factionId!)
+              : of(undefined);
+      faction$.subscribe(faction => {
+
+        this.currentUser.set(currentUser);
+        this.currentUserFaction.set(faction);
+      });
+    });
+  }
+
+  popoverButtonClicked() {
+    // if clicking on button to open the popover - then we need to refresh user information as the popover shows
+    if (!this.currentUserPopover().isOpen()) {
+      this.currentUserService.refreshCurrentUser().subscribe();
+    }
+  }
+
+  logout() {
+    this.logoutService.logout().subscribe({
+      next: () => {
+        this.currentUserPopover().close();
+        this.router.navigate([''])
+        //window.location.href = '';
+      },
+      error: () => {
+        // TODO
+        console.log('Failed to logout');
+        //this.logoutErrorMessage = 'Failed to logout';
       }
     });
   }
 
-  logout() {
-    this.logoutService.logout().subscribe(
-        output => {
-          //this.currentUserPopover?.close();
-          //this.router.navigate(['']);
-          // TODO
-          window.location.href = '';
-        },
-        error => {
-          // TODO
-          console.log('Failed to logout');
-          //this.logoutErrorMessage = 'Failed to logout';
-        });
-  }
-
   copyToClipboard() {
-    if (this.currentUser && this.currentUser.quickLoginCode) {
-      navigator.clipboard.writeText(this.currentUser.quickLoginCode);
-      this.copyToClipboardSuccessText = "Copied!";
+    if (this.currentUser() && this.currentUser()?.quickLoginCode) {
+      // TODO
+      navigator.clipboard.writeText(this.currentUser()?.quickLoginCode!);
+      this.copyToClipboardSuccessText.set('Copied!');
     }
   }
 
   close() {
-    this.currentUserPopover?.close();
+    this.currentUserPopover().close();
   }
+
 }

@@ -34,14 +34,17 @@ export class AppTitleStrategy extends TitleStrategy {
 
   updateTitle(routerStateSnapshot: RouterStateSnapshot): void {
     let title = customization.title;
+
     const routeStateTitle = this.buildTitle(routerStateSnapshot);
     if (routeStateTitle) {
       title += ' - ' + routeStateTitle;
     }
+
     // TODO
     if (routerStateSnapshot.root.firstChild?.paramMap.has('id')) {
       title += ' ' + routerStateSnapshot.root.firstChild.paramMap.get('id');
     }
+
     this.title.setTitle(title);
   }
 }

@@ -21,5 +21,8 @@
  */
 
 export interface MapComponentExtraInterface {
+
   ngOnInit(): void;
+
+  ngOnDestroy(): void;
 }

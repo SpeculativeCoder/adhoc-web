@@ -64,9 +64,10 @@ export class UsersComponent implements OnInit {
   currentUser = signal<CurrentUser | undefined>(undefined);
   factions = signal<Faction[] | undefined>(undefined);
 
+  selectedUsers = signal<User[]>([]);
+
   private paging: Paging = new Paging();
 
-  private selectedUsers: User[] = [];
 
   constructor(private userService: UserService,
               private currentUserService: CurrentUserService,
@@ -77,6 +78,7 @@ export class UsersComponent implements OnInit {
 
   ngOnInit() {
     this.featureFlags.set(this.metaService.getFeatureFlags());
+
     this.refreshData();
   }
 
@@ -96,24 +98,20 @@ export class UsersComponent implements OnInit {
     return computed(() => this.factions()?.find(faction => faction.id === factionId));
   }
 
-  isUserSelected(user: User): boolean {
-    return this.selectedUsers.indexOf(user) !== -1;
-  }
-
   userCheckboxChanged(user: User, selected: boolean) {
     if (selected) {
-      this.selectedUsers.push(user);
-      if (this.selectedUsers.length > 2) {
-        this.selectedUsers.shift();
+      this.selectedUsers().push(user);
+      if (this.selectedUsers().length > 2) {
+        this.selectedUsers().shift();
       }
     } else {
-      this.selectedUsers.splice(this.selectedUsers.indexOf(user), 1);
+      this.selectedUsers().splice(this.selectedUsers().indexOf(user), 1);
     }
   }
 
-  userDefeatUser() {
-    const [user, defeatedUser] = this.selectedUsers;
-    this.userDefeatService.userDefeat(user, defeatedUser);
+  serverUserDefeat() {
+    const [user, defeatedUser] = this.selectedUsers();
+    this.userDefeatService.serverUserDefeat(user, defeatedUser);
   }
 
   onPageChanged(pageIndex: number) {

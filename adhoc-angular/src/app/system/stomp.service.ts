@@ -75,6 +75,10 @@ export class StompService {
     return this.eventListeners[eventType] || (this.eventListeners[eventType] = new Subject());
   }
 
+  stopObserveEvent(eventType: string) {
+    delete this.eventListeners[eventType];
+  }
+
   private onMessage(message: Message) {
     const event = JSON.parse(message.body);
     // let services know the event happened so they can update cached data etc.

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {MetaService} from "./system/meta.service";
 import {customization} from "./customization";
@@ -28,6 +28,7 @@ import {CommonModule} from "@angular/common";
 import {CurrentUserService} from './user/current/current-user.service';
 import {CurrentUserComponent} from './user/current/current-user.component';
 import {CurrentUser} from './user/current/current-user';
+import {StompService} from './system/stomp.service';
 
 @Component({
   selector: 'app-root',
@@ -42,16 +43,17 @@ import {CurrentUser} from './user/current/current-user';
   ],
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
 
-  title = signal(customization.title);
   featureFlags = signal('');
   showExtraFeatures = signal(!!customization.extra);
+  title = signal(customization.title);
 
   currentUser = signal<CurrentUser | undefined>(undefined);
 
   constructor(private currentUserService: CurrentUserService,
-              private metaService: MetaService) {
+              private metaService: MetaService,
+              private stompService: StompService) {
   }
 
   ngOnInit() {
@@ -60,6 +62,12 @@ export class AppComponent implements OnInit {
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser.set(currentUser);
     });
+
+    this.stompService.connect();
+  }
+
+  ngOnDestroy(): void {
+    this.stompService.disconnect();
   }
 
   // @HostListener("window:beforeunload")

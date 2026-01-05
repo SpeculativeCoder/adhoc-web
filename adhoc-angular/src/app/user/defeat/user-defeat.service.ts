@@ -36,8 +36,8 @@ export class UserDefeatService {
         .subscribe((body: any) => this.handleUserDefeat(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
   }
 
-  userDefeat(user: User, defeatedUser?: User) {
-    this.stomp.send('UserDefeat', {userId: null /*user.id*/, defeatedUserId: defeatedUser?.id || null});
+  serverUserDefeat(user: User, defeatedUser?: User) {
+    this.stomp.send('ServerUserDefeat', {userId: user.id, defeatedUserId: defeatedUser?.id});
   }
 
   handleUserDefeat(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {

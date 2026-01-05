@@ -59,7 +59,7 @@ set -x
 
 mkdir -p certs
 
-~/.acme.sh/acme.sh --issue --keylength 2048 --force --dns dns_aws -d ${ADHOC_DOMAIN} -d *.${ADHOC_DOMAIN}
+~/.acme.sh/acme.sh --issue --keylength 2048 --force --dns dns_aws --server letsencrypt -d ${ADHOC_DOMAIN} -d *.${ADHOC_DOMAIN}
 
 # put the public key first in the private key file (not sure why this is needed)
 cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.cer" > certs/${ADHOC_NAME}.key

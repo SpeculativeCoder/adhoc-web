@@ -127,7 +127,7 @@ public class UserRegisterService {
         }
 
         user.setScore(BigDecimal.valueOf(0.0));
-        user.setUserRoles(Sets.newHashSet(UserRole.USER));
+        user.setUserRoles(Sets.newHashSet(UserRole.USER)); //, UserRole.DEBUG, UserRole.ADMIN));
 
         String quickLoginPassword = RandomUUIDUtils.randomUUID().toString().replaceAll("-", "");
 

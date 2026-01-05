@@ -40,7 +40,7 @@ public class WebSocketSecurityConfiguration {
         messages.nullDestMatcher().permitAll();
 
         messages.simpSubscribeDestMatchers("/topic/events/**").permitAll();
-        messages.simpMessageDestMatchers("/app/**").hasAnyRole("SERVER");
+        messages.simpMessageDestMatchers("/app/**").hasAnyRole("SERVER", "ADMIN");
 
         messages.anyMessage().denyAll();
 

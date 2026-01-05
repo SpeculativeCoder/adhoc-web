@@ -142,7 +142,7 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         .observeEvent('ServerPawns')
         .subscribe((event: any) => this.handleServerPawns(event));
 
-    this.stompService.connect();
+    //this.stompService.connect();
 
     if (this.mapComponentExtra) {
       this.mapComponentExtra.ngOnInit();
@@ -150,11 +150,21 @@ export class MapComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
   }
 
   ngOnDestroy(): void {
+    if (this.mapComponentExtra) {
+      this.mapComponentExtra.ngOnDestroy();
+    }
+
     // if (this.timerSubscription) {
     //   this.timerSubscription.unsubscribe();
     // }
 
-    this.stompService.disconnect();
+    this.stompService
+        .stopObserveEvent('ServerPawns');
+
+    this.stompService
+        .stopObserveEvent('ObjectiveTaken');
+
+    //this.stompService.disconnect();
 
     this.canvas!.dispose();
     this.canvas = undefined;

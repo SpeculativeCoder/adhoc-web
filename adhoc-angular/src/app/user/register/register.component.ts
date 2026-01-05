@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Faction} from '../../faction/faction';
 import {FactionService} from '../../faction/faction.service';
@@ -58,7 +58,8 @@ export class RegisterComponent implements OnInit {
   constructor(private registerService: RegisterService,
               private factionService: FactionService,
               private metaService: MetaService,
-              private router: Router) {
+              private router: Router,
+              private ref: ChangeDetectorRef) {
 
     this.quickRegisterRequest.name = undefined;
     this.quickRegisterRequest.email = undefined;
@@ -83,6 +84,7 @@ export class RegisterComponent implements OnInit {
       this.quickRegisterRequest.factionId =
           this.registerRequest.factionId =
               1 + Math.floor(Math.random() * this.factions.length);
+      this.ref.markForCheck();
     });
   }
 
@@ -106,6 +108,7 @@ export class RegisterComponent implements OnInit {
       //this.router.navigateByUrl(`/users/${users.userId}`)
     }, error => {
       this.quickRegisterErrorMessage = 'Failed to register';
+      this.ref.markForCheck();
     });
   }
 
@@ -125,6 +128,7 @@ export class RegisterComponent implements OnInit {
       //this.router.navigateByUrl(`/users/${users.userId}`)
     }, error => {
       this.registerErrorMessage = 'Failed to register';
+      this.ref.markForCheck();
     });
   }
 }

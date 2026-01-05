@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {FactionService} from '../../faction/faction.service';
 import {CommonModule} from "@angular/common";
@@ -63,7 +63,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
               private loginService: LoginService,
               private factionService: FactionService,
               private metaService: MetaService,
-              private router: Router) {
+              private router: Router,
+              private ref: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -78,6 +79,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     let hyphenIdx = (this.quickLoginCode || '').indexOf('-');
     if (hyphenIdx == -1) {
       this.quickLoginErrorMessage = 'Invalid Login Code';
+      this.ref.markForCheck();
       return;
     }
     this.quickLoginName = this.quickLoginCode.substring(0, hyphenIdx);
@@ -92,6 +94,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         },
         error => {
           this.quickLoginErrorMessage = 'Failed to login';
+          this.ref.markForCheck();
         });
   }
 
@@ -103,6 +106,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         },
         error => {
           this.loginErrorMessage = 'Failed to login';
+          this.ref.markForCheck();
         });
   }
 

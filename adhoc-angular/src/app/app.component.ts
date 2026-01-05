@@ -25,9 +25,9 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {MetaService} from "./system/meta.service";
 import {customization} from "./customization";
 import {CommonModule} from "@angular/common";
-import {CurrentUserService} from './user/current-user.service';
-import {CurrentUserComponent} from './user/current-user.component';
-import {CurrentUser} from './user/current-user';
+import {CurrentUserService} from './user/current/current-user.service';
+import {CurrentUserComponent} from './user/current/current-user.component';
+import {CurrentUser} from './user/current/current-user';
 
 @Component({
   selector: 'app-root',
@@ -58,7 +58,7 @@ export class AppComponent implements OnInit {
     this.featureFlags.set(this.metaService.getFeatureFlags());
 
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
-      this.currentUser.set(currentUser)
+      this.currentUser.set(currentUser);
     });
   }
 

@@ -23,7 +23,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {mergeMap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {CurrentUserService} from '../current-user.service';
+import {CurrentUserService} from '../current/current-user.service';
 import {CsrfService} from '../../system/csrf.service';
 
 @Injectable({

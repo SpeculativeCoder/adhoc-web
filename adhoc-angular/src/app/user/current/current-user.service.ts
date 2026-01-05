@@ -21,7 +21,6 @@
  */
 
 import {Inject, Injectable} from '@angular/core';
-import {User} from './user';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, mergeMap, take} from 'rxjs';
 import {CurrentUser} from './current-user';
@@ -33,7 +32,7 @@ export class CurrentUserService {
 
   private readonly currentUserUrl: string;
 
-  private currentUser$: BehaviorSubject<CurrentUser | undefined> = new BehaviorSubject<User | undefined>(undefined);
+  private currentUser$ = new BehaviorSubject<CurrentUser | undefined>(undefined);
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {

@@ -27,7 +27,7 @@ import {Observable} from 'rxjs';
 import {Paging} from "../shared/paging";
 import {Page} from "../shared/page";
 import {CsrfService} from "../system/csrf.service";
-import {CurrentUserService} from './current-user.service';
+import {CurrentUserService} from './current/current-user.service';
 
 @Injectable({
   providedIn: 'root'

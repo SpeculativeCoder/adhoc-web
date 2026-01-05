@@ -27,7 +27,7 @@ import {User} from '../user';
 @Injectable({
   providedIn: 'root'
 })
-export class UserDefeatEventService {
+export class UserDefeatService {
 
   constructor(private stomp: StompService) {
 

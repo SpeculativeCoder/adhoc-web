@@ -20,22 +20,26 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnInit, signal} from '@angular/core';
 import {UserService} from './user.service';
 import {User} from './user';
-import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
-import {forkJoin} from 'rxjs';
 import {TableHeaderSortableComponent} from '../shared/table/table-header-sortable.component';
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {TableSortDirective} from "../shared/table/table-sort.directive";
-import {Page} from "../shared/page";
 import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
-import {UserDefeatEventService} from './defeated/user-defeat-event.service';
+import {UserDefeatService} from './defeat/user-defeat.service';
+import {TableComponent} from '../shared/table/table.component';
+import {Page} from '../shared/page';
+import {Pagination} from '../shared/pagination/pagination.component';
+import {CurrentUserService} from './current/current-user.service';
+import {CurrentUser} from './current/current-user';
+import {MetaService} from '../system/meta.service';
+import {forkJoin} from 'rxjs';
+import {Faction} from '../faction/faction';
 
 @Component({
   selector: 'app-users',
@@ -44,44 +48,52 @@ import {UserDefeatEventService} from './defeated/user-defeat-event.service';
     CommonModule,
     RouterLink,
     SimpleDatePipe,
+    TableComponent,
     TableSortDirective,
     TableHeaderSortableComponent,
-    NgbPagination
+    Pagination
   ],
   templateUrl: './users.component.html'
 })
 export class UsersComponent implements OnInit {
 
-  users?: Page<User>;
+  featureFlags = signal('');
+
+  users = signal<Page<User> | undefined>(undefined);
+
+  currentUser = signal<CurrentUser | undefined>(undefined);
+  factions = signal<Faction[] | undefined>(undefined);
+
   private paging: Paging = new Paging();
 
-  factions: Faction[] = [];
-  selectedUsers: User[] = [];
+  private selectedUsers: User[] = [];
 
   constructor(private userService: UserService,
-              private userDefeatEventService: UserDefeatEventService,
+              private currentUserService: CurrentUserService,
+              private userDefeatService: UserDefeatService,
               private factionService: FactionService,
-              private ref: ChangeDetectorRef) {
-  }
-
-  getFaction(factionId: number) {
-    return this.factions.find(faction => faction.id === factionId);
+              private metaService: MetaService) {
   }
 
   ngOnInit() {
-    this.refreshUsers();
-
-    //this.stompService.connect();
+    this.featureFlags.set(this.metaService.getFeatureFlags());
+    this.refreshData();
   }
 
-  private refreshUsers() {
+  private refreshData() {
     forkJoin([
       this.userService.getUsers(this.paging),
-      this.factionService.getCachedFactions()
+      this.currentUserService.getCurrentUser(),
+      this.factionService.getCachedFactions(),
     ]).subscribe(data => {
-      [this.users, this.factions] = data;
-      this.ref.markForCheck();
+      this.users.set(data[0]);
+      this.currentUser.set(data[1]);
+      this.factions.set(data[2]);
     });
+  }
+
+  faction(factionId: number) {
+    return computed(() => this.factions()?.find(faction => faction.id === factionId));
   }
 
   isUserSelected(user: User): boolean {
@@ -101,16 +113,16 @@ export class UsersComponent implements OnInit {
 
   userDefeatUser() {
     const [user, defeatedUser] = this.selectedUsers;
-    this.userDefeatEventService.userDefeat(user, defeatedUser);
+    this.userDefeatService.userDefeat(user, defeatedUser);
   }
 
-  onPageChange(pageIndex: number) {
+  onPageChanged(pageIndex: number) {
     this.paging.page = pageIndex;
-    this.refreshUsers();
+    this.refreshData();
   }
 
   onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
-    this.refreshUsers();
+    this.refreshData();
   }
 }

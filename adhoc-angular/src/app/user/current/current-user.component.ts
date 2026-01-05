@@ -24,14 +24,14 @@ import {ChangeDetectionStrategy, Component, OnInit, signal, viewChild} from '@an
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {CurrentUserService} from './current-user.service';
-import {MetaService} from '../system/meta.service';
-import {Faction} from '../faction/faction';
+import {MetaService} from '../../system/meta.service';
+import {Faction} from '../../faction/faction';
 import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
-import {LogoutService} from './logout/logout.service';
+import {LogoutService} from '../logout/logout.service';
 import {Router} from '@angular/router';
-import {Observable, of} from 'rxjs';
+import {of} from 'rxjs';
 import {CurrentUser} from './current-user';
-import {FactionService} from '../faction/faction.service';
+import {FactionService} from '../../faction/faction.service';
 
 @Component({
   selector: 'app-current-user',
@@ -63,16 +63,14 @@ export class CurrentUserComponent implements OnInit {
 
   ngOnInit(): void {
     this.featureFlags.set(this.metaService.getFeatureFlags());
-
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
+      this.currentUser.set(currentUser);
 
-      let faction$: Observable<Faction | undefined> =
+      let factions$ =
           (currentUser && currentUser.factionId)
-              ? this.factionService.getCachedFaction(currentUser.factionId!)
-              : of(undefined);
-      faction$.subscribe(faction => {
-
-        this.currentUser.set(currentUser);
+              ? this.factionService.getCachedFaction(currentUser.factionId)
+              : of<Faction | undefined>(undefined);
+      factions$.subscribe(faction => {
         this.currentUserFaction.set(faction);
       });
     });

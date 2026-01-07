@@ -26,8 +26,6 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Paging} from "../shared/paging";
 import {Page} from "../shared/page";
-import {CsrfService} from "../system/csrf.service";
-import {CurrentUserService} from './current/current-user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -37,9 +35,7 @@ export class UserService {
   private readonly usersUrl: string;
 
   constructor(@Inject('BASE_URL') baseUrl: string,
-              private http: HttpClient,
-              private currentUserService: CurrentUserService,
-              private csrfService: CsrfService) {
+              private http: HttpClient) {
 
     this.usersUrl = `${baseUrl}/adhoc_api/users`;
   }

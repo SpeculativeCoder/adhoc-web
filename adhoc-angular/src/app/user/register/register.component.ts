@@ -43,17 +43,15 @@ import {MetaService} from '../../system/meta.service';
 })
 export class RegisterComponent implements OnInit {
 
-  featureFlags: string = '';
+  protected featureFlags: string = '';
 
-  quickRegisterRequest: UserRegisterRequest = {};
+  protected quickRegisterRequest: UserRegisterRequest = {};
+  protected quickRegisterErrorMessage?: string;
 
-  quickRegisterErrorMessage?: string;
+  protected registerRequest: UserRegisterRequest = {};
+  protected registerErrorMessage?: string;
 
-  registerRequest: UserRegisterRequest = {};
-
-  registerErrorMessage?: string;
-
-  factions: Faction[] = [];
+  protected factions: Faction[] = [];
 
   constructor(private registerService: RegisterService,
               private factionService: FactionService,
@@ -79,6 +77,10 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {
     this.featureFlags = this.metaService.getFeatureFlags();
 
+    this.refreshData();
+  }
+
+  private refreshData() {
     this.factionService.getCachedFactions().subscribe(factions => {
       this.factions = factions;
       this.quickRegisterRequest.factionId =
@@ -88,11 +90,11 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  getFaction(factionId: number) {
+  protected getFaction(factionId: number) {
     return this.factions.find(faction => faction.id === factionId);
   }
 
-  quickRegister(): void {
+  protected quickRegister(): void {
     if (this.quickRegisterRequest.name === '') {
       this.quickRegisterRequest.name = undefined;
     }
@@ -112,7 +114,7 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  register(): void {
+  protected register(): void {
     if (this.registerRequest.name === '') {
       this.registerRequest.name = undefined;
     }

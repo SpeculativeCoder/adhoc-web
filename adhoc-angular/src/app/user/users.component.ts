@@ -57,23 +57,21 @@ import {Faction} from '../faction/faction';
 })
 export class UsersComponent implements OnInit {
 
-  featureFlags = signal('');
+  protected featureFlags = signal('');
 
-  users = signal<Page<User> | undefined>(undefined);
+  protected users = signal<Page<User> | undefined>(undefined);
+  protected currentUser = signal<CurrentUser | undefined>(undefined);
+  protected factions = signal<Faction[] | undefined>(undefined);
 
-  currentUser = signal<CurrentUser | undefined>(undefined);
-  factions = signal<Faction[] | undefined>(undefined);
-
-  selectedUsers = signal<User[]>([]);
+  protected selectedUsers = signal<User[]>([]);
 
   private paging: Paging = new Paging();
 
-
-  constructor(private userService: UserService,
+  constructor(private metaService: MetaService,
+              private userService: UserService,
               private currentUserService: CurrentUserService,
-              private userDefeatService: UserDefeatService,
               private factionService: FactionService,
-              private metaService: MetaService) {
+              private userDefeatService: UserDefeatService) {
   }
 
   ngOnInit() {
@@ -94,11 +92,12 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  faction(factionId: number) {
-    return computed(() => this.factions()?.find(faction => faction.id === factionId));
+  protected faction(factionId: number | undefined) {
+    return computed(() =>
+        this.factions()?.find(faction => faction.id === factionId));
   }
 
-  userCheckboxChanged(user: User, selected: boolean) {
+  protected setUserSelected(user: User, selected: boolean) {
     if (selected) {
       this.selectedUsers().push(user);
       if (this.selectedUsers().length > 2) {
@@ -109,17 +108,17 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  serverUserDefeat() {
+  protected serverUserDefeat() {
     const [user, defeatedUser] = this.selectedUsers();
     this.userDefeatService.serverUserDefeat(user, defeatedUser);
   }
 
-  onPageChanged(pageIndex: number) {
+  protected onPageChanged(pageIndex: number) {
     this.paging.page = pageIndex;
     this.refreshData();
   }
 
-  onSort(sort: Sort) {
+  protected onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
     this.refreshData();
   }

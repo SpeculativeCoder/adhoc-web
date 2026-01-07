@@ -22,50 +22,57 @@
 
 <div class="container-xxl">
   <h2>
-    User {{ user.id }}
+    User {{ user().id }}
   </h2>
   <form>
     <div class="mb-3">
       <label class="form-label" for="nameInput">Name</label>
-      <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="user.name"/>
+      <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="user().name"/>
     </div>
     <div class="mb-3 form-check">
-      <input class="form-check-input" id="humanInput" name="human" type="checkbox" readonly onclick="return false;" [(ngModel)]="user.human"/>
+      <input class="form-check-input" id="humanInput" name="human" type="checkbox" readonly onclick="return false;" [(ngModel)]="user().human"/>
       <label class="form-check-label" for="humanInput">Human</label>
     </div>
     <div class="mb-3">
-      <label class="form-label" for="factionInput">Faction</label>
-      <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(user.factionId!)?.name"/>
-      <!-- <div *ngIf="false">
-      <div ngbDropdown>
-        <button class="btn" ngbDropdownToggle id="changeFactionDropdown">
-          {{ getFaction(user.factionId)?.name }}
-        </button>
-        <div ngbDropdownMenu aria-labelledby="changeFactionDropdown">
-          <button ngbDropdownItem *ngFor="let faction of factions"
-                  [ngClass]="{ active: faction.id === user.factionId }" (click)="user.factionId = faction.id">
-            {{ faction.name }}
+      @if ((currentUser()?.roles || []).indexOf("ADMIN") == -1) {
+        <label class="form-label" for="factionInput">Faction</label>
+        <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="faction(user().factionId)()?.name"/>
+      } @else {
+        <div ngbDropdown>
+          <button type="button" class="btn btn-outline-secondary" id="changeFactionDropdown" ngbDropdownToggle>
+            <span [ngStyle]="{'color': faction(user().factionId)()?.color }"><span class="oi oi-media-stop"></span></span>
+            <span class="text-body"> {{ faction(user().factionId)()?.name }}</span>
           </button>
+          <div ngbDropdownMenu aria-labelledby="changeFactionDropdown">
+            @for (faction of factions(); track faction.id) {
+              <button type="button" ngbDropdownItem
+                      [ngClass]="{ active: faction.id === user().factionId }" (click)="setUserFaction(user, faction)">
+                <span [ngStyle]="{'color': faction.color}"><span class="oi oi-media-stop"></span></span>
+                <span class="text-body"> {{ faction.name }}</span>
+              </button>
+            }
+          </div>
         </div>
-      </div>
-    </div> -->
+      }
     </div>
     <div class="mb-3">
       <label class="form-label" for="scoreInput">Score</label>
-      <input class="form-control" id="scoreInput" name="score" type="number" readonly [(ngModel)]="user.score"/>
+      <input class="form-control" id="scoreInput" name="score" type="number" readonly [(ngModel)]="user().score"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="regionIdInput">Region</label>
-      <input class="form-control" id="regionIdInput" name="regionId" type="text" readonly [ngModel]="user.regionId"/>
+      <input class="form-control" id="regionIdInput" name="regionId" type="text" readonly [ngModel]="user().regionId"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="seenInput">Seen</label>
-      <input class="form-control" id="seenInput" name="seen" type="text" readonly [ngModel]="user.seen | simpleDate"/>
+      <input class="form-control" id="seenInput" name="seen" type="text" readonly [ngModel]="user().seen | simpleDate"/>
     </div>
-    <!--  <div class="mb-3">-->
-    <!--    <label class="form-label" for="rolesInput">Roles</label>-->
-    <!--    <div class="form-control" id="rolesInput" readonly>{{ user.roles }}</div>-->
-    <!--  </div>-->
+    @if ((currentUser()?.roles || []).indexOf("DEBUG") != -1) {
+      <div class="mb-3">
+        <label class="form-label" for="rolesInput">Roles</label>
+        <div class="form-control" id="rolesInput" readonly>{{ user().roles?.join(',') }}</div>
+      </div>
+    }
     <!--  <div class="mb-3">-->
     <!--    <label class="form-label" for="createdInput">Created</label>-->
     <!--    <input class="form-control" id="createdInput" name="created" type="text" readonly [ngModel]="user.created | simpleDate"/>-->
@@ -84,12 +91,14 @@
     <!--  </div>-->
     <div class="mb-3">
       <label class="form-label" for="serverIdInput">Server</label>
-      <input class="form-control" id="serverIdInput" name="serverId" type="text" readonly [ngModel]="user.serverId"/>
+      <input class="form-control" id="serverIdInput" name="serverId" type="text" readonly [ngModel]="user().serverId"/>
     </div>
     <div class="row">
-      <!--<div class="col-auto mt-3 mb-3">
-        <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
-      </div>-->
+      @if ((currentUser()?.roles || []).indexOf("ADMIN") != -1) {
+        <div class="col-auto mt-3 mb-3">
+          <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
+        </div>
+      }
       <div class="col-auto mt-3 mb-3">
         <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
       </div>

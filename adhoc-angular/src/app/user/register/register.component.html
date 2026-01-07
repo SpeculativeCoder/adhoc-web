@@ -36,13 +36,13 @@
               <span class="text-body"> {{ getFaction(quickRegisterRequest.factionId!)?.name }}</span>
             </button>
             <div ngbDropdownMenu aria-labelledby="quickRegisterFactionId">
-              <button type="button" ngbDropdownItem
-                      *ngFor="let faction of factions "
-                      [ngClass]="{ active: faction.id === quickRegisterRequest.factionId }"
-                      (click)="quickRegisterRequest.factionId = faction.id">
-                <span [ngStyle]="{'color': faction.color}"><span class="oi oi-media-stop"></span></span>
-                <span class="text-body"> {{ faction.name }}</span>
-              </button>
+              @for (faction of factions; track faction.id) {
+                <button type="button" ngbDropdownItem
+                        [ngClass]="{ active: faction.id === quickRegisterRequest.factionId }" (click)="quickRegisterRequest.factionId = faction.id">
+                  <span [ngStyle]="{'color': faction.color}"><span class="oi oi-media-stop"></span></span>
+                  <span class="text-body"> {{ faction.name }}</span>
+                </button>
+              }
             </div>
           </div>
         </div>
@@ -88,13 +88,13 @@
               <span class="text-body"> {{ getFaction(registerRequest.factionId!)?.name }}</span>
             </button>
             <div ngbDropdownMenu aria-labelledby="factionId">
-              <button type="button" ngbDropdownItem
-                      *ngFor="let faction of factions "
-                      [ngClass]="{ active: faction.id === registerRequest.factionId }"
-                      (click)="registerRequest.factionId = faction.id">
-                <span [ngStyle]="{'color': faction.color}"><span class="oi oi-media-stop"></span></span>
-                <span class="text-body"> {{ faction.name }}</span>
-              </button>
+              @for (faction of factions; track faction.id) {
+                <button type="button" ngbDropdownItem
+                        [ngClass]="{ active: faction.id === registerRequest.factionId }" (click)="registerRequest.factionId = faction.id">
+                  <span [ngStyle]="{'color': faction.color}"><span class="oi oi-media-stop"></span></span>
+                  <span class="text-body"> {{ faction.name }}</span>
+                </button>
+              }
             </div>
           </div>
         </div>

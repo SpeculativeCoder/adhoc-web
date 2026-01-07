@@ -45,25 +45,30 @@ import {StompService} from './system/stomp.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
 
-  featureFlags = signal('');
-  showExtraFeatures = signal(!!customization.extra);
-  title = signal(customization.title);
+  protected title = signal(customization.title);
+  protected showExtraFeatures = signal(!!customization.extra);
 
-  currentUser = signal<CurrentUser | undefined>(undefined);
+  protected featureFlags = signal('');
 
-  constructor(private currentUserService: CurrentUserService,
-              private metaService: MetaService,
+  protected currentUser = signal<CurrentUser | undefined>(undefined);
+
+  constructor(private metaService: MetaService,
+              private currentUserService: CurrentUserService,
               private stompService: StompService) {
   }
 
   ngOnInit() {
     this.featureFlags.set(this.metaService.getFeatureFlags());
 
+    this.refreshData();
+
+    this.stompService.connect();
+  }
+
+  private refreshData() {
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser.set(currentUser);
     });
-
-    this.stompService.connect();
   }
 
   ngOnDestroy(): void {
@@ -74,8 +79,5 @@ export class AppComponent implements OnInit, OnDestroy {
   // beforeUnload() {
   //   // disconnect websocket if it is open
   //   this.stompService.disconnect();
-  // }
-
-  // ngOnDestroy() {
   // }
 }

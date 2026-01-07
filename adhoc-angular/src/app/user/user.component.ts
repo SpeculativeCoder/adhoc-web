@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnInit, signal, WritableSignal} from '@angular/core';
 import {User} from './user';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from './user.service';
@@ -30,6 +30,9 @@ import {forkJoin} from 'rxjs';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {CurrentUser} from './current/current-user';
+import {CurrentUserService} from './current/current-user.service';
+import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-user',
@@ -37,46 +40,60 @@ import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
   imports: [
     CommonModule,
     FormsModule,
-    SimpleDatePipe
+    SimpleDatePipe,
+    NgbDropdownModule
   ],
   templateUrl: './user.component.html'
 })
 export class UserComponent implements OnInit {
 
-  user: User = {};
-  factions: Faction[] = [];
+  protected user = signal<User>(new User());
+  protected currentUser = signal<CurrentUser | undefined>(undefined);
+  protected factions = signal<Faction[] | undefined>(undefined);
 
   constructor(private route: ActivatedRoute,
               private userService: UserService,
+              private currentUserService: CurrentUserService,
               private factionService: FactionService,
-              private router: Router,
-              private ref: ChangeDetectorRef) {
+              private router: Router) {
   }
 
   ngOnInit() {
     const userId = +(this.route.snapshot.paramMap.get('id')!);
+    this.refreshData(userId);
+  }
+
+  private refreshData(userId: number) {
     forkJoin([
       this.userService.getUser(userId),
+      this.currentUserService.getCurrentUser(),
       this.factionService.getCachedFactions()
     ]).subscribe(data => {
-      this.user = data[0];
-      this.factions = data[1];
-      this.ref.markForCheck();
+      this.user.set(data[0]);
+      this.currentUser.set(data[1]);
+      this.factions.set(data[2]);
     });
   }
 
-  getFaction(factionId: number) {
-    return this.factions.find(faction => faction.id === factionId);
+  protected faction(factionId: number | undefined) {
+    return computed(() =>
+        this.factions()?.find(faction => faction.id === factionId));
   }
 
-  save() {
-    this.userService.updateUser(this.user).subscribe(user => {
-      this.user = user;
-      this.ref.markForCheck();
+  protected setUserFaction(user: WritableSignal<User>, faction: Faction) {
+    user.update(user => {
+      user.factionId = faction.id;
+      return user;
     });
   }
 
-  back() {
+  protected save() {
+    this.userService.updateUser(this.user()).subscribe(user => {
+      this.user.set(user);
+    });
+  }
+
+  protected back() {
     this.router.navigateByUrl('/users');
   }
 }

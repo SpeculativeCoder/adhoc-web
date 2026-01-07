@@ -35,7 +35,7 @@
       }
       <th scope="col" sortable="id">ID</th>
       <th scope="col" sortable="name">Name</th>
-      @if (featureFlags().indexOf("development") != -1) {
+      @if ((currentUser()?.roles || []).indexOf("DEBUG") != -1) {
         <th scope="col" sortable="roles">Roles</th>
       }
       <th scope="col" sortable="human">Human</th>
@@ -58,13 +58,13 @@
               <input type="checkbox"
                      #userCheckbox
                      [checked]="selectedUsers().indexOf(user) !== -1"
-                     (change)="userCheckboxChanged(user, userCheckbox.checked)"
+                     (change)="setUserSelected(user, userCheckbox.checked)"
                      value=""/>
             </td>
           }
           <th scope="row"><a routerLink="/users/{{ user.id }}">{{ user.id }}</a></th>
           <td>{{ user.name }}</td>
-          @if (featureFlags().indexOf("development") != -1) {
+          @if ((currentUser()?.roles || []).indexOf("DEBUG") != -1) {
             <td>{{ user.roles?.join(',') }}</td>
           }
           <td>{{ user.human }}</td>
@@ -85,7 +85,9 @@
   <app-pagination [data]="users()" (pageChanged)="onPageChanged($event)"/>
 
   @if ((currentUser()?.roles || []).indexOf("ADMIN") != -1) {
-    <button type="button" id="userDefeat" class="btn btn-danger me-2"
+    <button type="button"
+            id="userDefeat"
+            class="btn btn-danger me-2"
             [disabled]="selectedUsers().length != 2"
             (click)="serverUserDefeat()">
       Send UserDefeat(
@@ -93,7 +95,9 @@
       {{ selectedUsers()[1]?.id?.toString() || 'defeatedUser' }})
     </button>
 
-    <button type="button" id="userDefeatSelf" class="btn btn-danger"
+    <button type="button"
+            id="userDefeatSelf"
+            class="btn btn-danger"
             [disabled]="selectedUsers().length != 1"
             (click)="serverUserDefeat()">
       Send UserDefeat(

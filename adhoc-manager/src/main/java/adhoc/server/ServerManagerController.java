@@ -22,8 +22,6 @@
 
 package adhoc.server;
 
-import adhoc.server.events.ServerStartedEvent;
-import adhoc.server.events.ServerUpdatedEvent;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

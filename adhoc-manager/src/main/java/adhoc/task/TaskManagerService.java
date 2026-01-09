@@ -22,6 +22,7 @@
 
 package adhoc.task;
 
+import adhoc.task.server.ServerTaskEntity;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

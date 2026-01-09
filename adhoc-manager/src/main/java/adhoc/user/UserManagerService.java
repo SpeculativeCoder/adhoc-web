@@ -22,6 +22,9 @@
 
 package adhoc.user;
 
+import adhoc.user.defeat.UserDefeatService;
+import adhoc.user.join.UserJoinService;
+import adhoc.user.navigate.UserNavigateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

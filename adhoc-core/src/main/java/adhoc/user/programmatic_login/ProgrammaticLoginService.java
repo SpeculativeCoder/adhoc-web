@@ -22,9 +22,9 @@
 
 package adhoc.user.programmatic_login;
 
+import adhoc.shared.random_uuid.RandomUUIDUtils;
 import adhoc.system.WebSecurityConfiguration;
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
-import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.user.UserEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -24,7 +24,7 @@ package adhoc;
 
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
-import adhoc.user.requests.UserRegisterRequest;
+import adhoc.user.register.UserRegisterRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

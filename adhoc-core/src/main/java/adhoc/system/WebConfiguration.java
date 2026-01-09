@@ -22,8 +22,8 @@
 
 package adhoc.system;
 
+import adhoc.shared.properties.CoreProperties;
 import adhoc.system.exception.AdhocExceptionHandlerExceptionResolver;
-import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;

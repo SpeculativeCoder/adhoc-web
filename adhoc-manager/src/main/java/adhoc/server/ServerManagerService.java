@@ -25,10 +25,8 @@ package adhoc.server;
 import adhoc.area.AreaEntity;
 import adhoc.area.AreaRepository;
 import adhoc.region.RegionRepository;
-import adhoc.server.events.ServerStartedEvent;
-import adhoc.server.events.ServerUpdatedEvent;
-import adhoc.task.ServerTaskEntity;
-import adhoc.task.ServerTaskRepository;
+import adhoc.task.server.ServerTaskEntity;
+import adhoc.task.server.ServerTaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -112,7 +110,7 @@ public class ServerManagerService {
         return server;
     }
 
-    ServerUpdatedEvent toServerUpdatedEvent(ServerEntity server) {
+    public ServerUpdatedEvent toServerUpdatedEvent(ServerEntity server) {
         ServerUpdatedEvent event = new ServerUpdatedEvent(
                 server.getId(),
                 server.getVersion(),

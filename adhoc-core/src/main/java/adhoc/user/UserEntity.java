@@ -24,6 +24,7 @@ package adhoc.user;
 
 import adhoc.faction.FactionEntity;
 import adhoc.pawn.PawnEntity;
+import adhoc.user.state.UserStateEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

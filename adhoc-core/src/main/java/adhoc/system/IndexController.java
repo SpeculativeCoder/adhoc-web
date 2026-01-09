@@ -22,7 +22,7 @@
 
 package adhoc.system;
 
-import adhoc.system.properties.CoreProperties;
+import adhoc.shared.properties.CoreProperties;
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

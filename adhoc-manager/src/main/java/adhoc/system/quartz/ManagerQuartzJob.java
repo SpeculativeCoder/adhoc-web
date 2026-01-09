@@ -22,17 +22,17 @@
 
 package adhoc.system.quartz;
 
-import adhoc.Event;
-import adhoc.faction.FactionScoreService;
-import adhoc.pawn.PawnPurgeService;
-import adhoc.server.ServerAllocateService;
-import adhoc.server.ServerPurgeService;
-import adhoc.task.ServerTaskManagerOrchestrator;
-import adhoc.task.TaskDomainOrchestrator;
+import adhoc.faction.score.FactionScoreService;
+import adhoc.pawn.purge.PawnPurgeService;
+import adhoc.server.allocate.ServerAllocateService;
+import adhoc.server.purge.ServerPurgeService;
+import adhoc.shared.Event;
 import adhoc.task.TaskManagerOrchestrator;
-import adhoc.user.UserPurgeService;
-import adhoc.user.UserScoreService;
-import adhoc.user.UserSeenService;
+import adhoc.task.domain.TaskDomainOrchestrator;
+import adhoc.task.server.ServerTaskManagerOrchestrator;
+import adhoc.user.purge.UserPurgeService;
+import adhoc.user.score.UserScoreService;
+import adhoc.user.state.UserStateManagerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
@@ -59,7 +59,7 @@ public class ManagerQuartzJob implements Job {
     private final TaskDomainOrchestrator taskDomainOrchestrator;
     private final ServerTaskManagerOrchestrator serverTaskManagerOrchestrator;
     private final FactionScoreService factionScoreService;
-    private final UserSeenService userSeenService;
+    private final UserStateManagerService userStateManagerService;
     private final UserScoreService userScoreService;
     private final UserPurgeService userPurgeService;
     private final PawnPurgeService pawnPurgeService;
@@ -95,7 +95,7 @@ public class ManagerQuartzJob implements Job {
                 userScoreService.awardAndDecayUserScores();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SEEN_USERS:
-                userSeenService.manageSeenUsers();
+                userStateManagerService.manageSeenUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_USERS:
                 userPurgeService.purgeOldUsers();

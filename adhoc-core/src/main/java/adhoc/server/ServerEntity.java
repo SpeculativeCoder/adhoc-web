@@ -25,7 +25,7 @@ package adhoc.server;
 import adhoc.area.AreaEntity;
 import adhoc.pawn.PawnEntity;
 import adhoc.region.RegionEntity;
-import adhoc.user.UserStateEntity;
+import adhoc.user.state.UserStateEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

@@ -22,8 +22,9 @@
 
 package adhoc.objective;
 
-import adhoc.objective.events.ObjectiveTakenEvent;
-import adhoc.objective.events.ServerObjectiveTakenEvent;
+import adhoc.objective.taken.ObjectiveTakenEvent;
+import adhoc.objective.taken.ObjectiveTakenService;
+import adhoc.objective.taken.ServerObjectiveTakenEvent;
 import com.google.common.base.Preconditions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

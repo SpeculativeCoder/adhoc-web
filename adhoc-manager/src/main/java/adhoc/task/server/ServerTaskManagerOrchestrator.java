@@ -24,7 +24,6 @@ package adhoc.task.server;
 
 import adhoc.hosting.HostingService;
 import adhoc.server.ServerDto;
-import adhoc.server.ServerManagerService;
 import adhoc.task.TaskDto;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,6 @@ import java.util.List;
 public class ServerTaskManagerOrchestrator {
 
     private final ServerTaskManagerService serverTaskManagerService;
-    private final ServerManagerService serverManagerService;
 
     private final HostingService hostingService;
 
@@ -47,7 +45,7 @@ public class ServerTaskManagerOrchestrator {
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.
      */
     public void manageServerTasks() {
-        List<ServerDto> enabledTasklessServers = serverManagerService.findEnabledTasklessServers();
+        List<ServerDto> enabledTasklessServers = serverTaskManagerService.findEnabledTasklessServers();
         for (ServerDto enabledTasklessServer : enabledTasklessServers) {
             TaskDto serverTask = startHostedServerTask(enabledTasklessServer);
             serverTaskManagerService.createServerTask(serverTask);

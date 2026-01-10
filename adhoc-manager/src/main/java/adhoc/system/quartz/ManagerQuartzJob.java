@@ -22,16 +22,16 @@
 
 package adhoc.system.quartz;
 
-import adhoc.faction.score.FactionScoreService;
+import adhoc.faction.award_decay.FactionAwardDecayService;
 import adhoc.pawn.purge.PawnPurgeService;
 import adhoc.server.allocate.ServerAllocateService;
 import adhoc.server.purge.ServerPurgeService;
 import adhoc.shared.Event;
-import adhoc.task.TaskManagerOrchestrator;
 import adhoc.task.domain.TaskDomainOrchestrator;
+import adhoc.task.refresh.TaskRefreshOrchestrator;
 import adhoc.task.server.ServerTaskManagerOrchestrator;
+import adhoc.user.award_decay.UserAwardDecayService;
 import adhoc.user.purge.UserPurgeService;
-import adhoc.user.score.UserScoreService;
 import adhoc.user.state.UserStateManagerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,12 +55,12 @@ public class ManagerQuartzJob implements Job {
 
     private final ServerAllocateService serverAllocateService;
     private final ServerPurgeService serverPurgeService;
-    private final TaskManagerOrchestrator taskManagerOrchestrator;
+    private final TaskRefreshOrchestrator taskRefreshOrchestrator;
     private final TaskDomainOrchestrator taskDomainOrchestrator;
     private final ServerTaskManagerOrchestrator serverTaskManagerOrchestrator;
-    private final FactionScoreService factionScoreService;
+    private final FactionAwardDecayService factionAwardDecayService;
     private final UserStateManagerService userStateManagerService;
-    private final UserScoreService userScoreService;
+    private final UserAwardDecayService userAwardDecayService;
     private final UserPurgeService userPurgeService;
     private final PawnPurgeService pawnPurgeService;
 
@@ -80,19 +80,19 @@ public class ManagerQuartzJob implements Job {
                 events = serverAllocateService.allocateServers();
                 break;
             case ManagerQuartzConfiguration.REFRESH_TASKS:
-                taskManagerOrchestrator.refreshTasks();
+                taskRefreshOrchestrator.refreshTasks();
                 break;
             case ManagerQuartzConfiguration.MANAGE_TASK_DOMAINS:
                 taskDomainOrchestrator.manageTaskDomains();
                 break;
-            case ManagerQuartzConfiguration.ALLOCATE_SERVER_TASKS:
+            case ManagerQuartzConfiguration.MANAGE_SERVER_TASKS:
                 serverTaskManagerOrchestrator.manageServerTasks();
                 break;
             case ManagerQuartzConfiguration.AWARD_AND_DECAY_FACTION_SCORES:
-                factionScoreService.awardAndDecayFactionScores();
+                factionAwardDecayService.awardAndDecayFactionScores();
                 break;
             case ManagerQuartzConfiguration.AWARD_AND_DECAY_USER_SCORES:
-                userScoreService.awardAndDecayUserScores();
+                userAwardDecayService.awardAndDecayUserScores();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SEEN_USERS:
                 userStateManagerService.manageSeenUsers();

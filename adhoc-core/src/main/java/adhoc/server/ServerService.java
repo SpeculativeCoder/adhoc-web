@@ -51,7 +51,7 @@ public class ServerService {
         return serverRepository.findById(serverId).map(this::toDto);
     }
 
-    ServerDto toDto(ServerEntity server) {
+    public ServerDto toDto(ServerEntity server) {
         return new ServerDto(
                 server.getId(),
                 server.getVersion(),

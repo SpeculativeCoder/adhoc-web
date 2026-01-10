@@ -23,6 +23,10 @@
 package adhoc.task.server;
 
 import adhoc.message.MessageService;
+import adhoc.server.ServerDto;
+import adhoc.server.ServerEntity;
+import adhoc.server.ServerRepository;
+import adhoc.server.ServerService;
 import adhoc.task.TaskDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +37,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -42,8 +49,27 @@ import java.util.List;
 public class ServerTaskManagerService {
 
     private final ServerTaskRepository serverTaskRepository;
+    private final ServerRepository serverRepository;
 
+    private final ServerService serverService;
     private final MessageService messageService;
+
+    public List<ServerDto> findEnabledTasklessServers() {
+        List<ServerDto> enabledTasklessServers = new ArrayList<>();
+
+        try (Stream<ServerEntity> enabledServers = serverRepository.streamByEnabledTrue()) {
+            enabledServers.forEach(enabledServer -> {
+                Optional<ServerTaskEntity> serverTask = serverTaskRepository.findFirstByServerId(enabledServer.getId());
+                if (serverTask.isEmpty()) {
+                    // no existing server task? will need to start a new one
+                    ServerDto enabledTasklessServer = serverService.toDto(enabledServer);
+                    enabledTasklessServers.add(enabledTasklessServer);
+                }
+            });
+        }
+
+        return enabledTasklessServers;
+    }
 
     public List<String> findSeenUnusedServerTasks() {
         LocalDateTime initiatedBefore = LocalDateTime.now().minusMinutes(1);

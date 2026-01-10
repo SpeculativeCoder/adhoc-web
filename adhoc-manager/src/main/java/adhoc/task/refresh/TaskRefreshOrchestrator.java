@@ -20,9 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.task.refresh;
 
 import adhoc.hosting.HostingService;
+import adhoc.task.TaskEntity;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +34,9 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TaskManagerOrchestrator {
+public class TaskRefreshOrchestrator {
 
-    private final TaskManagerService taskManagerService;
+    private final TaskRefreshService taskRefreshService;
 
     private final HostingService hostingService;
 
@@ -46,6 +47,6 @@ public class TaskManagerOrchestrator {
         log.debug("hostedTasks={}", hostedTasks);
         Verify.verifyNotNull(hostedTasks, "hostedTasks is null!");
 
-        taskManagerService.updateTasks(hostedTasks);
+        taskRefreshService.updateTasks(hostedTasks);
     }
 }

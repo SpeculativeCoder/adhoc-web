@@ -20,8 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.task;
+package adhoc.task.refresh;
 
+import adhoc.task.TaskEntity;
+import adhoc.task.TaskRepository;
 import adhoc.task.server.ServerTaskEntity;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +43,7 @@ import java.util.Objects;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class TaskManagerService {
+public class TaskRefreshService {
 
     private final TaskRepository taskRepository;
 

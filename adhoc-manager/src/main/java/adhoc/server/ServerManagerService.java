@@ -25,7 +25,6 @@ package adhoc.server;
 import adhoc.area.AreaEntity;
 import adhoc.area.AreaRepository;
 import adhoc.region.RegionRepository;
-import adhoc.task.server.ServerTaskEntity;
 import adhoc.task.server.ServerTaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,11 +35,8 @@ import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -74,23 +70,6 @@ public class ServerManagerService {
         server.setActive(true);
 
         return toServerUpdatedEvent(server);
-    }
-
-    public List<ServerDto> findEnabledTasklessServers() {
-        List<ServerDto> enabledTasklessServers = new ArrayList<>();
-
-        try (Stream<ServerEntity> enabledServers = serverRepository.streamByEnabledTrue()) {
-            enabledServers.forEach(enabledServer -> {
-                Optional<ServerTaskEntity> serverTask = serverTaskRepository.findFirstByServerId(enabledServer.getId());
-                if (serverTask.isEmpty()) {
-                    // no existing server task? will need to start a new one
-                    ServerDto enabledTasklessServer = serverService.toDto(enabledServer);
-                    enabledTasklessServers.add(enabledTasklessServer);
-                }
-            });
-        }
-
-        return enabledTasklessServers;
     }
 
     ServerEntity toEntity(ServerDto serverDto, ServerEntity server) {

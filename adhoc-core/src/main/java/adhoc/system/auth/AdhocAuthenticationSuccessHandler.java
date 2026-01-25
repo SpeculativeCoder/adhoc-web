@@ -29,6 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
@@ -44,12 +45,13 @@ public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessH
     private UserService userService;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+    public void onAuthenticationSuccess(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Authentication authentication) {
 
         String method = request.getMethod();
         String uri = request.getRequestURI();
 
-        log.atDebug()
+        log.atTrace()
+                .addKeyValue("authentication", authentication)
                 .addKeyValue("method", method)
                 .addKeyValue("uri", uri)
                 .log("onAuthenticationSuccess:");

@@ -25,9 +25,9 @@ package adhoc.system.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
@@ -47,7 +47,7 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
     @Override
     public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {
 
-        log.atDebug()
+        log.atTrace()
                 .addKeyValue("method", request.getMethod())
                 .addKeyValue("uri", request.getRequestURI())
                 .log("resolveException:", exception);
@@ -62,7 +62,7 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
                 .addKeyValue("status", response.getStatus())
-                .addKeyValue("exception.class", exception.getClass().getName())
+                .addKeyValue("exception", exception.getClass().getName())
                 .addKeyValue("method", request.getMethod())
                 .addKeyValue("uri", request.getRequestURI());
         if (!exceptionKnown) {

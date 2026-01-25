@@ -23,6 +23,7 @@
 package adhoc.system.auth;
 
 import lombok.Getter;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
@@ -42,7 +43,7 @@ public class AdhocUserDetails extends org.springframework.security.core.userdeta
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return super.toString() + " userId=" + userId;
     }
 }

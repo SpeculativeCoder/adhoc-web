@@ -23,6 +23,7 @@
 package adhoc.system.log;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.MDC;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -36,7 +37,7 @@ import org.springframework.stereotype.Component;
 public class AdhocMdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
 
     @Override
-    public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
+    public Message<?> beforeHandle(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         //MDC.put("uuid", UUID.randomUUID().toString());
         MDC.put("dest", accessor.getDestination());
@@ -44,7 +45,7 @@ public class AdhocMdcExecutorChannelInterceptor implements ExecutorChannelInterc
     }
 
     @Override
-    public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) {
+    public void afterMessageHandled(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler, Exception ex) {
         MDC.remove("dest");
         //MDC.remove("uuid");
     }

@@ -27,6 +27,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.http.HttpStatus;
@@ -46,12 +47,12 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
     //private final UserAuthService userAuthService;
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull AccessDeniedException exception) throws IOException, ServletException {
 
         String method = request.getMethod();
         String uri = request.getRequestURI();
 
-        log.atDebug()
+        log.atTrace()
                 .addKeyValue("method", method)
                 .addKeyValue("uri", uri)
                 .log("handle:", exception);
@@ -65,7 +66,7 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
                 || uri.startsWith("/adhoc_ws/");
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
-                .addKeyValue("exception.class", exception.getClass().getName())
+                .addKeyValue("exception", exception.getClass().getName())
                 .addKeyValue("method", method)
                 .addKeyValue("uri", uri);
         if (!exceptionKnown) {

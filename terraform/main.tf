@@ -534,7 +534,7 @@ resource "aws_efs_file_system" "adhoc_efs_db" {
   #transition_to_primary_storage_class = "AFTER_1_ACCESS"
   #}
 
-  throughput_mode = "elastic"
+  throughput_mode = "bursting"
 
   protection {
     replication_overwrite = "ENABLED"

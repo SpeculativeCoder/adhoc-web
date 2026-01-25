@@ -66,7 +66,7 @@ public class AdhocManagerApplication extends AbstractAdhocApplication {
         List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
 
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
-            activeProfiles.add("db-hsqldb");
+            activeProfiles.add("db-h2");
         }
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("hosting-"))) {
             activeProfiles.add("hosting-local");

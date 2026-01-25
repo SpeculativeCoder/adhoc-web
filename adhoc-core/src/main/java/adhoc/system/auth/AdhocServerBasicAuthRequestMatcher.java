@@ -28,6 +28,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
@@ -49,6 +50,7 @@ public class AdhocServerBasicAuthRequestMatcher implements RequestMatcher {
     public void postConstruct() {
         if (!Strings.isNullOrEmpty(coreProperties.getServerBasicAuthUsername())
                 && !Strings.isNullOrEmpty(coreProperties.getServerBasicAuthPassword())) {
+
             encodedServerBasicAuth = HttpHeaders.encodeBasicAuth(
                     coreProperties.getServerBasicAuthUsername(),
                     coreProperties.getServerBasicAuthPassword(),
@@ -57,7 +59,7 @@ public class AdhocServerBasicAuthRequestMatcher implements RequestMatcher {
     }
 
     @Override
-    public boolean matches(HttpServletRequest request) {
+    public boolean matches(@NonNull HttpServletRequest request) {
 
         boolean userServer = false;
 

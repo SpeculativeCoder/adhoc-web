@@ -57,7 +57,7 @@ ARG MANAGER_IMAGE=adhoc_dev_manager
 ARG KIOSK_IMAGE=adhoc_dev_kiosk
 ARG SERVER_IMAGE=adhoc_dev_server
 
-ARG SPRING_PROFILES_ACTIVE=db-hsqldb,hosting-local,dns-local
+ARG SPRING_PROFILES_ACTIVE=db-h2,hosting-local,dns-local
 
 ARG DOCKER_AUTO_REMOVE=true
 

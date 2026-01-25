@@ -22,29 +22,46 @@
 
 package adhoc.system.retry;
 
-// TODO: logging for retry
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.LockAcquisitionException;
+import org.slf4j.event.Level;
+import org.slf4j.spi.LoggingEventBuilder;
+import org.springframework.context.ApplicationListener;
+import org.springframework.dao.TransientDataAccessException;
+import org.springframework.resilience.retry.MethodRetryEvent;
+import org.springframework.stereotype.Component;
 
-//import lombok.extern.slf4j.Slf4j;
-//import org.slf4j.event.Level;
-//import org.springframework.retry.RetryContext;
-//import org.springframework.retry.interceptor.MethodInvocationRetryCallback;
-//import org.springframework.retry.listener.MethodInvocationRetryListenerSupport;
-//import org.springframework.stereotype.Component;
-//
-//@Component
-//@Slf4j
-//public class AdhocRetryListener extends MethodInvocationRetryListenerSupport {
-//
-//    @Override
-//    protected <T, E extends Throwable> void doOnError(RetryContext context, MethodInvocationRetryCallback<T, E> callback, Throwable throwable) {
-//        Level level;
-//        if (context.getRetryCount() >= 3) {
-//            level = Level.WARN;
-//        } else if (context.getRetryCount() >= 2) {
-//            level = Level.INFO;
-//        } else {
-//            level = Level.DEBUG;
-//        }
-//        log.atLevel(level).log("Retry: label={} context={}", callback.getLabel(), context);
-//    }
-//}
+@Component
+@Slf4j
+public class AdhocRetryListener implements ApplicationListener<MethodRetryEvent> {
+
+    @Override
+    public void onApplicationEvent(MethodRetryEvent event) {
+
+        boolean exceptionKnown = event.getFailure() instanceof TransientDataAccessException
+                || event.getFailure() instanceof LockAcquisitionException;
+
+        Level level;
+        if (event.isRetryAborted() && !exceptionKnown) {
+            level = Level.ERROR;
+        } else if (event.isRetryAborted()) {
+            level = Level.WARN;
+        } else {
+            level = Level.DEBUG;
+        }
+
+        LoggingEventBuilder logEvent = log.atLevel(level)
+                .addKeyValue("exception", event.getFailure().getClass())
+                .addKeyValue("method", event.getMethod());
+        if (event.isRetryAborted() || !exceptionKnown) {
+            logEvent = logEvent.setCause(event.getFailure());
+        }
+        logEvent.log(event.isRetryAborted() ? "Abort." : "Retry.");
+    }
+
+    @Override
+    public boolean supportsAsyncExecution() {
+        // prefer this to be run in the thread which is doing the retry
+        return false;
+    }
+}

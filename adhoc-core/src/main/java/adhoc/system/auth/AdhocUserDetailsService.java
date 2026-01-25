@@ -30,12 +30,13 @@ import adhoc.user.UserRole;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +53,7 @@ import java.util.LinkedHashSet;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class AdhocUserDetailsManager implements UserDetailsManager {
+public class AdhocUserDetailsService implements UserDetailsService {
 
     private final CoreProperties coreProperties;
 
@@ -60,10 +61,12 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
 
     private final UserRepository userRepository;
 
+    @NonNull
     @Transactional(readOnly = true)
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
 
+        // TODO: move to server package?
         if (!Strings.isNullOrEmpty(coreProperties.getServerBasicAuthUsername())
                 && !Strings.isNullOrEmpty(coreProperties.getServerBasicAuthPassword())
                 && coreProperties.getServerBasicAuthUsername().equals(username)) {
@@ -76,7 +79,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
                     null);
         }
 
-        log.atDebug()
+        log.atTrace()
                 .addKeyValue("username", username)
                 .log("loadUserByUsername:");
 
@@ -94,9 +97,9 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
         UserEntity user = userRepository.findByNameOrEmail(nameOrEmail, nameOrEmail).orElseThrow(() ->
                 UsernameNotFoundException.fromUsername(username));
 
-        log.atDebug()
+        log.atTrace()
                 .addKeyValue("user", user)
-                .addKeyValue("user.token", user.getState().getToken())
+                //.addKeyValue("user.token", user.getState().getToken())
                 .log("loadUserByUsername:");
 
         Collection<GrantedAuthority> authorities = new LinkedHashSet<>(user.getAuthorities());
@@ -122,7 +125,7 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
             enabled = false;
         }
 
-        return new AdhocUserDetails(
+        AdhocUserDetails userDetails = new AdhocUserDetails(
                 user.getName(),
                 password,
                 enabled,
@@ -131,30 +134,11 @@ public class AdhocUserDetailsManager implements UserDetailsManager {
                 true,
                 authorities,
                 user.getId());
-    }
 
-    @Override
-    public void createUser(UserDetails user) {
-        throw new UnsupportedOperationException();
-    }
+        log.atTrace()
+                .addKeyValue("userDetails", userDetails)
+                .log("loadUserByUsername:");
 
-    @Override
-    public void updateUser(UserDetails user) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void deleteUser(String username) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void changePassword(String oldPassword, String newPassword) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean userExists(String username) {
-        throw new UnsupportedOperationException();
+        return userDetails;
     }
 }

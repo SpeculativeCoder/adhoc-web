@@ -37,7 +37,7 @@ import org.hibernate.sql.exec.spi.JdbcOperation;
 /** Dialect to avoid use of <tt>for no key update</tt> as it is not available in H2's Postgres emulation. */
 public class H2PostgresSQLDialect extends PostgreSQLDialect {
 
-    public static final DatabaseVersion PRETEND_POSTGRES_VERSION = DatabaseVersion.make(17, 0, 0);
+    public static final DatabaseVersion PRETEND_POSTGRES_VERSION = DatabaseVersion.make(18, 0, 0);
 
     public H2PostgresSQLDialect() {
         super();

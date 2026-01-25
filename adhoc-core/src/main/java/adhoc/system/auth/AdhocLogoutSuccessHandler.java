@@ -27,6 +27,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -39,9 +40,9 @@ import java.io.IOException;
 public class AdhocLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
-    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, @Nullable Authentication authentication) throws IOException, ServletException {
+    public void onLogoutSuccess(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @Nullable Authentication authentication) throws IOException, ServletException {
 
-        Object principal = authentication.getPrincipal();
+        Object principal = Verify.verifyNotNull(authentication).getPrincipal();
         Verify.verify(principal instanceof AdhocUserDetails);
         AdhocUserDetails userDetails = (AdhocUserDetails) principal;
 

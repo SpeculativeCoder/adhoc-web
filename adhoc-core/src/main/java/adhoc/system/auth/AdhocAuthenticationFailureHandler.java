@@ -26,6 +26,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.http.HttpStatus;
@@ -46,12 +47,12 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
     //private UserAuthService userAuthService;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull AuthenticationException exception) throws IOException, ServletException {
 
         String method = request.getMethod();
         String uri = request.getRequestURI();
 
-        log.atDebug()
+        log.atTrace()
                 .addKeyValue("method", method)
                 .addKeyValue("uri", uri)
                 .log("onAuthenticationFailure:", exception);
@@ -66,7 +67,7 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
                 .addKeyValue("authentication", authentication)
-                .addKeyValue("exception.class", exception.getClass().getName())
+                .addKeyValue("exception", exception.getClass().getName())
                 .addKeyValue("method", method)
                 .addKeyValue("uri", uri);
         if (!exceptionKnown) {

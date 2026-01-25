@@ -23,7 +23,7 @@
 package adhoc.system.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -35,15 +35,15 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
 
     @NonNull
     @Override
-    protected Message<byte[]> handleInternal(@NonNull StompHeaderAccessor errorHeaderAccessor, @NonNull byte[] errorPayload, Throwable exception, StompHeaderAccessor clientHeaderAccessor) {
+    protected Message<byte[]> handleInternal(@NonNull StompHeaderAccessor errorHeaderAccessor, byte @NonNull [] errorPayload, Throwable exception, StompHeaderAccessor clientHeaderAccessor) {
 
-        log.debug("handleInternal", exception);
+        log.trace("handleInternal:", exception);
 
         Message<byte[]> message = super.handleInternal(errorHeaderAccessor, errorPayload, exception, clientHeaderAccessor);
 
         if (exception != null) {
             // TODO
-            log.warn("Stomp failure", exception);
+            log.warn("Stomp failure.", exception);
         }
         //else {
         //    // TODO

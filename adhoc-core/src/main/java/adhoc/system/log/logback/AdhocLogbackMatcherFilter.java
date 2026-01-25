@@ -39,11 +39,28 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
         if ("org.apache.activemq.artemis.core.server".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 
+            // clustering failure/recovery
             if (message.startsWith("AMQ224037: cluster connection Failed to handle message")) {
                 return FilterReply.DENY;
             }
 
-            if (message.startsWith("AMQ224091: Bridge ClusterConnectionBridge") && message.endsWith("is unable to connect to destination. Retrying")) {
+            // clustering failure/recovery
+            if (message.startsWith("AMQ224091: Bridge ClusterConnectionBridge")
+                    && message.endsWith("is unable to connect to destination. Retrying")) {
+                return FilterReply.DENY;
+            }
+
+            // websocket disconnect/timeouts
+            if (message.startsWith("AMQ222067: Connection failure has been detected:")) {
+                return FilterReply.DENY;
+            }
+        }
+
+        if ("org.apache.activemq.artemis.core.protocol.stomp".equals(loggerName)
+                && level.toInt() > Level.DEBUG.toInt()) {
+
+            // websocket disconnect/timeouts
+            if (message.startsWith("AMQ332069: Sent ERROR frame to STOMP client")) {
                 return FilterReply.DENY;
             }
         }
@@ -80,7 +97,7 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                 && level.toInt() > Level.DEBUG.toInt()) {
 
             // batch insert failures due to concurrency
-            if ("HHH100503: On release of batch it still contained JDBC statements".equals(message)) {
+            if ("HHH100503: JDBC batch still contained JDBC statements on release".equals(message)) {
                 return FilterReply.DENY;
             }
         }
@@ -88,8 +105,20 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
         if ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 
-            // web browser stomp disconnection failures
-            if (message.startsWith("Failed to forward DISCONNECT ")) {
+            // websocket disconnect/timeouts
+            if (message.startsWith("Failed to forward DISCONNECT")) {
+                return FilterReply.DENY;
+            }
+
+            // websocket disconnect/timeouts
+            if (message.startsWith("TCP connection failure in session")
+                    && message.contains("failed to forward DISCONNECT")) {
+                return FilterReply.DENY;
+            }
+
+            // websocket disconnect/timeouts
+            if (message.startsWith("Received ERROR {message=[AMQ229014: Did not receive data from")
+                    && message.contains("within the 20000ms connection TTL. The connection will now be closed.")) {
                 return FilterReply.DENY;
             }
         }

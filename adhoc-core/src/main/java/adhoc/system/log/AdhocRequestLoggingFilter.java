@@ -30,13 +30,13 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -63,7 +63,7 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
         this.coreProperties = coreProperties;
 
         setIncludeQueryString(true);
-        setIncludeHeaders(true);
+        //setIncludeHeaders(true);
         setIncludePayload(true);
         setMaxPayloadLength(2000);
         setIncludeClientInfo(true);
@@ -84,7 +84,7 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
         Verify.verify(!isAsyncDispatch(request)); // not properly supported by this logger
@@ -158,15 +158,14 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
                 // TODO
                 logEvent = logEvent
-                        .addKeyValue("request", createMessage(requestWrapper != null ? requestWrapper : request, "", ""))
-                        .addKeyValue("responseStatus", response.getStatus());
+                        .addKeyValue("request", createMessage(requestWrapper != null ? requestWrapper : request, "", ""));
 
                 if (responseWrapper != null) {
                     logEvent = logEvent.addKeyValue("responseBody", getResponseBody(responseWrapper));
                 }
 
                 // TODO
-                logEvent.log("");
+                logEvent.log(String.valueOf(response.getStatus()));
             }
 
             Verify.verify(!isAsyncStarted(request)); // not properly supported by this logger

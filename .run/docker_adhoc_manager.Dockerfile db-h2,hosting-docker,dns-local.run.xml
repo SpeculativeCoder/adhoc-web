@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="docker/adhoc_manager.Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+  <configuration default="false" name="docker/adhoc_manager.Dockerfile db-h2,hosting-docker,dns-local" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
         <option name="containerName" value="adhoc_local_manager" />
@@ -24,6 +24,7 @@
             </DockerPortBindingImpl>
           </list>
         </option>
+        <option name="commandLineOptions" value="--rm" />
         <option name="sourceFilePath" value="docker/adhoc_manager.Dockerfile" />
         <option name="volumeBindings">
           <list>

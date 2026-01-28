@@ -1,6 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="AdhocManagerApplication db-h2,hosting-docker" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="db-h2,hosting-docker" />
+  <configuration default="false" name="AdhocManagerApplication db-h2,hosting-docker,dns-local FEATURE_FLAGS=production" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="db-h2,hosting-docker,dns-local" />
+    <envs>
+      <env name="FEATURE_FLAGS" value="production" />
+    </envs>
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="adhoc-manager" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="adhoc.AdhocManagerApplication" />

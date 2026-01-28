@@ -126,7 +126,4 @@ docker build --tag ${KIOSK_IMAGE} --tag adhoc_${ADHOC_ENV}_kiosk -f docker/adhoc
   --build-arg KIOSK_IMAGE=${KIOSK_IMAGE} \
   --build-arg SERVER_IMAGE=${SERVER_IMAGE} \
   --build-arg SPRING_PROFILES_ACTIVE=${KIOSK_SPRING_PROFILES_ACTIVE} \
-  --build-arg MAX_CONTROLLERS=${MAX_CONTROLLERS} \
-  --build-arg MAX_PLAYERS=${MAX_PLAYERS} \
-  --build-arg MAX_BOTS=${MAX_BOTS} \
   .

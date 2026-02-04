@@ -41,13 +41,6 @@ public class ManagerProperties {
     @Value("${adhoc.default-admin-password}")
     private String defaultAdminPassword;
 
-    @Value("${adhoc.manager-domain}")
-    private String managerDomain;
-    @Value("${adhoc.kiosk-domain}")
-    private String kioskDomain;
-    @Value("${adhoc.server-domain}")
-    private String serverDomain;
-
     @Value("${adhoc.manager-image}")
     private String managerImage;
     @Value("${adhoc.kiosk-image}")
@@ -68,7 +61,6 @@ public class ManagerProperties {
     @EventListener
     public void contextRefreshed(ContextRefreshedEvent event) {
         log.info("defaultUserPassword={} defaultAdminPassword={}", defaultUserPassword, defaultAdminPassword == null ? null : "***");
-        log.info("managerDomain={} kioskDomain={} serverDomain={}", managerDomain, kioskDomain, serverDomain);
         log.info("managerImage={} kioskImage={} serverImage={}", managerImage, kioskImage, serverImage);
         log.info("maxControllers={} maxPlayers={} maxBots={}", maxControllers, maxPlayers, maxBots);
         log.info("purgeOldServersSeenBefore={}", purgeOldServersSeenBefore);

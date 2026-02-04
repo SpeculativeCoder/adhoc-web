@@ -21,19 +21,12 @@
 */-->
 
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <!--/*<meta name="_csrf_token" th:content="${_csrf.token}"/>*/-->
-  <!--/*<meta name="_csrf_headerName" th:content="${_csrf.headerName}"/>*/-->
-  <!--/*<meta name="_csrf_parameterName" th:content="${_csrf.parameterName}"/>*/-->
-  <!--/*<meta name="MODE" th:content="${MODE}">*/-->
-  <meta name="FEATURE_FLAGS" th:content="${FEATURE_FLAGS}">
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!--/*<link rel="icon" type="image/x-icon" href="favicon.ico">*/-->
+    <meta charset="UTF-8">
+    <title>AdhocCombat</title>
 </head>
-<body>
-<app-root></app-root>
+<body style="margin:0">
+<iframe style="border:none; margin:0; width:100%; height:100vh; overflow:hidden" allowfullscreen th:src="${ADHOC_URL}"></iframe>
 </body>
 </html>

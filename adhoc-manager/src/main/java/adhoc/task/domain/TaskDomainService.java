@@ -23,7 +23,7 @@
 package adhoc.task.domain;
 
 import adhoc.message.MessageService;
-import adhoc.shared.properties.ManagerProperties;
+import adhoc.shared.properties.CoreProperties;
 import adhoc.task.TaskEntity;
 import adhoc.task.TaskRepository;
 import adhoc.task.kiosk.KioskTaskEntity;
@@ -50,7 +50,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class TaskDomainService {
 
-    private final ManagerProperties managerProperties;
+    private final CoreProperties coreProperties;
 
     private final TaskRepository taskRepository;
 
@@ -87,9 +87,9 @@ public class TaskDomainService {
 
     private String determineDomain(TaskEntity task) {
         return switch (task) {
-            case ManagerTaskEntity managerTask -> managerProperties.getManagerDomain();
-            case KioskTaskEntity kioskTask -> managerProperties.getKioskDomain();
-            case ServerTaskEntity serverTask -> serverTask.getServerId() + "-" + managerProperties.getServerDomain();
+            case ManagerTaskEntity managerTask -> coreProperties.getManagerDomain();
+            case KioskTaskEntity kioskTask -> coreProperties.getKioskDomain();
+            case ServerTaskEntity serverTask -> serverTask.getServerId() + "-" + coreProperties.getServerDomain();
             default -> throw new IllegalStateException("Unknown task type: " + task.getClass());
         };
     }

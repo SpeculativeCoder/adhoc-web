@@ -68,8 +68,9 @@ export class ClientComponent implements OnInit {
   }
 
   private isUserAgentCompatible(): boolean {
-    // TODO: 'Intel Mac OS'
-    return this.document.defaultView?.navigator.userAgent.indexOf('Windows') != -1;
+    return true; // TODO
+    // TODO: 'Intel Mac OS'?
+    //this.document.defaultView?.navigator.userAgent.indexOf('Windows') != -1;
   }
 
   runClientAnyway() {

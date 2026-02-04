@@ -26,6 +26,7 @@ import adhoc.shared.properties.CoreProperties;
 import adhoc.system.exception.AdhocStompSubProtocolErrorHandler;
 import adhoc.system.log.AdhocMdcExecutorChannelInterceptor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.artemis.autoconfigure.ArtemisMode;
 import org.springframework.boot.artemis.autoconfigure.ArtemisProperties;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +46,7 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
+@Slf4j
 public class WebSocketConfiguration {
 
     private final CoreProperties coreProperties;
@@ -62,16 +64,22 @@ public class WebSocketConfiguration {
             @Override
             public void configureStompEndpoints(StompEndpointRegistry registry) {
 
+                //List<String> allowedOriginPatterns = new ArrayList<>();
+                //allowedOriginPatterns.add("https://" + coreProperties.getManagerDomain());
+                //allowedOriginPatterns.add("http://" + coreProperties.getManagerDomain());
+                //allowedOriginPatterns.add("https://*." + coreProperties.getKioskDomain());
+                //allowedOriginPatterns.add("http://*." + coreProperties.getKioskDomain());
+                //for (String thirdPartyDomain : coreProperties.getThirdPartyDomains()) {
+                //    allowedOriginPatterns.add("https://" + thirdPartyDomain);
+                //}
+                //log.info("allowedOriginPatterns={}", allowedOriginPatterns);
+
                 registry.addEndpoint("/adhoc_ws/stomp/server")
                         .addInterceptors(new HttpSessionHandshakeInterceptor());
 
                 registry.addEndpoint("/adhoc_ws/stomp/user_sockjs")
                         .addInterceptors(new HttpSessionHandshakeInterceptor())
-                        .setAllowedOriginPatterns(
-                                "https://" + coreProperties.getAdhocDomain(),
-                                "http://" + coreProperties.getAdhocDomain(),
-                                "https://*." + coreProperties.getAdhocDomain(),
-                                "http://*." + coreProperties.getAdhocDomain())
+                        //.setAllowedOriginPatterns(allowedOriginPatterns.toArray(new String[0]))
                         .withSockJS()
                         //.setHeartbeatTime(Duration.ofSeconds(30).toMillis())
                         .setTaskScheduler(taskScheduler);

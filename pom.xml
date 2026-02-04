@@ -44,6 +44,7 @@
         <module>adhoc-core</module>
         <module>adhoc-kiosk</module>
         <module>adhoc-manager</module>
+        <module>adhoc-third-party</module>
     </modules>
 
     <properties>

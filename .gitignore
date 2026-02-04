@@ -16,6 +16,8 @@
 
 /adhoc-kiosk/target
 
+/adhoc-third-party/target
+
 /terraform/.terraform
 /terraform/terraform.tfstate.d
 

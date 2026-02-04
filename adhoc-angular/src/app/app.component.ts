@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {MetaService} from "./system/meta.service";
 import {customization} from "./customization";
-import {CommonModule} from "@angular/common";
+import {CommonModule, DOCUMENT} from "@angular/common";
 import {CurrentUserService} from './user/current/current-user.service';
 import {CurrentUserComponent} from './user/current/current-user.component';
 import {CurrentUser} from './user/current/current-user';
@@ -50,9 +50,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
   protected featureFlags = signal('');
 
+  protected inSafariIFrame = signal(false);
+
+  //protected started = signal(false);
+
   protected currentUser = signal<CurrentUser | undefined>(undefined);
 
-  constructor(private metaService: MetaService,
+  constructor(@Inject(DOCUMENT) private document: Document,
+              private metaService: MetaService,
               private currentUserService: CurrentUserService,
               private stompService: StompService) {
   }
@@ -60,9 +65,57 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.featureFlags.set(this.metaService.getFeatureFlags());
 
+    // don't let the app load in a Safari IFrame as the partitioned third party session cookie doesn't seem to work at the moment
+    this.inSafariIFrame.set(this.calculateInSafariIFrame());
+
+    if (!this.inSafariIFrame()) {
+      //this.start();
+      this.doStart();
+    }
+  }
+
+  private calculateInSafariIFrame() {
+    let safari = this.document.defaultView?.navigator.userAgent.indexOf('Safari') != -1;
+    let notChrome = !(this.document.defaultView?.navigator.userAgent.indexOf('Chrome') != -1);
+    let iFrame;
+    try {
+      iFrame = window.top != window.self;
+    } catch (exception) {
+      iFrame = true;
+    }
+    console.log("safari=" + safari);
+    console.log("notChrome=" + notChrome);
+    console.log("iFrame=" + iFrame);
+    return safari && notChrome && iFrame;
+  }
+
+  protected openInNewTab() {
+    document.defaultView?.open(document.URL, '_blank');
+  }
+
+  // protected start() {
+  //   //if (!(this.document.defaultView?.navigator.userAgent.indexOf('Windows') != -1)) {
+  //   console.log("hasStorageAccess");
+  //   this.document.hasStorageAccess().then(storageAccess => {
+  //     console.log("hasStorageAccess=" + storageAccess);
+  //   });
+  //   console.log("requestStorageAccess");
+  //   this.document.requestStorageAccess().then(() => {
+  //     console.log("requestStorageAccess complete");
+  //     this.doStart();
+  //   }, reason => {
+  //     console.log("requestStorageAccess rejected: reason=" + reason);
+  //     this.doStart();
+  //   });
+  //   //}
+  // }
+
+  private doStart() {
     this.refreshData();
 
     this.stompService.connect();
+
+    //this.started.set(true);
   }
 
   private refreshData() {

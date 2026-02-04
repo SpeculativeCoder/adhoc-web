@@ -25,6 +25,7 @@ package adhoc.system;
 import adhoc.shared.properties.CoreProperties;
 import adhoc.system.exception.AdhocExceptionHandlerExceptionResolver;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +39,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExc
 @Configuration
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 @RequiredArgsConstructor
+@Slf4j
 public class WebConfiguration {
 
     private final CoreProperties coreProperties;
@@ -64,16 +66,22 @@ public class WebConfiguration {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOriginPatterns(
-                                "https://" + coreProperties.getAdhocDomain(),
-                                "http://" + coreProperties.getAdhocDomain(),
-                                "https://*." + coreProperties.getAdhocDomain(),
-                                "http://*." + coreProperties.getAdhocDomain())
-                        .allowedMethods("*")
-                        .allowedHeaders("*")
-                        .exposedHeaders("*")
-                        .allowCredentials(true);
+                //List<String> allowedOriginPatterns = new ArrayList<>();
+                //allowedOriginPatterns.add("https://" + coreProperties.getManagerDomain());
+                //allowedOriginPatterns.add("http://" + coreProperties.getManagerDomain());
+                //allowedOriginPatterns.add("https://*." + coreProperties.getKioskDomain());
+                //allowedOriginPatterns.add("http://*." + coreProperties.getKioskDomain());
+                //for (String thirdPartyDomain : coreProperties.getThirdPartyDomains()) {
+                //    allowedOriginPatterns.add("https://" + thirdPartyDomain);
+                //}
+                //log.info("allowedOriginPatterns={}", allowedOriginPatterns);
+
+                //registry.addMapping("/**")
+                //        .allowedOriginPatterns(allowedOriginPatterns.toArray(new String[0]))
+                //        .allowedMethods("*")
+                //        .allowedHeaders("*")
+                //        .exposedHeaders("*")
+                //        .allowCredentials(true);
             }
         };
     }

@@ -22,6 +22,7 @@
 
 package adhoc.system;
 
+import adhoc.shared.properties.CoreProperties;
 import adhoc.system.auth.AdhocAccessDeniedHandler;
 import adhoc.system.auth.AdhocAuthenticationFailureHandler;
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
@@ -60,6 +61,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class WebSecurityConfiguration<S extends Session> {
 
+    private final CoreProperties coreProperties;
+
     @Getter
     private SessionAuthenticationStrategy sessionAuthenticationStrategy;
 
@@ -75,6 +78,14 @@ public class WebSecurityConfiguration<S extends Session> {
             AdhocAuthenticationFailureHandler adhocAuthenticationFailureHandler,
             AdhocLogoutSuccessHandler adhocLogoutSuccessHandler,
             AdhocAccessDeniedHandler adhocAccessDeniedHandler) throws Exception {
+
+        StringBuilder frameAncestors = new StringBuilder("frame-ancestors 'self'");
+        //frameAncestors.append(" https://").append(coreProperties.getManagerDomain()).append("/");
+        //frameAncestors.append(" https://").append(coreProperties.getKioskDomain()).append("/");
+        for (String thirdPartyDomain : coreProperties.getThirdPartyDomains()) {
+            frameAncestors.append(" https://").append(thirdPartyDomain);
+        }
+        log.info("frameAncestors={}", frameAncestors);
 
         return http
                 .authorizeHttpRequests(auth -> auth
@@ -103,8 +114,11 @@ public class WebSecurityConfiguration<S extends Session> {
 
                 .headers(headers -> headers
                         // for sockjs
-                        .frameOptions(frameOptions -> frameOptions
-                                .sameOrigin()))
+                        //.frameOptions(frameOptions -> frameOptions
+                        //        .sameOrigin())
+                        .frameOptions(frameOptions -> frameOptions.disable())
+                        .contentSecurityPolicy(csp ->
+                                csp.policyDirectives(frameAncestors.toString())))
 
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfTokenRepository)
@@ -116,6 +130,7 @@ public class WebSecurityConfiguration<S extends Session> {
                 .cors(withDefaults())
 
                 .sessionManagement(session -> session
+                        //.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                         .sessionFixation(fixation -> fixation
                                 .changeSessionId()
                                 .withObjectPostProcessor(sessionAuthenticationStrategyPostProcessor()))

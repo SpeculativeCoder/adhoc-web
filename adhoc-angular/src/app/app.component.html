@@ -20,87 +20,107 @@
   ~ SOFTWARE.
   -->
 
-<ul class="nav">
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page"><strong>{{ title() }}</strong></a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/map" routerLinkActive="active" ariaCurrentWhenActive="page">Map</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/info/about" routerLinkActive="active" ariaCurrentWhenActive="page">About</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/info/eula" routerLinkActive="active" ariaCurrentWhenActive="page">EULA</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/servers" routerLinkActive="active" ariaCurrentWhenActive="page">Servers</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/tasks" routerLinkActive="active" ariaCurrentWhenActive="page">Tasks</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/regions" routerLinkActive="active" ariaCurrentWhenActive="page">Regions</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/areas" routerLinkActive="active" ariaCurrentWhenActive="page">Areas</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/objectives" routerLinkActive="active" ariaCurrentWhenActive="page">Objectives</a>
-  </li>
-  @if (showExtraFeatures()) {
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/structures" routerLinkActive="active" ariaCurrentWhenActive="page">Structures</a>
-    </li>
-  }
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/pawns" routerLinkActive="active" ariaCurrentWhenActive="page">Pawns</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/factions" routerLinkActive="active" ariaCurrentWhenActive="page">Factions</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/users" routerLinkActive="active" ariaCurrentWhenActive="page">Users</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Messages</a>
-  </li>
-  @if (!currentUser()) {
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/register" routerLinkActive="active" ariaCurrentWhenActive="page">
-        <em>Register</em>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">
-        <em>Login</em>
-      </a>
-    </li>
-  } @else {
-    <li class="nav-item">
-      <app-current-user/>
-    </li>
-  }
-  <!-- TODO -->
-  @if (featureFlags().indexOf("development") != -1) {
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-        <span class="oi oi-sun"></span>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end" style="--bs-dropdown-min-width: 5rem;">
-        <li>
-          <a class="dropdown-item text-center" onclick="document.documentElement.setAttribute('data-bs-theme', 'light')">Light</a>
-        </li>
-        <li>
-          <a class="dropdown-item text-center" onclick="document.documentElement.setAttribute('data-bs-theme', 'dark')">Dark</a>
-        </li>
-      </ul>
-    </li>
-  }
-</ul>
+<!--
+@if (!started()) {
 
-<router-outlet></router-outlet>
+  <div class="container-xxl">
+    <button type="button" class="btn btn-primary mt-3 mb-auto me-auto" (click)="start()">Click to Load Content</button>
+  </div>
 
+} @else {
+-->
+
+@if (inSafariIFrame()) {
+
+  <div class="container-xxl">
+    <p class="mt-3 lead">Does not currently work properly in a Safari IFrame</p>
+    <button type="button" class="btn btn-info mt-1 mb-auto me-auto" (click)="openInNewTab()">Open in New Tab</button>
+  </div>
+
+} @else {
+
+  <ul class="nav">
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page"><strong>{{ title() }}</strong></a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/map" routerLinkActive="active" ariaCurrentWhenActive="page">Map</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/info/about" routerLinkActive="active" ariaCurrentWhenActive="page">About</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/info/eula" routerLinkActive="active" ariaCurrentWhenActive="page">EULA</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/servers" routerLinkActive="active" ariaCurrentWhenActive="page">Servers</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/tasks" routerLinkActive="active" ariaCurrentWhenActive="page">Tasks</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/regions" routerLinkActive="active" ariaCurrentWhenActive="page">Regions</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/areas" routerLinkActive="active" ariaCurrentWhenActive="page">Areas</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/objectives" routerLinkActive="active" ariaCurrentWhenActive="page">Objectives</a>
+    </li>
+    @if (showExtraFeatures()) {
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/structures" routerLinkActive="active" ariaCurrentWhenActive="page">Structures</a>
+      </li>
+    }
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/pawns" routerLinkActive="active" ariaCurrentWhenActive="page">Pawns</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/factions" routerLinkActive="active" ariaCurrentWhenActive="page">Factions</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/users" routerLinkActive="active" ariaCurrentWhenActive="page">Users</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Messages</a>
+    </li>
+    @if (!currentUser()) {
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/register" routerLinkActive="active" ariaCurrentWhenActive="page">
+          <em>Register</em>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">
+          <em>Login</em>
+        </a>
+      </li>
+    } @else {
+      <li class="nav-item">
+        <app-current-user/>
+      </li>
+    }
+    <!-- TODO -->
+    @if (featureFlags().indexOf("development") != -1) {
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+          <span class="oi oi-sun"></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" style="--bs-dropdown-min-width: 5rem;">
+          <li>
+            <a class="dropdown-item text-center" onclick="document.documentElement.setAttribute('data-bs-theme', 'light')">Light</a>
+          </li>
+          <li>
+            <a class="dropdown-item text-center" onclick="document.documentElement.setAttribute('data-bs-theme', 'dark')">Dark</a>
+          </li>
+        </ul>
+      </li>
+    }
+  </ul>
+
+  <router-outlet></router-outlet>
+
+}
 <!--<app-messages></app-messages>-->
 
 <!--

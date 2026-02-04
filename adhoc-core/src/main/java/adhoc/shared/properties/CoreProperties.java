@@ -80,6 +80,16 @@ public class CoreProperties {
     @Value("${adhoc.domain}")
     private String adhocDomain;
 
+    @Value("${adhoc.manager-domain}")
+    private String managerDomain;
+    @Value("${adhoc.kiosk-domain}")
+    private String kioskDomain;
+    @Value("${adhoc.server-domain}")
+    private String serverDomain;
+
+    @Value("${adhoc.third-party-domains}")
+    private List<String> thirdPartyDomains;
+
     @Value("${adhoc.unreal-project-name}")
     private String unrealProjectName;
     @Value("${adhoc.unreal-project-region-maps}")
@@ -124,6 +134,8 @@ public class CoreProperties {
         log.info("kioskMessageBrokerHost={} kioskMessageBrokerCorePort={}", kioskMessageBrokerHost, kioskMessageBrokerCorePort);
         log.info("managerHost={} kioskHost={}", managerHost, kioskHost);
         log.info("adhocDomain={}", adhocDomain);
+        log.info("managerDomain={} kioskDomain={} serverDomain={}", managerDomain, kioskDomain, serverDomain);
+        log.info("thirdPartyDomains={}", thirdPartyDomains);
         log.info("unrealProjectName={} unrealProjectRegionMaps={}", unrealProjectName, unrealProjectRegionMaps);
         log.info("serverBasicAuthUsername={} serverBasicAuthPassword?={}", serverBasicAuthUsername, !Strings.isNullOrEmpty(serverBasicAuthPassword));
         log.info("quickLoginPasswordEncryptionKey?={}", !Strings.isNullOrEmpty(quickLoginPasswordEncryptionKey));

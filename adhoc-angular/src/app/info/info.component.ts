@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {AboutComponent} from "./about/about.component";
@@ -38,12 +38,12 @@ import {EulaComponent} from "./eula/eula.component";
 })
 export class InfoComponent {
 
-  page?: string;
+  page = signal('');
 
   constructor(private route: ActivatedRoute,
               private router: Router) {
     this.route.paramMap.subscribe(params => {
-      this.page = params.get('page')!;
+      this.page.set(params.get('page') || '');
     });
   }
 }

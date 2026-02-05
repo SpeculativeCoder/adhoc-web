@@ -326,16 +326,16 @@ resource "aws_vpc" "adhoc" {
   }
 }
 
-resource "aws_subnet" "adhoc_b" {
+resource "aws_subnet" "adhoc_a" {
   vpc_id          = aws_vpc.adhoc.id
   cidr_block      = "10.0.0.0/24"
   ipv6_cidr_block = cidrsubnet(aws_vpc.adhoc.ipv6_cidr_block, 8, 0)
   # TODO: multi subnets / zones
-  availability_zone               = "${data.aws_region.region.region}b"
+  availability_zone               = "${data.aws_region.region.region}a"
   map_public_ip_on_launch         = true
   assign_ipv6_address_on_creation = true
   tags = {
-    Name = "${local.adhoc_name}_${terraform.workspace}_b"
+    Name = "${local.adhoc_name}_${terraform.workspace}_a"
   }
 }
 
@@ -356,7 +356,7 @@ resource "aws_route" "adhoc_ipv6" {
 }
 
 #resource "aws_route_table_association" "adhoc" {
-#  subnet_id      = aws_subnet.adhoc_b.id
+#  subnet_id      = aws_subnet.adhoc_a.id
 #  route_table_id = aws_vpc.adhoc.default_route_table_id
 #}
 
@@ -607,7 +607,7 @@ resource "aws_efs_access_point" "adhoc_efs_db" {
 
 resource "aws_efs_mount_target" "adhoc_efs_db_b" {
   file_system_id  = aws_efs_file_system.adhoc_efs_db.id
-  subnet_id       = aws_subnet.adhoc_b.id
+  subnet_id       = aws_subnet.adhoc_a.id
   security_groups = [aws_security_group.adhoc_efs_db.id]
 }
 
@@ -1324,7 +1324,7 @@ resource "aws_ecs_cluster" "adhoc" {
 #
 #      network_configuration {
 #        subnets = [
-#          aws_subnet.adhoc_b.id,
+#          aws_subnet.adhoc_a.id,
 #        ]
 #        security_groups = [
 #          aws_security_group.adhoc_manager.id
@@ -1373,7 +1373,7 @@ resource "aws_ecs_service" "adhoc_manager" {
       aws_security_group.adhoc_manager.id
     ]
     subnets = [
-      aws_subnet.adhoc_b.id
+      aws_subnet.adhoc_a.id
     ]
     assign_public_ip = true
   }
@@ -1408,7 +1408,7 @@ resource "aws_ecs_service" "adhoc_kiosk" {
       aws_security_group.adhoc_kiosk.id
     ]
     subnets = [
-      aws_subnet.adhoc_b.id
+      aws_subnet.adhoc_a.id
     ]
     assign_public_ip = true
   }

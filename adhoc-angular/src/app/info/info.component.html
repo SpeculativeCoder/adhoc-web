@@ -22,12 +22,11 @@
 
 <div class="container-xxl">
 
-  <div *ngIf="page == 'eula'">
+  @if (page() == 'eula') {
     <app-eula></app-eula>
-  </div>
 
-  <div *ngIf="page == 'about'">
+  } @else if (page() == 'about') {
     <app-about></app-about>
-  </div>
+  }
 
 </div>

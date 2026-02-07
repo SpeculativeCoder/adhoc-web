@@ -46,7 +46,8 @@ mkdir -p ${UNREAL_ENGINE_CERTS_DIR}
 # root certificate
 rm -f certs/${ADHOC_NAME}-ca.crt
 
-certutil -store "AuthRoot" "USERTrust RSA Certification Authority" certs/${ADHOC_NAME}-ca.crt
+#certutil -store "AuthRoot" "USERTrust RSA Certification Authority" certs/${ADHOC_NAME}-ca.crt
+certutil -store "AuthRoot" "ISRG Root X1" certs/${ADHOC_NAME}-ca.crt
 openssl x509 -in certs/${ADHOC_NAME}-ca.crt -out certs/${ADHOC_NAME}-ca.cer -inform DEM -outform PEM
 dos2unix certs/${ADHOC_NAME}-ca.cer
 

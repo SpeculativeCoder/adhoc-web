@@ -33,6 +33,7 @@ import adhoc.user.state.UserStateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
+import org.slf4j.event.Level;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -94,7 +95,11 @@ public class UserService {
         user.getState().setToken(newToken);
         user.setLastLogin(now);
 
-        log.debug("Authentication success. id={} name={} human={} token={}", user.getId(), user.getName(), user.isHuman(), user.getState().getToken());
+        log.atLevel(Level.INFO)
+                .addKeyValue("name", user.getName())
+                .log("Authentication success: userId={} human={}", user.getId(), user.isHuman());
+
+        log.debug("authenticationSuccess: token={}", user.getState().getToken());
     }
 
     UserDto toDto(UserEntity user) {

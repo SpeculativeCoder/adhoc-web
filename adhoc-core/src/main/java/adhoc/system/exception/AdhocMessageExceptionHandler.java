@@ -33,6 +33,6 @@ public class AdhocMessageExceptionHandler {
     @MessageExceptionHandler
     public void handleThrowable(Throwable exception) {
         // TODO
-        log.warn("Message failure", exception);
+        log.warn("Message failure:", exception);
     }
 }

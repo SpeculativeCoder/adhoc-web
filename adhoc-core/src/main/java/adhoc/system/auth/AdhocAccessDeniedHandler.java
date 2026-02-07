@@ -49,12 +49,12 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull AccessDeniedException exception) throws IOException, ServletException {
 
-        String method = request.getMethod();
+        //String method = request.getMethod();
         String uri = request.getRequestURI();
 
         log.atTrace()
-                .addKeyValue("method", method)
-                .addKeyValue("uri", uri)
+                //.addKeyValue("method", method)
+                //.addKeyValue("uri", uri)
                 .log("handle:", exception);
 
         //userAuthService.onAccessDenied(method, uri, exception);
@@ -66,14 +66,18 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
                 || uri.startsWith("/adhoc_ws/");
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
-                .addKeyValue("exception", exception.getClass().getName())
-                .addKeyValue("method", method)
-                .addKeyValue("uri", uri);
+                //.addKeyValue("method", method)
+                //.addKeyValue("uri", uri)
+                .addKeyValue("exception", exception);
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Access denied.");
 
-        response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
+        int status = HttpStatus.FORBIDDEN.value();
+        String message = HttpStatus.FORBIDDEN.getReasonPhrase();
+
+        logEvent.log("Access denied: status={}", status);
+
+        response.sendError(status, message);
     }
 }

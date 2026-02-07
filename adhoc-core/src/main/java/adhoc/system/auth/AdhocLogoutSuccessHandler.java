@@ -49,6 +49,6 @@ public class AdhocLogoutSuccessHandler implements LogoutSuccessHandler {
         log.atInfo()
                 .addKeyValue("userId", userDetails.getUserId())
                 .addKeyValue("userName", userDetails.getUsername())
-                .log("Logout success.");
+                .log("Logout success:");
     }
 }

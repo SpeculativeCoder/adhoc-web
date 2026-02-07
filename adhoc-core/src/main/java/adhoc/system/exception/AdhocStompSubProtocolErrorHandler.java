@@ -22,10 +22,16 @@
 
 package adhoc.system.exception;
 
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.event.Level;
+import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 
@@ -42,8 +48,15 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
         Message<byte[]> message = super.handleInternal(errorHeaderAccessor, errorPayload, exception, clientHeaderAccessor);
 
         if (exception != null) {
-            // TODO
-            log.warn("Stomp failure.", exception);
+            var exceptionClasses = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
+            boolean exceptionKnown = ImmutableList.of(MessageDeliveryException.class, InvalidCsrfTokenException.class).equals(exceptionClasses);
+
+            LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
+                    .addKeyValue("exception", exception);
+            if (!exceptionKnown) {
+                logEvent = logEvent.setCause(exception);
+            }
+            logEvent.log("Stomp failure:");
         }
         //else {
         //    // TODO

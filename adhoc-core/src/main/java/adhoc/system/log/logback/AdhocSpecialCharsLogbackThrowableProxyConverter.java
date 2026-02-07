@@ -23,7 +23,7 @@
 package adhoc.system.log.logback;
 
 import adhoc.system.log.util.LoggingUtils;
-import ch.qos.logback.classic.pattern.RootCauseFirstThrowableProxyConverter;
+import ch.qos.logback.classic.pattern.ExtendedThrowableProxyConverter;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cglib.proxy.Enhancer;
@@ -33,7 +33,7 @@ import org.springframework.cglib.proxy.MethodProxy;
 import java.lang.reflect.Method;
 
 // TODO: consider a one-line exception?
-public class AdhocSpecialCharsLogbackThrowableProxyConverter extends RootCauseFirstThrowableProxyConverter {
+public class AdhocSpecialCharsLogbackThrowableProxyConverter extends ExtendedThrowableProxyConverter {
 
     @Override
     @SuppressWarnings("CallToPrintStackTrace")

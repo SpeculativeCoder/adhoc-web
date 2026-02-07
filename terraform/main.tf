@@ -605,7 +605,7 @@ resource "aws_efs_access_point" "adhoc_efs_db" {
   file_system_id = aws_efs_file_system.adhoc_efs_db.id
 }
 
-resource "aws_efs_mount_target" "adhoc_efs_db_b" {
+resource "aws_efs_mount_target" "adhoc_efs_db_a" {
   file_system_id  = aws_efs_file_system.adhoc_efs_db.id
   subnet_id       = aws_subnet.adhoc_a.id
   security_groups = [aws_security_group.adhoc_efs_db.id]

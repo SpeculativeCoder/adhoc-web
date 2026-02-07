@@ -121,7 +121,7 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
             //&& response.getStatus() != HttpStatus.METHOD_NOT_ALLOWED.value() // 405
 
             boolean statusServerError = (response.getStatus() / 100) == 5;
-            boolean statusBadRequest = response.getStatus() == 400;
+            //boolean statusBadRequest = response.getStatus() == 400;
             boolean statusSuccess = (response.getStatus() / 100) == 2;
             boolean statusInfo = (response.getStatus() / 100) == 1;
 
@@ -138,11 +138,11 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
             LoggingEventBuilder logEvent = null;
 
-            if (logger.isErrorEnabled() && statusServerError && uriApi) {
-                logEvent = logger.atError();
-
-            } else if (logger.isWarnEnabled() && statusBadRequest && uriApi) {
+            if (logger.isWarnEnabled() && statusServerError && uriApi) {
                 logEvent = logger.atWarn();
+
+                //} else if (logger.isWarnEnabled() && statusBadRequest && uriApi) {
+                //    logEvent = logger.atWarn();
 
             } else if (logger.isInfoEnabled() && !statusSuccess && !statusInfo && uriApi) {
                 logEvent = logger.atInfo();
@@ -165,7 +165,7 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
                 }
 
                 // TODO
-                logEvent.log(String.valueOf(response.getStatus()));
+                logEvent.log("status={}", response.getStatus());
             }
 
             Verify.verify(!isAsyncStarted(request)); // not properly supported by this logger

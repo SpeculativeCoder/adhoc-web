@@ -32,7 +32,7 @@
 
         <!-- &#x00A0; -->
         <encoder>
-            <pattern>%color(%-5level){} %color(%specialChars(%mdc)){magenta} %color([%thread]){blue} %color(%logger){cyan}%color(:){bright_black} %color(%specialChars(%message)){} %specialChars(%kvp{NONE}){}%n%specialCharsThrowable{}
+            <pattern>%color(%level){} %color(%specialChars(%mdc)){magenta} %color([%thread]){blue} %color(%logger){cyan}%color(:){bright_black} %color(%specialChars(%message)){} %specialChars(%kvp{NONE}){}%n%specialCharsThrowable{}
             </pattern>
             <charset>UTF-8</charset>
         </encoder>

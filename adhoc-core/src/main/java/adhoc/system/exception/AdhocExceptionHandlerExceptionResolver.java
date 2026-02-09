@@ -36,6 +36,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
 
@@ -65,7 +66,8 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
 
         var exceptionClasses = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
         boolean exceptionKnown = ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class).equals(exceptionClasses)
-                || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionClasses);
+                || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionClasses)
+                || ImmutableList.of(NoResourceFoundException.class).equals(exceptionClasses);
 
         boolean uriApi = uri.startsWith("/adhoc_api/")
                 || uri.startsWith("/adhoc_ws/");

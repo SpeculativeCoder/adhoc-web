@@ -54,27 +54,28 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
     @Override
     public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {
 
-        //String method = request.getMethod();
+        String method = request.getMethod();
         String uri = request.getRequestURI();
 
         log.atTrace()
-                //.addKeyValue("method", method)
-                //.addKeyValue("uri", uri)
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri)
                 .log("resolveException:", exception);
 
         ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
         var exceptionClasses = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
         boolean exceptionKnown = ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class).equals(exceptionClasses)
+                || ImmutableList.of(ClientAbortException.class, IOException.class).equals(exceptionClasses)
                 || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionClasses)
                 || ImmutableList.of(NoResourceFoundException.class).equals(exceptionClasses);
 
         boolean uriApi = uri.startsWith("/adhoc_api/")
                 || uri.startsWith("/adhoc_ws/");
 
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.WARN))
-                //.addKeyValue("method", method)
-                //.addKeyValue("uri", uri)
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri)
                 .addKeyValue("exception", exception);
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);

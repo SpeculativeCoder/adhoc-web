@@ -32,6 +32,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.ModelAndView;
@@ -68,7 +69,9 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
         boolean exceptionKnown = ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class).equals(exceptionClasses)
                 || ImmutableList.of(ClientAbortException.class, IOException.class).equals(exceptionClasses)
                 || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionClasses)
-                || ImmutableList.of(NoResourceFoundException.class).equals(exceptionClasses);
+                || ImmutableList.of(NoResourceFoundException.class).equals(exceptionClasses)
+                // TODO
+                || ImmutableList.of(HttpMediaTypeNotAcceptableException.class).equals(exceptionClasses);
 
         boolean uriApi = uri.startsWith("/adhoc_api/")
                 || uri.startsWith("/adhoc_ws/");

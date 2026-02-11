@@ -34,7 +34,7 @@ public class RandomNameUtils {
 
         return onlyAlpha(WordUtils.capitalize(faker.word().adjective()) +
                 WordUtils.capitalize(faker.word().adjective()) +
-                WordUtils.capitalize(faker.word().noun()));
+                WordUtils.capitalize(faker.word().verb()));
     }
 
     private String onlyAlpha(String str) {

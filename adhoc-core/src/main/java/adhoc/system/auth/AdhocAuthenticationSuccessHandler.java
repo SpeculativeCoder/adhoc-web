@@ -47,12 +47,12 @@ public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessH
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Authentication authentication) {
 
-        //String method = request.getMethod();
-        //String uri = request.getRequestURI();
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
 
         log.atTrace()
-                //.addKeyValue("method", method)
-                //.addKeyValue("uri", uri)
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri)
                 .addKeyValue("authentication", authentication)
                 .log("onAuthenticationSuccess:");
 

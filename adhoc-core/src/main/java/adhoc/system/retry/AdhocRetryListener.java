@@ -38,25 +38,27 @@ public class AdhocRetryListener implements ApplicationListener<MethodRetryEvent>
     @Override
     public void onApplicationEvent(MethodRetryEvent event) {
 
-        boolean exceptionKnown = event.getFailure() instanceof TransientDataAccessException
+        // we will log only for the transient exceptions
+        boolean exceptionRelevant = event.getFailure() instanceof TransientDataAccessException
                 || event.getFailure() instanceof LockAcquisitionException;
 
         Level level;
-        if (event.isRetryAborted() && !exceptionKnown) {
-            level = Level.ERROR;
-        } else if (event.isRetryAborted()) {
+        if (exceptionRelevant && event.isRetryAborted()) {
             level = Level.WARN;
+        } else if (exceptionRelevant) {
+            level = Level.INFO;
         } else {
-            level = Level.DEBUG;
+            level = Level.TRACE;
         }
 
         LoggingEventBuilder logEvent = log.atLevel(level)
-                .addKeyValue("exception", event.getFailure().getClass())
-                .addKeyValue("method", event.getMethod());
-        if (event.isRetryAborted() || !exceptionKnown) {
+                .addKeyValue("method", event.getMethod())
+                .addKeyValue("exception", event.getFailure());
+        // include full stack trace for cases where all retries of these transient exceptions failed
+        if (exceptionRelevant && event.isRetryAborted()) {
             logEvent = logEvent.setCause(event.getFailure());
         }
-        logEvent.log(event.isRetryAborted() ? "Abort." : "Retry.");
+        logEvent.log(event.isRetryAborted() ? "Aborting:" : "Retrying:");
     }
 
     @Override

@@ -49,12 +49,12 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull AuthenticationException exception) throws IOException, ServletException {
 
-        //String method = request.getMethod();
-        //String uri = request.getRequestURI();
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
 
         log.atTrace()
-                //.addKeyValue("method", method)
-                //.addKeyValue("uri", uri)
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri)
                 .log("onAuthenticationFailure:", exception);
 
         //userAuthService.onAuthenticationFailure(exception);
@@ -66,8 +66,8 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
                 || exception instanceof DisabledException;
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
-                //.addKeyValue("method", method)
-                //.addKeyValue("uri", uri)
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri)
                 .addKeyValue("authentication", authentication)
                 .addKeyValue("exception", exception);
         if (!exceptionKnown) {

@@ -161,11 +161,11 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
                         .addKeyValue("request", createMessage(requestWrapper != null ? requestWrapper : request, "", ""));
 
                 if (responseWrapper != null) {
-                    logEvent = logEvent.addKeyValue("responseBody", getResponseBody(responseWrapper));
+                    logEvent = logEvent.addKeyValue("response", getResponseBody(responseWrapper));
                 }
 
                 // TODO
-                logEvent.log("status={}", response.getStatus());
+                logEvent.log("{}", response.getStatus());
             }
 
             Verify.verify(!isAsyncStarted(request)); // not properly supported by this logger

@@ -27,6 +27,7 @@ import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.retry.RetryException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.resilience.retry.MethodRetryEvent;
 import org.springframework.stereotype.Component;
@@ -39,26 +40,31 @@ public class AdhocRetryListener implements ApplicationListener<MethodRetryEvent>
     public void onApplicationEvent(MethodRetryEvent event) {
 
         // we will log only for the transient exceptions
-        boolean exceptionRelevant = event.getFailure() instanceof TransientDataAccessException
-                || event.getFailure() instanceof LockAcquisitionException;
+        Throwable exception = event.getFailure();
+        if (exception instanceof RetryException e) {
+            exception = e.getCause();
+        }
+
+        boolean exceptionRelevant = exception instanceof TransientDataAccessException
+                || exception instanceof LockAcquisitionException;
 
         Level level;
         if (exceptionRelevant && event.isRetryAborted()) {
             level = Level.WARN;
         } else if (exceptionRelevant) {
-            level = Level.INFO;
+            level = Level.DEBUG;
         } else {
             level = Level.TRACE;
         }
 
         LoggingEventBuilder logEvent = log.atLevel(level)
                 .addKeyValue("method", event.getMethod())
-                .addKeyValue("exception", event.getFailure());
+                .addKeyValue("exception", exception);
         // include full stack trace for cases where all retries of these transient exceptions failed
-        if (exceptionRelevant && event.isRetryAborted()) {
-            logEvent = logEvent.setCause(event.getFailure());
-        }
-        logEvent.log(event.isRetryAborted() ? "Aborting:" : "Retrying:");
+        //if (exceptionRelevant && event.isRetryAborted()) {
+        //    logEvent = logEvent.setCause(exception);
+        //}
+        logEvent.log(event.isRetryAborted() ? "Abort." : "Retry.");
     }
 
     @Override

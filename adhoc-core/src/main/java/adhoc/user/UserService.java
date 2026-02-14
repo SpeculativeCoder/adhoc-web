@@ -96,8 +96,10 @@ public class UserService {
         user.setLastLogin(now);
 
         log.atLevel(Level.INFO)
+                .addKeyValue("id", userId)
                 .addKeyValue("name", user.getName())
-                .log("Authentication success: userId={} human={}", user.getId(), user.isHuman());
+                .addKeyValue("human", user.isHuman())
+                .log("Authentication success.");
 
         log.debug("authenticationSuccess: token={}", user.getState().getToken());
     }

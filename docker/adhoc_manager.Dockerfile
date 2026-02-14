@@ -128,4 +128,4 @@ ADD adhoc-manager/target/adhoc-manager-0.0.1-SNAPSHOT.jar adhoc-manager.jar
 
 #USER adhoc
 
-ENTRYPOINT ../adhoc_container_init.sh && cat /etc/hosts && echo ${SPRING_PROFILES_ACTIVE} && java -DMESSAGE_BROKER_HOST=$(cat /etc/hosts | tail -1 | awk {'print $1'}) -jar adhoc-manager.jar
+CMD ../adhoc_container_init.sh && cat /etc/hosts && echo ${SPRING_PROFILES_ACTIVE} && exec java -DMESSAGE_BROKER_HOST=$(cat /etc/hosts | tail -1 | awk {'print $1'}) -jar adhoc-manager.jar

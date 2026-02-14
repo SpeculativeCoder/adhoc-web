@@ -24,6 +24,7 @@ package adhoc.system.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -47,6 +48,14 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException exception, WebRequest webRequest) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, exception.getMessage(), null, null, webRequest);
+        return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
+    }
+
+    // TODO
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<Object> handlePropertyReferenceException(PropertyReferenceException exception, WebRequest webRequest) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, exception.getMessage(), null, null, webRequest);
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);

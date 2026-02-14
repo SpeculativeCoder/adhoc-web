@@ -112,4 +112,4 @@ ADD adhoc-kiosk/target/adhoc-kiosk-0.0.1-SNAPSHOT.jar adhoc-kiosk.jar
 
 #USER adhoc
 
-ENTRYPOINT ../adhoc_container_init.sh && cat /etc/hosts && echo ${SPRING_PROFILES_ACTIVE} && java -DMESSAGE_BROKER_HOST=$(cat /etc/hosts | tail -1 | awk {'print $1'}) -jar adhoc-kiosk.jar
+CMD ../adhoc_container_init.sh && cat /etc/hosts && echo ${SPRING_PROFILES_ACTIVE} && exec java -DMESSAGE_BROKER_HOST=$(cat /etc/hosts | tail -1 | awk {'print $1'}) -jar adhoc-kiosk.jar

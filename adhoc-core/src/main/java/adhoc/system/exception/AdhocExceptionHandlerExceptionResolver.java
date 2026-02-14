@@ -31,6 +31,7 @@ import org.apache.catalina.connector.ClientAbortException;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -70,20 +71,23 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
                 || ImmutableList.of(ClientAbortException.class, IOException.class).equals(exceptionClasses)
                 || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionClasses)
                 || ImmutableList.of(NoResourceFoundException.class).equals(exceptionClasses)
-                // TODO
+                // sorting errors TODO
+                || ImmutableList.of(PropertyReferenceException.class).equals(exceptionClasses)
+                // error page TODO
                 || ImmutableList.of(HttpMediaTypeNotAcceptableException.class).equals(exceptionClasses);
 
         boolean uriApi = uri.startsWith("/adhoc_api/")
                 || uri.startsWith("/adhoc_ws/");
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
+                .addKeyValue("status", response.getStatus())
                 .addKeyValue("method", method)
                 .addKeyValue("uri", uri)
                 .addKeyValue("exception", exception);
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Request failure: status={}", response.getStatus());
+        logEvent.log("Request failure.");
 
         return modelAndView;
     }

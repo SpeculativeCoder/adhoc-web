@@ -957,10 +957,11 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
   family = "${local.adhoc_name}_${terraform.workspace}_manager"
   container_definitions = jsonencode([
     {
-      name  = "${local.adhoc_name}_${terraform.workspace}_manager"
-      image = aws_ecr_repository.adhoc_manager.repository_url
-      cpu   = 0
-      links = []
+      name        = "${local.adhoc_name}_${terraform.workspace}_manager"
+      image       = aws_ecr_repository.adhoc_manager.repository_url
+      stopTimeout = 60
+      cpu         = 0
+      links       = []
       portMappings = [
         {
           name          = "${local.adhoc_name}_${terraform.workspace}_manager-443-tcp"
@@ -1060,11 +1061,13 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-create-group      = "true"
-          awslogs-group             = "/ecs/${local.adhoc_name}_${terraform.workspace}_manager"
-          awslogs-region            = data.aws_region.region.region
-          awslogs-stream-prefix     = "ecs"
-          awslogs-multiline-pattern = "^(ERROR|WARN|INFO|DEBUG|TRACE)"
+          awslogs-create-group    = "true"
+          awslogs-group           = "/ecs/${local.adhoc_name}_${terraform.workspace}_manager"
+          awslogs-region          = data.aws_region.region.region
+          awslogs-stream-prefix   = "ecs"
+          awslogs-datetime-format = "%Y-%m-%dT%H:%M:%S.%f%z"
+          //awslogs-multiline-pattern = "^(ERROR|WARN|INFO|DEBUG|TRACE)"
+          awslogs-multiline-pattern = "{datetime_format}"
         },
         secretOptions = [
         ]
@@ -1078,9 +1081,9 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
           "curl -f http://localhost/actuator/health || exit 1"
         ]
         startPeriod = 300
-        interval    = 10
-        timeout     = 5
-        retries     = 3
+        interval    = 20 #10
+        timeout     = 10 #5
+        retries     = 5  #3
       }
     }
   ])
@@ -1118,10 +1121,11 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
   family = "${local.adhoc_name}_${terraform.workspace}_kiosk"
   container_definitions = jsonencode([
     {
-      name  = "${local.adhoc_name}_${terraform.workspace}_kiosk"
-      image = aws_ecr_repository.adhoc_kiosk.repository_url
-      cpu   = 0
-      links = []
+      name        = "${local.adhoc_name}_${terraform.workspace}_kiosk"
+      image       = aws_ecr_repository.adhoc_kiosk.repository_url
+      stopTimeout = 60
+      cpu         = 0
+      links       = []
       portMappings = [
         {
           name          = "${local.adhoc_name}_${terraform.workspace}_kiosk-443-tcp"
@@ -1196,11 +1200,13 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-create-group      = "true"
-          awslogs-group             = "/ecs/${local.adhoc_name}_${terraform.workspace}_kiosk"
-          awslogs-region            = data.aws_region.region.region
-          awslogs-stream-prefix     = "ecs"
-          awslogs-multiline-pattern = "^(ERROR|WARN|INFO|DEBUG|TRACE)"
+          awslogs-create-group    = "true"
+          awslogs-group           = "/ecs/${local.adhoc_name}_${terraform.workspace}_kiosk"
+          awslogs-region          = data.aws_region.region.region
+          awslogs-stream-prefix   = "ecs"
+          awslogs-datetime-format = "%Y-%m-%dT%H:%M:%S.%f%z"
+          //awslogs-multiline-pattern = "^(ERROR|WARN|INFO|DEBUG|TRACE)"
+          awslogs-multiline-pattern = "{datetime_format}"
         },
         secretOptions = [
         ]
@@ -1214,9 +1220,9 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
           "curl -f http://localhost/actuator/health || exit 1"
         ]
         startPeriod = 300
-        interval    = 10
-        timeout     = 5
-        retries     = 3
+        interval    = 20 #10
+        timeout     = 10 #5
+        retries     = 5  #3
       }
     }
   ])
@@ -1239,9 +1245,10 @@ resource "aws_ecs_task_definition" "adhoc_server" {
   family = "${local.adhoc_name}_${terraform.workspace}_server"
   container_definitions = jsonencode([
     {
-      name  = "${local.adhoc_name}_${terraform.workspace}_server"
-      image = aws_ecr_repository.adhoc_server.repository_url
-      cpu   = 0
+      name        = "${local.adhoc_name}_${terraform.workspace}_server"
+      image       = aws_ecr_repository.adhoc_server.repository_url
+      stopTimeout = 30
+      cpu         = 0
       portMappings = [
         {
           name          = "${local.adhoc_name}_${terraform.workspace}_server-8889-tcp"
@@ -1285,9 +1292,9 @@ resource "aws_ecs_task_definition" "adhoc_server" {
           "pgrep Server || exit 1"
         ]
         startPeriod = 300
-        interval    = 10
-        timeout     = 5
-        retries     = 3
+        interval    = 20 #10
+        timeout     = 10 #5
+        retries     = 5  #3
       }
     }
   ])

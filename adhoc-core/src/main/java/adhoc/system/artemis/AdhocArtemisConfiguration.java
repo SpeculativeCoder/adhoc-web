@@ -40,8 +40,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -82,7 +82,7 @@ public class AdhocArtemisConfiguration {
             @Override
             public void customize(org.apache.activemq.artemis.core.config.Configuration configuration) {
                 configuration.addAddressSetting("/topic/events", eventsAddressSettings());
-                configuration.addAddressSetting("/queue/server_emissions", emissionsAddressSettings());
+                configuration.addAddressSetting("/queue/server_emissions", serverEmissionsAddressSettings());
 
                 configuration.addAcceptorConfiguration(
                         new TransportConfiguration(NettyAcceptorFactory.class.getName(), coreConnectorProps(), "core-acceptor"));
@@ -126,7 +126,7 @@ public class AdhocArtemisConfiguration {
         //clusterConnection.setAllowDirectConnectionsOnly(true);
         //clusterConnection.setReconnectAttempts(10);
         //clusterConnection.setInitialConnectAttempts(1);
-        clusterConnection.setStaticConnectors(Arrays.asList("manager-core-connector")); //, "kiosk-core-connector")); //, "core-connector"
+        clusterConnection.setStaticConnectors(List.of("manager-core-connector")); //, "kiosk-core-connector")); //, "core-connector"
         return clusterConnection;
     }
 
@@ -141,7 +141,7 @@ public class AdhocArtemisConfiguration {
         return addressSettings;
     }
 
-    private static AddressSettings emissionsAddressSettings() {
+    private static AddressSettings serverEmissionsAddressSettings() {
         AddressSettings addressSettings = new AddressSettings();
         addressSettings.setAutoCreateAddresses(true);
         addressSettings.setAutoCreateQueues(true);

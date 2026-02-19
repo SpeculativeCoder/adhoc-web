@@ -41,6 +41,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExc
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 @Component
 @Slf4j
@@ -68,6 +69,7 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
 
         var exceptionClasses = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
         boolean exceptionKnown = ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class).equals(exceptionClasses)
+                || ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, SocketTimeoutException.class).equals(exceptionClasses)
                 || ImmutableList.of(ClientAbortException.class, IOException.class).equals(exceptionClasses)
                 || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionClasses)
                 || ImmutableList.of(NoResourceFoundException.class).equals(exceptionClasses)

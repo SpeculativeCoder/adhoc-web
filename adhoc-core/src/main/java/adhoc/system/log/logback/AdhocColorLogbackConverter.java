@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
+ * Copyright 2022-2026 SpeculativeCoder (https://github.com/SpeculativeCoder)
  *
  * Modification of code from Spring Boot (https://spring.io/projects/spring-boot)
  * which is subject to Apache License, Version 2.0 (see adjacent *.LICENSE file)

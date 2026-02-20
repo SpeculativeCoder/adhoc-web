@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
+ * Copyright (c) 2022-2026 SpeculativeCoder (https://github.com/SpeculativeCoder)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ export class CsrfInterceptor implements HttpInterceptor {
     return this.csrfService.getCsrf().pipe(mergeMap(csrf => {
       req = req.clone({
         headers: req.headers
-          .set(csrf!.headerName!, csrf!.token!)
+            .set(csrf!.headerName!, csrf!.token!)
         //.set('Content-Type', 'application/json')
         //.set('Authorization', 'Basic ' + window.btoa('user:password'))
       })

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
+ * Copyright (c) 2022-2026 SpeculativeCoder (https://github.com/SpeculativeCoder)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,4 +25,4 @@ import {appConfig} from './app/app.config';
 import {AppComponent} from './app/app.component';
 
 bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+    .catch((err) => console.error(err));

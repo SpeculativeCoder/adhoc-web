@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
+ * Copyright (c) 2022-2026 SpeculativeCoder (https://github.com/SpeculativeCoder)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,14 +30,14 @@ export class ErrorInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
-      catchError((error: HttpErrorResponse) => {
-        //console.error("Error " + error.status + " for " + req.method + " " + req.urlWithParams);
-        return throwError(() => {
-          const e: Error = new Error(error.message);
-          e.cause = error;
-          return e;
-        });
-      })
+        catchError((error: HttpErrorResponse) => {
+          //console.error("Error " + error.status + " for " + req.method + " " + req.urlWithParams);
+          return throwError(() => {
+            const e: Error = new Error(error.message);
+            e.cause = error;
+            return e;
+          });
+        })
     );
   }
 }

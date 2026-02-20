@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
+ * Copyright (c) 2022-2026 SpeculativeCoder (https://github.com/SpeculativeCoder)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Set;
 
 @Service
 @Profile({"dns-local"})

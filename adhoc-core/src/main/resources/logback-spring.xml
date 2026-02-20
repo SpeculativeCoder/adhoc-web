@@ -32,15 +32,20 @@
 
         <!-- &#x00A0; -->
         <encoder>
-            <pattern>%color(%date{yyyy-MM-dd'T'HH:mm:ss.SSS}%micros%date{xx}){bright_black} %color(%level){} %color([%thread]){blue} %color(%logger){cyan}%color(:){bright_black} %color(%specialChars(%message)){}%replace( %specialChars(%kvp{NONE}){}){'^ $',''}%color(%replace( \(%specialChars(%mdc){}\)){'^ \(\)$',''}){bright_black}%n%specialCharsThrowable{}</pattern>
-            <charset>UTF-8</charset>
+            <pattern>%color(%date{yyyy-MM-dd'T'HH:mm:ss.SSS}%micros%date{xx}){bright_black} %color(%level){} %color([%thread]){blue} %color(%logger{1}){cyan}%color(:){bright_black} %color(%specialChars(%message)){}%replace( %specialChars(%kvp{NONE}){}){'^ $',''}%color(%replace( \(%specialChars(%mdc){}\)){'^ \(\)$',''}){bright_black}%n%specialCharsThrowable{}</pattern>
+            <charset>${CONSOLE_LOG_CHARSET}</charset>
         </encoder>
+
+        <!--<encoder class="org.springframework.boot.logging.logback.StructuredLogEncoder">
+            <format>${CONSOLE_LOG_STRUCTURED_FORMAT}</format>
+            <charset>${CONSOLE_LOG_CHARSET}</charset>
+        </encoder>-->
 
         <filter class="adhoc.system.log.logback.AdhocLogbackMatcherFilter"/>
 
     </appender>
 
-    <root level="info">
+    <root level="all">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

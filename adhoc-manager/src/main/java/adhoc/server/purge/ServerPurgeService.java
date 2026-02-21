@@ -24,7 +24,7 @@ package adhoc.server.purge;
 
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.shared.properties.ManagerProperties;
+import adhoc.system.properties.ManagerProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

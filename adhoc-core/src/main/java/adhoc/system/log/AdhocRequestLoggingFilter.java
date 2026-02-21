@@ -22,7 +22,7 @@
 
 package adhoc.system.log;
 
-import adhoc.shared.properties.CoreProperties;
+import adhoc.system.properties.CoreProperties;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
 import jakarta.annotation.PostConstruct;

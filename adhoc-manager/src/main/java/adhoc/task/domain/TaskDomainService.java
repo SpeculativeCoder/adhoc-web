@@ -23,7 +23,7 @@
 package adhoc.task.domain;
 
 import adhoc.message.MessageService;
-import adhoc.shared.properties.CoreProperties;
+import adhoc.system.properties.CoreProperties;
 import adhoc.task.TaskEntity;
 import adhoc.task.TaskRepository;
 import adhoc.task.kiosk.KioskTaskEntity;

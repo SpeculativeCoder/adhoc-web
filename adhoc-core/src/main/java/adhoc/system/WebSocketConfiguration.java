@@ -22,9 +22,9 @@
 
 package adhoc.system;
 
-import adhoc.shared.properties.CoreProperties;
 import adhoc.system.exception.AdhocStompSubProtocolErrorHandler;
 import adhoc.system.log.AdhocMdcExecutorChannelInterceptor;
+import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.artemis.autoconfigure.ArtemisMode;

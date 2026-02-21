@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.shared.properties;
+package adhoc.system.properties;
 
 import com.google.common.base.Strings;
 import lombok.Getter;

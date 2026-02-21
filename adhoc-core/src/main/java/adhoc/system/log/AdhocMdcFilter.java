@@ -41,17 +41,38 @@ public class AdhocMdcFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        String query = request.getQueryString();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(method);
+        sb.append("@");
+        sb.append(uri);
+        if (query != null) {
+            sb.append("?");
+            sb.append(query);
+        }
+        String req = sb.toString();
+
         try {
+            MDC.put("req", req);
+            //MDC.put("method", method);
+            //MDC.put("uri", uri);
+            //if (query != null) {
+            //    MDC.put("query", query);
+            //}
             //MDC.put("uuid", UUID.randomUUID().toString());
-            //MDC.put("method", request.getMethod());
-            //MDC.put("uri", request.getRequestURI());
-            MDC.put("req", String.format("%s@%s", request.getMethod(), request.getRequestURI()));
             filterChain.doFilter(request, response);
+
         } finally {
-            MDC.remove("req");
+            //MDC.remove("uuid");
+            //if (query != null) {
+            //    MDC.remove("query");
+            //}
             //MDC.remove("uri");
             //MDC.remove("method");
-            //MDC.remove("uuid");
+            MDC.remove("req");
         }
     }
 }

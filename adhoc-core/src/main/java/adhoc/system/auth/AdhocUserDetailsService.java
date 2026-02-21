@@ -22,8 +22,8 @@
 
 package adhoc.system.auth;
 
-import adhoc.shared.properties.CoreProperties;
 import adhoc.shared.random_uuid.RandomUUIDUtils;
+import adhoc.system.properties.CoreProperties;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;

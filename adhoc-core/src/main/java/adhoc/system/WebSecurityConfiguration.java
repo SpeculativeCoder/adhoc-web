@@ -22,12 +22,12 @@
 
 package adhoc.system;
 
-import adhoc.shared.properties.CoreProperties;
 import adhoc.system.auth.AdhocAccessDeniedHandler;
 import adhoc.system.auth.AdhocAuthenticationFailureHandler;
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
 import adhoc.system.auth.AdhocLogoutSuccessHandler;
 import adhoc.system.auth.AdhocServerBasicAuthRequestMatcher;
+import adhoc.system.properties.CoreProperties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

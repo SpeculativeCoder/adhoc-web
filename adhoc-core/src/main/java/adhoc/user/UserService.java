@@ -24,10 +24,10 @@ package adhoc.user;
 
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
-import adhoc.shared.properties.CoreProperties;
 import adhoc.shared.random_uuid.RandomUUIDUtils;
 import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
 import adhoc.system.auth.AdhocUserDetails;
+import adhoc.system.properties.CoreProperties;
 import adhoc.user.current.CurrentUserDto;
 import adhoc.user.state.UserStateEntity;
 import lombok.RequiredArgsConstructor;

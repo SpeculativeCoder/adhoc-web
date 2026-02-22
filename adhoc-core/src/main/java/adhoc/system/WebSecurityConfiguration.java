@@ -84,6 +84,7 @@ public class WebSecurityConfiguration<S extends Session> {
         //frameAncestors.append(" https://").append(coreProperties.getKioskDomain()).append("/");
         for (String thirdPartyDomain : coreProperties.getThirdPartyDomains()) {
             frameAncestors.append(" https://").append(thirdPartyDomain);
+            //frameAncestors.append(" http://").append(thirdPartyDomain);
         }
         log.info("frameAncestors={}", frameAncestors);
 

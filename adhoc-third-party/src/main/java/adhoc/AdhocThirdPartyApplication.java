@@ -30,6 +30,8 @@ import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,6 +68,13 @@ public class AdhocThirdPartyApplication {
         connector.setPort(serverPortHttp);
         //connector.addUpgradeProtocol(new Http2Protocol());
         return connector;
+    }
+
+    @Bean
+    WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer(Connector httpConnector) {
+        return (TomcatServletWebServerFactory factory) -> {
+            factory.addAdditionalConnectors(httpConnector);
+        };
     }
 
     public static void main(String[] args) {

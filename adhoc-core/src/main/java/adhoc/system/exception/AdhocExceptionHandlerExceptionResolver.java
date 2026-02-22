@@ -42,6 +42,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -85,11 +86,11 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
                 .addKeyValue("status", response.getStatus())
                 .addKeyValue("method", method)
                 .addKeyValue("uri", uri)
-                .addKeyValue("exception", exception);
+                .addKeyValue("chain", exceptionClasses.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Request failure.");
+        logEvent.log("Request failure:");
 
         return modelAndView;
     }

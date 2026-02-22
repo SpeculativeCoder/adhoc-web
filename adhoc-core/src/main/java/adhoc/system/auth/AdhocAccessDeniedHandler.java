@@ -22,6 +22,8 @@
 
 package adhoc.system.auth;
 
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,6 +40,7 @@ import org.springframework.security.web.csrf.MissingCsrfTokenException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -59,24 +62,25 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
 
         //userAuthService.onAccessDenied(method, uri, exception);
 
-        boolean exceptionKnown = exception instanceof MissingCsrfTokenException
-                || exception instanceof InvalidCsrfTokenException;
+        var exceptionClasses = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
+        boolean exceptionKnown = ImmutableList.of(MissingCsrfTokenException.class).equals(exceptionClasses)
+                || ImmutableList.of(InvalidCsrfTokenException.class).equals(exceptionClasses);
 
         boolean uriApi = uri.startsWith("/adhoc_api/")
                 || uri.startsWith("/adhoc_ws/");
 
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
-                .addKeyValue("method", method)
-                .addKeyValue("uri", uri)
-                .addKeyValue("exception", exception);
-        if (!exceptionKnown) {
-            logEvent = logEvent.setCause(exception);
-        }
-
         int status = HttpStatus.FORBIDDEN.value();
         String message = HttpStatus.FORBIDDEN.getReasonPhrase();
 
-        logEvent.log("Access denied: status={}", status);
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
+                .addKeyValue("status", status)
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri)
+                .addKeyValue("chain", exceptionClasses.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
+        if (!exceptionKnown) {
+            logEvent = logEvent.setCause(exception);
+        }
+        logEvent.log("Access denied:");
 
         response.sendError(status, message);
     }

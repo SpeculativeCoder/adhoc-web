@@ -35,6 +35,8 @@ import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 
+import java.util.stream.Collectors;
+
 @Component
 @Slf4j
 public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHandler {
@@ -52,16 +54,16 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
             boolean exceptionKnown = ImmutableList.of(MessageDeliveryException.class, InvalidCsrfTokenException.class).equals(exceptionClasses);
 
             LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
-                    .addKeyValue("exception", exception);
+                    .addKeyValue("chain", exceptionClasses.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
             if (!exceptionKnown) {
                 logEvent = logEvent.setCause(exception);
             }
             logEvent.log("Stomp failure:");
+
+        } else {
+            // TODO
+            log.debug("Stomp issue");
         }
-        //else {
-        //    // TODO
-        //    log.debug("Stomp failure");
-        //}
 
         return message;
     }

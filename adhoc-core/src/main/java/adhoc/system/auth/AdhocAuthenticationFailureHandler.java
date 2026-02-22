@@ -22,6 +22,8 @@
 
 package adhoc.system.auth;
 
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,13 +33,14 @@ import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -62,22 +65,26 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
         Authentication authentication = exception.getAuthenticationRequest();
         //Verify.verifyNotNull(authentication);
 
-        boolean exceptionKnown = exception instanceof BadCredentialsException
-                || exception instanceof DisabledException;
-
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
-                .addKeyValue("method", method)
-                .addKeyValue("uri", uri)
-                .addKeyValue("authentication", authentication)
-                .addKeyValue("exception", exception);
-        if (!exceptionKnown) {
-            logEvent = logEvent.setCause(exception);
-        }
+        var exceptionClasses = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
+        boolean exceptionKnown = ImmutableList.of(BadCredentialsException.class, UsernameNotFoundException.class).equals(exceptionClasses)
+                || ImmutableList.of(BadCredentialsException.class).equals(exceptionClasses);
+        //|| ImmutableList.of(DisabledException.class).equals(exceptionClasses);
 
         int status = HttpStatus.UNAUTHORIZED.value();
         String message = HttpStatus.UNAUTHORIZED.getReasonPhrase();
 
-        logEvent.log("Authentication failure: status={}", status);
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
+                .addKeyValue("status", status)
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri)
+                .addKeyValue("principal", authentication == null ? null : authentication.getPrincipal())
+                .addKeyValue("chain", exceptionClasses.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
+        if (!exceptionKnown) {
+            logEvent = logEvent
+                    .addKeyValue("authentication", authentication)
+                    .setCause(exception);
+        }
+        logEvent.log("Authentication failure:");
 
         response.sendError(status, message);
     }

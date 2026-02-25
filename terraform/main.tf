@@ -957,11 +957,14 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
   family = "${local.adhoc_name}_${terraform.workspace}_manager"
   container_definitions = jsonencode([
     {
-      name        = "${local.adhoc_name}_${terraform.workspace}_manager"
-      image       = aws_ecr_repository.adhoc_manager.repository_url
-      stopTimeout = 60
-      cpu         = 0
-      links       = []
+      name  = "${local.adhoc_name}_${terraform.workspace}_manager"
+      image = aws_ecr_repository.adhoc_manager.repository_url
+      # use image URI rather than digest as we regularly update the images and we want to easily use new versions for now - see:
+      # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#ContainerDefinition-versionconsistency
+      versionConsistency = "disabled"
+      stopTimeout        = 60
+      cpu                = 0
+      links              = []
       portMappings = [
         {
           name          = "${local.adhoc_name}_${terraform.workspace}_manager-443-tcp"
@@ -1121,11 +1124,14 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
   family = "${local.adhoc_name}_${terraform.workspace}_kiosk"
   container_definitions = jsonencode([
     {
-      name        = "${local.adhoc_name}_${terraform.workspace}_kiosk"
-      image       = aws_ecr_repository.adhoc_kiosk.repository_url
-      stopTimeout = 60
-      cpu         = 0
-      links       = []
+      name  = "${local.adhoc_name}_${terraform.workspace}_kiosk"
+      image = aws_ecr_repository.adhoc_kiosk.repository_url
+      # use image URI rather than digest as we regularly update the images and we want to easily use new versions for now - see:
+      # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#ContainerDefinition-versionconsistency
+      versionConsistency = "disabled"
+      stopTimeout        = 60
+      cpu                = 0
+      links              = []
       portMappings = [
         {
           name          = "${local.adhoc_name}_${terraform.workspace}_kiosk-443-tcp"
@@ -1245,10 +1251,13 @@ resource "aws_ecs_task_definition" "adhoc_server" {
   family = "${local.adhoc_name}_${terraform.workspace}_server"
   container_definitions = jsonencode([
     {
-      name        = "${local.adhoc_name}_${terraform.workspace}_server"
-      image       = aws_ecr_repository.adhoc_server.repository_url
-      stopTimeout = 30
-      cpu         = 0
+      name  = "${local.adhoc_name}_${terraform.workspace}_server"
+      image = aws_ecr_repository.adhoc_server.repository_url
+      # use image URI rather than digest as we regularly update the images and we want to easily use new versions for now - see:
+      # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#ContainerDefinition-versionconsistency
+      versionConsistency = "disabled"
+      stopTimeout        = 30
+      cpu                = 0
       portMappings = [
         {
           name          = "${local.adhoc_name}_${terraform.workspace}_server-8889-tcp"

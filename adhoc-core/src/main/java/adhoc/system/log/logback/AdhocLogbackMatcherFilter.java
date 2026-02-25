@@ -36,6 +36,7 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
         String message = event.getMessage();
         Level level = event.getLevel();
 
+        /*
         if ("org.apache.activemq.artemis.core.server".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 
@@ -92,6 +93,7 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                 return FilterReply.DENY;
             }
         }
+        */
 
         if ("org.hibernate.orm.jdbc.batch".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
@@ -102,6 +104,7 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
             }
         }
 
+        /*
         if ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 
@@ -122,6 +125,7 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                 return FilterReply.DENY;
             }
         }
+        */
 
         if ("org.hibernate.SQL".equals(loggerName)) {
 

@@ -65,16 +65,18 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                 return FilterReply.DENY;
             }
         }
+        */
 
         if ("org.hibernate.orm.jdbc.warn".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 
-            // suppress no data warnings from UPDATEs etc. which don't update any columns
+            // suppress no data warnings from UPDATEs etc. which don't update any columns (HSQLDB)
             if ("HHH000247: ErrorCode: -1100, SQLState: 02000".equals(message)
                     || "no data".equals(message)) {
                 return FilterReply.DENY;
             }
 
+            /*
             // pessimistic locking failure messages
             if ("SQL Error: -4861, SQLState: 40001".equals(message)
                     || "transaction rollback: serialization failure".equals(message)) {
@@ -92,8 +94,8 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                     || message.startsWith("ERROR: deadlock detected")) {
                 return FilterReply.DENY;
             }
+            */
         }
-        */
 
         if ("org.hibernate.orm.jdbc.batch".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {

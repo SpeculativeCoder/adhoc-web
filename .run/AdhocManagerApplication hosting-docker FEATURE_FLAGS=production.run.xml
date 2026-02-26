@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="AdhocManagerApplication hosting-docker FEATURE_FLAGS=production" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="hosting-docker" />
+    <envs>
+      <env name="FEATURE_FLAGS" value="production" />
+    </envs>
+    <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+    <module name="adhoc-manager" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="adhoc.AdhocManagerApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -23,6 +23,8 @@
 package adhoc.task.domain;
 
 import adhoc.dns.DnsService;
+import adhoc.system.properties.CoreProperties;
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,11 +37,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskDomainOrchestrator {
 
+    private final CoreProperties coreProperties;
+
     private final TaskDomainService taskDomainService;
 
     private final DnsService dnsService;
 
     public void manageTaskDomains() {
+
+        // TODO
+        // domain mapping requires these to be set
+        if (Strings.isNullOrEmpty(coreProperties.getAdhocDomain())
+                || Strings.isNullOrEmpty(coreProperties.getManagerDomain())
+                || Strings.isNullOrEmpty(coreProperties.getKioskDomain())
+                || Strings.isNullOrEmpty(coreProperties.getServerDomain())) {
+            return;
+        }
 
         List<TaskDomainService.TaskDomain> taskDomains = taskDomainService.determineTaskDomains();
 

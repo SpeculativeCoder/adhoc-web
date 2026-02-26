@@ -35,6 +35,7 @@ import adhoc.task.server.ServerTaskEntity;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -87,9 +88,8 @@ import java.util.stream.Stream;
 public class EcsHostingService implements HostingService {
 
     private final CoreProperties coreProperties;
-
     private final ManagerProperties managerProperties;
-
+    private final ServerProperties serverProperties;
     private final EcsHostingProperties ecsHostingProperties;
 
     private Ec2Client ec2Client() {
@@ -345,7 +345,8 @@ public class EcsHostingService implements HostingService {
                                     KeyValuePair.builder().name("MAX_CONTROLLERS").value(managerProperties.getMaxControllers().toString()).build(),
                                     KeyValuePair.builder().name("MAX_PLAYERS").value(managerProperties.getMaxPlayers().toString()).build(),
                                     KeyValuePair.builder().name("MAX_BOTS").value(managerProperties.getMaxBots().toString()).build(),
-                                    KeyValuePair.builder().name("FEATURE_FLAGS").value(coreProperties.getFeatureFlags()).build())
+                                    KeyValuePair.builder().name("FEATURE_FLAGS").value(coreProperties.getFeatureFlags()).build(),
+                                    KeyValuePair.builder().name("SSL_ENABLED").value(String.valueOf(serverProperties.getSsl().isEnabled())).build())
                             .build()).build())
                     .cluster(ecsHostingProperties.getEcsCluster())
                     .count(1)

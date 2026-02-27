@@ -20,14 +20,14 @@
  * SOFTWARE.
  */
 
-package adhoc.system.log.util;
+package adhoc.shared.special_char;
 
 import lombok.experimental.UtilityClass;
 
 import java.util.regex.Pattern;
 
 @UtilityClass
-public final class LoggingUtils {
+public final class SpecialCharUtils {
 
     private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
 

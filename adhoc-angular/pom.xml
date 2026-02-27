@@ -105,7 +105,7 @@
 
     <!-- profile to switch off angular customization if the relevant file is missing -->
     <profile>
-      <id>adhoc.angular.customization</id>
+      <id>adhoc-angular-customization</id>
       <activation>
         <file>
           <missing>src/customization/customization.ts</missing>

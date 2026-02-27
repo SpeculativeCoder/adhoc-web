@@ -22,7 +22,7 @@
 
 package adhoc.system.log.logback;
 
-import adhoc.system.log.util.LoggingUtils;
+import adhoc.shared.special_char.SpecialCharUtils;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.CompositeConverter;
 
@@ -30,6 +30,6 @@ public class AdhocSpecialCharsLogbackConverter extends CompositeConverter<ILoggi
 
     @Override
     protected String transform(ILoggingEvent event, String in) {
-        return LoggingUtils.replaceSpecialChars(in);
+        return SpecialCharUtils.replaceSpecialChars(in);
     }
 }

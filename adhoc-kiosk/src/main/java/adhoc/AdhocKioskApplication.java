@@ -52,7 +52,7 @@ public class AdhocKioskApplication extends AbstractAdhocApplication {
         List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
 
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
-            activeProfiles.add("db-h2");
+            activeProfiles.add("db-h2-mem"); // default to in memory H2 database (real deployment will use something else)
         }
 
         environment.setActiveProfiles(activeProfiles.toArray(new String[0]));

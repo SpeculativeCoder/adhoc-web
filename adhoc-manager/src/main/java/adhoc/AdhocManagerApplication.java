@@ -66,7 +66,7 @@ public class AdhocManagerApplication extends AbstractAdhocApplication {
         List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
 
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
-            activeProfiles.add("db-h2");
+            activeProfiles.add("db-h2-mem"); // default to in memory H2 database (real deployment will use something else)
         }
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("hosting-"))) {
             activeProfiles.add("hosting-local");

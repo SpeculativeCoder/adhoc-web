@@ -1081,12 +1081,12 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
       healthCheck = {
         command = [
           "CMD-SHELL",
-          "curl -f http://localhost/actuator/health || exit 1"
+          "curl --silent --fail --connect-timeout 5 --max-time 5 'http://localhost/actuator/health' | grep --quiet '\"status\":\"UP\"'"
         ]
         startPeriod = 300
-        interval    = 20 #10
-        timeout     = 10 #5
-        retries     = 5  #3
+        interval    = 10 #10
+        timeout     = 5  #5
+        retries     = 3  #3
       }
     }
   ])
@@ -1110,7 +1110,7 @@ resource "aws_ecs_task_definition" "adhoc_manager" {
     #"MANAGED_INSTANCES"
   ]
   cpu    = "512"
-  memory = "1024"
+  memory = "2048"
   // TODO
   task_role_arn      = aws_iam_role.adhoc_ecs_task_manager_role.arn
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
@@ -1223,12 +1223,12 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
       healthCheck = {
         command = [
           "CMD-SHELL",
-          "curl -f http://localhost/actuator/health || exit 1"
+          "curl --silent --fail --connect-timeout 5 --max-time 5 'http://localhost/actuator/health' | grep --quiet '\"status\":\"UP\"'"
         ]
         startPeriod = 300
-        interval    = 20 #10
-        timeout     = 10 #5
-        retries     = 5  #3
+        interval    = 10 #10
+        timeout     = 5  #5
+        retries     = 3  #3
       }
     }
   ])
@@ -1237,7 +1237,7 @@ resource "aws_ecs_task_definition" "adhoc_kiosk" {
     "FARGATE"
   ]
   cpu    = "512"
-  memory = "1024"
+  memory = "2048"
   // TODO
   #task_role_arn            = data.aws_iam_role.ecs_task_execution_role.arn
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
@@ -1298,12 +1298,12 @@ resource "aws_ecs_task_definition" "adhoc_server" {
       healthCheck = {
         command = [
           "CMD-SHELL",
-          "pgrep Server || exit 1"
+          "pgrep Server"
         ]
         startPeriod = 300
-        interval    = 20 #10
-        timeout     = 10 #5
-        retries     = 5  #3
+        interval    = 10 #10
+        timeout     = 5  #5
+        retries     = 3  #3
       }
     }
   ])

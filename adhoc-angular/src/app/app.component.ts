@@ -83,9 +83,9 @@ export class AppComponent implements OnInit, OnDestroy {
     } catch (exception) {
       iFrame = true;
     }
-    console.log("safari=" + safari);
-    console.log("notChrome=" + notChrome);
-    console.log("iFrame=" + iFrame);
+    //console.log("safari=" + safari);
+    //console.log("notChrome=" + notChrome);
+    //console.log("iFrame=" + iFrame);
     return safari && notChrome && iFrame;
   }
 

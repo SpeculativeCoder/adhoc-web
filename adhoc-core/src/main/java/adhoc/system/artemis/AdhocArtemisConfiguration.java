@@ -102,6 +102,9 @@ public class AdhocArtemisConfiguration {
                 configuration.setGracefulShutdownEnabled(true);
                 configuration.setGracefulShutdownTimeout(3000);
 
+                //configuration.setGlobalMaxSizePercentOfJvmMaxMemory(20);
+                configuration.setGlobalMaxSize(200_000_000); // TODO
+
                 configuration.addClusterConfiguration(clusterConnectionConfiguration());
             }
         };

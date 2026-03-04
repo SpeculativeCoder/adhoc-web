@@ -36,8 +36,9 @@ import {CommonModule} from "@angular/common";
 export class AboutComponent {
 
   title = customization.title;
-  description = customization.description;
   developer = customization.developer;
+  documentationUrl = customization.documentationUrl;
+  description = customization.description;
 
   aboutPageMoreHtml: string;
 

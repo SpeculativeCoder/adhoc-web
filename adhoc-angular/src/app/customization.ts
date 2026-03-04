@@ -23,11 +23,20 @@
 /** You can create a copy of this in src/customization and tailor it to your needs. */
 export const customization = {
   title: 'WebApp',
-  description: 'Web Application',
   developer: 'the developer(s) of this web page / application',
+  documentationUrl: '',
+  description: 'WebApp is a multi-user web application',
 
   /** Any additional about information (e.g. assets used etc.) can go in here. */
   aboutPageMoreHtml: `
+<p>
+Uses a <a href="https://github.com/SpeculativeCoder/UnrealEngine-HTML5-ES3">fork of Unreal Engine 4.27 with HTML5 ES3 (WebGL 2) platform plugin</a> which is a modified version of the <a href="https://github.com/UnrealEngineHTML5/Documentation">community-supported plugin for UE 4.24</a>
+</p>
+
+<p>
+Uses <a href="https://github.com/SpeculativeCoder/AdhocPlugin">Adhoc Unreal Plugin</a> and <a href="https://github.com/SpeculativeCoder/adhoc-web">Adhoc Web</a>
+</p>
+
 <br/>
   `,
 

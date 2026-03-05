@@ -49,14 +49,23 @@
     @if (currentUser()?.quickLoginCode) {
       <div class="mb-3">
         <label class="form-label" for="quickLoginCode">Quick Login Code</label>
-        <input class="form-control" id="quickLoginCode" name="quickLoginCode" type="password" disabled [value]="currentUser()?.quickLoginCode">
-      </div>
-      <div class="mb-3">
-        <button type="button" class="btn btn-primary me-2" (click)="copyToClipboard()">Copy to Clipboard</button>
-        @if (copyToClipboardSuccessText()) {
-          <span class="text-success">{{ copyToClipboardSuccessText() }}</span>
+        @if (!quickLoginCodeVisible()) {
+          <input class="form-control" id="hiddenQuickLoginCode" name="hiddenQuickLoginCode" type="password" disabled [value]="currentUser()?.quickLoginCode">
+        } @else {
+          <input class="form-control" id="visibleQuickLoginCode" name="visibleQuickLoginCode" type="text" disabled [value]="currentUser()?.quickLoginCode">
         }
       </div>
+      <div class="mb-3">
+        <button type="button" class="btn btn-primary me-2" (click)="revealOrHideCode()">{{ quickLoginCodeVisible() ? 'Hide' : 'Reveal' }}</button>
+      </div>
+      @if (copyToClipboardVisible()) {
+        <div class="mb-3">
+          <button type="button" class="btn btn-primary me-2" (click)="copyToClipboard()">Copy to Clipboard</button>
+          @if (copyToClipboardSuccessText()) {
+            <span class="text-success">{{ copyToClipboardSuccessText() }}</span>
+          }
+        </div>
+      }
     }
 
     <p>Score: {{ currentUser()?.score }}</p>

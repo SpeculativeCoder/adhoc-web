@@ -27,6 +27,7 @@ import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.boot.session.autoconfigure.DefaultCookieSerializerCustomizer;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,6 +58,17 @@ public class WebConfiguration {
             @Override
             public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
                 return new AdhocExceptionHandlerExceptionResolver();
+            }
+        };
+    }
+
+    @Bean
+    public DefaultCookieSerializerCustomizer cookieSerializerCustomizer() {
+        return cookieSerializer -> {
+            // if we don't need to be used in a third party context (iframe) then we can have strict SameSite for cookies
+            if (coreProperties.getThirdPartyDomains().isEmpty()) {
+                cookieSerializer.setSameSite("strict");
+                cookieSerializer.setPartitioned(false);
             }
         };
     }

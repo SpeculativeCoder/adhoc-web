@@ -21,7 +21,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, OnInit, signal, viewChild} from '@angular/core';
-import {CommonModule} from "@angular/common";
+import {CommonModule, PlatformLocation} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {CurrentUserService} from './current-user.service';
 import {MetaService} from '../../system/meta.service';
@@ -54,15 +54,22 @@ export class CurrentUserComponent implements OnInit {
 
   currentUserPopover = viewChild.required<NgbPopover>('currentUserPopover');
 
+  quickLoginCodeVisible = signal(false);
+  copyToClipboardVisible = signal(false);
+
   constructor(private currentUserService: CurrentUserService,
               private factionService: FactionService,
               private logoutService: LogoutService,
               private metaService: MetaService,
-              private router: Router) {
+              private router: Router,
+              private platformLocation: PlatformLocation) {
   }
 
   ngOnInit(): void {
     this.featureFlags.set(this.metaService.getFeatureFlags());
+
+    this.copyToClipboardVisible.set(this.platformLocation.protocol === 'https:');
+
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser.set(currentUser);
 
@@ -96,6 +103,10 @@ export class CurrentUserComponent implements OnInit {
         //this.logoutErrorMessage = 'Failed to logout';
       }
     });
+  }
+
+  revealOrHideCode() {
+    this.quickLoginCodeVisible.set(!this.quickLoginCodeVisible());
   }
 
   copyToClipboard() {

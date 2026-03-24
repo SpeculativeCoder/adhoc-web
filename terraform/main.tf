@@ -536,6 +536,10 @@ resource "aws_efs_file_system" "adhoc_efs_db" {
 
   throughput_mode = "bursting"
 
+  tags = {
+    Name = "${local.adhoc_name}_${terraform.workspace}_db"
+  }
+
   protection {
     replication_overwrite = "ENABLED"
   }
@@ -603,6 +607,9 @@ resource "aws_efs_file_system_policy" "adhoc_efs_db" {
 
 resource "aws_efs_access_point" "adhoc_efs_db" {
   file_system_id = aws_efs_file_system.adhoc_efs_db.id
+  tags = {
+    Name = "${local.adhoc_name}_${terraform.workspace}_db"
+  }
 }
 
 resource "aws_efs_mount_target" "adhoc_efs_db_a" {

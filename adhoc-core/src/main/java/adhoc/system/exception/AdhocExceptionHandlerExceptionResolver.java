@@ -84,13 +84,14 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
                 .addKeyValue("status", response.getStatus())
+                .addKeyValue("modelAndView?.status", modelAndView != null ? modelAndView.getStatus() : null)
                 .addKeyValue("method", method)
                 .addKeyValue("uri", uri)
                 .addKeyValue("chain", exceptionClasses.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Request failure:");
+        logEvent.log("Request failure.");
 
         return modelAndView;
     }

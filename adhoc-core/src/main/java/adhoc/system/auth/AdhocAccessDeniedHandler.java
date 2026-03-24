@@ -80,7 +80,7 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Access denied:");
+        logEvent.log("Access denied.");
 
         response.sendError(status, message);
     }

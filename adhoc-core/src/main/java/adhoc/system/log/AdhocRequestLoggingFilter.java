@@ -166,7 +166,7 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
                 }
 
                 // TODO
-                logEvent.log("{}:", response.getStatus());
+                logEvent.log("{}.", response.getStatus());
             }
 
             Verify.verify(!isAsyncStarted(request)); // not properly supported by this logger

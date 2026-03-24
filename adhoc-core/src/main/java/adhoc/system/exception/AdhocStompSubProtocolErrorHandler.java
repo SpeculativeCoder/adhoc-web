@@ -58,11 +58,11 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
             if (!exceptionKnown) {
                 logEvent = logEvent.setCause(exception);
             }
-            logEvent.log("Stomp failure:");
+            logEvent.log("Stomp failure.");
 
         } else {
             // TODO
-            log.debug("Stomp issue");
+            log.debug("Stomp issue.");
         }
 
         return message;

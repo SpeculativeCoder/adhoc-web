@@ -84,7 +84,7 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
                     .addKeyValue("authentication", authentication)
                     .setCause(exception);
         }
-        logEvent.log("Authentication failure:");
+        logEvent.log("Authentication failure.");
 
         response.sendError(status, message);
     }

@@ -86,7 +86,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UserIdSequence")
-    @SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 100)
     private Long id;
 
     @Version

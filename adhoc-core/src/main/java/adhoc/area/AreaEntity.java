@@ -64,7 +64,7 @@ public class AreaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AreaIdSequence")
-    @SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 100)
     private Long id;
 
     @Version

@@ -64,7 +64,7 @@ public class ServerEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ServerIdSequence")
-    @SequenceGenerator(name = "ServerIdSequence", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "ServerIdSequence", initialValue = 1, allocationSize = 100)
     private Long id;
 
     @Version

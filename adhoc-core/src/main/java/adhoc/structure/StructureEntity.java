@@ -58,7 +58,7 @@ public class StructureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "StructureIdSequence")
-    @SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "StructureIdSequence", initialValue = 1, allocationSize = 100)
     private Long id;
 
     @Version

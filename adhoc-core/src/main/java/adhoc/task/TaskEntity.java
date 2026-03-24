@@ -56,7 +56,7 @@ public abstract class TaskEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TaskIdSequence")
-    @SequenceGenerator(name = "TaskIdSequence", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "TaskIdSequence", initialValue = 1, allocationSize = 100)
     private Long id;
 
     @Version

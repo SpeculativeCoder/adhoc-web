@@ -30,7 +30,7 @@
 
         <createSequence sequenceName="message_id_sequence"
                         startValue="1"
-                        incrementBy="1"/>
+                        incrementBy="100"/>
 
         <createTable tableName="message">
             <column name="id"

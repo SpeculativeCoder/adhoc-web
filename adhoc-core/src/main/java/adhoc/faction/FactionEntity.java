@@ -57,7 +57,7 @@ public class FactionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FactionIdSequence")
-    @SequenceGenerator(name = "FactionIdSequence", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "FactionIdSequence", initialValue = 1, allocationSize = 100)
     private Long id;
 
     @Version

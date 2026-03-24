@@ -30,7 +30,7 @@
 
         <createSequence sequenceName="faction_id_sequence"
                         startValue="1"
-                        incrementBy="1"/>
+                        incrementBy="100"/>
 
         <createTable tableName="faction">
             <column name="id"

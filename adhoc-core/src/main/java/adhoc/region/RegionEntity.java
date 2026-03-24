@@ -59,7 +59,7 @@ public class RegionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RegionIdSequence")
-    @SequenceGenerator(name = "RegionIdSequence", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "RegionIdSequence", initialValue = 1, allocationSize = 100)
     private Long id;
 
     @Version

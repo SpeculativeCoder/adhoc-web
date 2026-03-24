@@ -62,7 +62,7 @@ public class ObjectiveEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ObjectiveIdSequence")
-    @SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 100)
     private Long id;
 
     @Version

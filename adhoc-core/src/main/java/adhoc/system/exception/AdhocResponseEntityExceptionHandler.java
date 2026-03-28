@@ -29,6 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -61,16 +62,17 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
     }
 
-    //@ExceptionHandler(Throwable.class)
-    //@Nullable
-    //public ResponseEntity<Object> handleThrowable(Exception exception, WebRequest webRequest) {
-    //    HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-    //    ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
-    //    HttpHeaders httpHeaders = (exception instanceof ErrorResponse errorResponse)
-    //            ? errorResponse.getHeaders()
-    //            : new HttpHeaders();
-    //    return handleExceptionInternal(exception, problemDetail, httpHeaders, httpStatus, webRequest);
-    //}
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<Object> handleThrowable(Exception exception, WebRequest webRequest) {
+        if (exception instanceof ErrorResponse errorResponse) {
+            return handleExceptionInternal(exception, null, errorResponse.getHeaders(), errorResponse.getStatusCode(), webRequest);
+        } else {
+            // TODO
+            HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
+            return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
+        }
+    }
 
     //@Override
     //protected ResponseEntity<Object> handleExceptionInternal(@NonNull Exception exception, Object body, @NonNull HttpHeaders httpHeaders, @NonNull HttpStatusCode statusCode, @NonNull WebRequest webRequest) {

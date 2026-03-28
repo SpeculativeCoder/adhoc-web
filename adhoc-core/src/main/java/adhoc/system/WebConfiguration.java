@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.session.autoconfigure.DefaultCookieSerializerCustomizer;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +45,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExc
 public class WebConfiguration {
 
     private final CoreProperties coreProperties;
+    private final ServerProperties serverProperties;
 
     @Bean
     public PageableHandlerMethodArgumentResolverCustomizer pageableHandlerMethodArgumentResolverCustomizer() {
@@ -69,6 +71,9 @@ public class WebConfiguration {
             if (coreProperties.getThirdPartyDomains().isEmpty()) {
                 cookieSerializer.setSameSite("strict");
                 cookieSerializer.setPartitioned(false);
+            }
+            if (serverProperties.getSsl().isEnabled()) {
+                cookieSerializer.setCookieName("__Host-Http-SESSION");
             }
         };
     }

@@ -65,6 +65,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.featureFlags.set(this.metaService.getFeatureFlags());
 
+    // TODO
     // don't let the app load in a Safari IFrame as the partitioned third party session cookie doesn't seem to work at the moment
     this.inSafariIFrame.set(this.calculateInSafariIFrame());
 

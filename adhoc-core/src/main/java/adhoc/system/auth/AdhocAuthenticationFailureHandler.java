@@ -65,20 +65,20 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
         Authentication authentication = exception.getAuthenticationRequest();
         //Verify.verifyNotNull(authentication);
 
-        var exceptionClasses = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
-        boolean exceptionKnown = ImmutableList.of(BadCredentialsException.class, UsernameNotFoundException.class).equals(exceptionClasses)
-                || ImmutableList.of(BadCredentialsException.class).equals(exceptionClasses);
-        //|| ImmutableList.of(DisabledException.class).equals(exceptionClasses);
+        var exceptionChain = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
+        boolean exceptionKnown = ImmutableList.of(BadCredentialsException.class, UsernameNotFoundException.class).equals(exceptionChain)
+                || ImmutableList.of(BadCredentialsException.class).equals(exceptionChain);
+        //|| ImmutableList.of(DisabledException.class).equals(exceptionChain);
 
         int status = HttpStatus.UNAUTHORIZED.value();
         String message = HttpStatus.UNAUTHORIZED.getReasonPhrase();
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
                 .addKeyValue("status", status)
-                .addKeyValue("method", method)
-                .addKeyValue("uri", uri)
-                .addKeyValue("principal", authentication == null ? null : authentication.getPrincipal())
-                .addKeyValue("chain", exceptionClasses.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
+                //.addKeyValue("method", method)
+                //.addKeyValue("uri", uri)
+                .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")))
+                .addKeyValue("principal", authentication == null ? null : authentication.getPrincipal());
         if (!exceptionKnown) {
             logEvent = logEvent
                     .addKeyValue("authentication", authentication)

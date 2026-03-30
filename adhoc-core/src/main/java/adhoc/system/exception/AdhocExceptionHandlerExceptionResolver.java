@@ -68,29 +68,36 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
 
         ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
-        var exceptionClasses = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
-        boolean exceptionKnown = ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class).equals(exceptionClasses)
-                || ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, SocketTimeoutException.class).equals(exceptionClasses)
-                || ImmutableList.of(ClientAbortException.class, IOException.class).equals(exceptionClasses)
-                || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionClasses)
-                || ImmutableList.of(NoResourceFoundException.class).equals(exceptionClasses)
+        var exceptionChain = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
+        boolean exceptionKnown = ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class).equals(exceptionChain)
+                || ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, SocketTimeoutException.class).equals(exceptionChain)
+                || ImmutableList.of(ClientAbortException.class, IOException.class).equals(exceptionChain)
+                || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionChain)
+                || ImmutableList.of(NoResourceFoundException.class).equals(exceptionChain)
                 // sorting errors TODO
-                || ImmutableList.of(PropertyReferenceException.class).equals(exceptionClasses)
+                || ImmutableList.of(PropertyReferenceException.class).equals(exceptionChain)
                 // error page TODO
-                || ImmutableList.of(HttpMediaTypeNotAcceptableException.class).equals(exceptionClasses);
+                || ImmutableList.of(HttpMediaTypeNotAcceptableException.class).equals(exceptionChain);
 
         boolean uriApi = uri.startsWith("/adhoc_api/")
                 || uri.startsWith("/adhoc_ws/");
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
-                .addKeyValue("status", response.getStatus())
-                .addKeyValue("modelAndView?.status", modelAndView != null ? modelAndView.getStatus() : null)
-                .addKeyValue("method", method)
-                .addKeyValue("uri", uri)
-                .addKeyValue("chain", exceptionClasses.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
+                .addKeyValue("status", response.getStatus());
+
+        if (modelAndView != null && modelAndView.getStatus() != null) {
+            logEvent = logEvent.addKeyValue("modelAndView.status", modelAndView.getStatus());
+        }
+
+        logEvent = logEvent.addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
+
+        //logEvent = logEvent.addKeyValue("method", method)
+        //        .addKeyValue("uri", uri);
+
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }
+
         logEvent.log("Request failure.");
 
         return modelAndView;

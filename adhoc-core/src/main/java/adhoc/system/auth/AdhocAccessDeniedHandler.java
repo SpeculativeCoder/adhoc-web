@@ -62,9 +62,9 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
 
         //userAuthService.onAccessDenied(method, uri, exception);
 
-        var exceptionClasses = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
-        boolean exceptionKnown = ImmutableList.of(MissingCsrfTokenException.class).equals(exceptionClasses)
-                || ImmutableList.of(InvalidCsrfTokenException.class).equals(exceptionClasses);
+        var exceptionChain = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
+        boolean exceptionKnown = ImmutableList.of(MissingCsrfTokenException.class).equals(exceptionChain)
+                || ImmutableList.of(InvalidCsrfTokenException.class).equals(exceptionChain);
 
         boolean uriApi = uri.startsWith("/adhoc_api/")
                 || uri.startsWith("/adhoc_ws/");
@@ -74,9 +74,9 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
                 .addKeyValue("status", status)
-                .addKeyValue("method", method)
-                .addKeyValue("uri", uri)
-                .addKeyValue("chain", exceptionClasses.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
+                //.addKeyValue("method", method)
+                //.addKeyValue("uri", uri)
+                .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
         if (!exceptionKnown) {
             logEvent = logEvent.setCause(exception);
         }

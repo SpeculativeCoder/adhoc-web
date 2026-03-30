@@ -65,11 +65,11 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
         setIncludeQueryString(true);
         //setIncludeHeaders(true);
         setIncludePayload(true);
-        setMaxPayloadLength(2000);
+        setMaxPayloadLength(5000);
         setIncludeClientInfo(true);
-        setHeaderPredicate(
-                header -> !"cookie".equalsIgnoreCase(header)
-                        && !"x-csrf-token".equalsIgnoreCase(header));
+        //setHeaderPredicate(
+        //        header -> !"cookie".equalsIgnoreCase(header)
+        //                && !"x-csrf-token".equalsIgnoreCase(header));
     }
 
     @PostConstruct
@@ -138,7 +138,7 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
             LoggingEventBuilder logEvent = null;
 
-            if (logger.isWarnEnabled() && statusServerError && uriApi) {
+            if (logger.isWarnEnabled() && statusServerError) { // && uriApi) {
                 logEvent = logger.atWarn();
 
                 //} else if (logger.isWarnEnabled() && statusBadRequest && uriApi) {
@@ -157,13 +157,13 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
             if (logEvent != null) {
 
                 // TODO
-                logEvent = logEvent
-                        //createMessage(requestWrapper != null ? requestWrapper : request, "", "")
-                        .addKeyValue("request", getMessagePayload(requestWrapper != null ? requestWrapper : request));
-
                 if (responseWrapper != null) {
                     logEvent = logEvent.addKeyValue("response", getResponseBody(responseWrapper));
                 }
+
+                logEvent = logEvent
+                        //createMessage(requestWrapper != null ? requestWrapper : request, "", "")
+                        .addKeyValue("request", getMessagePayload(requestWrapper != null ? requestWrapper : request));
 
                 // TODO
                 logEvent.log("{}.", response.getStatus());

@@ -53,7 +53,7 @@
         <awssdk.version>2.42.23</awssdk.version>
         <docker-java.version>3.7.1</docker-java.version>
         <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
-        <!--<datafaker.version>2.5.4</datafaker.version>-->
+        <datafaker.version>2.5.4</datafaker.version>
 
         <!--<quartz.version>2.5.2</quartz.version>-->
 

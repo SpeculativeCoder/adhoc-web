@@ -62,11 +62,11 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
     public AdhocRequestLoggingFilter(CoreProperties coreProperties) {
         this.coreProperties = coreProperties;
 
-        setIncludeQueryString(true);
+        //setIncludeQueryString(true);
         //setIncludeHeaders(true);
         setIncludePayload(true);
         setMaxPayloadLength(5000);
-        setIncludeClientInfo(true);
+        //setIncludeClientInfo(true);
         //setHeaderPredicate(
         //        header -> !"cookie".equalsIgnoreCase(header)
         //                && !"x-csrf-token".equalsIgnoreCase(header));

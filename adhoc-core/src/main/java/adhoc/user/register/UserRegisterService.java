@@ -23,6 +23,7 @@
 package adhoc.user.register;
 
 import adhoc.faction.FactionRepository;
+import adhoc.shared.random_name.RandomNameUtils;
 import adhoc.shared.random_uuid.RandomUUIDUtils;
 import adhoc.system.properties.CoreProperties;
 import adhoc.user.UserEntity;
@@ -46,8 +47,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.temporal.ChronoField;
 
 @Service
 @Transactional
@@ -118,16 +117,12 @@ public class UserRegisterService {
         user.setFaction(userRegisterRequest.getFactionId() == null ? null : factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
 
         if (user.getName() == null) {
-            Instant now = Instant.now();
-            String prefix = user.isHuman() ? "Anon" : "Bot";
-            String name = prefix + now.getLong(ChronoField.INSTANT_SECONDS) + now.getLong(ChronoField.MICRO_OF_SECOND);
-            user.setName(name);
+            //Instant now = Instant.now();
+            //String prefix = user.isHuman() ? "Anon" : "Bot";
+            //String name = prefix + now.getLong(ChronoField.INSTANT_SECONDS) + now.getLong(ChronoField.MICRO_OF_SECOND);
+            //user.setName(name);
 
-            //if (user.isHuman()) {
-            //    user.setName(RandomNameUtils.randomName()); // TODO
-            //} else {
-            //    user.setName("Bot" + Long.toString(System.currentTimeMillis()).replaceFirst("^176159", "")); // TODO
-            //}
+            user.setName(RandomNameUtils.randomName());
         }
 
         if (user.getFaction() == null) {

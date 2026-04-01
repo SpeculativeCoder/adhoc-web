@@ -72,9 +72,10 @@ public class WebConfiguration {
                 cookieSerializer.setSameSite("strict");
                 cookieSerializer.setPartitioned(false);
             }
-            if (serverProperties.getSsl().isEnabled()) {
-                cookieSerializer.setCookieName("__Host-Http-SESSION");
-            }
+            // see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#cookie_prefixes
+            //if (serverProperties.getSsl().isEnabled()) {
+            //    cookieSerializer.setCookieName("__Host-Http-SESSION");
+            //}
         };
     }
 

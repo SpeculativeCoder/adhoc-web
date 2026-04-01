@@ -23,18 +23,18 @@
 package adhoc.shared.random_name;
 
 import lombok.experimental.UtilityClass;
+import net.datafaker.Faker;
+import net.datafaker.internal.helper.WordUtils;
 
 @UtilityClass
 public class RandomNameUtils {
 
     public String randomName() {
-        // TODO
-        //Faker faker = new Faker();
+        Faker faker = new Faker();
 
-        //return onlyAlpha(WordUtils.capitalize(faker.word().adjective()) +
-        //        WordUtils.capitalize(faker.word().adjective()) +
-        //        WordUtils.capitalize(faker.word().verb()));
-        return null;
+        return onlyAlpha(WordUtils.capitalize(faker.word().adjective()) +
+                WordUtils.capitalize(faker.word().adjective()) +
+                WordUtils.capitalize(faker.word().verb()));
     }
 
     private String onlyAlpha(String str) {

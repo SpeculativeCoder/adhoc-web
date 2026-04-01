@@ -114,14 +114,14 @@ export class AppComponent implements OnInit, OnDestroy {
   private doStart() {
     this.refreshData();
 
-    this.stompService.connect();
-
     //this.started.set(true);
   }
 
   private refreshData() {
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser.set(currentUser);
+
+      this.stompService.connect();
     });
   }
 

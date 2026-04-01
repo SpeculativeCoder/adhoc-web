@@ -72,7 +72,7 @@ public class Route53DnsService implements DnsService {
         log.info("Updating Route 53 DNS entry: domain={} ips={}", domain, ips);
 
         //  TODO
-        if (domain.contains("localhost") || ips.isEmpty()) {
+        if (domain.contains("local") || ips.isEmpty()) {
             log.warn("Ignoring attempt to set DNS! domain={} ips={}", domain, ips);
             return;
         }

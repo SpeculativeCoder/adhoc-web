@@ -27,7 +27,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
@@ -44,8 +43,6 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @Getter
 public class CoreProperties {
-
-    private final ServerProperties serverProperties;
 
     @Value("${adhoc.server-port-http}")
     private Integer serverPortHttp;
@@ -127,7 +124,7 @@ public class CoreProperties {
             throw new RuntimeException(e);
         }
 
-        log.info("serverPort={} serverPort2={}", serverProperties.getPort(), serverPortHttp);
+        log.info("serverPortHttp={}", serverPortHttp);
         log.info("featureFlags={}", featureFlags);
         log.info("messageBrokerHost={} messageBrokerStompPort={} messageBrokerCorePort={}", messageBrokerHost, messageBrokerStompPort, messageBrokerCorePort);
         log.info("managerMessageBrokerHost={} managerMessageBrokerCorePort={}", managerMessageBrokerHost, managerMessageBrokerCorePort);

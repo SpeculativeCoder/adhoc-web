@@ -20,23 +20,33 @@
  * SOFTWARE.
  */
 
-package adhoc.shared.special_char;
+package adhoc.system.logging;
 
-import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import org.slf4j.MDC;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ExecutorChannelInterceptor;
+import org.springframework.stereotype.Component;
 
-import java.util.regex.Pattern;
+@Component
+@Slf4j
+public class AdhocMdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
 
-@UtilityClass
-public final class SpecialCharUtils {
+    @Override
+    public Message<?> beforeHandle(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler) {
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        //MDC.put("uuid", UUID.randomUUID().toString());
+        MDC.put("dest", accessor.getDestination());
+        return message;
+    }
 
-    private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
-
-    public String replaceSpecialChars(String text) {
-
-        text = text.replace("\r", "\\r");
-        text = text.replace("\n", "\\n");
-        text = text.replace("\t", "\\t");
-
-        return NON_PRINTABLE.matcher(text).replaceAll("?");
+    @Override
+    public void afterMessageHandled(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler, Exception ex) {
+        MDC.remove("dest");
+        //MDC.remove("uuid");
     }
 }

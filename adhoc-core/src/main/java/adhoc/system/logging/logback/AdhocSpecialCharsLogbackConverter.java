@@ -20,33 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.system.log;
+package adhoc.system.logging.logback;
 
-import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
-import org.slf4j.MDC;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ExecutorChannelInterceptor;
-import org.springframework.stereotype.Component;
+import adhoc.shared.special_chars.SpecialCharsUtils;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.pattern.CompositeConverter;
 
-@Component
-@Slf4j
-public class AdhocMdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
+public class AdhocSpecialCharsLogbackConverter extends CompositeConverter<ILoggingEvent> {
 
     @Override
-    public Message<?> beforeHandle(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        //MDC.put("uuid", UUID.randomUUID().toString());
-        MDC.put("dest", accessor.getDestination());
-        return message;
-    }
-
-    @Override
-    public void afterMessageHandled(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler, Exception ex) {
-        MDC.remove("dest");
-        //MDC.remove("uuid");
+    protected String transform(ILoggingEvent event, String in) {
+        return SpecialCharsUtils.replaceSpecialChars(in);
     }
 }

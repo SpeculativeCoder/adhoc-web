@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.log;
+package adhoc.system.logging;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

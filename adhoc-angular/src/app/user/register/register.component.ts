@@ -46,9 +46,11 @@ export class RegisterComponent implements OnInit {
   protected featureFlags: string = '';
 
   protected quickRegisterRequest: UserRegisterRequest = {};
+  protected quickRegisterRememberMe = false;
   protected quickRegisterErrorMessage?: string;
 
   protected registerRequest: UserRegisterRequest = {};
+  protected registerRememberMe = false;
   protected registerErrorMessage?: string;
 
   protected factions: Faction[] = [];
@@ -63,14 +65,12 @@ export class RegisterComponent implements OnInit {
     this.quickRegisterRequest.email = undefined;
     this.quickRegisterRequest.password = undefined;
     this.quickRegisterRequest.factionId = undefined;
-    this.quickRegisterRequest.rememberMe = false;
     this.quickRegisterRequest.human = true;
 
     this.registerRequest.name = undefined; // 'Anon' + Math.floor(Math.random() * 1000000000);
     this.registerRequest.email = undefined; // this.users.email = `${this.users.name}@localhost`;
     this.registerRequest.password = undefined;
     this.registerRequest.factionId = undefined;
-    this.registerRequest.rememberMe = false;
     this.registerRequest.human = true;
   }
 
@@ -104,7 +104,7 @@ export class RegisterComponent implements OnInit {
     if (this.quickRegisterRequest.password === '') {
       this.quickRegisterRequest.password = undefined;
     }
-    this.registerService.register(this.quickRegisterRequest).subscribe(user => {
+    this.registerService.register(this.quickRegisterRequest, this.quickRegisterRememberMe).subscribe(user => {
       this.router.navigate(['']);
       //window.location.href = '';
       //this.router.navigateByUrl(`/users/${users.userId}`)
@@ -124,7 +124,7 @@ export class RegisterComponent implements OnInit {
     if (this.registerRequest.password === '') {
       this.registerRequest.password = undefined;
     }
-    this.registerService.register(this.registerRequest).subscribe(user => {
+    this.registerService.register(this.registerRequest, this.registerRememberMe).subscribe(user => {
       this.router.navigate(['']);
       //window.location.href = '';
       //this.router.navigateByUrl(`/users/${users.userId}`)

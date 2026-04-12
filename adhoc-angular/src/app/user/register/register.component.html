@@ -48,7 +48,7 @@
         </div>
         <div class="mb-3">
           <div class="form-check">
-            <input class="form-check-input" id="quickRegisterRememberMe" name="quickRegisterRememberMe" type="checkbox" required [(ngModel)]="quickRegisterRequest.rememberMe">
+            <input class="form-check-input" id="quickRegisterRememberMe" name="quickRegisterRememberMe" type="checkbox" required [(ngModel)]="quickRegisterRememberMe">
             <label class="form-check-label" for="quickRegisterRememberMe">Remember Me</label>
             <small class="text-secondary"> (stay logged in for this browser - don't select this on a public computer)</small>
           </div>
@@ -100,7 +100,7 @@
         </div>
         <div class="mb-3">
           <div class="form-check">
-            <input class="form-check-input" id="rememberMe" name="rememberMe" type="checkbox" required [(ngModel)]="registerRequest.rememberMe">
+            <input class="form-check-input" id="rememberMe" name="rememberMe" type="checkbox" required [(ngModel)]="registerRememberMe">
             <label class="form-check-label" for="rememberMe">Remember Me</label>
             <small class="text-secondary"> (stay logged in for this browser - don't select this on a public computer)</small>
           </div>

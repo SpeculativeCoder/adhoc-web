@@ -24,13 +24,11 @@ package adhoc;
 
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
-import adhoc.user.register.UserRegisterRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -38,17 +36,18 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import org.springframework.transaction.annotation.Transactional;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.data.domain.Sort.Order.desc;
+import static org.springframework.data.domain.Sort.by;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @SpringBootTest
 @WebAppConfiguration
 @TestPropertySource("classpath:/application-test.properties")
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc //(printOnlyOnFailure = false)
 @Slf4j
 @Transactional
 public class AdhocManagerApplicationTest {
@@ -56,8 +55,8 @@ public class AdhocManagerApplicationTest {
     @Autowired
     private MockMvcTester mvc;
 
-    @Autowired
-    private JsonMapper jsonMapper;
+    //@Autowired
+    //private JsonMapper jsonMapper;
 
     @Autowired
     private UserRepository userRepository;
@@ -71,12 +70,15 @@ public class AdhocManagerApplicationTest {
     // TODO
     @Test
     public void testRegister() throws Exception {
-        UserRegisterRequest request = UserRegisterRequest.builder()
-                .build();
+        //UserRegisterRequest request = UserRegisterRequest.builder()
+        //        .build();
 
         MvcTestResult result = mvc.post().uri("/adhoc_api/users/register")
                 .contentType(MediaType.APPLICATION_JSON).with(csrf())
-                .content(jsonMapper.writeValueAsBytes(request))
+                //.content(jsonMapper.writeValueAsBytes(request))
+                .content("""
+                        {}
+                        """)
                 .exchange();
 
         assertThat(result)
@@ -86,13 +88,32 @@ public class AdhocManagerApplicationTest {
         assertThat(result).cookies()
                 .containsCookie("SESSION");
 
-        List<UserEntity> users = userRepository.findAll(Sort.by(Sort.Order.desc("id")));
+        List<UserEntity> users = userRepository.findAll(by(desc("id")));
         UserEntity user = users.getFirst();
 
-        assertThat(result).bodyJson().satisfies(json -> {
-            //log.info(json.getJson());
-            assertThat(json).extractingPath("$.id").convertTo(Long.class).isEqualTo(user.getId());
-            assertThat(json).extractingPath("$.name").asString().isEqualTo(user.getName());
+        assertThat(user.getId()).isPositive();
+        assertThat(user.getName()).isNotEmpty();
+
+        assertThat(result).headers().hasHeaderSatisfying("Location", header -> {
+            assertThat(header).isEqualTo(List.of("/adhoc_api/users/current"));
         });
+
+        assertThat(result).bodyJson().isEqualTo("""
+                {
+                    id: %d,
+                    name: '%s'
+                }
+                """.formatted(user.getId(), user.getName()));
+
+        //assertThat(result).bodyJson().convertTo(UserRegisterResponse.class).satisfies(response -> {
+        //    assertThat(response.getId()).isEqualTo(user.getId());
+        //    assertThat(response.getName()).isEqualTo(user.getName());
+        //});
+
+        //assertThat(result).bodyJson().satisfies(json -> {
+        //    //log.info(json.getJson());
+        //    assertThat(json).extractingPath("$.id").convertTo(Long.class).isEqualTo(user.getId());
+        //    assertThat(json).extractingPath("$.name").asString().isEqualTo(user.getName());
+        //});
     }
 }

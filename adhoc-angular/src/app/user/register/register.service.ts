@@ -43,10 +43,10 @@ export class RegisterService {
     this.usersUrl = `${baseUrl}/adhoc_api/users`;
   }
 
-  register(userRegisterRequest: UserRegisterRequest) {
+  register(userRegisterRequest: UserRegisterRequest, rememberMe: boolean = false) {
     return this.http.post(`${this.usersUrl}/register`, {...userRegisterRequest}, {
       params: {
-        'remember-me': userRegisterRequest.rememberMe || false
+        'remember-me': rememberMe
       }
     }).pipe(
         mergeMap((user: UserRegisterResponse) => {

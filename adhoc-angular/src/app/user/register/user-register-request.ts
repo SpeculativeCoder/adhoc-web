@@ -25,6 +25,6 @@ export class UserRegisterRequest {
   email?: string;
   password?: string;
   factionId?: number;
-  rememberMe?: boolean;
+  //rememberMe?: boolean;
   human?: boolean;
 }

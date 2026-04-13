@@ -22,6 +22,7 @@
 
 package adhoc;
 
+import adhoc.system.properties.CoreProperties;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @SpringBootTest
 @WebAppConfiguration
 @TestPropertySource("classpath:/application-test.properties")
-@AutoConfigureMockMvc //(printOnlyOnFailure = false)
+@AutoConfigureMockMvc(printOnlyOnFailure = false)
 @Slf4j
 @Transactional
 public class AdhocManagerApplicationTest {
@@ -57,6 +58,9 @@ public class AdhocManagerApplicationTest {
 
     //@Autowired
     //private JsonMapper jsonMapper;
+
+    @Autowired
+    private CoreProperties coreProperties;
 
     @Autowired
     private UserRepository userRepository;
@@ -70,50 +74,47 @@ public class AdhocManagerApplicationTest {
     // TODO
     @Test
     public void testRegister() throws Exception {
-        //UserRegisterRequest request = UserRegisterRequest.builder()
-        //        .build();
+        long numUsersBefore = userRepository.count();
 
         MvcTestResult result = mvc.post().uri("/adhoc_api/users/register")
                 .contentType(MediaType.APPLICATION_JSON).with(csrf())
                 //.content(jsonMapper.writeValueAsBytes(request))
                 .content("""
-                        {}
+                        {
+                            "human": true
+                        }
                         """)
                 .exchange();
 
-        assertThat(result)
-                .hasStatus(HttpStatus.CREATED)
-                .hasContentTypeCompatibleWith(MediaType.APPLICATION_JSON);
-
-        assertThat(result).cookies()
-                .containsCookie("SESSION");
+        long numUsersAfter = userRepository.count();
+        assertThat(numUsersAfter).isEqualTo(numUsersBefore + 1);
 
         List<UserEntity> users = userRepository.findAll(by(desc("id")));
         UserEntity user = users.getFirst();
 
-        assertThat(user.getId()).isPositive();
-        assertThat(user.getName()).isNotEmpty();
+        assertThat(user.getId()).isEqualTo(numUsersAfter);
+        assertThat(user.getName()).isAlphanumeric();
+        assertThat(user.getEmail()).isNull();
+        assertThat(user.getPassword()).isNull();
+        assertThat(user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey())).isAlphanumeric();
+        assertThat(user.isHuman()).isTrue();
+        // TODO
 
-        assertThat(result).headers().hasHeaderSatisfying("Location", header -> {
-            assertThat(header).isEqualTo(List.of("/adhoc_api/users/current"));
-        });
+        assertThat(result)
+                .hasStatus(HttpStatus.CREATED)
+                .hasContentType(MediaType.APPLICATION_JSON) // TODO
+                .hasHeader("Location", "/adhoc_api/users/current");
+
+        assertThat(result).cookies()
+                .containsCookie("SESSION");
 
         assertThat(result).bodyJson().isEqualTo("""
                 {
-                    id: %d,
-                    name: '%s'
+                    "id": %d,
+                    "name": '%s'
                 }
-                """.formatted(user.getId(), user.getName()));
-
-        //assertThat(result).bodyJson().convertTo(UserRegisterResponse.class).satisfies(response -> {
-        //    assertThat(response.getId()).isEqualTo(user.getId());
-        //    assertThat(response.getName()).isEqualTo(user.getName());
-        //});
-
-        //assertThat(result).bodyJson().satisfies(json -> {
-        //    //log.info(json.getJson());
-        //    assertThat(json).extractingPath("$.id").convertTo(Long.class).isEqualTo(user.getId());
-        //    assertThat(json).extractingPath("$.name").asString().isEqualTo(user.getName());
-        //});
+                """.formatted(
+                user.getId(),
+                user.getName()));
     }
 }

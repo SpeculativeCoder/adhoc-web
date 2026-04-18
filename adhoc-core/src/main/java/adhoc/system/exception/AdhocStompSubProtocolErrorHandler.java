@@ -26,11 +26,11 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageDeliveryException;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
@@ -41,29 +41,39 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHandler {
 
-    @NonNull
     @Override
-    protected Message<byte[]> handleInternal(@NonNull StompHeaderAccessor errorHeaderAccessor, byte @NonNull [] errorPayload, Throwable exception, StompHeaderAccessor clientHeaderAccessor) {
+    public @Nullable Message<byte[]> handleClientMessageProcessingError(@Nullable Message<byte[]> clientMessage, @NonNull Throwable exception) {
+        log.atTrace()
+                .addKeyValue("clientMessage", clientMessage)
+                .log("handleClientMessageProcessingError:", exception);
 
-        log.trace("handleInternal:", exception);
+        Message<byte[]> message = super.handleClientMessageProcessingError(clientMessage, exception);
 
-        Message<byte[]> message = super.handleInternal(errorHeaderAccessor, errorPayload, exception, clientHeaderAccessor);
+        var exceptionChain = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
+        boolean exceptionKnown = ImmutableList.of(MessageDeliveryException.class, InvalidCsrfTokenException.class).equals(exceptionChain);
 
-        if (exception != null) {
-            var exceptionChain = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
-            boolean exceptionKnown = ImmutableList.of(MessageDeliveryException.class, InvalidCsrfTokenException.class).equals(exceptionChain);
-
-            LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
-                    .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
-            if (!exceptionKnown) {
-                logEvent = logEvent.setCause(exception);
-            }
-            logEvent.log("Stomp failure.");
-
-        } else {
-            // TODO
-            log.debug("Stomp issue.");
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
+                .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")))
+                .addKeyValue("clientMessage", clientMessage);
+        if (!exceptionKnown) {
+            logEvent = logEvent.setCause(exception);
         }
+        logEvent.log("Stomp failure.");
+
+        return message;
+    }
+
+    @Override
+    public @Nullable Message<byte[]> handleErrorMessageToClient(@NonNull Message<byte[]> errorMessage) {
+        log.atTrace()
+                .addKeyValue("errorMessage", errorMessage)
+                .log("handleErrorMessageToClient:");
+
+        Message<byte[]> message = super.handleErrorMessageToClient(errorMessage);
+
+        LoggingEventBuilder logEvent = log.atLevel(Level.INFO)
+                .addKeyValue("errorMessage", errorMessage);
+        logEvent.log("Stomp issue.");
 
         return message;
     }

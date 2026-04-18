@@ -101,7 +101,7 @@ public class ProgrammaticLoginService {
 
         rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
 
-        adhocAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
+        //adhocAuthenticationSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
     }
 
     private AuthenticationManager getAuthenticationManager() {

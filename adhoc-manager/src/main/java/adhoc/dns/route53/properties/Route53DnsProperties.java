@@ -22,12 +22,11 @@
 
 package adhoc.dns.route53.properties;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -42,8 +41,8 @@ public class Route53DnsProperties {
     @Value("${adhoc.dns-route53.zone}")
     private String route53Zone;
 
-    @EventListener
-    public void contextRefreshed(ContextRefreshedEvent event) {
+    @PostConstruct
+    public void postConstruct() {
         log.info("awsProfileForRoute53={} route53Zone={}", awsProfileForRoute53, route53Zone);
     }
 }

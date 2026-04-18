@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -137,6 +138,7 @@ public class UserRegisterService {
 
         user.setQuickLoginPassword(quickLoginPassword, coreProperties.getQuickLoginPasswordEncryptionKey());
 
+        user.setLastLogin(LocalDateTime.now());
         user.getState().setToken(RandomUUIDUtils.randomUUID());
 
         user = userRepository.save(user);

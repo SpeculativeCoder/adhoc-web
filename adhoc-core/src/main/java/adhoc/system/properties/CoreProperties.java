@@ -23,12 +23,11 @@
 package adhoc.system.properties;
 
 import com.google.common.base.Strings;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -101,8 +100,8 @@ public class CoreProperties {
     @Value("${adhoc.quick-login-password-encryption-key}")
     private String quickLoginPasswordEncryptionKey;
 
-    @EventListener
-    public void contextRefreshed(ContextRefreshedEvent event) {
+    @PostConstruct
+    public void postConstruct() {
         // TODO: also find region maps
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         try {

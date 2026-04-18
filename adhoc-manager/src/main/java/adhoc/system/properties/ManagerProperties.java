@@ -22,11 +22,10 @@
 
 package adhoc.system.properties;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -58,8 +57,8 @@ public class ManagerProperties {
     @Value("${adhoc.purge-old.servers.seen-before}")
     private Duration purgeOldServersSeenBefore;
 
-    @EventListener
-    public void contextRefreshed(ContextRefreshedEvent event) {
+    @PostConstruct
+    public void postConstruct() {
         log.info("defaultUserPassword={} defaultAdminPassword={}", defaultUserPassword, defaultAdminPassword == null ? null : "***");
         log.info("managerImage={} kioskImage={} serverImage={}", managerImage, kioskImage, serverImage);
         log.info("maxControllers={} maxPlayers={} maxBots={}", maxControllers, maxPlayers, maxBots);

@@ -63,6 +63,10 @@ public class AdhocMdcFilter extends OncePerRequestFilter {
             //    MDC.put("query", query);
             //}
             //MDC.put("uuid", UUID.randomUUID().toString());
+            //String ip = request.getRemoteAddr();
+            //if (!Strings.isEmpty(ip)) {
+            //    MDC.put("ip", ip);
+            //}
             filterChain.doFilter(request, response);
 
         } finally {
@@ -72,6 +76,7 @@ public class AdhocMdcFilter extends OncePerRequestFilter {
             //}
             //MDC.remove("uri");
             //MDC.remove("method");
+            //MDC.remove("ip");
             MDC.remove("req");
         }
     }

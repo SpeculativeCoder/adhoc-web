@@ -28,6 +28,7 @@ import {customization} from "../customization";
 import {CommonModule, DOCUMENT} from "@angular/common";
 import {RegisterService} from '../user/register/register.service';
 import {NavigateService} from '../user/navigate/navigate.service';
+import {UserNavigateRequest} from '../user/navigate/user-navigate-request';
 
 @Component({
   selector: 'app-client',
@@ -58,9 +59,7 @@ export class ClientComponent implements OnInit {
   }
 
   ngOnInit() {
-    let userAgentCompatible = this.isUserAgentCompatible();
-
-    if (userAgentCompatible) {
+    if (this.isUserAgentCompatible()) {
       this.runClient();
     } else {
       this.showCompatibilityWarning = true;
@@ -68,14 +67,12 @@ export class ClientComponent implements OnInit {
   }
 
   private isUserAgentCompatible(): boolean {
-    return true; // TODO
     // TODO: 'Intel Mac OS'?
-    //this.document.defaultView?.navigator.userAgent.indexOf('Windows') != -1;
+    return this.document.defaultView?.navigator.userAgent.indexOf('Windows') != -1;
   }
 
   runClientAnyway() {
     this.showCompatibilityWarning = false;
-
     this.runClient();
   }
 
@@ -92,7 +89,16 @@ export class ClientComponent implements OnInit {
     }
 
     this.registerService.getCurrentUserOrRegister().subscribe(user => {
-      this.navigateService.navigate(serverId).subscribe(navigation => {
+      if (!user) {
+        return;
+      }
+
+      let userNavigateRequest: UserNavigateRequest = {
+        //userId: user.id,
+        serverId: serverId
+      };
+
+      this.navigateService.navigate(userNavigateRequest).subscribe(navigation => {
         // TODO: error check
 
         if (!navigation.ip) {

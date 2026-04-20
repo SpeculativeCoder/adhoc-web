@@ -31,19 +31,15 @@ import {UserNavigateRequest} from './user-navigate-request';
 })
 export class NavigateService {
 
-  private readonly currentUserUrl: string;
+  private readonly usersUrl: string;
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
 
-    this.currentUserUrl = `${baseUrl}/adhoc_api/users/current`;
+    this.usersUrl = `${baseUrl}/adhoc_api/users`;
   }
 
-  navigate(serverId?: number): Observable<UserNavigateResponse> {
-    let userNavigateRequest: UserNavigateRequest = {};
-    if (serverId !== undefined) {
-      userNavigateRequest.serverId = serverId;
-    }
-    return this.http.post(`${this.currentUserUrl}/navigate`, userNavigateRequest);
+  navigate(userNavigateRequest: UserNavigateRequest): Observable<UserNavigateResponse> {
+    return this.http.post(`${this.usersUrl}/navigate`, userNavigateRequest);
   }
 }

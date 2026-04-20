@@ -71,12 +71,14 @@ public class AdhocUserDetailsService implements UserDetailsService {
                 && !Strings.isNullOrEmpty(coreProperties.getServerBasicAuthPassword())
                 && coreProperties.getServerBasicAuthUsername().equals(username)) {
 
-            return new AdhocUserDetails(
+            return new AdhocServerUserDetails(
                     coreProperties.getServerBasicAuthUsername(),
                     passwordEncoder.encode(coreProperties.getServerBasicAuthPassword()),
-                    true, true, true, true,
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserRole.SERVER.name())),
-                    null);
+                    true,
+                    true,
+                    true,
+                    true,
+                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserRole.SERVER.name())));
         }
 
         log.atTrace()

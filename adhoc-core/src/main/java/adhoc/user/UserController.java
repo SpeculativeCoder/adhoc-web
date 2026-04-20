@@ -31,6 +31,7 @@ import adhoc.user.register.UserRegisterRequest;
 import adhoc.user.register.UserRegisterResponse;
 import adhoc.user.register.UserRegisterService;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,40 +88,46 @@ public class UserController {
     public ResponseEntity<UserRegisterResponse> postUserRegister(
             @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
 
-        log.debug("postUserRegister: name={} password?={} factionId={}",
-                userRegisterRequest.getName(),
-                userRegisterRequest.getPassword() != null,
-                userRegisterRequest.getFactionId());
+        log.atInfo()
+                .addKeyValue("name", userRegisterRequest.getName())
+                .addKeyValue("password?", userRegisterRequest.getPassword() != null)
+                .addKeyValue("factionId", userRegisterRequest.getFactionId())
+                .log("postUserRegister:");
 
         UserRegisterResponse response = userRegisterService.userRegisterAndLogin(userRegisterRequest);
 
         return ResponseEntity.created(URI.create("/adhoc_api/users/current")).body(response);
     }
 
-    @PostMapping("/users/current/navigate")
-    public ResponseEntity<UserNavigateResponse> postCurrentUserNavigate(
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/users/navigate")
+    public ResponseEntity<UserNavigateResponse> postUserNavigate(
             @Valid @RequestBody UserNavigateRequest request,
             Authentication authentication) {
 
-        Preconditions.checkArgument(authentication != null);
-        Preconditions.checkArgument(authentication.getPrincipal() instanceof AdhocUserDetails);
+        Verify.verifyNotNull(authentication, "authentication must be set");
+        Verify.verify(authentication.getPrincipal() instanceof AdhocUserDetails, "principal must be user details");
 
         AdhocUserDetails adhocUserDetails = (AdhocUserDetails) authentication.getPrincipal();
 
+        // TODO
+        //Preconditions.checkArgument(Objects.equals(request.getUserId(), adhocUserDetails.getUserId()), "request user does not match current user: %s != %s", request.getUserId(), adhocUserDetails.getUserId());
+        Preconditions.checkArgument(request.getUserId() == null, "userId must not be set: %s", request.getUserId());
+
         request = request.toBuilder().userId(adhocUserDetails.getUserId()).build();
 
-        log.debug("userNavigate: request={}", request);
+        log.atInfo().addKeyValue("request", request).log("userNavigate:");
 
         // for now, only server navigation may specify location
-        Preconditions.checkArgument(request.getX() == null);
-        Preconditions.checkArgument(request.getY() == null);
-        Preconditions.checkArgument(request.getZ() == null);
-        Preconditions.checkArgument(request.getYaw() == null);
-        Preconditions.checkArgument(request.getPitch() == null);
+        Preconditions.checkArgument(request.getX() == null, "x must not be set: %s", request.getX());
+        Preconditions.checkArgument(request.getY() == null, "y must not be set: %s", request.getY());
+        Preconditions.checkArgument(request.getZ() == null, "z must not be set: %s", request.getZ());
+        Preconditions.checkArgument(request.getYaw() == null, "yaw must not be set: %s", request.getYaw());
+        Preconditions.checkArgument(request.getPitch() == null, "pitch must not be set: %s", request.getPitch());
 
         UserNavigateResponse response = userNavigateService.userNavigate(request);
 
-        log.debug("userNavigate: response={}", response);
+        log.atInfo().addKeyValue("response", request).log("userNavigate:");
 
         return ResponseEntity.ok(response);
     }

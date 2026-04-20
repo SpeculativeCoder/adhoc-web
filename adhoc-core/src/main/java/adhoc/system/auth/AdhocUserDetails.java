@@ -37,8 +37,8 @@ public class AdhocUserDetails extends org.springframework.security.core.userdeta
     @Getter
     private final Long userId;
 
-    public AdhocUserDetails(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long userId) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+    public AdhocUserDetails(String username, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities, Long userId) {
+        super(username, password, enabled, true, true, true, authorities);
         this.userId = userId;
     }
 

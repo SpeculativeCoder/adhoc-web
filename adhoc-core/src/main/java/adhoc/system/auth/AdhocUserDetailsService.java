@@ -75,9 +75,6 @@ public class AdhocUserDetailsService implements UserDetailsService {
                     coreProperties.getServerBasicAuthUsername(),
                     passwordEncoder.encode(coreProperties.getServerBasicAuthPassword()),
                     true,
-                    true,
-                    true,
-                    true,
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserRole.SERVER.name())));
         }
 
@@ -131,9 +128,6 @@ public class AdhocUserDetailsService implements UserDetailsService {
                 user.getName(),
                 password,
                 enabled,
-                true,
-                true,
-                true,
                 authorities,
                 user.getId());
 

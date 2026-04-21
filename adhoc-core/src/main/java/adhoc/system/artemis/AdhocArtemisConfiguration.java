@@ -47,11 +47,11 @@ import java.util.Map;
 /**
  * Configure Active MQ Artemis to act as an embedded message broker running locally.
  * <p>
- * In manager mode we will allow STOMP connections from the Unreal servers.
+ * Allows STOMP connections from the Unreal servers.
  * <p>
- * In kiosk mode we should allow STOMP connections from the user's web browsers.
+ * Allows STOMP connections from the users' web browsers.
  * <p>
- * The manager and kiosk brokers talk to each other via an Artemis cluster to ensure we pass along events.
+ * The brokers talk to each other via an Artemis cluster to ensure we pass along events.
  */
 @Configuration
 @RequiredArgsConstructor

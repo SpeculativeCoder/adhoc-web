@@ -20,33 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging;
+package adhoc.system.security;
 
-import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
-import org.slf4j.MDC;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ExecutorChannelInterceptor;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.GrantedAuthority;
 
-@Component
-@Slf4j
-public class AdhocMdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
+import java.util.Collection;
 
-    @Override
-    public Message<?> beforeHandle(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        //MDC.put("uuid", UUID.randomUUID().toString());
-        MDC.put("dest", accessor.getDestination());
-        return message;
-    }
+/** Spring Security user details for an Unreal server. */
+public class AdhocServerUserDetails extends org.springframework.security.core.userdetails.User {
 
-    @Override
-    public void afterMessageHandled(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler, Exception ex) {
-        MDC.remove("dest");
-        //MDC.remove("uuid");
+    public AdhocServerUserDetails(String username, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
+        super(username, password, enabled, true, true, true, authorities);
     }
 }

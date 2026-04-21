@@ -39,9 +39,7 @@ import lombok.ToString;
 
 import java.math.BigDecimal;
 
-/**
- * Each user is associated with a faction.
- */
+/** Each user is associated with a faction. */
 @Entity(name = "Faction")
 @Table(indexes = {
         @Index(name = "idx_faction_score", columnList = "score")

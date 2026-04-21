@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2026 SpeculativeCoder (https://github.com/SpeculativeCoder)
+ * Copyright (c) 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,46 +20,36 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.system.security;
 
-import adhoc.user.UserService;
 import com.google.common.base.Verify;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
+/** Logging for logouts. */
 @Component
 @Slf4j
-@RequiredArgsConstructor
-public class AdhocAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
-    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    private UserService userService;
+public class AdhocLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Authentication authentication) {
+    public void onLogoutSuccess(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @Nullable Authentication authentication) throws IOException, ServletException {
 
-        String method = request.getMethod();
-        String uri = request.getRequestURI();
-
-        log.atTrace()
-                .addKeyValue("method", method)
-                .addKeyValue("uri", uri)
-                .addKeyValue("authentication", authentication)
-                .log("onAuthenticationSuccess:");
-
-        Object principal = authentication.getPrincipal();
+        Object principal = Verify.verifyNotNull(authentication).getPrincipal();
         Verify.verify(principal instanceof AdhocUserDetails);
         AdhocUserDetails userDetails = (AdhocUserDetails) principal;
 
-        userService.authenticationSuccess(userDetails.getUserId());
+        log.atInfo()
+                .addKeyValue("userId", userDetails.getUserId())
+                .addKeyValue("userName", userDetails.getUsername())
+                .log("Logout success.");
     }
 }

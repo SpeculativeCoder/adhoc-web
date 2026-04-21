@@ -22,7 +22,7 @@
 
 package adhoc.user;
 
-import adhoc.system.auth.AdhocUserDetails;
+import adhoc.system.security.AdhocUserDetails;
 import adhoc.user.current.CurrentUserDto;
 import adhoc.user.navigate.UserNavigateRequest;
 import adhoc.user.navigate.UserNavigateResponse;
@@ -127,7 +127,7 @@ public class UserController {
 
         UserNavigateResponse response = userNavigateService.userNavigate(request);
 
-        log.atInfo().addKeyValue("response", request).log("userNavigate:");
+        log.atInfo().addKeyValue("response", response).log("userNavigate:");
 
         return ResponseEntity.ok(response);
     }

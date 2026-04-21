@@ -29,10 +29,10 @@ import adhoc.system.properties.CoreProperties;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
-import adhoc.user.UserService;
 import adhoc.user.programmatic_login.ProgrammaticLoginService;
 import adhoc.user.state.UserStateEntity;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +60,6 @@ public class UserRegisterService {
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
 
-    private final UserService userService;
     private final ProgrammaticLoginService programmaticLoginService;
 
     private final HttpServletRequest httpServletRequest;
@@ -103,8 +102,8 @@ public class UserRegisterService {
             throw new IllegalArgumentException("User name or email already in use");
         }
 
-        // assume human user unless specified false
-        boolean human = userRegisterRequest.getHuman() == null || userRegisterRequest.getHuman();
+        Verify.verifyNotNull(userRegisterRequest.getHuman(), "human is null");
+        boolean human = userRegisterRequest.getHuman();
 
         UserEntity user = new UserEntity();
 

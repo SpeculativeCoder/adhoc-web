@@ -22,5 +22,5 @@
 
 export class UserNavigateRequest {
   //userId?: number;
-  serverId?: number;
+  destinationServerId?: number;
 }

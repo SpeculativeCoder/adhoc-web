@@ -24,15 +24,15 @@
 <configuration packagingData="true">
     <!--<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>-->
 
-    <conversionRule conversionWord="color" class="adhoc.system.logging.logback.AdhocColorLogbackConverter"/>
-    <conversionRule conversionWord="specialChars" class="adhoc.system.logging.logback.AdhocSpecialCharsLogbackConverter"/>
-    <conversionRule conversionWord="specialCharsThrowable" class="adhoc.system.logging.logback.AdhocSpecialCharsLogbackThrowableProxyConverter"/>
+    <conversionRule conversionWord="color" class="adhoc.system.logback.AdhocColorLogbackConverter"/>
+    <conversionRule conversionWord="specialChars" class="adhoc.system.logback.AdhocSpecialCharsLogbackConverter"/>
+    <conversionRule conversionWord="specialCharsThrowable" class="adhoc.system.logback.AdhocSpecialCharsLogbackThrowableProxyConverter"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
         <!-- &#x00A0; -->
         <encoder>
-            <pattern>%color(%date{yyyy-MM-dd'T'HH:mm:ss.SSS}%micros%date{xx}){bright_black} %color(%5level){} %color([%15.15thread]){blue} %color(%35.35logger{34}){cyan}%color(:){bright_black} %color(%specialChars(%message)){}%replace( %specialChars(%kvp{NONE}){}){'^ $',''}%color(%replace( \(%specialChars(%mdc){}\)){'^ \(\)$',''}){bright_black}%n%specialCharsThrowable{}</pattern>
+            <pattern>%color(%date{yyyy-MM-dd'T'HH:mm:ss.SSS}%micros%date{xx}){bright_black} %color(%.-1level){} %color([%15.15thread]){blue} %color(%30.30logger{29}){cyan}%color(:){bright_black} %color(%specialChars(%message)){}%replace( %specialChars(%kvp{NONE}){}){'^ $',''}%color(%replace( \(%specialChars(%mdc){}\)){'^ \(\)$',''}){bright_black}%n%specialCharsThrowable{}</pattern>
             <charset>${CONSOLE_LOG_CHARSET}</charset>
         </encoder>
 
@@ -41,7 +41,7 @@
             <charset>${CONSOLE_LOG_CHARSET}</charset>
         </encoder>-->
 
-        <filter class="adhoc.system.logging.logback.AdhocLogbackMatcherFilter"/>
+        <filter class="adhoc.system.logback.AdhocLogbackMatcherFilter"/>
 
     </appender>
 

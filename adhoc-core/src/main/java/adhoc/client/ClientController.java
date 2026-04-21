@@ -37,9 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
-/**
- * Controller for serving up the UnrealEngine HTML5 client.
- */
+/** Controller for serving up the Unreal Engine HTML5 client. */
 @RestController
 @Slf4j
 @RequiredArgsConstructor

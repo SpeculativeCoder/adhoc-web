@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,15 +36,15 @@ import org.springframework.security.messaging.web.csrf.XorCsrfChannelInterceptor
 import org.springframework.stereotype.Component;
 
 /**
- * Replacement for Spring messaging CSRF channel interceptor.
- * This ignores CSRF for web socket connections from Unreal server.
- * All other requests are handled as usual by the Spring messaging {@link XorCsrfChannelInterceptor}.
+ * Wrapper for Spring Security messaging XOR CSRF channel interceptor.
+ * This wrapper deliberately ignores CSRF for all web socket connections from an Unreal server,
+ * but allows the wrapped {@link XorCsrfChannelInterceptor} to do CSRF checking on all other connections.
  */
 @Primary
 @Component("csrfChannelInterceptor")
 @Slf4j
 @RequiredArgsConstructor
-public class AdhocCsrfChannelInterceptor implements ChannelInterceptor {
+public class AdhocXorCsrfChannelInterceptor implements ChannelInterceptor {
 
     private final XorCsrfChannelInterceptor xorCsrfChannelInterceptor = new XorCsrfChannelInterceptor();
 

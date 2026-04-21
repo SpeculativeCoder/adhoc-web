@@ -1,0 +1,75 @@
+/*
+ * Copyright (c) 2022-2026 SpeculativeCoder (https://github.com/SpeculativeCoder)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package adhoc.system.security;
+
+import adhoc.user.UserService;
+import com.google.common.base.Verify;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import org.slf4j.event.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+/**
+ * Logging for successful login attempts.
+ * Also updates last login time.
+ */
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class AdhocFormLoginSuccessHandler implements AuthenticationSuccessHandler {
+
+    @Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
+    private UserService userService;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Authentication authentication) {
+
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+
+        log.atTrace()
+                .addKeyValue("method", method)
+                .addKeyValue("uri", uri)
+                .addKeyValue("authentication", authentication)
+                .log("onAuthenticationSuccess:");
+
+        Object principal = authentication.getPrincipal();
+        Verify.verify(principal instanceof AdhocUserDetails);
+        AdhocUserDetails userDetails = (AdhocUserDetails) principal;
+
+        userService.updateLastLogin(userDetails.getUserId());
+
+        log.atLevel(Level.INFO)
+                .addKeyValue("id", userDetails.getUserId())
+                .addKeyValue("name", userDetails.getUsername())
+                .log("Authentication success.");
+    }
+}

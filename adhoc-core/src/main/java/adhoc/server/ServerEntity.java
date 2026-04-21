@@ -50,7 +50,7 @@ import java.util.List;
  * A server is assigned to represent one or more areas of a region.
  * When a server is enabled, a server task (typically in the cloud) should be launched.
  * Once the server task is running, the server is considered active and users can navigate to it.
- * A server which is not enabled will have any associated task torn down and will be eventually purged.
+ * A server which is not enabled will have any associated task torn down and will eventually be purged.
  */
 @Entity(name = "Server")
 //@DynamicInsert

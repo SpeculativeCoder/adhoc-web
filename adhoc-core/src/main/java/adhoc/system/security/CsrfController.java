@@ -20,16 +20,22 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging.logback;
+package adhoc.system.security;
 
-import adhoc.shared.special_chars.SpecialCharsUtils;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.pattern.CompositeConverter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-public class AdhocSpecialCharsLogbackConverter extends CompositeConverter<ILoggingEvent> {
+/** Allows access to CSRF token for the Angular app. */
+@RestController
+@RequestMapping("/adhoc_api")
+@RequiredArgsConstructor
+public class CsrfController {
 
-    @Override
-    protected String transform(ILoggingEvent event, String in) {
-        return SpecialCharsUtils.replaceSpecialChars(in);
+    @GetMapping("/csrf")
+    public CsrfToken csrf(CsrfToken token) {
+        return token;
     }
 }

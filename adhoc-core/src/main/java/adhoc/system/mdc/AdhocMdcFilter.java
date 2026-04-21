@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging;
+package adhoc.system.mdc;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,6 +35,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/** Include URI and request params in logs for request handling. */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AdhocMdcFilter extends OncePerRequestFilter {

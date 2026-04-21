@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging;
+package adhoc.system;
 
 import adhoc.system.properties.CoreProperties;
 import com.google.common.base.Strings;
@@ -47,6 +47,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Logging component to enable logging of POSTs/PUTs etc.
+ * Normally we only log the requests which result in a non-normal response code.
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)

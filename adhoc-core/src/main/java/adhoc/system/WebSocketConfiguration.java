@@ -22,8 +22,7 @@
 
 package adhoc.system;
 
-import adhoc.system.exception.AdhocStompSubProtocolErrorHandler;
-import adhoc.system.logging.AdhocMdcExecutorChannelInterceptor;
+import adhoc.system.mdc.AdhocMdcExecutorChannelInterceptor;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +49,6 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 public class WebSocketConfiguration {
 
     private final CoreProperties coreProperties;
-
     private final ArtemisProperties artemisProperties;
 
     @Bean

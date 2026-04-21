@@ -76,7 +76,6 @@ public class UniverseInitializeService {
     private final MessageService messageService;
 
     private final Environment environment;
-
     private final PasswordEncoder passwordEncoder;
 
     /**

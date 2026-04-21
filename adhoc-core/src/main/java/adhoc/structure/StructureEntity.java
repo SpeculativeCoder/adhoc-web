@@ -43,9 +43,7 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-/**
- * Structures are objects that are pre-placed or that users have placed in the world e.g. barriers etc.
- */
+/** Structures are objects that are pre-placed or that users have placed in the world e.g. barriers etc. */
 @Entity(name = "Structure")
 //@DynamicInsert
 //@DynamicUpdate

@@ -37,7 +37,6 @@ import java.util.List;
 public class TaskRefreshOrchestrator {
 
     private final TaskRefreshService taskRefreshService;
-
     private final HostingService hostingService;
 
     /** Query the hosting service for the current state of the tasks. */

@@ -24,16 +24,13 @@ package adhoc.user;
 
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
-import adhoc.shared.random_uuid.RandomUUIDUtils;
-import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
-import adhoc.system.auth.AdhocUserDetails;
 import adhoc.system.properties.CoreProperties;
+import adhoc.system.security.AdhocUserDetails;
 import adhoc.user.current.CurrentUserDto;
 import adhoc.user.state.UserStateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
-import org.slf4j.event.Level;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,29 +75,17 @@ public class UserService {
         return userRepository.findById(currentUserDetails.getUserId()).map(this::toCurrentUserDto);
     }
 
-    /**
-     * Called by {@link AdhocAuthenticationSuccessHandler}. Sets a new "token" every time a user logs in.
-     * The "token" will need to be provided to the Unreal server so we can make sure the user is who they say they are.
-     */
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
-    public void authenticationSuccess(Long userId) {
+    public void updateLastLogin(Long userId) {
 
         UserEntity user = userRepository.getReferenceById(userId);
 
-        UUID newToken = RandomUUIDUtils.randomUUID();
+        //UUID newToken = RandomUUIDUtils.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        user.getState().setToken(newToken);
+        //user.getState().setToken(newToken);
         user.setLastLogin(now);
-
-        log.atLevel(Level.INFO)
-                .addKeyValue("id", userId)
-                .addKeyValue("name", user.getName())
-                .addKeyValue("human", user.isHuman())
-                .log("Authentication success.");
-
-        log.debug("authenticationSuccess: token={}", user.getState().getToken());
     }
 
     UserDto toDto(UserEntity user) {

@@ -95,7 +95,7 @@ export class ClientComponent implements OnInit {
 
       let userNavigateRequest: UserNavigateRequest = {
         //userId: user.id,
-        serverId: serverId
+        destinationServerId: serverId
       };
 
       this.navigateService.navigate(userNavigateRequest).subscribe(navigation => {

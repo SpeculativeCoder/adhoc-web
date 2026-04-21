@@ -31,6 +31,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
+/**
+ * Serve up a robots.txt appropriate to the environment we are in.
+ * Prod environments should encourage indexing, whereas dev environments should not.
+ */
 @RestController
 @RequiredArgsConstructor
 public class RobotsController {

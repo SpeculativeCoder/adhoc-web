@@ -50,7 +50,7 @@ import java.util.UUID;
 
 /**
  * State of user in the world. Generally this changes a lot but is otherwise not important to keep so can be wiped/reset without too much consequence.
- * Long term important information about the user (login details, score etc.) should not be kept in here and should be elsewhere i.e. in {@link UserEntity}
+ * Long term important information about the user (login details, score etc.) should not be kept in here and should be in {@link UserEntity}
  */
 @Entity(name = "UserState")
 @Table(indexes = {

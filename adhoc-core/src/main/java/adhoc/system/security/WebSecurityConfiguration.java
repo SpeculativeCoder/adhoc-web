@@ -20,13 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.system;
+package adhoc.system.security;
 
-import adhoc.system.auth.AdhocAccessDeniedHandler;
-import adhoc.system.auth.AdhocAuthenticationFailureHandler;
-import adhoc.system.auth.AdhocAuthenticationSuccessHandler;
-import adhoc.system.auth.AdhocLogoutSuccessHandler;
-import adhoc.system.auth.AdhocServerBasicAuthRequestMatcher;
 import adhoc.system.properties.CoreProperties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -73,9 +68,9 @@ public class WebSecurityConfiguration<S extends Session> {
             CsrfTokenRepository csrfTokenRepository,
             RememberMeServices rememberMeServices,
             SpringSessionBackedSessionRegistry<S> sessionRegistry,
-            AdhocServerBasicAuthRequestMatcher adhocServerBasicAuthRequestMatcher,
-            AdhocAuthenticationSuccessHandler adhocAuthenticationSuccessHandler,
-            AdhocAuthenticationFailureHandler adhocAuthenticationFailureHandler,
+            AdhocServerUserBasicAuthRequestMatcher adhocServerUserBasicAuthRequestMatcher,
+            AdhocFormLoginSuccessHandler adhocFormLoginSuccessHandler,
+            AdhocFormLoginFailureHandler adhocFormLoginFailureHandler,
             AdhocLogoutSuccessHandler adhocLogoutSuccessHandler,
             AdhocAccessDeniedHandler adhocAccessDeniedHandler) throws Exception {
 
@@ -126,25 +121,25 @@ public class WebSecurityConfiguration<S extends Session> {
                         // ignore CSRF for sockjs as protected by Stomp headers
                         .ignoringRequestMatchers("/adhoc_ws/stomp/user_sockjs/**")
                         // we don't want CSRF on requests from Unreal server
-                        .ignoringRequestMatchers(adhocServerBasicAuthRequestMatcher))
+                        .ignoringRequestMatchers(adhocServerUserBasicAuthRequestMatcher))
 
                 .cors(withDefaults())
 
                 .sessionManagement(session -> session
                         //.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                         .sessionFixation(fixation -> fixation
-                                .changeSessionId()
-                                .withObjectPostProcessor(sessionAuthenticationStrategyPostProcessor()))
+                                .changeSessionId())
                         .sessionConcurrency(concurrency -> concurrency
                                 //.maximumSessions(1)
-                                .sessionRegistry(sessionRegistry)))
+                                .sessionRegistry(sessionRegistry))
+                        .withObjectPostProcessor(sessionAuthenticationStrategyPostProcessor()))
 
                 // allow form login - used by users
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/adhoc_api/login")
-                        .failureHandler(adhocAuthenticationFailureHandler)
-                        .successHandler(adhocAuthenticationSuccessHandler))
+                        .failureHandler(adhocFormLoginFailureHandler)
+                        .successHandler(adhocFormLoginSuccessHandler))
 
                 .logout(logout -> logout
                         .logoutUrl("/adhoc_api/logout")
@@ -207,6 +202,7 @@ public class WebSecurityConfiguration<S extends Session> {
                 // keep a reference to this so we can use it for our programmatic login code
                 // TODO: would prefer it as a bean in the context
                 WebSecurityConfiguration.this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
+                log.info("sessionAuthenticationStrategy={}", sessionAuthenticationStrategy);
                 return sessionAuthenticationStrategy;
             }
         };

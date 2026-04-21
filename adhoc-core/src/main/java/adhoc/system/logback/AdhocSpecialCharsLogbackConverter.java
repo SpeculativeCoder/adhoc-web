@@ -20,15 +20,17 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.system.logback;
 
-import org.springframework.security.core.GrantedAuthority;
+import adhoc.shared.special_chars.SpecialCharsUtils;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.pattern.CompositeConverter;
 
-import java.util.Collection;
+/** Replaces special characters (e.g. newlines etc.) from log messages. */
+public class AdhocSpecialCharsLogbackConverter extends CompositeConverter<ILoggingEvent> {
 
-public class AdhocServerUserDetails extends org.springframework.security.core.userdetails.User {
-
-    public AdhocServerUserDetails(String username, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, enabled, true, true, true, authorities);
+    @Override
+    protected String transform(ILoggingEvent event, String in) {
+        return SpecialCharsUtils.replaceSpecialChars(in);
     }
 }

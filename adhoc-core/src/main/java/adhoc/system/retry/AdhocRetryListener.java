@@ -32,6 +32,7 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.resilience.retry.MethodRetryEvent;
 import org.springframework.stereotype.Component;
 
+/** Logging for retries. */
 @Component
 @Slf4j
 public class AdhocRetryListener implements ApplicationListener<MethodRetryEvent> {

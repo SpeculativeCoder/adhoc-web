@@ -22,6 +22,7 @@
 
 package adhoc.area;
 
+import adhoc.server.ServerEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -58,6 +59,6 @@ public class AreaService {
                 area.getName(),
                 area.getX(), area.getY(), area.getZ(),
                 area.getSizeX(), area.getSizeY(), area.getSizeZ(),
-                area.getServer() == null ? Optional.empty() : Optional.of(area.getServer().getId()));
+                Optional.ofNullable(area.getServer()).map(ServerEntity::getId));
     }
 }

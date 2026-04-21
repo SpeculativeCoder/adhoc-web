@@ -20,37 +20,38 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.system.security;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.csrf.InvalidCsrfTokenException;
+import org.springframework.security.web.csrf.MissingCsrfTokenException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
 
+/** Logging for access denied. */
 @Component
+@RequiredArgsConstructor
 @Slf4j
-public class AdhocAuthenticationFailureHandler implements AuthenticationFailureHandler {
+public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
 
-    //@Setter(onMethod_ = {@Autowired}, onParam_ = {@Lazy})
-    //private UserAuthService userAuthService;
+    //private final UserAuthService userAuthService;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull AuthenticationException exception) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull AccessDeniedException exception) throws IOException, ServletException {
 
         String method = request.getMethod();
         String uri = request.getRequestURI();
@@ -58,33 +59,29 @@ public class AdhocAuthenticationFailureHandler implements AuthenticationFailureH
         log.atTrace()
                 .addKeyValue("method", method)
                 .addKeyValue("uri", uri)
-                .log("onAuthenticationFailure:", exception);
+                .log("handle:", exception);
 
-        //userAuthService.onAuthenticationFailure(exception);
-
-        Authentication authentication = exception.getAuthenticationRequest();
-        //Verify.verifyNotNull(authentication);
+        //userAuthService.onAccessDenied(method, uri, exception);
 
         var exceptionChain = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
-        boolean exceptionKnown = ImmutableList.of(BadCredentialsException.class, UsernameNotFoundException.class).equals(exceptionChain)
-                || ImmutableList.of(BadCredentialsException.class).equals(exceptionChain);
-        //|| ImmutableList.of(DisabledException.class).equals(exceptionChain);
+        boolean exceptionKnown = ImmutableList.of(MissingCsrfTokenException.class).equals(exceptionChain)
+                || ImmutableList.of(InvalidCsrfTokenException.class).equals(exceptionChain);
 
-        int status = HttpStatus.UNAUTHORIZED.value();
-        String message = HttpStatus.UNAUTHORIZED.getReasonPhrase();
+        boolean uriApi = uri.startsWith("/adhoc_api/")
+                || uri.startsWith("/adhoc_ws/");
 
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
+        int status = HttpStatus.FORBIDDEN.value();
+        String message = HttpStatus.FORBIDDEN.getReasonPhrase();
+
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
                 .addKeyValue("status", status)
                 //.addKeyValue("method", method)
                 //.addKeyValue("uri", uri)
-                .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")))
-                .addKeyValue("principal", authentication == null ? null : authentication.getPrincipal());
+                .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
         if (!exceptionKnown) {
-            logEvent = logEvent
-                    .addKeyValue("authentication", authentication)
-                    .setCause(exception);
+            logEvent = logEvent.setCause(exception);
         }
-        logEvent.log("Authentication failure.");
+        logEvent.log("Access denied.");
 
         response.sendError(status, message);
     }

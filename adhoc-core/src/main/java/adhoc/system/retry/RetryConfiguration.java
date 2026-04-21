@@ -25,6 +25,7 @@ package adhoc.system.retry;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.resilience.annotation.EnableResilientMethods;
 
+/** Enable retries via annotated methods. */
 @Configuration
 @EnableResilientMethods
 public class RetryConfiguration {

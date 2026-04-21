@@ -38,7 +38,6 @@ import java.util.List;
 public class ServerTaskManagerOrchestrator {
 
     private final ServerTaskManagerService serverTaskManagerService;
-
     private final HostingService hostingService;
 
     /**

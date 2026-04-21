@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.system.security;
 
 import adhoc.system.properties.CoreProperties;
 import com.google.common.base.Strings;
@@ -34,13 +34,13 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 
 /**
- * This matcher provides a way to identify server requests.
- * Used by {@link adhoc.system.WebSecurityConfiguration#securityFilterChain} to ignore CSRF checking on web requests from Unreal server.
+ * This matcher provides a way to identify requests from an Unreal server.
+ * Used by {@link WebSecurityConfiguration#securityFilterChain} to ignore CSRF checking on web requests from Unreal servers.
  */
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class AdhocServerBasicAuthRequestMatcher implements RequestMatcher {
+public class AdhocServerUserBasicAuthRequestMatcher implements RequestMatcher {
 
     private final CoreProperties coreProperties;
 
@@ -60,7 +60,6 @@ public class AdhocServerBasicAuthRequestMatcher implements RequestMatcher {
 
     @Override
     public boolean matches(@NonNull HttpServletRequest request) {
-
         boolean userServer = false;
 
         if (encodedServerBasicAuth != null) {

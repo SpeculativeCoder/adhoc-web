@@ -24,9 +24,7 @@ package adhoc.shared;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-/**
- * Stomp events we can emit should implement this interface to provide an automatic eventType property based on the class name of the event.
- */
+/** Stomp events we can emit should implement this interface to provide an automatic eventType property based on the class name of the event. */
 @JsonPropertyOrder("eventType")
 public interface Event {
 

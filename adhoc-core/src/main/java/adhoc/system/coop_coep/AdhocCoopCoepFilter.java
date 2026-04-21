@@ -32,9 +32,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-/**
- * Add some headers required by the browser to allow execution of the UnrealEngine HTML5 client in multithreaded mode.
- */
+/** Adds some headers required by the browser to allow execution of the UnrealEngine HTML5 client in multithreaded mode. */
 // TODO: this is only needed if UE is built for multithreaded
 //@Component
 public class AdhocCoopCoepFilter implements Filter {

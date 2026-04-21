@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.exception;
+package adhoc.system;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;

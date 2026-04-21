@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging.logback;
+package adhoc.system.logback;
 
 import adhoc.shared.special_chars.SpecialCharsUtils;
 import ch.qos.logback.classic.pattern.ExtendedThrowableProxyConverter;
@@ -32,6 +32,7 @@ import org.springframework.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
 
+/** Replaces special characters (e.g. newlines etc.) from log exceptions. */
 // TODO: consider a one-line exception?
 public class AdhocSpecialCharsLogbackThrowableProxyConverter extends ExtendedThrowableProxyConverter {
 

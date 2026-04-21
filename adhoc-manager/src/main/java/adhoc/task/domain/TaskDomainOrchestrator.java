@@ -40,7 +40,6 @@ public class TaskDomainOrchestrator {
     private final CoreProperties coreProperties;
 
     private final TaskDomainService taskDomainService;
-
     private final DnsService dnsService;
 
     public void manageTaskDomains() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
+ * Copyright (c) 2022-2026 SpeculativeCoder (https://github.com/SpeculativeCoder)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,35 +20,34 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.system.mdc;
 
-import com.google.common.base.Verify;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.slf4j.MDC;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ExecutorChannelInterceptor;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
+/** Include destination queue in logs for message handling. */
 @Component
 @Slf4j
-public class AdhocLogoutSuccessHandler implements LogoutSuccessHandler {
+public class AdhocMdcExecutorChannelInterceptor implements ExecutorChannelInterceptor {
 
     @Override
-    public void onLogoutSuccess(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @Nullable Authentication authentication) throws IOException, ServletException {
+    public Message<?> beforeHandle(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler) {
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        //MDC.put("uuid", UUID.randomUUID().toString());
+        MDC.put("dest", accessor.getDestination());
+        return message;
+    }
 
-        Object principal = Verify.verifyNotNull(authentication).getPrincipal();
-        Verify.verify(principal instanceof AdhocUserDetails);
-        AdhocUserDetails userDetails = (AdhocUserDetails) principal;
-
-        log.atInfo()
-                .addKeyValue("userId", userDetails.getUserId())
-                .addKeyValue("userName", userDetails.getUsername())
-                .log("Logout success.");
+    @Override
+    public void afterMessageHandled(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler, Exception ex) {
+        MDC.remove("dest");
+        //MDC.remove("uuid");
     }
 }

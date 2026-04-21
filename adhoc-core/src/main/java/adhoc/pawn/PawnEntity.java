@@ -45,9 +45,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * A pawn is either a bot or user on an Unreal server.
+ * A pawn is either a bot or a human on an Unreal server.
  * Pawns are not updated regularly so only gives a recent location
- * (intended for an "at a glance" location of bots/users in the world).
+ * (intended for an "at a glance" location of bots/humans in the world).
  */
 @Entity(name = "Pawn")
 //@DynamicInsert

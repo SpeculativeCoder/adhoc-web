@@ -22,7 +22,6 @@
 
 package adhoc.system;
 
-import adhoc.system.exception.AdhocExceptionHandlerExceptionResolver;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

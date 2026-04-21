@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.system.security;
 
 import adhoc.shared.random_uuid.RandomUUIDUtils;
 import adhoc.system.properties.CoreProperties;
@@ -46,7 +46,7 @@ import java.util.LinkedHashSet;
 
 /**
  * Consults the {@link UserEntity} table for user info as needed by Spring Security.
- * Also has special support for the "server" user (used by Unreal server when talking to the web server) which is set via properties.
+ * Also has special support for the Unreal server user (used by Unreal server when talking to the web server) which is defined via properties.
  * TODO: it would be nice to split the "server" user functionality into another user details service.
  */
 @Service
@@ -57,9 +57,9 @@ public class AdhocUserDetailsService implements UserDetailsService {
 
     private final CoreProperties coreProperties;
 
-    private final PasswordEncoder passwordEncoder;
-
     private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @NonNull
     @Transactional(readOnly = true)

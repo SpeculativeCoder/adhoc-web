@@ -46,9 +46,7 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.util.Set;
 
-/**
- * An objective that can be taken by a faction.
- */
+/** An objective that can be taken by a faction. */
 @Entity(name = "Objective")
 @Table(uniqueConstraints = @UniqueConstraint(name = "uc_objective_region_id_index", columnNames = {"region_id", "index"}))
 //@DynamicInsert

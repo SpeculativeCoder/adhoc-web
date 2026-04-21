@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.exception;
+package adhoc.system;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -37,6 +37,7 @@ import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 
 import java.util.stream.Collectors;
 
+/** Stomp exception logging. */
 @Component
 @Slf4j
 public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHandler {

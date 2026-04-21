@@ -20,13 +20,14 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging.logback;
+package adhoc.system.logback;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.AbstractMatcherFilter;
 import ch.qos.logback.core.spi.FilterReply;
 
+/** Filters out some messages that occur during normal usage that we are no longer interested in. */
 public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEvent> {
 
     @Override

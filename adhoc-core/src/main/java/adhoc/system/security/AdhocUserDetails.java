@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.auth;
+package adhoc.system.security;
 
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;
@@ -29,7 +29,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 /**
- * Spring Security's view of authenticated user.
+ * Spring Security user details for an authenticated user.
  * We keep track of the authenticated user's database ID so we can easily look up any extra information as needed.
  */
 public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {

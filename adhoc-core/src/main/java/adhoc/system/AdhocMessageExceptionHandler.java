@@ -20,12 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.system.exception;
+package adhoc.system;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
+/** Message handling exception logging. */
 @ControllerAdvice
 @Slf4j
 public class AdhocMessageExceptionHandler {

@@ -45,7 +45,6 @@ import java.sql.SQLException;
 public class ManagerH2Configuration {
 
     private final ManagerH2Properties managerH2Properties;
-
     private final DataSourceProperties dataSourceProperties;
 
     @Bean(initMethod = "start", destroyMethod = "stop")

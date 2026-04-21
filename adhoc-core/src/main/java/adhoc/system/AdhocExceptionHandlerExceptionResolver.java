@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.exception;
+package adhoc.system;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.stream.Collectors;
 
+/** Request handling exception logging. */
 @Component
 @Slf4j
 public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExceptionResolver {

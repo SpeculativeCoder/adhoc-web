@@ -23,7 +23,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Csrf} from "./csrf";
-import {BehaviorSubject, mergeMap, take} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +32,7 @@ export class CsrfService {
 
   private readonly csrfUrl: string;
 
-  private csrf$: BehaviorSubject<Csrf | undefined> = new BehaviorSubject<Csrf | undefined>(undefined);
+  private csrf?: Observable<Csrf>;
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
@@ -40,24 +40,28 @@ export class CsrfService {
     this.csrfUrl = `${baseUrl}/adhoc_api/csrf`;
   }
 
-  getCsrf$() {
-    return this.csrf$.value ? this.csrf$ : this.refreshCsrf$();
-  }
-
-  refreshCsrf$() {
-    return this.http.get<Csrf>(this.csrfUrl).pipe(
-        mergeMap(csrf => {
-          this.csrf$.next(csrf);
-          return this.csrf$;
-        }));
-  }
-
   getCsrf() {
-    return this.getCsrf$().pipe(take(1));
-  }
+    if (this.csrf) {
+      return this.csrf;
+    }
 
-  refreshCsrf() {
-    return this.refreshCsrf$().pipe(take(1));
+    let subject = this.csrf = new Subject<Csrf>();
+
+    this.http.get<Csrf>(this.csrfUrl).subscribe({
+      next: (csrf) => {
+        this.csrf = of(csrf);
+        subject.next(csrf);
+      },
+      error: (error) => {
+        this.csrf = undefined;
+        subject.error(error);
+      },
+      complete: () => {
+        subject.complete();
+      }
+    });
+
+    return this.csrf;
   }
 
   /**
@@ -65,6 +69,6 @@ export class CsrfService {
    * Typically, this is called when the current user changes due to register/login etc.
    */
   clearCsrf() {
-    this.csrf$.next(undefined)
+    this.csrf = undefined;
   }
 }

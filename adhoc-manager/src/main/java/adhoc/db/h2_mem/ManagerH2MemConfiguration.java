@@ -31,9 +31,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
 @Configuration
 @Profile("db-h2-mem")
 @Slf4j
@@ -43,7 +40,7 @@ public class ManagerH2MemConfiguration {
     private final DataSourceProperties dataSourceProperties;
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    Server h2MemServer() throws SQLException, IOException {
+    Server h2MemServer() throws Exception {
 
         Server server = Server.createTcpServer(
                 "-tcp", "-tcpAllowOthers", "-tcpPort", "9092");

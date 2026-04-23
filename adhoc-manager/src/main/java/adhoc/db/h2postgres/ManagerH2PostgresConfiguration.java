@@ -36,7 +36,6 @@ import org.springframework.context.annotation.Profile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 
 @Configuration
 @Profile("db-h2postgres")
@@ -49,7 +48,7 @@ public class ManagerH2PostgresConfiguration {
     private final DataSourceProperties dataSourceProperties;
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    Server h2PostgresServer() throws SQLException, IOException {
+    Server h2PostgresServer() throws Exception {
 
         String h2PostgresPath = managerH2PostgresProperties.getH2PostgresPath();
 

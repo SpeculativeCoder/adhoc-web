@@ -36,7 +36,6 @@ import org.springframework.context.annotation.Profile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 
 @Configuration
 @Profile("db-h2")
@@ -48,7 +47,7 @@ public class ManagerH2Configuration {
     private final DataSourceProperties dataSourceProperties;
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    Server h2Server() throws SQLException, IOException {
+    Server h2Server() throws Exception {
 
         String h2Path = managerH2Properties.getH2Path();
 

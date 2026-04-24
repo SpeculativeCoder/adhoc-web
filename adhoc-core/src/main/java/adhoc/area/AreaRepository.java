@@ -26,8 +26,8 @@ import adhoc.region.RegionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface AreaRepository extends JpaRepository<AreaEntity, Long> {
 
@@ -35,5 +35,5 @@ public interface AreaRepository extends JpaRepository<AreaEntity, Long> {
 
     Optional<AreaEntity> findByRegionAndIndex(RegionEntity region, Integer index);
 
-    Stream<AreaEntity> streamByRegionAndIndexNotIn(RegionEntity region, Collection<Integer> indexNotIn);
+    List<AreaEntity> findByRegionAndIndexNotIn(RegionEntity region, Collection<Integer> indexNotIn);
 }

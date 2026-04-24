@@ -35,14 +35,15 @@ import org.springframework.core.env.StandardEnvironment;
 import java.util.List;
 
 /**
- * When running as a manager, this application talks to a {@link adhoc.hosting.HostingService}
- * to ensure servers are representing each area in each region (and will start / stop servers accordingly).
- * There will likely only be a few (and typically just 1) manager application(s) running.
+ * When running as a Manager, this application manages the Unreal servers.
+ * There will likely only be a few (and typically just 1) Manager application(s) running.
  * <p>
- * Servers communicate with the manager to let it know about events occurring in the world.
- * Events are handled by the manager and then emitted in the {@link AdhocArtemisConfiguration} cluster for kiosks to observe.
+ * Unreal servers communicate with the Manager to let it know about events occurring.
+ * Events are handled by the Manager and then emitted in the Artemis cluster (see {@link AdhocArtemisConfiguration})
+ * for Kiosks to observe.
  * <p>
- * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the manager.
+ * The Manager also runs all the same web-facing functionality of the Kiosk, particularly for administrator access.
+ * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the Manager.
  */
 @SpringBootApplication
 @Slf4j
@@ -50,14 +51,11 @@ import java.util.List;
 public class AdhocManagerApplication extends AbstractAdhocApplication {
 
     /**
-     * Some valid combinations of Spring profiles for the manager are:
+     * Recommended combinations of Spring profiles (defaults will be chosen if you don't specify):
      * <ul>
-     * <li><tt>db-h2postgres,hosting-local,dns-local</tt> - this is the default, used for local testing where you can also run the Unreal server in the editor</li>
-     * <li><tt>db-h2postgres,hosting-docker,dns-local</tt> - this will use Docker to run the Unreal servers for local testing</li>
-     * <li><tt>db-h2,hosting-docker,dns-local</tt> - as above but uses H2 database without postgres dialect</li>
-     * <li><tt>db-hsqldb,hosting-docker,dns-local</tt> - as above but uses HSQLDB database</li>
-     * <li><tt>db-postgres,hosting-docker,dns-local</tt> - as above but uses a real persistent Postgres database on the local machine (good for testing DB changelog)</li>
-     * <li><tt>db-h2postgres,hosting-ecs,dns-route53</tt> - this is what runs in AWS and makes use of ECS to run unreal servers, and Route53 to manage DNS entries</li>
+     * <li><tt>db-h2,hosting-local,dns-local</tt> - used for local testing. This is the default if you don't specify any profiles. It will assume you are running an Unreal server on the localhost manually via the editor.</li>
+     * <li><tt>db-h2,hosting-docker,dns-local</tt> - used for local testing. It will use a local Docker to run the Unreal servers.</li>
+     * <li><tt>db-h2,hosting-ecs,dns-route53</tt> - this is what runs in AWS. Makes use of ECS to run unreal servers, and Route53 to manage DNS entries</li>
      * </ul>
      */
     public static void main(String[] args) {
@@ -66,7 +64,7 @@ public class AdhocManagerApplication extends AbstractAdhocApplication {
         List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
 
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
-            activeProfiles.add("db-h2-mem"); // default to in memory H2 database (real deployment will use something else)
+            activeProfiles.add("db-h2");
         }
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("hosting-"))) {
             activeProfiles.add("hosting-local");

@@ -44,7 +44,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -95,12 +94,14 @@ public class ObjectiveManagerService {
             Preconditions.checkArgument(unique, "Objective index not unique: %s", objectiveDto.getIndex());
         }
 
-        try (Stream<ObjectiveEntity> objectivesToDelete = objectiveRepository.streamByRegionAndIndexNotIn(serverRegion, objectiveIndexes)) {
-            objectivesToDelete.forEach(objectiveToDelete -> {
-                log.info("Deleting unused objective: {}", objectiveToDelete);
-                objectiveRepository.delete(objectiveToDelete);
-            });
-        }
+        objectiveRepository.findByRegionAndIndexNotIn(serverRegion, objectiveIndexes).forEach(objectiveToDelete -> {
+            log.info("Deleting unused objective: {}", objectiveToDelete);
+            // before deleting unused objectives we must unlink any objectives that are linked to it
+            for (ObjectiveEntity linkedObjective : objectiveToDelete.getLinkedObjectives()) {
+                linkedObjective.getLinkedObjectives().remove(objectiveToDelete);
+            }
+            objectiveRepository.delete(objectiveToDelete);
+        });
 
         // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveDtos.stream().map(objectiveDto -> {

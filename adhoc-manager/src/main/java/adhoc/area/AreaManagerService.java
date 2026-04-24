@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -57,6 +56,7 @@ public class AreaManagerService {
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
     public List<AreaDto> updateServerAreas(Long serverId, List<AreaDto> areaDtos) {
+
         ServerEntity server = serverRepository.getReferenceById(serverId);
         RegionEntity serverRegion = server.getRegion();
 
@@ -69,16 +69,14 @@ public class AreaManagerService {
             Preconditions.checkArgument(unique, "Area index not unique: %s", areaDto.getIndex());
         }
 
-        try (Stream<AreaEntity> areasToDelete = areaRepository.streamByRegionAndIndexNotIn(serverRegion, areaIndexes)) {
-            areasToDelete.forEach(areaToDelete -> {
-                log.info("Deleting unused area: {}", areaToDelete);
-                // before deleting unused areas we must unlink any objectives that will become orphaned
-                for (ObjectiveEntity orphanedObjective : areaToDelete.getObjectives()) {
-                    orphanedObjective.setArea(null);
-                }
-                areaRepository.delete(areaToDelete);
-            });
-        }
+        areaRepository.findByRegionAndIndexNotIn(serverRegion, areaIndexes).forEach(areaToDelete -> {
+            log.info("Deleting unused area: {}", areaToDelete);
+            // before deleting unused areas we must unlink any objectives that will become orphaned
+            for (ObjectiveEntity orphanedObjective : areaToDelete.getObjectives()) {
+                orphanedObjective.setArea(null);
+            }
+            areaRepository.delete(areaToDelete);
+        });
 
         return areaDtos.stream()
                 .map(areaDto -> toEntity(areaDto,

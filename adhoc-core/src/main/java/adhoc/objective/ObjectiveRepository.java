@@ -30,7 +30,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface ObjectiveRepository extends JpaRepository<ObjectiveEntity, Long> {
 
@@ -38,7 +37,7 @@ public interface ObjectiveRepository extends JpaRepository<ObjectiveEntity, Long
 
     Optional<ObjectiveEntity> findByRegionAndIndex(RegionEntity region, Integer index);
 
-    Stream<ObjectiveEntity> streamByRegionAndIndexNotIn(RegionEntity region, Collection<Integer> indexNotIn);
+    List<ObjectiveEntity> findByRegionAndIndexNotIn(RegionEntity region, Collection<Integer> indexNotIn);
 
     @Query("select f as faction, count(o) as objectiveCount from Faction f join Objective o on o.faction = f group by f")
     List<FactionObjectiveCount> getFactionObjectiveCounts();

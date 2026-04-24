@@ -22,6 +22,7 @@
 
 package adhoc;
 
+import adhoc.system.artemis.AdhocArtemisConfiguration;
 import adhoc.user.UserRole;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
@@ -34,25 +35,31 @@ import org.springframework.core.env.StandardEnvironment;
 import java.util.List;
 
 /**
- * When running as a kiosk this application is for access by users (i.e. the "public" facing variant of the application).
- * There will likely be many kiosks running - enough to handle whatever load is occurring.
+ * When running as a Kiosk this application is for access by users (i.e. the "public" facing variant of the application).
+ * There will likely be many Kiosks running - enough to handle whatever load is occurring.
  * <p>
- * It receives events via the Artemis cluster to pass on to users.
+ * It receives events via the Artemis cluster (see {@link AdhocArtemisConfiguration}) to pass on to users.
  * <p>
- * Most of the access to the kiosk will be users with {@link UserRole#USER} role.
+ * Most of the access to the Kiosk will be users with {@link UserRole#USER} role.
  */
 @SpringBootApplication
 @Slf4j
 @RequiredArgsConstructor
 public class AdhocKioskApplication extends AbstractAdhocApplication {
 
+    /**
+     * Recommended combinations of Spring profiles (defaults will be chosen if you don't specify):
+     * <ul>
+     * <li><tt>db-h2</tt> - used for local testing and is also what runs in AWS. This is the default if you don't specify any profiles.
+     * </ul>
+     */
     public static void main(String[] args) {
         // rather than rely on spring.profiles.default we will just pick some extra default profiles as needed
         ConfigurableEnvironment environment = new StandardEnvironment();
         List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
 
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {
-            activeProfiles.add("db-h2-mem"); // default to in memory H2 database (real deployment will use something else)
+            activeProfiles.add("db-h2");
         }
 
         environment.setActiveProfiles(activeProfiles.toArray(new String[0]));

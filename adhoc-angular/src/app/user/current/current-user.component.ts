@@ -47,8 +47,8 @@ export class CurrentUserComponent implements OnInit {
 
   featureFlags = signal<string>('');
 
-  currentUser = signal<CurrentUser | undefined>(undefined);
-  currentUserFaction = signal<Faction | undefined>(undefined);
+  currentUser = signal<CurrentUser | null>(null);
+  currentUserFaction = signal<Faction | null>(null);
 
   copyToClipboardSuccessText = signal('');
 
@@ -76,7 +76,7 @@ export class CurrentUserComponent implements OnInit {
       let factions$ =
           (currentUser && currentUser.factionId)
               ? this.factionService.getCachedFaction(currentUser.factionId)
-              : of<Faction | undefined>(undefined);
+              : of<Faction | null>(null);
       factions$.subscribe(faction => {
         this.currentUserFaction.set(faction);
       });
@@ -85,9 +85,10 @@ export class CurrentUserComponent implements OnInit {
 
   popoverButtonClicked() {
     // if clicking on button to open the popover - then we need to refresh user information as the popover shows
-    if (!this.currentUserPopover().isOpen()) {
-      this.currentUserService.refreshCurrentUser().subscribe();
-    }
+    // TODO: still needed?
+    //if (!this.currentUserPopover().isOpen()) {
+    //  this.currentUserService.refreshCurrentUser().subscribe();
+    //}
   }
 
   logout() {

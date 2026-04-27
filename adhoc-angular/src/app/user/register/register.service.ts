@@ -22,11 +22,11 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {UserRegisterRequest} from './user-register-request';
-import {mergeMap, of} from 'rxjs';
+import {mergeMap, of, tap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current/current-user.service';
 import {CsrfService} from '../../core/csrf.service';
-import {UserRegisterResponse} from './user-register-response';
+import {CurrentUser} from '../current/current-user';
 
 @Injectable({
   providedIn: 'root'
@@ -49,9 +49,9 @@ export class RegisterService {
         'remember-me': rememberMe
       }
     }).pipe(
-        mergeMap((user: UserRegisterResponse) => {
-          this.csrfService.clearCsrf();
-          return this.currentUserService.refreshCurrentUser();
+        tap((currentUser: CurrentUser) => {
+          this.csrfService.refreshCsrf().subscribe();
+          this.currentUserService.setCurrentUser(currentUser);
         }));
   }
 

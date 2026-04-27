@@ -98,7 +98,7 @@ public class UserService {
                 Optional.ofNullable(user.getState()).map(UserStateEntity::getServer).map(ServerEntity::getId).orElse(null));
     }
 
-    CurrentUserDto toCurrentUserDto(UserEntity user) {
+    public CurrentUserDto toCurrentUserDto(UserEntity user) {
 
         String quickLoginCode = user.getName() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey());
 

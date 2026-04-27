@@ -29,6 +29,8 @@ import adhoc.system.properties.CoreProperties;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
+import adhoc.user.UserService;
+import adhoc.user.current.CurrentUserDto;
 import adhoc.user.programmatic_login.ProgrammaticLoginService;
 import adhoc.user.state.UserStateEntity;
 import com.google.common.base.Preconditions;
@@ -59,6 +61,7 @@ public class UserRegisterService {
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
 
+    private final UserService userService;
     private final ProgrammaticLoginService programmaticLoginService;
 
     private final HttpServletRequest httpServletRequest;
@@ -66,16 +69,13 @@ public class UserRegisterService {
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
-    public UserRegisterResponse userRegisterAndLogin(UserRegisterRequest userRegisterRequest) {
+    public CurrentUserDto userRegisterAndLogin(UserRegisterRequest userRegisterRequest) {
 
         UserEntity user = userRegisterInternal(userRegisterRequest);
 
         programmaticLoginService.programmaticLoginInternal(user, userRegisterRequest.getPassword());
 
-        return UserRegisterResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .build();
+        return userService.toCurrentUserDto(user);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)

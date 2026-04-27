@@ -53,7 +53,7 @@ export class App implements OnInit, OnDestroy {
 
   protected isSafariIFrame = signal(false);
 
-  protected currentUser = signal<CurrentUser | undefined>(undefined);
+  protected currentUser = signal<CurrentUser | null>(null);
 
   constructor(@Inject(DOCUMENT) private document: Document,
               private metaService: MetaService,
@@ -72,7 +72,6 @@ export class App implements OnInit, OnDestroy {
       this.start();
     }
   }
-
 
   private calculateIsSafariIFrame() {
     let safari = this.document.defaultView?.navigator.userAgent.indexOf('Safari') != -1;
@@ -99,7 +98,7 @@ export class App implements OnInit, OnDestroy {
   }
 
   private refreshData() {
-    this.currentUserService.getCurrentUser$().subscribe(currentUser => {
+    this.currentUserService.refreshCurrentUser$().subscribe(currentUser => {
       this.currentUser.set(currentUser);
     });
   }

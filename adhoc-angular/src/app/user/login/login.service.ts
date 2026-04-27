@@ -21,10 +21,10 @@
  */
 
 import {Inject, Injectable} from '@angular/core';
-import {mergeMap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current/current-user.service';
 import {CsrfService} from '../../core/csrf.service';
+import {mergeMap} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -54,7 +54,7 @@ export class LoginService {
       }
     }).pipe(
         mergeMap(_ => {
-          this.csrfService.clearCsrf();
+          this.csrfService.refreshCsrf().subscribe();
           return this.currentUserService.refreshCurrentUser();
         }));
   }

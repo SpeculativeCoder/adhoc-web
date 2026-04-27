@@ -44,7 +44,10 @@ export class CsrfService {
     if (this.csrf) {
       return this.csrf;
     }
+    return this.refreshCsrf();
+  }
 
+  refreshCsrf() {
     let subject = this.csrf = new Subject<Csrf>();
 
     this.http.get<Csrf>(this.csrfUrl).subscribe({
@@ -53,7 +56,6 @@ export class CsrfService {
         subject.next(csrf);
       },
       error: (error) => {
-        this.csrf = undefined;
         subject.error(error);
       },
       complete: () => {
@@ -61,14 +63,6 @@ export class CsrfService {
       }
     });
 
-    return this.csrf;
-  }
-
-  /**
-   * Clear CSRF token information, forcing it to be obtained again when next needed.
-   * Typically, this is called when the current user changes due to register/login etc.
-   */
-  clearCsrf() {
-    this.csrf = undefined;
+    return subject;
   }
 }

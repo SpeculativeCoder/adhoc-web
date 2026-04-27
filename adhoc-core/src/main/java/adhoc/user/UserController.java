@@ -28,7 +28,6 @@ import adhoc.user.navigate.UserNavigateRequest;
 import adhoc.user.navigate.UserNavigateResponse;
 import adhoc.user.navigate.UserNavigateService;
 import adhoc.user.register.UserRegisterRequest;
-import adhoc.user.register.UserRegisterResponse;
 import adhoc.user.register.UserRegisterService;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
@@ -79,14 +78,14 @@ public class UserController {
     }
 
     @PostMapping("/users/register")
-    public ResponseEntity<UserRegisterResponse> postUserRegister(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
+    public ResponseEntity<CurrentUserDto> postUserRegister(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
         log.atInfo()
                 .addKeyValue("name", userRegisterRequest.getName())
                 .addKeyValue("password?", userRegisterRequest.getPassword() != null)
                 .addKeyValue("factionId", userRegisterRequest.getFactionId())
                 .log("postUserRegister:");
 
-        UserRegisterResponse response = userRegisterService.userRegisterAndLogin(userRegisterRequest);
+        CurrentUserDto response = userRegisterService.userRegisterAndLogin(userRegisterRequest);
 
         return ResponseEntity.created(URI.create("/adhoc_api/users/current")).body(response);
     }

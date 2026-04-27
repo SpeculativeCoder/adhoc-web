@@ -60,7 +60,7 @@ export class UsersComponent implements OnInit {
   protected featureFlags = signal('');
 
   protected users = signal<Page<User> | undefined>(undefined);
-  protected currentUser = signal<CurrentUser | undefined>(undefined);
+  protected currentUser = signal<CurrentUser | null>(null);
   protected factions = signal<Faction[] | undefined>(undefined);
 
   protected selectedUsers = signal<User[]>([]);

@@ -21,7 +21,7 @@
  */
 
 import {Inject, Injectable} from '@angular/core';
-import {mergeMap} from 'rxjs';
+import {tap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current/current-user.service';
 import {CsrfService} from '../../core/csrf.service';
@@ -48,12 +48,9 @@ export class LogoutService {
       //responseType: 'text',
       //params: {}
     }).pipe(
-        mergeMap(logoutResponse => {
-          this.csrfService.clearCsrf();
-          // immediately clear user
-          this.currentUserService.clearCurrentUser();
-          // then refresh for good measure
-          return this.currentUserService.refreshCurrentUser();
+        tap(_ => {
+          this.csrfService.refreshCsrf().subscribe();
+          this.currentUserService.setCurrentUser(null);
         }));
   }
 }

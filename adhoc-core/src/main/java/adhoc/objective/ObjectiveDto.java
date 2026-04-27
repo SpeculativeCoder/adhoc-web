@@ -38,6 +38,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class ObjectiveDto {
 
     @Min(1)

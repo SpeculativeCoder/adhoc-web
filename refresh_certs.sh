@@ -54,8 +54,8 @@ dos2unix certs/${ADHOC_NAME}-ca.cer
 rm -f certs/${ADHOC_NAME}-ca.crt
 
 set +x
-export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id --profile ${AWS_PROFILE_FOR_ROUTE53})
-export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key --profile ${AWS_PROFILE_FOR_ROUTE53})
+export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id --profile ${AWS_PROFILE_FOR_ROUTE53}) || exit 1
+export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key --profile ${AWS_PROFILE_FOR_ROUTE53}) || exit 1
 set -x
 
 mkdir -p certs

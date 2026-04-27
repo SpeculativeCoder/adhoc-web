@@ -38,6 +38,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class ServerDto {
 
     @Min(1)

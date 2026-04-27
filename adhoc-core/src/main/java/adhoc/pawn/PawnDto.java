@@ -37,6 +37,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class PawnDto {
 
     @Min(1)

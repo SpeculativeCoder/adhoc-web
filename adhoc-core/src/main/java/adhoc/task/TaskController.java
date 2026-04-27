@@ -42,17 +42,12 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping("/tasks")
-    public Page<TaskDto> getTasks(
-            @SortDefault("id") Pageable pageable) {
-
-        // TODO: sorting
+    public Page<TaskDto> getTasks(@SortDefault("id") Pageable pageable) {
         return taskService.findTasks(pageable);
     }
 
     @GetMapping("/tasks/{taskId}")
-    public ResponseEntity<TaskDto> getTask(
-            @PathVariable Long taskId) {
-
+    public ResponseEntity<TaskDto> getTask(@PathVariable Long taskId) {
         return ResponseEntity.of(taskService.findTask(taskId));
     }
 }

@@ -62,32 +62,24 @@ public class UserController {
     private final UserNavigateService userNavigateService;
 
     @GetMapping("/users")
-    public Page<UserDto> getUsers(
-            @SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
-
+    public Page<UserDto> getUsers(@SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
         return userService.findUsers(pageable);
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<UserDto> getUser(
-            @PathVariable Long userId) {
-
+    public ResponseEntity<UserDto> getUser(@PathVariable Long userId) {
         return ResponseEntity.of(userService.findUser(userId));
     }
 
     @GetMapping("/users/current")
-    public ResponseEntity<CurrentUserDto> getCurrentUser(
-            Authentication authentication) {
-
+    public ResponseEntity<CurrentUserDto> getCurrentUser(Authentication authentication) {
         return userService.findCurrentUser(authentication)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PostMapping("/users/register")
-    public ResponseEntity<UserRegisterResponse> postUserRegister(
-            @Valid @RequestBody UserRegisterRequest userRegisterRequest) {
-
+    public ResponseEntity<UserRegisterResponse> postUserRegister(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
         log.atInfo()
                 .addKeyValue("name", userRegisterRequest.getName())
                 .addKeyValue("password?", userRegisterRequest.getPassword() != null)
@@ -101,9 +93,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/users/navigate")
-    public ResponseEntity<UserNavigateResponse> postUserNavigate(
-            @Valid @RequestBody UserNavigateRequest request,
-            Authentication authentication) {
+    public ResponseEntity<UserNavigateResponse> postUserNavigate(@Valid @RequestBody UserNavigateRequest request, Authentication authentication) {
 
         Verify.verifyNotNull(authentication, "authentication must be set");
         Verify.verify(authentication.getPrincipal() instanceof AdhocUserDetails, "principal must be user details");
@@ -111,12 +101,11 @@ public class UserController {
         AdhocUserDetails adhocUserDetails = (AdhocUserDetails) authentication.getPrincipal();
 
         // TODO
-        //Preconditions.checkArgument(Objects.equals(request.getUserId(), adhocUserDetails.getUserId()), "request user does not match current user: %s != %s", request.getUserId(), adhocUserDetails.getUserId());
+        //Preconditions.checkArgument(Objects.equals(request.getUserId(), adhocUserDetails.getUserId()),
+        //        "request user does not match current user: %s != %s", request.getUserId(), adhocUserDetails.getUserId());
         Preconditions.checkArgument(request.getUserId() == null, "userId must not be set: %s", request.getUserId());
 
         request = request.toBuilder().userId(adhocUserDetails.getUserId()).build();
-
-        log.atInfo().addKeyValue("request", request).log("userNavigate:");
 
         // for now, only server navigation may specify location
         Preconditions.checkArgument(request.getX() == null, "x must not be set: %s", request.getX());
@@ -124,6 +113,8 @@ public class UserController {
         Preconditions.checkArgument(request.getZ() == null, "z must not be set: %s", request.getZ());
         Preconditions.checkArgument(request.getYaw() == null, "yaw must not be set: %s", request.getYaw());
         Preconditions.checkArgument(request.getPitch() == null, "pitch must not be set: %s", request.getPitch());
+
+        log.atInfo().addKeyValue("request", request).log("userNavigate:");
 
         UserNavigateResponse response = userNavigateService.userNavigate(request);
 

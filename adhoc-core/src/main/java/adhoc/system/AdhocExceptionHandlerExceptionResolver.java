@@ -56,7 +56,8 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
     //}
 
     @Override
-    public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Object handler, @NonNull Exception exception) {
+    public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                         Object handler, @NonNull Exception exception) {
 
         String method = request.getMethod();
         String uri = request.getRequestURI();

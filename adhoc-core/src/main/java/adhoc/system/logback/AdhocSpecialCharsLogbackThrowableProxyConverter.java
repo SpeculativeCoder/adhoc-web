@@ -50,6 +50,7 @@ public class AdhocSpecialCharsLogbackThrowableProxyConverter extends ExtendedThr
     }
 
     @RequiredArgsConstructor
+    @SuppressWarnings("ClassCanBeRecord")
     private static class ThrowableProxyMethodInterceptor implements MethodInterceptor {
 
         private final IThrowableProxy throwableProxy;

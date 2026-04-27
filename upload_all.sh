@@ -41,7 +41,7 @@ export KIOSK_IMAGE=${KIOSK_IMAGE:-${ADHOC_NAME}_${ADHOC_ENV}_kiosk}
 export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_${ADHOC_ENV}_server}
 
 export AWS_REGION=${AWS_REGION:-us-east-1}
-export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text --profile ${AWS_PROFILE_FOR_ECR})
+export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text --profile ${AWS_PROFILE_FOR_ECR}) || exit 1
 
 docker tag ${MANAGER_IMAGE}:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${MANAGER_IMAGE}:latest
 docker tag ${KIOSK_IMAGE}:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${KIOSK_IMAGE}:latest

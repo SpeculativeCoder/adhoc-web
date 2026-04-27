@@ -51,6 +51,7 @@ public class ObjectiveTakenService {
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
     public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
+
         ObjectiveEntity objective = objectiveRepository.getReferenceById(event.getObjectiveId());
         FactionEntity faction = factionRepository.getReferenceById(event.getFactionId());
 

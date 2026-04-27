@@ -35,6 +35,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class TaskDto {
 
     @Min(1)

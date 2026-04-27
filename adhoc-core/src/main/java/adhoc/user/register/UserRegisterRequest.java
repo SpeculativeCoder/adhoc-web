@@ -37,6 +37,7 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class UserRegisterRequest {
 
     @Size(min = 1, max = 50)

@@ -45,14 +45,13 @@ public class PawnManagerController {
     @MessageMapping("ServerPawns")
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER')")
-    public ServerPawnsEvent handleServerPawns(
-            @Valid @RequestBody ServerPawnsEvent event) {
-
+    public ServerPawnsEvent handleServerPawns(@Valid @RequestBody ServerPawnsEvent event) {
         log.debug("Handling: {}", event);
 
         List<PawnDto> pawnDtos = pawnManagerService.handleServerPawns(event);
 
         ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
+
         log.debug("Sending: {}", serverPawnsEvent);
         return serverPawnsEvent;
     }

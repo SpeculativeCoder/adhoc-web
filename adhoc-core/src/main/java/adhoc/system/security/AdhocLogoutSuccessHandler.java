@@ -41,7 +41,8 @@ import java.io.IOException;
 public class AdhocLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
-    public void onLogoutSuccess(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @Nullable Authentication authentication) throws IOException, ServletException {
+    public void onLogoutSuccess(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                @Nullable Authentication authentication) throws IOException, ServletException {
 
         Object principal = Verify.verifyNotNull(authentication).getPrincipal();
         Verify.verify(principal instanceof AdhocUserDetails);

@@ -43,16 +43,12 @@ public class FactionController {
     private final FactionService factionService;
 
     @GetMapping("/factions")
-    public Page<FactionDto> getFactions(
-            @SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
-
+    public Page<FactionDto> getFactions(@SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
         return factionService.findFactions(pageable);
     }
 
     @GetMapping("/factions/{factionId}")
-    public ResponseEntity<FactionDto> getFaction(
-            @PathVariable Long factionId) {
-
+    public ResponseEntity<FactionDto> getFaction(@PathVariable Long factionId) {
         return ResponseEntity.of(factionService.findFaction(factionId));
     }
 }

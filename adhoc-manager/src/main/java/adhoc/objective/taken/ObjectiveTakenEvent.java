@@ -34,21 +34,22 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class ObjectiveTakenEvent implements Event {
 
     @NotNull
     @Min(1)
-    private Long objectiveId;
+    Long objectiveId;
 
     @NotNull
     @Min(0)
-    private Long objectiveVersion;
+    Long objectiveVersion;
 
     @NotNull
     @Min(1)
-    private Long factionId;
+    Long factionId;
 
     @NotNull
     @Min(0)
-    private Long factionVersion;
+    Long factionVersion;
 }

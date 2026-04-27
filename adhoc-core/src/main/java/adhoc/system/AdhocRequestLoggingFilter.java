@@ -85,8 +85,8 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         Verify.verify(!isAsyncDispatch(request)); // not properly supported by this logger
 

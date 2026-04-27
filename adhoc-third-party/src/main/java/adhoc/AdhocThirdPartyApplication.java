@@ -55,10 +55,8 @@ public class AdhocThirdPartyApplication {
 
     @GetMapping(value = {"/"})
     public ModelAndView getIndex(HttpServletRequest request) {
-
-        ModelAndView index = new ModelAndView("index",
+        return new ModelAndView("index",
                 ImmutableMap.of("ADHOC_URL", request.getScheme() + "://" + managerDomain));
-        return index;
     }
 
     @Bean(destroyMethod = "destroy")

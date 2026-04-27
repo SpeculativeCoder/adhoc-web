@@ -25,6 +25,7 @@ package adhoc.user;
 import adhoc.faction.FactionEntity;
 import adhoc.pawn.PawnEntity;
 import adhoc.user.state.UserStateEntity;
+import com.google.common.base.Verify;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -168,31 +169,22 @@ public class UserEntity {
         this.password = password == null ? null : passwordEncoder.encode(password);
     }
 
-
     public String getQuickLoginPassword(String quickLoginPasswordEncryptionKey) {
+        Verify.verifyNotNull(quickLoginPasswordEncryptionKey, "quick login password encryption key is null");
 
-        if (quickLoginPasswordEncryptionKey == null) {
-            return null;
+        String quickLoginPasswordEncryptionSalt = quickLoginPassword.substring(0, 16);
+        TextEncryptor textEncryptor = Encryptors.text(quickLoginPasswordEncryptionKey, quickLoginPasswordEncryptionSalt);
 
-        } else {
-            String quickLoginPasswordEncryptionSalt = quickLoginPassword.substring(0, 16);
-            TextEncryptor textEncryptor = Encryptors.text(quickLoginPasswordEncryptionKey, quickLoginPasswordEncryptionSalt);
-
-            return textEncryptor.decrypt(quickLoginPassword.substring(quickLoginPasswordEncryptionSalt.length()));
-        }
+        return textEncryptor.decrypt(quickLoginPassword.substring(quickLoginPasswordEncryptionSalt.length()));
     }
 
     public void setQuickLoginPassword(String quickLoginPassword, String quickLoginPasswordEncryptionKey) {
+        Verify.verifyNotNull(quickLoginPasswordEncryptionKey, "quick login password encryption key is null");
 
-        if (quickLoginPassword == null) {
-            this.quickLoginPassword = null;
+        //new String(Hex.encode(KeyGenerators.secureRandom().generateKey()), StandardCharsets.UTF_8);
+        String quickLoginPasswordSalt = KeyGenerators.string().generateKey();
+        TextEncryptor textEncryptor = Encryptors.text(quickLoginPasswordEncryptionKey, quickLoginPasswordSalt);
 
-        } else {
-            //new String(Hex.encode(KeyGenerators.secureRandom().generateKey()), StandardCharsets.UTF_8);
-            String quickLoginPasswordSalt = KeyGenerators.string().generateKey();
-            TextEncryptor textEncryptor = Encryptors.text(quickLoginPasswordEncryptionKey, quickLoginPasswordSalt);
-
-            this.quickLoginPassword = quickLoginPasswordSalt + textEncryptor.encrypt(quickLoginPassword);
-        }
+        this.quickLoginPassword = quickLoginPasswordSalt + textEncryptor.encrypt(quickLoginPassword);
     }
 }

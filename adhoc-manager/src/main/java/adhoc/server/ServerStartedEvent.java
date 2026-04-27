@@ -35,15 +35,16 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class ServerStartedEvent implements Event {
 
     @NotNull
     @Min(1)
-    private Long serverId;
+    Long serverId;
 
     @NotEmpty
-    private String privateIp;
+    String privateIp;
 
     @NotEmpty
-    private String managerHost;
+    String managerHost;
 }

@@ -55,30 +55,25 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Page<UserDto> findUsers(Pageable pageable) {
-
         return userRepository.findAll(pageable).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<UserDto> findUser(Long userId) {
-
         return userRepository.findById(userId).map(this::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<CurrentUserDto> findCurrentUser(Authentication authentication) {
-
         if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails currentUserDetails)) {
             return Optional.empty();
         }
-
         return userRepository.findById(currentUserDetails.getUserId()).map(this::toCurrentUserDto);
     }
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
     public void updateLastLogin(Long userId) {
-
         UserEntity user = userRepository.getReferenceById(userId);
 
         //UUID newToken = RandomUUIDUtils.randomUUID();

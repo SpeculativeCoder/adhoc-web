@@ -46,7 +46,6 @@ public class UserManagerService {
     private final UserDefeatService userDefeatService;
 
     public UserDto updateUser(UserDto userDto) {
-
         return userService.toDto(
                 toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }

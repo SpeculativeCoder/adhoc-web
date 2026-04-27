@@ -52,7 +52,7 @@ public class ManagerHsqldbConfiguration {
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    Server hsqldbServer() throws IOException {
+    Server hsqldbServer() {
 
         String hsqldbPath = managerHsqldbProperties.getHsqldbPath();
 

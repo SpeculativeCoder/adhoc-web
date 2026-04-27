@@ -41,7 +41,9 @@ import java.io.IOException;
 public class AdhocMdcFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+
         String method = request.getMethod();
         String uri = request.getRequestURI();
         String query = request.getQueryString();

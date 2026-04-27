@@ -51,7 +51,8 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
     //private final UserAuthService userAuthService;
 
     @Override
-    public void handle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull AccessDeniedException exception) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, @NonNull HttpServletResponse response,
+                       @NonNull AccessDeniedException exception) throws IOException, ServletException {
 
         String method = request.getMethod();
         String uri = request.getRequestURI();

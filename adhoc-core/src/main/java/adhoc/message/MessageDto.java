@@ -34,13 +34,11 @@ import lombok.extern.jackson.Jacksonized;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * DTO for {@link MessageEntity}
- */
 @Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class MessageDto implements Serializable {
 
     @Min(1)

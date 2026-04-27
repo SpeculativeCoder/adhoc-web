@@ -38,22 +38,23 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class UserJoinRequest {
 
     //@NotNull
     @Min(1)
-    private Long userId;
+    Long userId;
 
     @Min(1)
-    private Long factionId;
+    Long factionId;
 
     @NotNull
-    private Boolean human;
+    Boolean human;
 
     @NotNull
     @Min(1)
-    private Long serverId;
+    Long serverId;
 
     @Length(min = 1)
-    private String token;
+    String token;
 }

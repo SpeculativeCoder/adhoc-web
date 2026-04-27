@@ -41,9 +41,9 @@ import {StompService} from './system/stomp.service';
     RouterLinkActive,
     CurrentUserComponent
   ],
-  templateUrl: './app.component.html'
+  templateUrl: './app.html'
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class App implements OnInit, OnDestroy {
 
   protected title = signal(customization.title);
   protected showExtraFeatures = signal(!!customization.extra);

@@ -51,7 +51,8 @@ public class AdhocFormLoginFailureHandler implements AuthenticationFailureHandle
     //private UserAuthService userAuthService;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, @NonNull HttpServletResponse response,
+                                        @NonNull AuthenticationException exception) throws IOException, ServletException {
 
         String method = request.getMethod();
         String uri = request.getRequestURI();

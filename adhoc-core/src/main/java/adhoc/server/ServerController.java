@@ -42,16 +42,12 @@ public class ServerController {
     private final ServerService serverService;
 
     @GetMapping("/servers")
-    public Page<ServerDto> getServers(
-            @SortDefault("id") Pageable pageable) {
-
+    public Page<ServerDto> getServers(@SortDefault("id") Pageable pageable) {
         return serverService.findServers(pageable);
     }
 
     @GetMapping("/servers/{serverId}")
-    public ResponseEntity<ServerDto> getServer(
-            @PathVariable Long serverId) {
-
+    public ResponseEntity<ServerDto> getServer(@PathVariable Long serverId) {
         return ResponseEntity.of(serverService.findServer(serverId));
     }
 }

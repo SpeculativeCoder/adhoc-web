@@ -48,9 +48,7 @@ public class ServerManagerController {
 
     @PutMapping("/servers/{serverId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ServerDto putServer(
-            @PathVariable Long serverId,
-            @Valid @RequestBody ServerDto serverDto) {
+    public ServerDto putServer(@PathVariable Long serverId, @Valid @RequestBody ServerDto serverDto) {
 
         Preconditions.checkArgument(Objects.equals(serverId, serverDto.getId()),
                 "Server ID mismatch: %s != %s", serverId, serverDto.getId());
@@ -60,19 +58,14 @@ public class ServerManagerController {
 
     @GetMapping("/servers/{serverId}/servers")
     @PreAuthorize("hasRole('SERVER')")
-    public List<ServerDto> getServerServers(
-            @PathVariable Long serverId) {
-
+    public List<ServerDto> getServerServers(@PathVariable Long serverId) {
         return serverManagerService.getServerServers(serverId);
     }
 
     @MessageMapping("ServerStarted")
     @PreAuthorize("hasRole('SERVER')")
-    public ServerUpdatedEvent handleServerStarted(
-            @Valid @RequestBody ServerStartedEvent serverStartedEvent) {
-
+    public ServerUpdatedEvent handleServerStarted(@Valid @RequestBody ServerStartedEvent serverStartedEvent) {
         log.debug("Handling: {}", serverStartedEvent);
-
         return serverManagerService.handleServerStarted(serverStartedEvent);
     }
 }

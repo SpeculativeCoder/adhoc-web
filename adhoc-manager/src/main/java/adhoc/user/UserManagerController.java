@@ -61,9 +61,7 @@ public class UserManagerController {
 
     @PutMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public UserDto putUser(
-            @PathVariable Long userId,
-            @Valid @RequestBody UserDto userDto) {
+    public UserDto putUser(@PathVariable Long userId, @Valid @RequestBody UserDto userDto) {
 
         Preconditions.checkArgument(Objects.equals(userId, userDto.getId()),
                 "User ID mismatch: %s != %s", userId, userDto.getId());
@@ -73,10 +71,7 @@ public class UserManagerController {
 
     @PostMapping("/servers/{serverId}/userNavigate")
     @PreAuthorize("hasRole('SERVER')")
-    public ResponseEntity<UserNavigateResponse> postServerUserNavigate(
-            @PathVariable Long serverId,
-            @Valid @RequestBody UserNavigateRequest request) {
-
+    public ResponseEntity<UserNavigateResponse> postServerUserNavigate(@PathVariable Long serverId, @Valid @RequestBody UserNavigateRequest request) {
         log.debug("serverUserNavigate: request={}", request);
 
         // for now, server must specify location so user can be properly placed on arrival
@@ -89,15 +84,12 @@ public class UserManagerController {
         UserNavigateResponse response = userNavigateService.userNavigate(request);
 
         log.debug("serverUserNavigate: response={}", response);
-
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/servers/{serverId}/userJoin")
     @PreAuthorize("hasRole('SERVER')")
-    public UserJoinResponse postServerUserJoin(
-            @PathVariable Long serverId,
-            @Valid @RequestBody UserJoinRequest userJoinRequest) {
+    public UserJoinResponse postServerUserJoin(@PathVariable Long serverId, @Valid @RequestBody UserJoinRequest userJoinRequest) {
 
         Preconditions.checkArgument(Objects.equals(serverId, userJoinRequest.getServerId()),
                 "Server ID mismatch: %s != %s", serverId, userJoinRequest.getServerId());
@@ -111,15 +103,12 @@ public class UserManagerController {
     @MessageMapping("ServerUserDefeat")
     @SendTo("/topic/events")
     @PreAuthorize("hasRole('SERVER') or hasRole('ADMIN')")
-    public UserDefeatEvent handleUserDefeat(
-            @Valid @RequestBody ServerUserDefeatEvent serverUserDefeatEvent) {
-
+    public UserDefeatEvent handleServerUserDefeat(@Valid @RequestBody ServerUserDefeatEvent serverUserDefeatEvent) {
         log.debug("Handling: {}", serverUserDefeatEvent);
 
         UserDefeatEvent userDefeatEvent = userDefeatService.userDefeat(serverUserDefeatEvent);
 
         log.debug("Sending: {}", userDefeatEvent);
-
         return userDefeatEvent;
     }
 }

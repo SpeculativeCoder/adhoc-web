@@ -42,16 +42,12 @@ public class AreaController {
     private final AreaService areaService;
 
     @GetMapping("/areas")
-    public Page<AreaDto> getAreas(
-            @SortDefault("region.id") @SortDefault("index") Pageable pageable) {
-
+    public Page<AreaDto> getAreas(@SortDefault("region.id") @SortDefault("index") Pageable pageable) {
         return areaService.findAreas(pageable);
     }
 
     @GetMapping("/areas/{areaId}")
-    public ResponseEntity<AreaDto> getArea(
-            @PathVariable Long areaId) {
-
+    public ResponseEntity<AreaDto> getArea(@PathVariable Long areaId) {
         return ResponseEntity.of(areaService.findArea(areaId));
     }
 }

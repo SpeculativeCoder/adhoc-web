@@ -42,16 +42,12 @@ public class ObjectiveController {
     private final ObjectiveService objectiveService;
 
     @GetMapping("/objectives")
-    public Page<ObjectiveDto> getObjectives(
-            @SortDefault("region.id") @SortDefault("index") Pageable pageable) {
-
+    public Page<ObjectiveDto> getObjectives(@SortDefault("region.id") @SortDefault("index") Pageable pageable) {
         return objectiveService.findObjectives(pageable);
     }
 
     @GetMapping("/objectives/{objectiveId}")
-    public ResponseEntity<ObjectiveDto> getObjective(
-            @PathVariable Long objectiveId) {
-
+    public ResponseEntity<ObjectiveDto> getObjective(@PathVariable Long objectiveId) {
         return ResponseEntity.of(objectiveService.findObjective(objectiveId));
     }
 }

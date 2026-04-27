@@ -42,16 +42,12 @@ public class RegionController {
     private final RegionService regionService;
 
     @GetMapping("/regions")
-    public Page<RegionDto> getRegions(
-            @SortDefault("id") Pageable pageable) {
-
+    public Page<RegionDto> getRegions(@SortDefault("id") Pageable pageable) {
         return regionService.findRegions(pageable);
     }
 
     @GetMapping("/regions/{regionId}")
-    public ResponseEntity<RegionDto> getRegion(
-            @PathVariable Long regionId) {
-
+    public ResponseEntity<RegionDto> getRegion(@PathVariable Long regionId) {
         return ResponseEntity.of(regionService.findRegion(regionId));
     }
 }

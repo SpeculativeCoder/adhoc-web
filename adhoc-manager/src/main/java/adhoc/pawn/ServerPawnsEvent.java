@@ -37,13 +37,14 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class ServerPawnsEvent implements Event {
 
     @NotNull
     @Min(1)
-    private Long serverId;
+    Long serverId;
 
     @NotNull
     @Valid
-    private List<PawnDto> pawns;
+    List<PawnDto> pawns;
 }

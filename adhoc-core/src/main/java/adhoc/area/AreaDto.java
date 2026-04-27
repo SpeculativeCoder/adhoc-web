@@ -38,6 +38,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class AreaDto {
 
     @Min(1)

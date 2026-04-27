@@ -72,7 +72,7 @@ public class WebSecurityConfiguration<S extends Session> {
             AdhocFormLoginSuccessHandler adhocFormLoginSuccessHandler,
             AdhocFormLoginFailureHandler adhocFormLoginFailureHandler,
             AdhocLogoutSuccessHandler adhocLogoutSuccessHandler,
-            AdhocAccessDeniedHandler adhocAccessDeniedHandler) throws Exception {
+            AdhocAccessDeniedHandler adhocAccessDeniedHandler) {
 
         StringBuilder frameAncestors = new StringBuilder("frame-ancestors 'self'");
         //frameAncestors.append(" https://").append(coreProperties.getManagerDomain()).append("/");

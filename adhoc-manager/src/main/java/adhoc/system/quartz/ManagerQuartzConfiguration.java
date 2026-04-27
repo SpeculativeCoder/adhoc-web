@@ -190,51 +190,81 @@ public class ManagerQuartzConfiguration {
 
     @Bean
     public JobDetail allocateServersJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(ALLOCATE_SERVERS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(ALLOCATE_SERVERS)
+                .storeDurably()
+                .build();
     }
 
     @Bean
     public JobDetail refreshTasksJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(REFRESH_TASKS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(REFRESH_TASKS)
+                .storeDurably()
+                .build();
     }
 
     @Bean
     public JobDetail manageTaskDomainsJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_TASK_DOMAINS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(MANAGE_TASK_DOMAINS)
+                .storeDurably()
+                .build();
     }
 
     @Bean
     public JobDetail manageServerTasksJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_SERVER_TASKS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(MANAGE_SERVER_TASKS)
+                .storeDurably()
+                .build();
     }
 
     @Bean
     public JobDetail awardAndDecayFactionScoresJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(AWARD_AND_DECAY_FACTION_SCORES).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(AWARD_AND_DECAY_FACTION_SCORES)
+                .storeDurably()
+                .build();
     }
 
     @Bean
     public JobDetail awardAndDecayUserScoresJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(AWARD_AND_DECAY_USER_SCORES).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(AWARD_AND_DECAY_USER_SCORES)
+                .storeDurably()
+                .build();
     }
 
     @Bean
     public JobDetail manageSeenUsersJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(MANAGE_SEEN_USERS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(MANAGE_SEEN_USERS)
+                .storeDurably()
+                .build();
     }
 
     @Bean
     public JobDetail purgeOldUsersJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(PURGE_OLD_USERS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(PURGE_OLD_USERS)
+                .storeDurably()
+                .build();
     }
 
     @Bean
     public JobDetail purgeOldServersJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(PURGE_OLD_SERVERS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(PURGE_OLD_SERVERS)
+                .storeDurably()
+                .build();
     }
 
     @Bean
     public JobDetail purgeOldPawnsJobDetail() {
-        return JobBuilder.newJob(ManagerQuartzJob.class).withIdentity(PURGE_OLD_PAWNS).storeDurably().build();
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(PURGE_OLD_PAWNS)
+                .storeDurably()
+                .build();
     }
 }

@@ -36,31 +36,32 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
 public class ServerUpdatedEvent implements Event {
 
     @NotNull
     @Min(1)
-    private Long serverId;
+    Long serverId;
 
     @NotNull
     @Min(0)
-    private Long version;
+    Long version;
 
     @NotNull
-    private Long regionId;
+    Long regionId;
     @NotNull
-    private List<Long> areaIds;
+    List<Long> areaIds;
     @NotNull
-    private List<Integer> areaIndexes;
+    List<Integer> areaIndexes;
 
     @NotNull
-    private Boolean enabled;
+    Boolean enabled;
     @NotNull
-    private Boolean active;
+    Boolean active;
 
-    private String publicIp;
+    String publicIp;
 
-    private Integer publicWebSocketPort;
+    Integer publicWebSocketPort;
 
-    private String webSocketUrl;
+    String webSocketUrl;
 }

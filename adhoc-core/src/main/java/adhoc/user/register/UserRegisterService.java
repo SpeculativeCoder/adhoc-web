@@ -40,14 +40,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.event.Level;
 import org.springframework.dao.TransientDataAccessException;
-import org.springframework.lang.Nullable;
 import org.springframework.resilience.annotation.Retryable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -79,10 +78,11 @@ public class UserRegisterService {
                 .build();
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     public UserEntity userRegisterInternal(UserRegisterRequest userRegisterRequest) {
 
-        String userAgent = determineUserAgent();
         String remoteAddr = determineRemoteAddr();
+        String userAgent = determineUserAgent();
         log.debug("userRegister: remoteAddr={} userAgent={}", remoteAddr, userAgent);
 
         if (!coreProperties.getFeatureFlags().contains("development")) {
@@ -137,8 +137,8 @@ public class UserRegisterService {
 
         user.setQuickLoginPassword(quickLoginPassword, coreProperties.getQuickLoginPasswordEncryptionKey());
 
-        user.setLastLogin(LocalDateTime.now());
-        user.getState().setToken(RandomUUIDUtils.randomUUID());
+        //user.setLastLogin(LocalDateTime.now());
+        //user.getState().setToken(RandomUUIDUtils.randomUUID());
 
         user = userRepository.save(user);
 
@@ -157,11 +157,11 @@ public class UserRegisterService {
         return user;
     }
 
-    private @Nullable String determineRemoteAddr() {
+    private String determineRemoteAddr() {
         return httpServletRequest.getRemoteAddr();
     }
 
-    private @Nullable String determineUserAgent() {
+    private String determineUserAgent() {
         String userAgent = httpServletRequest.getHeader("user-agent");
         return userAgent == null ? null : userAgent.replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?");
     }

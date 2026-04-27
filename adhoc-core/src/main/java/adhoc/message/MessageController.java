@@ -45,9 +45,7 @@ public class MessageController {
     private final MessageService messageService;
 
     @GetMapping("/messages")
-    public Page<MessageDto> getMessages(
-            @SortDefault("id") Pageable pageable,
-            Authentication authentication) {
+    public Page<MessageDto> getMessages(@SortDefault("id") Pageable pageable, Authentication authentication) {
 
         Optional<Long> optionalUserId;
         if (authentication != null && authentication.getPrincipal() instanceof AdhocUserDetails userDetails) {
@@ -60,9 +58,7 @@ public class MessageController {
     }
 
     @GetMapping("/messages/{messageId}")
-    public ResponseEntity<MessageDto> getMessage(
-            Long messageId,
-            Authentication authentication) {
+    public ResponseEntity<MessageDto> getMessage(Long messageId, Authentication authentication) {
 
         Optional<Long> optionalUserId;
         if (authentication != null && authentication.getPrincipal() instanceof AdhocUserDetails userDetails) {

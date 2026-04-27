@@ -44,10 +44,7 @@ public class AreaManagerController {
 
     @PostMapping("/servers/{serverId}/areas")
     @PreAuthorize("hasRole('SERVER')")
-    public List<AreaDto> postServerAreas(
-            @PathVariable Long serverId,
-            @Valid @RequestBody List<AreaDto> areaDtos) {
-
+    public List<AreaDto> postServerAreas(@PathVariable Long serverId, @Valid @RequestBody List<AreaDto> areaDtos) {
         return areaManagerService.updateServerAreas(serverId, areaDtos);
     }
 }

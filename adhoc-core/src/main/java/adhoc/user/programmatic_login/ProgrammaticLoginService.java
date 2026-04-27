@@ -25,6 +25,7 @@ package adhoc.user.programmatic_login;
 import adhoc.shared.random_uuid.RandomUUIDUtils;
 import adhoc.system.security.WebSecurityConfiguration;
 import adhoc.user.UserEntity;
+import adhoc.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -51,6 +53,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProgrammaticLoginService {
 
     private final WebSecurityConfiguration<?> webSecurityConfiguration;
+
+    private final UserService userService;
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final PasswordEncoder passwordEncoder;
@@ -68,6 +72,7 @@ public class ProgrammaticLoginService {
      * Login the user programmatically (i.e. by invoking necessary Spring Security actions etc.), given a user and password.
      * Used after registering a user (we want them to be automatically logged in).
      */
+    @Transactional(propagation = Propagation.MANDATORY)
     public void programmaticLoginInternal(UserEntity user, String password) {
 
         String tempPassword = null;
@@ -101,6 +106,7 @@ public class ProgrammaticLoginService {
         rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
 
         //adhocFormLoginSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
+        userService.updateLastLogin(user.getId());
     }
 
     private AuthenticationManager getAuthenticationManager() {

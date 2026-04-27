@@ -43,14 +43,16 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException exception, WebRequest webRequest) {
         HttpStatus httpStatus = HttpStatus.UNPROCESSABLE_CONTENT;
-        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, exception.getMessage(), null, null, webRequest);
+        ProblemDetail problemDetail = createProblemDetail(
+                exception, httpStatus, exception.getMessage(), null, null, webRequest);
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException exception, WebRequest webRequest) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, exception.getMessage(), null, null, webRequest);
+        ProblemDetail problemDetail = createProblemDetail(
+                exception, httpStatus, exception.getMessage(), null, null, webRequest);
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
     }
 
@@ -58,7 +60,8 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
     @ExceptionHandler(PropertyReferenceException.class)
     public ResponseEntity<Object> handlePropertyReferenceException(PropertyReferenceException exception, WebRequest webRequest) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, exception.getMessage(), null, null, webRequest);
+        ProblemDetail problemDetail = createProblemDetail(
+                exception, httpStatus, exception.getMessage(), null, null, webRequest);
         return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
     }
 
@@ -69,7 +72,8 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
         } else {
             // TODO
             HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-            ProblemDetail problemDetail = createProblemDetail(exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
+            ProblemDetail problemDetail = createProblemDetail(
+                    exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
             return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
         }
     }

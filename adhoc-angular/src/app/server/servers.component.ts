@@ -24,7 +24,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@an
 import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
-import {MetaService} from "../system/meta.service";
+import {MetaService} from "../core/meta.service";
 import {TableHeaderSortableComponent} from "../shared/table/table-header-sortable.component";
 import {Router, RouterLink} from "@angular/router";
 import {CommonModule} from "@angular/common";

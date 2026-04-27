@@ -29,7 +29,7 @@ import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {NgbDropdownModule} from "@ng-bootstrap/ng-bootstrap";
 import {RegisterService} from './register.service';
-import {MetaService} from '../../system/meta.service';
+import {MetaService} from '../../core/meta.service';
 
 @Component({
   selector: 'app-login',

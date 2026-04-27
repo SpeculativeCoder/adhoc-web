@@ -37,7 +37,7 @@ import {Page} from '../shared/page';
 import {Pagination} from '../shared/pagination/pagination.component';
 import {CurrentUserService} from './current/current-user.service';
 import {CurrentUser} from './current/current-user';
-import {MetaService} from '../system/meta.service';
+import {MetaService} from '../core/meta.service';
 import {forkJoin} from 'rxjs';
 import {Faction} from '../faction/faction';
 

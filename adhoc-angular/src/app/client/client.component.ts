@@ -23,7 +23,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {MetaService} from "../system/meta.service";
+import {MetaService} from "../core/meta.service";
 import {customization} from "../customization";
 import {CommonModule, DOCUMENT} from "@angular/common";
 import {RegisterService} from '../user/register/register.service';

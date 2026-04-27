@@ -30,7 +30,7 @@
 } @else {
 -->
 
-@if (inSafariIFrame()) {
+@if (isSafariIFrame()) {
 
   <div class="container-xxl">
     <p class="mt-3 lead">Does not currently work properly in a Safari IFrame</p>
@@ -101,7 +101,7 @@
       </li>
     }
     <!-- TODO -->
-    @if (featureFlags().indexOf("development") != -1) {
+    @if (isFeatureFlagDevelopment()) {
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
           <span class="oi oi-sun"></span>
@@ -119,8 +119,8 @@
   </ul>
 
   <router-outlet></router-outlet>
-
 }
+
 <!--<app-messages></app-messages>-->
 
 <!--

@@ -24,7 +24,7 @@ import {ChangeDetectionStrategy, Component, OnInit, signal, viewChild} from '@an
 import {CommonModule, PlatformLocation} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {CurrentUserService} from './current-user.service';
-import {MetaService} from '../../system/meta.service';
+import {MetaService} from '../../core/meta.service';
 import {Faction} from '../../faction/faction';
 import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
 import {LogoutService} from '../logout/logout.service';

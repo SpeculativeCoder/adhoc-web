@@ -20,15 +20,15 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, Inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {MetaService} from "./system/meta.service";
+import {MetaService} from "./core/meta.service";
 import {customization} from "./customization";
 import {CommonModule, DOCUMENT} from "@angular/common";
 import {CurrentUserService} from './user/current/current-user.service';
 import {CurrentUserComponent} from './user/current/current-user.component';
 import {CurrentUser} from './user/current/current-user';
-import {StompService} from './system/stomp.service';
+import {StompService} from './core/stomp.service';
 
 @Component({
   selector: 'app-root',
@@ -49,10 +49,9 @@ export class App implements OnInit, OnDestroy {
   protected showExtraFeatures = signal(!!customization.extra);
 
   protected featureFlags = signal('');
+  protected isFeatureFlagDevelopment = computed(() => this.featureFlags().indexOf('development') !== -1);
 
-  protected inSafariIFrame = signal(false);
-
-  //protected started = signal(false);
+  protected isSafariIFrame = signal(false);
 
   protected currentUser = signal<CurrentUser | undefined>(undefined);
 
@@ -67,15 +66,15 @@ export class App implements OnInit, OnDestroy {
 
     // TODO
     // don't let the app load in a Safari IFrame as the partitioned third party session cookie doesn't seem to work at the moment
-    this.inSafariIFrame.set(this.calculateInSafariIFrame());
+    this.isSafariIFrame.set(this.calculateIsSafariIFrame());
 
-    if (!this.inSafariIFrame()) {
-      //this.start();
-      this.doStart();
+    if (!this.isSafariIFrame()) {
+      this.start();
     }
   }
 
-  private calculateInSafariIFrame() {
+
+  private calculateIsSafariIFrame() {
     let safari = this.document.defaultView?.navigator.userAgent.indexOf('Safari') != -1;
     let notChrome = !(this.document.defaultView?.navigator.userAgent.indexOf('Chrome') != -1);
     let iFrame;
@@ -94,44 +93,53 @@ export class App implements OnInit, OnDestroy {
     document.defaultView?.open(document.URL, '_blank');
   }
 
-  // protected start() {
-  //   //if (!(this.document.defaultView?.navigator.userAgent.indexOf('Windows') != -1)) {
-  //   console.log("hasStorageAccess");
-  //   this.document.hasStorageAccess().then(storageAccess => {
-  //     console.log("hasStorageAccess=" + storageAccess);
-  //   });
-  //   console.log("requestStorageAccess");
-  //   this.document.requestStorageAccess().then(() => {
-  //     console.log("requestStorageAccess complete");
-  //     this.doStart();
-  //   }, reason => {
-  //     console.log("requestStorageAccess rejected: reason=" + reason);
-  //     this.doStart();
-  //   });
-  //   //}
-  // }
-
-  private doStart() {
+  private start() {
     this.refreshData();
-
-    //this.started.set(true);
+    this.stompService.connect();
   }
 
   private refreshData() {
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser.set(currentUser);
-
-      this.stompService.connect();
     });
   }
 
   ngOnDestroy(): void {
-    this.stompService.disconnect();
+    this.stop();
   }
 
-  // @HostListener("window:beforeunload")
-  // beforeUnload() {
-  //   // disconnect websocket if it is open
-  //   this.stompService.disconnect();
-  // }
+  private stop() {
+    this.stompService.disconnect();
+  }
 }
+
+//protected started = signal(false);
+
+// protected start() {
+//   //if (!(this.document.defaultView?.navigator.userAgent.indexOf('Windows') != -1)) {
+//   console.log("hasStorageAccess");
+//   this.document.hasStorageAccess().then(storageAccess => {
+//     console.log("hasStorageAccess=" + storageAccess);
+//   });
+//   console.log("requestStorageAccess");
+//   this.document.requestStorageAccess().then(() => {
+//     console.log("requestStorageAccess complete");
+//     this.doStart();
+//   }, reason => {
+//     console.log("requestStorageAccess rejected: reason=" + reason);
+//     this.doStart();
+//   });
+//   //}
+// }
+
+// private doStart() {
+//   this.refreshData();
+//
+//   this.started.set(true);
+// }
+
+// @HostListener("window:beforeunload")
+// beforeUnload() {
+//   // disconnect websocket if it is open
+//   this.stompService.disconnect();
+// }

@@ -25,7 +25,7 @@ import {UserRegisterRequest} from './user-register-request';
 import {mergeMap, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current/current-user.service';
-import {CsrfService} from '../../system/csrf.service';
+import {CsrfService} from '../../core/csrf.service';
 import {UserRegisterResponse} from './user-register-response';
 
 @Injectable({

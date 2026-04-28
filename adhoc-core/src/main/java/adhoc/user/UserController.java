@@ -113,11 +113,11 @@ public class UserController {
         Preconditions.checkArgument(request.getYaw() == null, "yaw must not be set: %s", request.getYaw());
         Preconditions.checkArgument(request.getPitch() == null, "pitch must not be set: %s", request.getPitch());
 
-        log.atInfo().addKeyValue("request", request).log("userNavigate:");
+        log.atDebug().addKeyValue("request", request).log("userNavigate:");
 
         UserNavigateResponse response = userNavigateService.userNavigate(request);
 
-        log.atInfo().addKeyValue("response", response).log("userNavigate:");
+        log.atDebug().addKeyValue("response", response).log("userNavigate:");
 
         return ResponseEntity.ok(response);
     }

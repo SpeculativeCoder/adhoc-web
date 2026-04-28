@@ -40,7 +40,7 @@
   <build>
     <resources>
       <resource>
-        <directory>dist/${angular.configuration}/adhoc-angular/browser/en-US</directory>
+        <directory>target/dist/${angular.configuration}/adhoc-angular/browser/en-US</directory>
         <includes>
           <include>index.html</include>
         </includes>
@@ -48,7 +48,7 @@
       </resource>
 
       <resource>
-        <directory>dist/${angular.configuration}/adhoc-angular/browser/en-US</directory>
+        <directory>target/dist/${angular.configuration}/adhoc-angular/browser/en-US</directory>
         <excludes>
           <exclude>index.html</exclude>
         </excludes>

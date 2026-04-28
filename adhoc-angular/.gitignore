@@ -1,6 +1,5 @@
 /node_modules
 /.angular/cache
-/dist
 /target
 
 /temp-angular

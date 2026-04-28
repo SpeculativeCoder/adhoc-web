@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, Component, computed, Inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, HostListener, Inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {MetaService} from "./core/meta.service";
 import {customization} from "./customization";
@@ -93,13 +93,10 @@ export class App implements OnInit, OnDestroy {
   }
 
   private start() {
-    this.refreshData();
-    this.stompService.connect();
-  }
-
-  private refreshData() {
-    this.currentUserService.refreshCurrentUser$().subscribe(currentUser => {
+    this.currentUserService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser.set(currentUser);
+      // this will either connect for the first time or reconnect the socket
+      this.stompService.reconnect();
     });
   }
 
@@ -108,7 +105,23 @@ export class App implements OnInit, OnDestroy {
   }
 
   private stop() {
+    // disconnect websocket if it is open
     this.stompService.disconnect();
+  }
+
+  @HostListener("window:beforeunload")
+  onWindowBeforeUnload() {
+    this.stop();
+  }
+
+  @HostListener("document:freeze")
+  onDocumentFreeze() {
+    this.stop();
+  }
+
+  @HostListener("document:resume")
+  onDocumentResume() {
+    this.start();
   }
 }
 
@@ -137,8 +150,3 @@ export class App implements OnInit, OnDestroy {
 //   this.started.set(true);
 // }
 
-// @HostListener("window:beforeunload")
-// beforeUnload() {
-//   // disconnect websocket if it is open
-//   this.stompService.disconnect();
-// }

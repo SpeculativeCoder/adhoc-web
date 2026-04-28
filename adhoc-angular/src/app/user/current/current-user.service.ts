@@ -32,7 +32,7 @@ export class CurrentUserService {
 
   private readonly currentUserUrl: string;
 
-  private currentUser$ = new BehaviorSubject<CurrentUser | null>(null);
+  private currentUser$?: BehaviorSubject<CurrentUser | null>;
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
@@ -41,14 +41,18 @@ export class CurrentUserService {
   }
 
   getCurrentUser$() {
-    return this.currentUser$.value ? this.currentUser$ : this.refreshCurrentUser$();
+    return this.currentUser$ ? this.currentUser$ : this.refreshCurrentUser$();
   }
 
   refreshCurrentUser$() {
+    let subject = this.currentUser$;
+    if (!subject) {
+      subject = this.currentUser$ = new BehaviorSubject<CurrentUser | null>(null);
+    }
     return this.http.get<CurrentUser | null>(this.currentUserUrl).pipe(
         mergeMap(currentUser => {
-          this.currentUser$.next(currentUser);
-          return this.currentUser$;
+          subject.next(currentUser);
+          return subject;
         }));
   }
 
@@ -61,6 +65,6 @@ export class CurrentUserService {
   }
 
   setCurrentUser(currentUser: CurrentUser | null) {
-    this.currentUser$.next(currentUser);
+    this.currentUser$?.next(currentUser);
   }
 }

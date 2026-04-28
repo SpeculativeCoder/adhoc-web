@@ -38,14 +38,15 @@ export class CsrfInterceptor implements HttpInterceptor {
     }
 
     // for non-GET requests, make user we have got the CSRF token then add it to the request
-    return this.csrfService.getCsrf().pipe(mergeMap(csrf => {
-      req = req.clone({
-        headers: req.headers
-            .set(csrf!.headerName!, csrf!.token!)
-        //.set('Content-Type', 'application/json')
-        //.set('Authorization', 'Basic ' + window.btoa('user:password'))
-      })
-      return next.handle(req);
-    }));
+    return this.csrfService.getCsrf().pipe(
+        mergeMap(csrf => {
+          req = req.clone({
+            headers: req.headers
+                .set(csrf!.headerName!, csrf!.token!)
+            //.set('Content-Type', 'application/json')
+            //.set('Authorization', 'Basic ' + window.btoa('user:password'))
+          })
+          return next.handle(req);
+        }));
   }
 }

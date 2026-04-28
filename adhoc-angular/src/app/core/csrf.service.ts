@@ -23,7 +23,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Csrf} from "./csrf";
-import {Observable, of, Subject} from 'rxjs';
+import {Observable, of, Subject, tap} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -50,19 +50,10 @@ export class CsrfService {
   refreshCsrf() {
     let subject = this.csrf = new Subject<Csrf>();
 
-    this.http.get<Csrf>(this.csrfUrl).subscribe({
-      next: (csrf) => {
-        this.csrf = of(csrf);
-        subject.next(csrf);
-      },
-      error: (error) => {
-        subject.error(error);
-      },
-      complete: () => {
-        subject.complete();
-      }
-    });
-
-    return subject;
+    return this.http.get<Csrf>(this.csrfUrl).pipe(
+        tap(csrf => {
+          this.csrf = of(csrf);
+          subject.next(csrf);
+        }));
   }
 }

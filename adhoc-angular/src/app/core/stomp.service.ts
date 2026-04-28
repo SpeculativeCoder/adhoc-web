@@ -21,7 +21,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import webstomp, {Client, Message} from 'webstomp-client';
+import webstomp, {Client, Frame, Message} from 'webstomp-client';
 import {Observable, Subject} from 'rxjs';
 import SockJS from "sockjs-client";
 import {CsrfService} from "./csrf.service";
@@ -35,6 +35,11 @@ export class StompService {
   private eventListeners: { [key: string]: Subject<object> } = {};
 
   constructor(private csrfService: CsrfService) {
+  }
+
+  reconnect() {
+    this.disconnect();
+    this.connect();
   }
 
   connect() {
@@ -52,18 +57,21 @@ export class StompService {
       });
       let headers: { [key: string]: string } = {}
       headers[csrf!.headerName!] = csrf!.token!;
-      this.client.connect(headers, () => this.onConnect(), () => this.onError());
+      this.client.connect(
+          headers,
+          (frame) => this.onConnect(frame),
+          (error) => this.onError(error));
     });
   }
 
   disconnect() {
-    this.eventListeners = {}; // TODO
+    //this.eventListeners = {}; // TODO
     if (this.client && this.client.connected) {
       this.client.disconnect(() => this.onDisconnect());
     }
   }
 
-  private onConnect() {
+  private onConnect(frame?: Frame) {
     this.client!.subscribe('/topic/events', message => this.onMessage(message));
   }
 
@@ -90,7 +98,7 @@ export class StompService {
     }
   }
 
-  private onError() {
+  private onError(error: Frame | CloseEvent) {
     // TODO
   }
 

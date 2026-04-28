@@ -36,7 +36,7 @@ MSYS_NO_PATHCONV=1 \
 docker run \
 -v ./.angular:/home/node/app/.angular:ro \
 -v ./.npm:/home/node/.npm \
--v ./dist:/home/node/app/dist \
+-v ./target/dist:/home/node/app/target/dist \
 -v ./node_modules:/home/node/app/node_modules:ro \
 -v ./src:/home/node/app/src:ro \
 -v ./angular.json:/home/node/app/angular.json:ro \
@@ -116,7 +116,7 @@ docker build -t node_pnpm ./node_pnpm/. \
 MSYS_NO_PATHCONV=1 \
 docker run \
 -v ./.angular:/home/node/app/.angular:ro \
--v ./dist:/home/node/app/dist \
+-v ./target/dist:/home/node/app/target/dist \
 -v ./node_modules:/home/node/app/node_modules:ro \
 -v ./src:/home/node/app/src:ro \
 -v ./angular.json:/home/node/app/angular.json:ro \
@@ -137,7 +137,7 @@ docker build -t node_pnpm ./node_pnpm/. \
 MSYS_NO_PATHCONV=1 \
 docker run \
 -v ./.angular:/home/node/app/.angular \
--v ./dist:/home/node/app/dist \
+-v ./target/dist:/home/node/app/target/dist \
 -v ./node_modules:/home/node/app/node_modules:ro \
 -v ./src:/home/node/app/src:ro \
 -v ./angular.json:/home/node/app/angular.json:ro \

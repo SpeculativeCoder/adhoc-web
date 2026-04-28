@@ -32,7 +32,7 @@ docker build --progress plain -t node_pnpm ./node_pnpm/. \
 MSYS_NO_PATHCONV=1 \
 docker run \
 --mount type=bind,src=./.angular,dst=/home/node/app/.angular \
---mount type=bind,src=./dist,dst=/home/node/app/dist \
+--mount type=bind,src=./target/dist,dst=/home/node/app/target/dist \
 --mount type=bind,src=./node_modules,dst=/home/node/app/node_modules,ro \
 --mount type=bind,src=./src,dst=/home/node/app/src,ro \
 --mount type=bind,src=./angular.json,dst=/home/node/app/angular.json,ro \

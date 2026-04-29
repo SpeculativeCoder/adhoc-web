@@ -72,6 +72,9 @@ export class StompService {
   }
 
   private onConnect(frame?: Frame) {
+    //console.log("Stomp connected");
+    //console.log(frame);
+
     this.client!.subscribe('/topic/events', message => this.onMessage(message));
   }
 
@@ -100,9 +103,12 @@ export class StompService {
 
   private onError(error: Frame | CloseEvent) {
     // TODO
+    //console.warn("Stomp error");
+    //console.warn(error);
   }
 
   private onDisconnect() {
+    //console.log("Stomp disconnected");
     // TODO
   }
 }

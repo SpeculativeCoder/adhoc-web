@@ -30,11 +30,9 @@ import org.springframework.boot.artemis.autoconfigure.ArtemisMode;
 import org.springframework.boot.artemis.autoconfigure.ArtemisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.session.Session;
 import org.springframework.session.web.socket.config.annotation.AbstractSessionWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -54,8 +52,8 @@ public class WebSocketConfiguration {
     @Bean
     public AbstractSessionWebSocketMessageBrokerConfigurer<Session> webSocketMessageBrokerConfigurer(
             AdhocStompSubProtocolErrorHandler adhocStompSubProtocolErrorHandler,
-            AdhocMdcExecutorChannelInterceptor adhocMdcExecutorChannelInterceptor,
-            @Lazy TaskScheduler taskScheduler) {
+            AdhocMdcExecutorChannelInterceptor adhocMdcExecutorChannelInterceptor) {
+        //@Lazy TaskScheduler taskScheduler) {
 
         return new AbstractSessionWebSocketMessageBrokerConfigurer<>() {
 
@@ -78,9 +76,9 @@ public class WebSocketConfiguration {
                 registry.addEndpoint("/adhoc_ws/stomp/user_sockjs")
                         .addInterceptors(new HttpSessionHandshakeInterceptor())
                         //.setAllowedOriginPatterns(allowedOriginPatterns.toArray(new String[0]))
-                        .withSockJS()
-                        //.setHeartbeatTime(Duration.ofSeconds(30).toMillis())
-                        .setTaskScheduler(taskScheduler);
+                        .withSockJS();
+                //.setHeartbeatTime(Duration.ofSeconds(30).toMillis())
+                //.setTaskScheduler(taskScheduler);
 
                 registry.setErrorHandler(adhocStompSubProtocolErrorHandler);
             }
@@ -92,20 +90,20 @@ public class WebSocketConfiguration {
 
                 config.setPreservePublishOrder(true);
 
-                config.configureBrokerChannel()
-                        .taskExecutor();
+                //config.configureBrokerChannel()
+                //        .taskExecutor();
 
                 if (artemisProperties.getMode() == ArtemisMode.EMBEDDED && !artemisProperties.getEmbedded().isEnabled()) {
-                    config.enableSimpleBroker("/queue", "/topic")
-                            .setTaskScheduler(taskScheduler);
+                    config.enableSimpleBroker("/queue", "/topic");
+                    //.setTaskScheduler(taskScheduler);
 
                 } else {
                     config.enableStompBrokerRelay("/queue", "/topic")
                             .setRelayHost(coreProperties.getMessageBrokerHost())
-                            .setRelayPort(coreProperties.getMessageBrokerStompPort())
-                            //.setSystemHeartbeatReceiveInterval(Duration.ofSeconds(30).toMillis())
-                            //.setSystemHeartbeatSendInterval(Duration.ofSeconds(30).toMillis())
-                            .setTaskScheduler(taskScheduler);
+                            .setRelayPort(coreProperties.getMessageBrokerStompPort());
+                    //.setSystemHeartbeatReceiveInterval(Duration.ofSeconds(30).toMillis())
+                    //.setSystemHeartbeatSendInterval(Duration.ofSeconds(30).toMillis())
+                    //.setTaskScheduler(taskScheduler);
                 }
             }
 

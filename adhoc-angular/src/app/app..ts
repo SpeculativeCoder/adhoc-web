@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, Component, computed, HostListener, Inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, Inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {MetaService} from "./core/meta.service";
 import {customization} from "./customization";
@@ -109,20 +109,31 @@ export class App implements OnInit, OnDestroy {
     this.stompService.disconnect();
   }
 
-  @HostListener("window:beforeunload")
-  onWindowBeforeUnload() {
-    this.stop();
-  }
+  //@HostListener("document:visibilitychange")
+  //onVisibilityChange() {
+  //  if (this.document.visibilityState === 'visible') {
+  //    //console.log("visible");
+  //    this.start();
+  //  } else {
+  //    //console.log("not visible");
+  //    this.stop();
+  //  }
+  //}
 
-  @HostListener("document:freeze")
-  onDocumentFreeze() {
-    this.stop();
-  }
+  //@HostListener("window:beforeunload")
+  //onWindowBeforeUnload() {
+  //  this.stop();
+  //}
 
-  @HostListener("document:resume")
-  onDocumentResume() {
-    this.start();
-  }
+  //@HostListener("document:freeze")
+  //onDocumentFreeze() {
+  //  this.stop();
+  //}
+
+  //@HostListener("document:resume")
+  //onDocumentResume() {
+  //  this.start();
+  //}
 }
 
 //protected started = signal(false);
@@ -149,4 +160,3 @@ export class App implements OnInit, OnDestroy {
 //
 //   this.started.set(true);
 // }
-

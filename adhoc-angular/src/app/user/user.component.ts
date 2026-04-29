@@ -48,7 +48,9 @@ import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
 export class UserComponent implements OnInit {
 
   protected user = signal<User>(new User());
+
   protected currentUser = signal<CurrentUser | null>(null);
+
   protected factions = signal<Faction[] | undefined>(undefined);
 
   constructor(private route: ActivatedRoute,

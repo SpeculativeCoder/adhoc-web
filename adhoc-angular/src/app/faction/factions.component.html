@@ -24,34 +24,25 @@
   <h2>
     Factions
   </h2>
-  <div class="table-responsive">
-    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="onSort($event)">
-      <!--    <caption>{{factions.length}} factions</caption>-->
-      <thead>
-      <tr>
-        <th scope="col" sortable="id">ID</th>
-        <th scope="col" sortable="name">Name</th>
-        <th scope="col" sortable="color">Color</th>
-        <th scope="col" sortable="score">Score</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let faction of factions?.content">
-        <th scope="row"><a routerLink="/factions/{{ faction.id }}">{{ faction.id }}</a></th>
-        <td>{{ faction.name }}</td>
-        <td [ngStyle]="{ 'color': faction.color }">{{ faction.color }}</td>
-        <td>{{ faction.score | number : '1.0-0' }}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="d-flex justify-content-end" *ngIf="factions && factions.page.totalElements">
-    <div class="mt-2 me-4 text-nowrap">{{ (factions.page!.number! * factions.page!.size!) + 1 }} - {{ (factions.page!.number! * factions.page!.size!) + factions.content!.length }} of {{ factions.page!.totalElements }}</div>
-    <ngb-pagination [page]="factions.page!.number! + 1"
-                    [pageSize]="factions.page!.size!"
-                    [collectionSize]="factions.page!.totalElements!"
-                    [maxSize]="3"
-                    [boundaryLinks]="true"
-                    (pageChange)="onPageChange($event - 1)"/>
-  </div>
+  <app-table (sort)="onSort($event)">
+    <thead>
+    <tr>
+      <th scope="col" sortable="id">ID</th>
+      <th scope="col" sortable="name">Name</th>
+      <th scope="col" sortable="color">Color</th>
+      <th scope="col" sortable="score">Score</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (faction of factions()?.content; track faction.id) {
+        <tr>
+          <th scope="row"><a routerLink="/factions/{{ faction.id }}">{{ faction.id }}</a></th>
+          <td>{{ faction.name }}</td>
+          <td [ngStyle]="{ 'color': faction.color }">{{ faction.color }}</td>
+          <td>{{ faction.score | number : '1.0-0' }}</td>
+        </tr>
+      }
+    </tbody>
+  </app-table>
+  <app-pagination [data]="factions()" (pageChanged)="onPageChanged($event)"/>
 </div>

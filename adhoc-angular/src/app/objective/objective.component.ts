@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnInit, signal, WritableSignal} from '@angular/core';
 import {Objective} from './objective';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ObjectiveService} from './objective.service';
@@ -29,48 +29,76 @@ import {Faction} from '../faction/faction';
 import {forkJoin} from 'rxjs';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {CurrentUser} from '../user/current/current-user';
+import {CurrentUserService} from '../user/current/current-user.service';
+import {User} from '../user/user';
+import {NgbDropdown, NgbDropdownButtonItem, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-objective',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    NgbDropdown,
+    NgbDropdownButtonItem,
+    NgbDropdownItem,
+    NgbDropdownMenu,
+    NgbDropdownToggle
   ],
   templateUrl: './objective.component.html'
 })
 export class ObjectiveComponent implements OnInit {
 
-  objective: Objective = {};
-  factions: Faction[] = [];
+  protected objective = signal<Objective>(new Objective());
+
+  protected currentUser = signal<CurrentUser | null>(null);
+
+  protected factions = signal<Faction[] | undefined>(undefined);
 
   constructor(private route: ActivatedRoute,
               private objectiveService: ObjectiveService,
+              private currentUserService: CurrentUserService,
               private factionService: FactionService,
-              private router: Router,
-              private ref: ChangeDetectorRef) {
+              private router: Router) {
   }
 
   ngOnInit() {
     const objectiveId = +(this.route.snapshot.paramMap.get('id')!);
-    forkJoin([this.objectiveService.getObjective(objectiveId), this.factionService.getCachedFactions()]).subscribe(data => {
-      [this.objective, this.factions] = data;
-      this.ref.markForCheck();
+    this.refreshData(objectiveId);
+  }
+
+  private refreshData(objectiveId: number) {
+    forkJoin([
+      this.objectiveService.getObjective(objectiveId),
+      this.currentUserService.getCurrentUser(),
+      this.factionService.getCachedFactions()
+    ]).subscribe(data => {
+      this.objective.set(data[0]);
+      this.currentUser.set(data[1]);
+      this.factions.set(data[2]);
     });
   }
 
-  getFaction(factionId: number) {
-    return this.factions.find(faction => faction.id === factionId);
+  protected faction(factionId: number | undefined) {
+    return computed(() =>
+        this.factions()?.find(faction => faction.id === factionId));
   }
 
-  save() {
-    this.objectiveService.updateObjective(this.objective).subscribe(objective => {
-      this.objective = objective;
-      this.ref.markForCheck();
+  protected setObjectiveFaction(objective: WritableSignal<User>, faction: Faction) {
+    objective.update(user => {
+      user.factionId = faction.id;
+      return user;
     });
   }
 
-  back() {
+  protected save() {
+    this.objectiveService.updateObjective(this.objective()).subscribe(objective => {
+      this.objective.set(objective);
+    });
+  }
+
+  protected back() {
     this.router.navigateByUrl('/objectives');
   }
 }

@@ -22,87 +22,89 @@
 
 <div class="container-xxl">
   <h2>
-    Server {{ server.id }}
+    Server {{ server().id }}
   </h2>
   <form>
     <div class="mb-3">
       <label class="form-label" for="regionInput">Region</label>
       <input class="form-control" id="regionInput" name="region" type="number" readonly
-             [(ngModel)]="server.regionId"/>
+             [(ngModel)]="server().regionId"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="areaInput">Areas</label>
       <input class="form-control" id="areaInput" name="area" type="text" readonly
-             [(ngModel)]="server.areaIds"/>
+             [(ngModel)]="server().areaIds"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="mapNameInput">Map</label>
       <input class="form-control" id="mapNameInput" name="mapName" type="text" readonly
-             [ngModel]="server.mapName"/>
+             [ngModel]="server().mapName"/>
     </div>
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label" for="xInput">X</label>
         <input class="form-control" id="xInput" name="x" type="number" readonly
-               [(ngModel)]="server.x"/>
+               [(ngModel)]="server().x"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="yInput">Y</label>
         <input class="form-control" id="yInput" name="y" type="number" readonly
-               [(ngModel)]="server.y"/>
+               [(ngModel)]="server().y"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="zInput">Z</label>
         <input class="form-control" id="zInput" name="z" type="number" readonly
-               [(ngModel)]="server.z"/>
+               [(ngModel)]="server().z"/>
       </div>
     </div>
     <div class="mb-3 form-check">
       <input class="form-check-input" id="enabledInput" name="enabled" type="checkbox" readonly onclick="return false;"
-             [(ngModel)]="server.enabled"/>
+             [(ngModel)]="server().enabled"/>
       <label class="form-check-label" for="enabledInput">Enabled</label>
     </div>
     <div class="mb-3 form-check">
       <input class="form-check-input" id="activeInput" name="active" type="checkbox" readonly onclick="return false;"
-             [(ngModel)]="server.active"/>
+             [(ngModel)]="server().active"/>
       <label class="form-check-label" for="activeInput">Active</label>
     </div>
     <div class="mb-3">
       <label class="form-label" for="publicIpInput">Public IP</label>
       <input class="form-control" id="publicIpInput" name="publicIp" type="text" readonly
-             [(ngModel)]="server.publicIp"/>
+             [(ngModel)]="server().publicIp"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="publicWebSocketPort">Public Web Socket Port</label>
       <input class="form-control" id="publicWebSocketPort" name="publicWebSocketPort" type="number" readonly
-             [(ngModel)]="server.publicWebSocketPort"/>
+             [(ngModel)]="server().publicWebSocketPort"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="domainInput">Domain</label>
       <input class="form-control" id="domainInput" name="domain" type="text" readonly
-             [(ngModel)]="server.domain"/>
+             [(ngModel)]="server().domain"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="webSocketUrlInput">Web Socket URL</label>
       <input class="form-control" id="webSocketUrlInput" name="webSocketUrl" type="text" readonly
-             [(ngModel)]="server.webSocketUrl"/>
+             [(ngModel)]="server().webSocketUrl"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="initiatedInput">Initiated</label>
       <input class="form-control" id="initiatedInput" name="initiated" type="text" readonly
-             [ngModel]="server.initiated | simpleDate"/>
+             [ngModel]="server().initiated | simpleDate"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="seenInput">Seen</label>
       <input class="form-control" id="seenInput" name="seen" type="text" readonly
-             [ngModel]="server.seen | simpleDate"/>
+             [ngModel]="server().seen | simpleDate"/>
     </div>
     <div class="row">
-      <!--<div class="col-auto mt-3 mb-3">
-        <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
-      </div>-->
+      @if ((currentUser()?.roles || []).indexOf("ADMIN") != -1) {
+        <div class="col-auto mt-3 mb-3">
+          <button class="btn btn-primary" type="button" (click)="save()">Save</button>
+        </div>
+      }
       <div class="col-auto mt-3 mb-3">
-        <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
+        <button class="btn btn-secondary" type="button" (click)="back()">Back</button>
       </div>
     </div>
   </form>

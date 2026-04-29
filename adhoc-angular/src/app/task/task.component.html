@@ -22,55 +22,57 @@
 
 <div class="container-xxl">
   <h2>
-    Task {{ task.id }}
+    Task {{ task().id }}
   </h2>
   <form>
     <div class="mb-3">
       <label class="form-label" for="typeInput">Type</label>
       <input class="form-control" id="typeInput" name="type" type="text" readonly
-             [(ngModel)]="task.type"/>
+             [(ngModel)]="task().type"/>
     </div>
     <!--<div class="mb-3">
       <label class="form-label" for="privateIpInput">Private IP</label>
       <input class="form-control" id="privateIpInput" name="privateIp" type="text" readonly
-             [(ngModel)]="task.privateIp"/>
+             [(ngModel)]="task().privateIp"/>
     </div>-->
     <div class="mb-3">
       <label class="form-label" for="publicIpInput">Public IP</label>
       <input class="form-control" id="publicIpInput" name="publicIp" type="text" readonly
-             [(ngModel)]="task.publicIp"/>
+             [(ngModel)]="task().publicIp"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="publicWebSocketPort">Public Web Socket Port</label>
       <input class="form-control" id="publicWebSocketPort" name="publicWebSocketPort" type="number" readonly
-             [(ngModel)]="task.publicWebSocketPort"/>
+             [(ngModel)]="task().publicWebSocketPort"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="domainInput">Domain</label>
       <input class="form-control" id="domainInput" name="domain" type="text" readonly
-             [(ngModel)]="task.domain"/>
+             [(ngModel)]="task().domain"/>
     </div>
     <div class="mb-3">
-      <label class="form-label" for="initiatedInput">initiated</label>
+      <label class="form-label" for="initiatedInput">Initiated</label>
       <input class="form-control" id="initiatedInput" name="initiated" type="text" readonly
-             [ngModel]="task.initiated | simpleDate"/>
+             [ngModel]="task().initiated | simpleDate"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="seenInput">Seen</label>
       <input class="form-control" id="seenInput" name="seen" type="text" readonly
-             [ngModel]="task.seen | simpleDate"/>
+             [ngModel]="task().seen | simpleDate"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="serverIdInput">Server ID</label>
       <input class="form-control" id="serverIdInput" name="serverId" type="number" readonly
-             [(ngModel)]="task.serverId"/>
+             [(ngModel)]="task().serverId"/>
     </div>
     <div class="row">
-      <!--<div class="col-auto mt-3 mb-3">
-        <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
-      </div>-->
+      @if ((currentUser()?.roles || []).indexOf("ADMIN") != -1) {
+        <div class="col-auto mt-3 mb-3">
+          <button class="btn btn-primary" type="button" (click)="save()">Save</button>
+        </div>
+      }
       <div class="col-auto mt-3 mb-3">
-        <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
+        <button class="btn btn-secondary" type="button" (click)="back()">Back</button>
       </div>
     </div>
   </form>

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnInit, signal} from '@angular/core';
 import {PawnService} from './pawn.service';
 import {Pawn} from './pawn';
 import {Faction} from '../faction/faction';
@@ -28,13 +28,17 @@ import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
 import {TableHeaderSortableComponent} from '../shared/table/table-header-sortable.component';
 import {Page} from "../shared/page";
-import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table/table-sort.directive";
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {CurrentUser} from '../user/current/current-user';
+import {MetaService} from '../core/meta.service';
+import {CurrentUserService} from '../user/current/current-user.service';
+import {Paging} from '../shared/paging';
+import {TableComponent} from '../shared/table/table.component';
+import {Pagination} from '../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-pawns',
@@ -45,47 +49,59 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
     SimpleDatePipe,
     TableSortDirective,
     TableHeaderSortableComponent,
-    NgbPagination
+    TableComponent,
+    Pagination
   ],
   templateUrl: './pawns.component.html'
 })
 export class PawnsComponent implements OnInit {
 
-  pawns?: Page<Pawn>;
+  protected featureFlags = signal('');
+
+  protected pawns = signal<Page<Pawn> | undefined>(undefined);
+
+  protected currentUser = signal<CurrentUser | null>(null);
+
+  protected factions = signal<Faction[] | undefined>(undefined);
+
   private paging: Paging = new Paging();
 
-  private factions: Faction[] = [];
-
-  constructor(private pawnService: PawnService,
-              private factionService: FactionService,
-              private ref: ChangeDetectorRef) {
-  }
-
-  getFaction(factionId: number) {
-    return this.factions.find(faction => faction.id === factionId);
+  constructor(private metaService: MetaService,
+              private pawnService: PawnService,
+              private currentUserService: CurrentUserService,
+              private factionService: FactionService) {
   }
 
   ngOnInit() {
-    this.refreshPawns();
+    this.featureFlags.set(this.metaService.getFeatureFlags());
+
+    this.refreshData();
   }
 
-  private refreshPawns() {
+  private refreshData() {
     forkJoin([
       this.pawnService.getPawns(this.paging),
-      this.factionService.getCachedFactions(),
+      this.currentUserService.getCurrentUser(),
+      this.factionService.getCachedFactions()
     ]).subscribe(data => {
-      [this.pawns, this.factions] = data;
-      this.ref.markForCheck();
+      this.pawns.set(data[0]);
+      this.currentUser.set(data[1]);
+      this.factions.set(data[2]);
     });
   }
 
-  onPageChange(pageIndex: number) {
-    this.paging.page = pageIndex;
-    this.refreshPawns();
+  protected faction(factionId: number | undefined) {
+    return computed(() =>
+        this.factions()?.find(faction => faction.id === factionId));
   }
 
-  onSort(sort: Sort) {
+  protected onPageChanged(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshData();
+  }
+
+  protected onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
-    this.refreshPawns();
+    this.refreshData();
   }
 }

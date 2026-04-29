@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Server} from './server';
 import {ServerService} from './server.service';
@@ -30,11 +30,12 @@ import {Router, RouterLink} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {TableSortDirective} from "../shared/table/table-sort.directive";
 import {Page} from "../shared/page";
-import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
-import {RegisterService} from '../user/register/register.service';
-import {NavigateService} from '../user/navigate/navigate.service';
+import {CurrentUser} from '../user/current/current-user';
+import {CurrentUserService} from '../user/current/current-user.service';
+import {Paging} from '../shared/paging';
+import {TableComponent} from '../shared/table/table.component';
+import {Pagination} from '../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-servers',
@@ -44,33 +45,40 @@ import {NavigateService} from '../user/navigate/navigate.service';
     RouterLink,
     TableSortDirective,
     TableHeaderSortableComponent,
-    NgbPagination
+    TableComponent,
+    Pagination
   ],
   templateUrl: './servers.component.html'
 })
 export class ServersComponent implements OnInit {
 
-  servers?: Page<Server>;
+  protected featureFlags = signal('');
+
+  protected servers = signal<Page<Server> | undefined>(undefined);
+
+  protected currentUser = signal<CurrentUser | null>(null);
+
   private paging: Paging = new Paging();
 
-  constructor(private serverService: ServerService,
-              private registerService: RegisterService,
-              private navigateService: NavigateService,
-              private metaService: MetaService,
-              private router: Router,
-              private ref: ChangeDetectorRef) {
+  constructor(private metaService: MetaService,
+              private serverService: ServerService,
+              private currentUserService: CurrentUserService,
+              private router: Router) {
   }
 
   ngOnInit() {
-    this.refreshServers();
+    this.featureFlags.set(this.metaService.getFeatureFlags());
+
+    this.refreshData();
   }
 
-  private refreshServers() {
+  private refreshData() {
     forkJoin([
-      this.serverService.getServers(this.paging)
+      this.serverService.getServers(this.paging),
+      this.currentUserService.getCurrentUser(),
     ]).subscribe(data => {
-      [this.servers] = data;
-      this.ref.markForCheck();
+      this.servers.set(data[0]);
+      this.currentUser.set(data[1]);
     });
   }
 
@@ -82,13 +90,13 @@ export class ServersComponent implements OnInit {
     });
   }
 
-  onPageChange(pageIndex: number) {
+  onPageChanged(pageIndex: number) {
     this.paging.page = pageIndex;
-    this.refreshServers();
+    this.refreshData();
   }
 
   onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
-    this.refreshServers();
+    this.refreshData();
   }
 }

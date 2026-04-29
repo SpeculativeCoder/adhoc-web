@@ -20,13 +20,15 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {forkJoin} from "rxjs";
 import {Region} from "./region";
 import {RegionService} from "./region.service";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {CurrentUser} from '../user/current/current-user';
+import {CurrentUserService} from '../user/current/current-user.service';
 
 @Component({
   selector: 'app-region',
@@ -39,31 +41,39 @@ import {FormsModule} from "@angular/forms";
 })
 export class RegionComponent implements OnInit {
 
-  region: Region = {};
+  protected region = signal<Region>(new Region());
+
+  protected currentUser = signal<CurrentUser | null>(null);
 
   constructor(
       private route: ActivatedRoute,
       private regionService: RegionService,
-      private router: Router,
-      private ref: ChangeDetectorRef) {
+      private currentUserService: CurrentUserService,
+      private router: Router) {
   }
 
   ngOnInit() {
-    const objectiveId = +(this.route.snapshot.paramMap.get('id')!);
-    forkJoin([this.regionService.getRegion(objectiveId)]).subscribe(data => {
-      [this.region] = data;
-      this.ref.markForCheck();
+    const regionId = +(this.route.snapshot.paramMap.get('id')!);
+    this.refreshData(regionId);
+  }
+
+  private refreshData(regionId: number) {
+    forkJoin([
+      this.regionService.getRegion(regionId),
+      this.currentUserService.getCurrentUser()
+    ]).subscribe(data => {
+      this.region.set(data[0]);
+      this.currentUser.set(data[1]);
     });
   }
 
-  save() {
-    this.regionService.updateRegion(this.region).subscribe(region => {
-      this.region = region;
-      this.ref.markForCheck();
+  protected save() {
+    this.regionService.updateRegion(this.region()).subscribe(region => {
+      this.region.set(region);
     });
   }
 
-  back() {
-    this.router.navigateByUrl('/regions');
+  protected back() {
+    this.router.navigateByUrl('/pawns');
   }
 }

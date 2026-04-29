@@ -24,41 +24,31 @@
   <h2>
     Regions
   </h2>
-  <div class="table-responsive">
-    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="onSort($event)">
-      <!--    <caption>{{regions.length}} regions</caption>-->
-      <thead>
-      <tr>
-        <!--<th scope="col"></th>-->
-        <th scope="col" sortable="id">ID</th>
-        <th scope="col" sortable="name">Name</th>
-        <th scope="col" sortable="mapName">Map</th>
-        <th scope="col" sortable="x">X</th>
-        <th scope="col" sortable="y">Y</th>
-        <th scope="col" sortable="z">Z</th>
-        <th scope="col" sortable="areas">Areas</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let region of regions?.content">
-        <th scope="row"><a routerLink="/regions/{{ region.id }}">{{ region.id }}</a></th>
-        <td>{{ region.name }}</td>
-        <td>{{ region.mapName }}</td>
-        <td>{{ region.x }}</td>
-        <td>{{ region.y }}</td>
-        <td>{{ region.z }}</td>
-        <td>{{ region.areaIds }}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="d-flex justify-content-end" *ngIf="regions && regions.page.totalElements">
-    <div class="mt-2 me-4 text-nowrap">{{ (regions.page!.number! * regions.page!.size!) + 1 }} - {{ (regions.page!.number! * regions.page!.size!) + regions.content!.length }} of {{ regions.page!.totalElements }}</div>
-    <ngb-pagination [page]="regions.page!.number! + 1"
-                    [pageSize]="regions.page!.size!"
-                    [collectionSize]="regions.page!.totalElements!"
-                    [maxSize]="3"
-                    [boundaryLinks]="true"
-                    (pageChange)="onPageChange($event - 1)"/>
-  </div>
+  <app-table (sort)="onSort($event)">
+    <thead>
+    <tr>
+      <th scope="col" sortable="id">ID</th>
+      <th scope="col" sortable="name">Name</th>
+      <th scope="col" sortable="mapName">Map</th>
+      <th scope="col" sortable="x">X</th>
+      <th scope="col" sortable="y">Y</th>
+      <th scope="col" sortable="z">Z</th>
+      <th scope="col" sortable="areas">Areas</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (region of regions()?.content; track region.id) {
+        <tr>
+          <th scope="row"><a routerLink="/regions/{{ region.id }}">{{ region.id }}</a></th>
+          <td>{{ region.name }}</td>
+          <td>{{ region.mapName }}</td>
+          <td>{{ region.x }}</td>
+          <td>{{ region.y }}</td>
+          <td>{{ region.z }}</td>
+          <td>{{ region.areaIds }}</td>
+        </tr>
+      }
+    </tbody>
+  </app-table>
+  <app-pagination [data]="regions()" (pageChanged)="onPageChanged($event)"/>
 </div>

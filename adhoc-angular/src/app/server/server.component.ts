@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {Server} from './server';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ServerService} from './server.service';
@@ -28,6 +28,8 @@ import {forkJoin} from 'rxjs';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {CurrentUser} from '../user/current/current-user';
+import {CurrentUserService} from '../user/current/current-user.service';
 
 @Component({
   selector: 'app-server',
@@ -41,30 +43,38 @@ import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 })
 export class ServerComponent implements OnInit {
 
-  server: Server = {};
+  protected server = signal<Server>(new Server());
+
+  protected currentUser = signal<CurrentUser | null>(null);
 
   constructor(private route: ActivatedRoute,
               private serverService: ServerService,
-              private router: Router,
-              private ref: ChangeDetectorRef) {
+              private currentUserService: CurrentUserService,
+              private router: Router) {
   }
 
   ngOnInit() {
     const serverId = +(this.route.snapshot.paramMap.get('id')!);
-    forkJoin([this.serverService.getServer(serverId)]).subscribe(data => {
-      [this.server] = data;
-      this.ref.markForCheck();
+    this.refreshData(serverId);
+  }
+
+  private refreshData(serverId: number) {
+    forkJoin([
+      this.serverService.getServer(serverId),
+      this.currentUserService.getCurrentUser()
+    ]).subscribe(data => {
+      this.server.set(data[0]);
+      this.currentUser.set(data[1]);
     });
   }
 
-  save() {
-    this.serverService.updateServer(this.server).subscribe(server => {
-      this.server = server;
-      this.ref.markForCheck();
+  protected save() {
+    this.serverService.updateServer(this.server()).subscribe(server => {
+      this.server.set(server);
     });
   }
 
-  back() {
+  protected back() {
     this.router.navigateByUrl('/servers');
   }
 }

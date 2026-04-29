@@ -22,12 +22,10 @@
 
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {FactionService} from '../../faction/faction.service';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {NgbDropdownModule} from "@ng-bootstrap/ng-bootstrap";
 import {LoginService} from './login.service';
-import {RegisterService} from '../register/register.service';
 import {MetaService} from '../../core/meta.service';
 
 @Component({
@@ -59,9 +57,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   @ViewChild('loginNameOrEmailInput')
   loginNameOrEmailInput?: ElementRef;
 
-  constructor(private registerService: RegisterService,
-              private loginService: LoginService,
-              private factionService: FactionService,
+  constructor(private loginService: LoginService,
               private metaService: MetaService,
               private router: Router,
               private ref: ChangeDetectorRef) {

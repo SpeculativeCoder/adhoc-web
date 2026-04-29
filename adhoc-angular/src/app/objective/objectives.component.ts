@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnInit, signal} from '@angular/core';
 import {ObjectiveService} from './objective.service';
 import {FactionService} from '../faction/faction.service';
 import {Faction} from '../faction/faction';
@@ -33,7 +33,11 @@ import {Page} from "../shared/page";
 import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
 import {Objective} from "./objective";
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {CurrentUser} from '../user/current/current-user';
+import {MetaService} from '../core/meta.service';
+import {CurrentUserService} from '../user/current/current-user.service';
+import {TableComponent} from '../shared/table/table.component';
+import {Pagination} from '../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-objectives',
@@ -43,47 +47,59 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
     RouterLink,
     TableSortDirective,
     TableHeaderSortableComponent,
-    NgbPagination
+    TableComponent,
+    Pagination
   ],
   templateUrl: './objectives.component.html'
 })
 export class ObjectivesComponent implements OnInit {
 
-  objectives?: Page<Objective>;
+  protected featureFlags = signal('');
+
+  protected objectives = signal<Page<Objective> | undefined>(undefined);
+
+  protected currentUser = signal<CurrentUser | null>(null);
+
+  protected factions = signal<Faction[] | undefined>(undefined);
+
   private paging: Paging = new Paging();
 
-  factions: Faction[] = [];
-
-  constructor(private objectiveService: ObjectiveService,
-              private factionService: FactionService,
-              private ref: ChangeDetectorRef) {
+  constructor(private metaService: MetaService,
+              private objectiveService: ObjectiveService,
+              private currentUserService: CurrentUserService,
+              private factionService: FactionService) {
   }
 
   ngOnInit() {
-    this.refreshObjectives();
+    this.featureFlags.set(this.metaService.getFeatureFlags());
+
+    this.refreshData();
   }
 
-  private refreshObjectives() {
+  private refreshData() {
     forkJoin([
       this.objectiveService.getObjectives(this.paging),
+      this.currentUserService.getCurrentUser(),
       this.factionService.getCachedFactions()
     ]).subscribe(data => {
-      [this.objectives, this.factions] = data;
-      this.ref.markForCheck();
+      this.objectives.set(data[0]);
+      this.currentUser.set(data[1]);
+      this.factions.set(data[2]);
     });
   }
 
-  getFaction(factionId: number) {
-    return this.factions.find(faction => faction.id === factionId);
+  protected faction(factionId: number | undefined) {
+    return computed(() =>
+        this.factions()?.find(faction => faction.id === factionId));
   }
 
-  onPageChange(pageIndex: number) {
+  protected onPageChanged(pageIndex: number) {
     this.paging.page = pageIndex;
-    this.refreshObjectives();
+    this.refreshData();
   }
 
-  onSort(sort: Sort) {
+  protected onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
-    this.refreshObjectives();
+    this.refreshData();
   }
 }

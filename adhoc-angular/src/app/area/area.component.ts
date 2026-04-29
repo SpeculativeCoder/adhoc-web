@@ -20,12 +20,15 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Area} from "./area";
 import {AreaService} from "./area.service";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {CurrentUserService} from '../user/current/current-user.service';
+import {CurrentUser} from '../user/current/current-user';
+import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-area',
@@ -38,26 +41,34 @@ import {FormsModule} from "@angular/forms";
 })
 export class AreaComponent implements OnInit {
 
-  area: Area = {};
+  protected area = signal<Area>(new Area());
+
+  protected currentUser = signal<CurrentUser | null>(null);
 
   constructor(private route: ActivatedRoute,
               private areaService: AreaService,
-              private router: Router,
-              private ref: ChangeDetectorRef) {
+              private currentUserService: CurrentUserService,
+              private router: Router) {
   }
 
   ngOnInit() {
     const objectiveId = +this.route.snapshot.paramMap.get('id')!;
-    this.areaService.getArea(objectiveId).subscribe(data => {
-      this.area = data;
-      this.ref.markForCheck();
-    });
+    this.refreshData(objectiveId);
+  }
+
+  private refreshData(objectiveId: number) {
+    forkJoin([
+      this.areaService.getArea(objectiveId),
+      this.currentUserService.getCurrentUser()
+    ]).subscribe(data => {
+      this.area.set(data[0]);
+      this.currentUser.set(data[1]);
+    })
   }
 
   save() {
-    this.areaService.updateArea(this.area).subscribe(area => {
-      this.area = area;
-      this.ref.markForCheck();
+    this.areaService.updateArea(this.area()).subscribe(area => {
+      this.area.set(area);
     });
   }
 

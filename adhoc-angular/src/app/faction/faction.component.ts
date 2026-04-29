@@ -20,12 +20,15 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {Faction} from './faction';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FactionService} from './faction.service';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {forkJoin} from 'rxjs';
+import {CurrentUserService} from '../user/current/current-user.service';
+import {CurrentUser} from '../user/current/current-user';
 
 @Component({
   selector: 'app-faction',
@@ -38,32 +41,40 @@ import {FormsModule} from "@angular/forms";
 })
 export class FactionComponent implements OnInit {
 
-  faction: Faction = {};
+  protected faction = signal<Faction>(new Faction());
+
+  protected currentUser = signal<CurrentUser | null>(null);
 
   //colors: string[] = ['blue', 'red', 'green', 'yellow', 'black', 'white', 'gray']; // TODO
 
   constructor(private route: ActivatedRoute,
               private factionService: FactionService,
-              private router: Router,
-              private ref: ChangeDetectorRef) {
+              private currentUserService: CurrentUserService,
+              private router: Router) {
   }
 
   ngOnInit() {
     const factionId = +(this.route.snapshot.paramMap.get('id')!);
-    this.factionService.getFaction(factionId).subscribe(faction => {
-      this.faction = faction;
-      this.ref.markForCheck();
+    this.refreshData(factionId);
+  }
+
+  private refreshData(factionId: number) {
+    forkJoin([
+      this.factionService.getFaction(factionId),
+      this.currentUserService.getCurrentUser(),
+    ]).subscribe(data => {
+      this.faction.set(data[0]);
+      this.currentUser.set(data[1]);
     });
   }
 
-  save() {
-    this.factionService.updateFaction(this.faction).subscribe(faction => {
-      this.faction = faction;
-      this.ref.markForCheck();
+  protected save() {
+    this.factionService.updateFaction(this.faction()).subscribe(faction => {
+      this.faction.set(faction);
     });
   }
 
-  back() {
+  protected back() {
     this.router.navigateByUrl('/factions');
   }
 }

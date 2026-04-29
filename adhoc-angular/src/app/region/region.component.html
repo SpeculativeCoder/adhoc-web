@@ -22,41 +22,49 @@
 
 <div class="container-xxl">
   <h2>
-    Region {{ region.id }}
+    Region {{ region().id }}
   </h2>
   <form>
     <div class="mb-3">
       <label class="form-label" for="name">Name</label>
-      <input class="form-control" id="name" name="name" type="text" readonly [(ngModel)]="region.name"/>
+      <input class="form-control" id="name" name="name" type="text" readonly
+             [(ngModel)]="region().name"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="mapName">Map</label>
-      <input class="form-control" id="mapName" name="mapName" type="text" readonly [ngModel]="region.mapName"/>
+      <input class="form-control" id="mapName" name="mapName" type="text" readonly
+             [ngModel]="region().mapName"/>
     </div>
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label" for="x">X</label>
-        <input class="form-control" id="x" name="x" type="number" readonly [(ngModel)]="region.x"/>
+        <input class="form-control" id="x" name="x" type="number" readonly
+               [(ngModel)]="region().x"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="y">Y</label>
-        <input class="form-control" id="y" name="y" type="number" readonly [(ngModel)]="region.y"/>
+        <input class="form-control" id="y" name="y" type="number" readonly
+               [(ngModel)]="region().y"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="z">Z</label>
-        <input class="form-control" id="z" name="z" type="number" readonly [(ngModel)]="region.z"/>
+        <input class="form-control" id="z" name="z" type="number" readonly
+               [(ngModel)]="region().z"/>
       </div>
     </div>
     <div class="mb-3">
       <label class="form-label" for="areas">Areas</label>
-      <input class="form-control" id="areas" name="areas" type="text" readonly [ngModel]="region.areaIds"/>
+      <input class="form-control" id="areas" name="areas" type="text" readonly
+             [ngModel]="region().areaIds"/>
     </div>
     <div class="row">
-      <!--<div class="col-auto mt-3 mb-3">
-        <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
-      </div>-->
+      @if ((currentUser()?.roles || []).indexOf("ADMIN") != -1) {
+        <div class="col-auto mt-3 mb-3">
+          <button class="btn btn-primary" type="button" (click)="save()">Save</button>
+        </div>
+      }
       <div class="col-auto mt-3 mb-3">
-        <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
+        <button class="btn btn-secondary" type="button" (click)="back()">Back</button>
       </div>
     </div>
   </form>

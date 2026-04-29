@@ -22,81 +22,98 @@
 
 <div class="container-xxl">
   <h2>
-    Structure {{ structure.id }}
+    Structure {{ structure().id }}
   </h2>
   <form>
     <div class="mb-3">
       <label class="form-label" for="nameInput">Name</label>
-      <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="structure.name"/>
+      <input class="form-control" id="nameInput" name="name" type="text" readonly
+             [(ngModel)]="structure().name"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="uuidInput">UUID</label>
-      <input class="form-control" id="uuidInput" name="uuid" type="text" readonly [(ngModel)]="structure.uuid"/>
+      <input class="form-control" id="uuidInput" name="uuid" type="text" readonly
+             [(ngModel)]="structure().uuid"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="typeInput">Type</label>
-      <input class="form-control" id="typeInput" name="type" type="text" readonly [(ngModel)]="structure.type"/>
+      <input class="form-control" id="typeInput" name="type" type="text" readonly
+             [(ngModel)]="structure().type"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="regionInput">Region</label>
-      <input class="form-control" id="regionInput" name="region" type="number" readonly [(ngModel)]="structure.regionId"/>
+      <input class="form-control" id="regionInput" name="region" type="number" readonly
+             [(ngModel)]="structure().regionId"/>
     </div>
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label" for="xInput">X</label>
-        <input class="form-control" id="xInput" name="x" type="number" readonly [(ngModel)]="structure.x"/>
+        <input class="form-control" id="xInput" name="x" type="number" readonly
+               [(ngModel)]="structure().x"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="yInput">Y</label>
-        <input class="form-control" id="yInput" name="y" type="number" readonly [(ngModel)]="structure.y"/>
+        <input class="form-control" id="yInput" name="y" type="number" readonly
+               [(ngModel)]="structure().y"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="zInput">Z</label>
-        <input class="form-control" id="zInput" name="z" type="number" readonly [(ngModel)]="structure.z"/>
+        <input class="form-control" id="zInput" name="z" type="number" readonly
+               [(ngModel)]="structure().z"/>
       </div>
     </div>
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label" for="pitchInput">Pitch</label>
-        <input class="form-control" id="pitchInput" name="pitch" type="number" readonly [(ngModel)]="structure.pitch"/>
+        <input class="form-control" id="pitchInput" name="pitch" type="number" readonly
+               [(ngModel)]="structure().pitch"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="rollInput">Roll</label>
-        <input class="form-control" id="rollInput" name="roll" type="number" readonly [(ngModel)]="structure.roll"/>
+        <input class="form-control" id="rollInput" name="roll" type="number" readonly
+               [(ngModel)]="structure().roll"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="yawInput">Yaw</label>
-        <input class="form-control" id="yawInput" name="yaw" type="number" readonly [(ngModel)]="structure.yaw"/>
+        <input class="form-control" id="yawInput" name="yaw" type="number" readonly
+               [(ngModel)]="structure().yaw"/>
       </div>
     </div>
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label" for="sizeXInput">SizeX</label>
-        <input class="form-control" id="sizeXInput" name="sizeX" type="number" readonly [(ngModel)]="structure.sizeX"/>
+        <input class="form-control" id="sizeXInput" name="sizeX" type="number" readonly
+               [(ngModel)]="structure().sizeX"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="sizeYInput">SizeY</label>
-        <input class="form-control" id="sizeYInput" name="sizeY" type="number" readonly [(ngModel)]="structure.sizeY"/>
+        <input class="form-control" id="sizeYInput" name="sizeY" type="number" readonly
+               [(ngModel)]="structure().sizeY"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="sizeZInput">SizeZ</label>
-        <input class="form-control" id="sizeZInput" name="sizeZ" type="number" readonly [(ngModel)]="structure.sizeZ"/>
+        <input class="form-control" id="sizeZInput" name="sizeZ" type="number" readonly
+               [(ngModel)]="structure().sizeZ"/>
       </div>
     </div>
     <div class="mb-3">
       <label class="form-label" for="userInput">User</label>
-      <input class="form-control" id="userInput" name="user" type="number" readonly [(ngModel)]="structure.userId"/>
+      <input class="form-control" id="userInput" name="user" type="number" readonly
+             [(ngModel)]="structure().userId"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="factionInput">Faction</label>
-      <input class="form-control" id="factionInput" name="faction" type="text" readonly [ngModel]="getFaction(structure.factionId!)?.name"/>
+      <input class="form-control" id="factionInput" name="faction" type="text" readonly
+             [ngModel]="faction(structure().factionId)()?.name"/>
     </div>
     <div class="row">
-      <!--<div class="col-auto mt-3 mb-3">
-        <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
-      </div>-->
+      @if ((currentUser()?.roles || []).indexOf("ADMIN") != -1) {
+        <div class="col-auto mt-3 mb-3">
+          <button class="btn btn-primary" type="button" (click)="save()">Save</button>
+        </div>
+      }
       <div class="col-auto mt-3 mb-3">
-        <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
+        <button class="btn btn-secondary" type="button" (click)="back()">Back</button>
       </div>
     </div>
   </form>

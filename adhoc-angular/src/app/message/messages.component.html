@@ -24,7 +24,6 @@
   <h2>
     Messages
   </h2>
-
   <app-table (sort)="onSort($event)">
     <thead>
     <tr>
@@ -45,6 +44,5 @@
       }
     </tbody>
   </app-table>
-
   <app-pagination [data]="messages()" (pageChanged)="onPageChanged($event)"/>
 </div>

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnInit, signal} from '@angular/core';
 import {StructureService} from './structure.service';
 import {Faction} from '../faction/faction';
 import {FactionService} from '../faction/faction.service';
@@ -33,7 +33,11 @@ import {Page} from "../shared/page";
 import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
 import {Structure} from "./structure";
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {CurrentUser} from '../user/current/current-user';
+import {MetaService} from '../core/meta.service';
+import {CurrentUserService} from '../user/current/current-user.service';
+import {TableComponent} from '../shared/table/table.component';
+import {Pagination} from '../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-structures',
@@ -43,47 +47,59 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
     RouterLink,
     TableSortDirective,
     TableHeaderSortableComponent,
-    NgbPagination
+    TableComponent,
+    Pagination
   ],
   templateUrl: './structures.component.html'
 })
 export class StructuresComponent implements OnInit {
 
-  structures?: Page<Structure>;
+  protected featureFlags = signal('');
+
+  protected structures = signal<Page<Structure> | undefined>(undefined);
+
+  protected currentUser = signal<CurrentUser | null>(null);
+
+  protected factions = signal<Faction[] | undefined>(undefined);
+
   private paging: Paging = new Paging();
 
-  factions: Faction[] = [];
-
-  constructor(private structureService: StructureService,
-              private factionService: FactionService,
-              private ref: ChangeDetectorRef) {
-  }
-
-  getFaction(factionId: number) {
-    return this.factions.find(faction => faction.id === factionId);
+  constructor(private metaService: MetaService,
+              private structureService: StructureService,
+              private currentUserService: CurrentUserService,
+              private factionService: FactionService) {
   }
 
   ngOnInit() {
-    this.refreshStructures();
+    this.featureFlags.set(this.metaService.getFeatureFlags());
+
+    this.refreshData();
   }
 
-  private refreshStructures() {
+  private refreshData() {
     forkJoin([
       this.structureService.getStructures(this.paging),
+      this.currentUserService.getCurrentUser(),
       this.factionService.getCachedFactions()
     ]).subscribe(data => {
-      [this.structures, this.factions] = data;
-      this.ref.markForCheck();
+      this.structures.set(data[0]);
+      this.currentUser.set(data[1]);
+      this.factions.set(data[2]);
     });
   }
 
-  onPageChange(pageIndex: number) {
-    this.paging.page = pageIndex;
-    this.refreshStructures();
+  protected faction(factionId: number | undefined) {
+    return computed(() =>
+        this.factions()?.find(faction => faction.id === factionId));
   }
 
-  onSort(sort: Sort) {
+  protected onPageChanged(pageIndex: number) {
+    this.paging.page = pageIndex;
+    this.refreshData();
+  }
+
+  protected onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
-    this.refreshStructures();
+    this.refreshData();
   }
 }

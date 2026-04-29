@@ -20,11 +20,10 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {MessageService} from './message.service';
 import {CommonModule} from "@angular/common";
 import {TableHeaderSortableComponent} from "../shared/table/table-header-sortable.component";
-import {Router} from "@angular/router";
 import {TableSortDirective} from "../shared/table/table-sort.directive";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {Page} from "../shared/page";
@@ -53,17 +52,15 @@ export class MessagesComponent implements OnInit {
   messages = signal<Page<Message> | undefined>(undefined);
   private paging: Paging = new Paging();
 
-  constructor(private messageService: MessageService,
-              private router: Router,
-              private ref: ChangeDetectorRef) {
+  constructor(private messageService: MessageService) {
     this.paging.sort = [new Sort('id', 'desc')];
   }
 
   ngOnInit() {
-    this.refreshMessages();
+    this.refreshData();
   }
 
-  private refreshMessages() {
+  private refreshData() {
     forkJoin([
       this.messageService.getMessages(this.paging)
     ]).subscribe(data => {
@@ -73,11 +70,11 @@ export class MessagesComponent implements OnInit {
 
   onPageChanged(pageIndex: number) {
     this.paging.page = pageIndex;
-    this.refreshMessages();
+    this.refreshData();
   }
 
   onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
-    this.refreshMessages();
+    this.refreshData();
   }
 }

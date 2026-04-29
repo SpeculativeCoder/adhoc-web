@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnInit, signal} from '@angular/core';
 import {Pawn} from './pawn';
 import {ActivatedRoute, Router} from '@angular/router';
 import {PawnService} from './pawn.service';
@@ -30,6 +30,8 @@ import {forkJoin} from 'rxjs';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {CurrentUser} from '../user/current/current-user';
+import {CurrentUserService} from '../user/current/current-user.service';
 
 @Component({
   selector: 'app-pawn',
@@ -43,37 +45,49 @@ import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 })
 export class PawnComponent implements OnInit {
 
-  pawn: Pawn = {};
-  factions: Faction[] = [];
+  protected pawn = signal<Pawn>(new Pawn());
+
+  protected currentUser = signal<CurrentUser | null>(null);
+
+  protected factions = signal<Faction[] | undefined>(undefined);
 
   constructor(
       private route: ActivatedRoute,
       private pawnService: PawnService,
+      private currentUserService: CurrentUserService,
       private factionService: FactionService,
-      private router: Router,
-      private ref: ChangeDetectorRef) {
+      private router: Router) {
   }
 
   ngOnInit() {
     const pawnId = +(this.route.snapshot.paramMap.get('id')!);
-    forkJoin([this.pawnService.getPawn(pawnId), this.factionService.getCachedFactions()]).subscribe(data => {
-      [this.pawn, this.factions] = data;
-      this.ref.markForCheck();
+    this.refreshData(pawnId);
+  }
+
+  private refreshData(pawnId: number) {
+    forkJoin([
+      this.pawnService.getPawn(pawnId),
+      this.currentUserService.getCurrentUser(),
+      this.factionService.getCachedFactions()
+    ]).subscribe(data => {
+      this.pawn.set(data[0]);
+      this.currentUser.set(data[1]);
+      this.factions.set(data[2]);
     });
   }
 
-  getFaction(factionId: number) {
-    return this.factions.find(faction => faction.id === factionId);
+  protected faction(factionId: number | undefined) {
+    return computed(() =>
+        this.factions()?.find(faction => faction.id === factionId));
   }
 
-  save() {
-    this.pawnService.updatePawn(this.pawn).subscribe(pawn => {
-      this.pawn = pawn;
-      this.ref.markForCheck();
+  protected save() {
+    this.pawnService.updatePawn(this.pawn()).subscribe(pawn => {
+      this.pawn.set(pawn);
     });
   }
 
-  back() {
+  protected back() {
     this.router.navigateByUrl('/pawns');
   }
 }

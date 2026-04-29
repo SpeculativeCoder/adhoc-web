@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnInit, signal} from '@angular/core';
 import {Structure} from './structure';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StructureService} from './structure.service';
@@ -29,6 +29,8 @@ import {FactionService} from '../faction/faction.service';
 import {forkJoin} from 'rxjs';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {CurrentUser} from '../user/current/current-user';
+import {CurrentUserService} from '../user/current/current-user.service';
 
 @Component({
   selector: 'app-structure',
@@ -41,36 +43,48 @@ import {FormsModule} from "@angular/forms";
 })
 export class StructureComponent implements OnInit {
 
-  structure: Structure = {};
-  factions: Faction[] = [];
+  protected structure = signal<Structure>(new Structure());
+
+  protected currentUser = signal<CurrentUser | null>(null);
+
+  protected factions = signal<Faction[] | undefined>(undefined);
 
   constructor(private route: ActivatedRoute,
               private structureService: StructureService,
+              private currentUserService: CurrentUserService,
               private factionService: FactionService,
-              private router: Router,
-              private ref: ChangeDetectorRef) {
+              private router: Router) {
   }
 
   ngOnInit() {
     const structureId = +(this.route.snapshot.paramMap.get('id')!);
-    forkJoin([this.structureService.getStructure(structureId), this.factionService.getCachedFactions()]).subscribe(data => {
-      [this.structure, this.factions] = data;
-      this.ref.markForCheck();
+    this.refreshData(structureId);
+  }
+
+  private refreshData(structureId: number) {
+    forkJoin([
+      this.structureService.getStructure(structureId),
+      this.currentUserService.getCurrentUser(),
+      this.factionService.getCachedFactions()
+    ]).subscribe(data => {
+      this.structure.set(data[0]);
+      this.currentUser.set(data[1]);
+      this.factions.set(data[2]);
     });
   }
 
-  getFaction(factionId: number) {
-    return this.factions.find(faction => faction.id === factionId);
+  protected faction(factionId: number | undefined) {
+    return computed(() =>
+        this.factions()?.find(faction => faction.id === factionId));
   }
 
-  save() {
-    this.structureService.updateStructure(this.structure).subscribe(structure => {
-      this.structure = structure;
-      this.ref.markForCheck();
+  protected save() {
+    this.structureService.updateStructure(this.structure()).subscribe(structure => {
+      this.structure.set(structure);
     });
   }
 
-  back() {
+  protected back() {
     this.router.navigateByUrl('/structures');
   }
 }

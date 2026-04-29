@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {TaskService} from './task.service';
 import {TableHeaderSortableComponent} from "../shared/table/table-header-sortable.component";
@@ -31,8 +31,12 @@ import {TableSortDirective} from "../shared/table/table-sort.directive";
 import {Page} from "../shared/page";
 import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
+import {CurrentUser} from '../user/current/current-user';
 import {Task} from './task';
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {MetaService} from '../core/meta.service';
+import {CurrentUserService} from '../user/current/current-user.service';
+import {TableComponent} from '../shared/table/table.component';
+import {Pagination} from '../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-tasks',
@@ -43,39 +47,49 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
     SimpleDatePipe,
     TableHeaderSortableComponent,
     TableSortDirective,
-    NgbPagination
+    TableComponent,
+    Pagination
   ],
   templateUrl: './tasks.component.html'
 })
 export class TasksComponent implements OnInit {
 
-  tasks?: Page<Task>;
+  protected featureFlags = signal('');
+
+  protected tasks = signal<Page<Task> | undefined>(undefined);
+
+  protected currentUser = signal<CurrentUser | null>(null);
+
   private paging: Paging = new Paging();
 
-  constructor(private taskService: TaskService,
-              private ref: ChangeDetectorRef) {
+  constructor(private metaService: MetaService,
+              private taskService: TaskService,
+              private currentUserService: CurrentUserService) {
   }
 
   ngOnInit() {
-    this.refreshTasks();
+    this.featureFlags.set(this.metaService.getFeatureFlags());
+
+    this.refreshData();
   }
 
-  private refreshTasks() {
+  private refreshData() {
     forkJoin([
-      this.taskService.getTasks(this.paging)
+      this.taskService.getTasks(this.paging),
+      this.currentUserService.getCurrentUser(),
     ]).subscribe(data => {
-      [this.tasks] = data;
-      this.ref.markForCheck();
+      this.tasks.set(data[0]);
+      this.currentUser.set(data[1]);
     });
   }
 
-  onPageChange(pageIndex: number) {
+  protected onPageChanged(pageIndex: number) {
     this.paging.page = pageIndex;
-    this.refreshTasks();
+    this.refreshData();
   }
 
-  onSort(sort: Sort) {
+  protected onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
-    this.refreshTasks();
+    this.refreshData();
   }
 }

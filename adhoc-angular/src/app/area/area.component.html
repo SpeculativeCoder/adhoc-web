@@ -22,59 +22,71 @@
 
 <div class="container-xxl">
   <h2>
-    Area {{ area.id }}
+    Area {{ area().id }}
   </h2>
   <form>
     <div class="mb-3">
       <label class="form-label" for="name">Name</label>
-      <input class="form-control" id="name" name="name" type="text" readonly [(ngModel)]="area.name"/>
+      <input class="form-control" id="name" name="name" type="text" readonly
+             [(ngModel)]="area().name"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="region">Region</label>
-      <input class="form-control" id="region" name="region" type="number" readonly [(ngModel)]="area.regionId"/>
+      <input class="form-control" id="region" name="region" type="number" readonly
+             [(ngModel)]="area().regionId"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="index">Index</label>
-      <input class="form-control" id="index" name="index" type="number" readonly [(ngModel)]="area.index"/>
+      <input class="form-control" id="index" name="index" type="number" readonly
+             [(ngModel)]="area().index"/>
     </div>
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label" for="x">X</label>
-        <input class="form-control" id="x" name="x" type="number" readonly [(ngModel)]="area.x"/>
+        <input class="form-control" id="x" name="x" type="number" readonly
+               [(ngModel)]="area().x"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="y">Y</label>
-        <input class="form-control" id="y" name="y" type="number" readonly [(ngModel)]="area.y"/>
+        <input class="form-control" id="y" name="y" type="number" readonly
+               [(ngModel)]="area().y"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="z">Z</label>
-        <input class="form-control" id="z" name="z" type="number" readonly [(ngModel)]="area.z"/>
+        <input class="form-control" id="z" name="z" type="number" readonly
+               [(ngModel)]="area().z"/>
       </div>
     </div>
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label" for="sizeX">Size X</label>
-        <input class="form-control" id="sizeX" name="sizeX" type="number" readonly [(ngModel)]="area.sizeX"/>
+        <input class="form-control" id="sizeX" name="sizeX" type="number" readonly
+               [(ngModel)]="area().sizeX"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="sizeY">Size Y</label>
-        <input class="form-control" id="sizeY" name="sizeY" type="number" readonly [(ngModel)]="area.sizeY"/>
+        <input class="form-control" id="sizeY" name="sizeY" type="number" readonly
+               [(ngModel)]="area().sizeY"/>
       </div>
       <div class="col-md-4 mb-3">
         <label class="form-label" for="sizeZ">Size Z</label>
-        <input class="form-control" id="sizeZ" name="sizeZ" type="number" readonly [(ngModel)]="area.sizeZ"/>
+        <input class="form-control" id="sizeZ" name="sizeZ" type="number" readonly
+               [(ngModel)]="area().sizeZ"/>
       </div>
     </div>
     <div class="mb-3">
       <label class="form-label" for="server">Server</label>
-      <input class="form-control" id="server" name="server" type="number" readonly [(ngModel)]="area.serverId"/>
+      <input class="form-control" id="server" name="server" type="number" readonly
+             [(ngModel)]="area().serverId"/>
     </div>
     <div class="row">
-      <!--<div class="col-auto mt-3 mb-3">
-        <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
-      </div>-->
+      @if ((currentUser()?.roles || []).indexOf("ADMIN") != -1) {
+        <div class="col-auto mt-3 mb-3">
+          <button class="btn btn-primary" type="click" (click)="save()">Save</button>
+        </div>
+      }
       <div class="col-auto mt-3 mb-3">
-        <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
+        <button class="btn btn-secondary" type="button" (click)="back()">Back</button>
       </div>
     </div>
   </form>

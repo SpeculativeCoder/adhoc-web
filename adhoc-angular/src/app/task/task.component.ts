@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {Task} from './task';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TaskService} from './task.service';
@@ -28,6 +28,8 @@ import {forkJoin} from 'rxjs';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
+import {CurrentUser} from '../user/current/current-user';
+import {CurrentUserService} from '../user/current/current-user.service';
 
 @Component({
   selector: 'app-task',
@@ -41,30 +43,38 @@ import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 })
 export class TaskComponent implements OnInit {
 
-  task: Task = {};
+  protected task = signal<Task>(new Task());
+
+  protected currentUser = signal<CurrentUser | null>(null);
 
   constructor(private route: ActivatedRoute,
               private taskService: TaskService,
-              private router: Router,
-              private ref: ChangeDetectorRef) {
+              private currentUserService: CurrentUserService,
+              private router: Router) {
   }
 
   ngOnInit() {
     const taskId = +(this.route.snapshot.paramMap.get('id')!);
-    forkJoin([this.taskService.getTask(taskId)]).subscribe(data => {
-      [this.task] = data;
-      this.ref.markForCheck();
+    this.refreshData(taskId);
+  }
+
+  private refreshData(taskId: number) {
+    forkJoin([
+      this.taskService.getTask(taskId),
+      this.currentUserService.getCurrentUser()
+    ]).subscribe(data => {
+      this.task.set(data[0]);
+      this.currentUser.set(data[1]);
     });
   }
 
-  save() {
-    this.taskService.updateTask(this.task).subscribe(task => {
-      this.task = task;
-      this.ref.markForCheck();
+  protected save() {
+    this.taskService.updateTask(this.task()).subscribe(task => {
+      this.task.set(task);
     });
   }
 
-  back() {
+  protected back() {
     this.router.navigateByUrl('/tasks');
   }
 }

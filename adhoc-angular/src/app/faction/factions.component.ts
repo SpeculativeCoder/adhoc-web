@@ -20,17 +20,19 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {FactionService} from './faction.service';
 import {TableHeaderSortableComponent} from "../shared/table/table-header-sortable.component";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {TableSortDirective} from "../shared/table/table-sort.directive";
-import {Page} from "../shared/page";
 import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
 import {Faction} from "./faction";
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {forkJoin} from 'rxjs';
+import {TableComponent} from '../shared/table/table.component';
+import {Pagination} from '../shared/pagination/pagination.component';
+import {Page} from '../shared/page';
 
 @Component({
   selector: 'app-factions',
@@ -40,38 +42,39 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
     RouterLink,
     TableSortDirective,
     TableHeaderSortableComponent,
-    NgbPagination
+    TableComponent,
+    Pagination
   ],
   templateUrl: './factions.component.html'
 })
 export class FactionsComponent implements OnInit {
 
-  factions?: Page<Faction>;
+  protected factions = signal<Page<Faction> | undefined>(undefined);
+
   private paging: Paging = new Paging();
 
-  constructor(private factionService: FactionService,
-              private ref: ChangeDetectorRef) {
+  constructor(private factionService: FactionService) {
   }
 
   ngOnInit() {
-    this.refreshFactions();
+    this.refreshData();
   }
 
-  private refreshFactions() {
-    this.factionService.getFactions(this.paging)
-        .subscribe(factionsPage => {
-          this.factions = factionsPage;
-          this.ref.markForCheck();
-        });
+  private refreshData() {
+    forkJoin([
+      this.factionService.getFactions(this.paging),
+    ]).subscribe(data => {
+      this.factions.set(data[0]);
+    });
   }
 
-  onPageChange(pageIndex: number) {
+  protected onPageChanged(pageIndex: number) {
     this.paging.page = pageIndex;
-    this.refreshFactions();
+    this.refreshData();
   }
 
-  onSort(sort: Sort) {
+  protected onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
-    this.refreshFactions();
+    this.refreshData();
   }
 }

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {forkJoin} from "rxjs";
 import {RegionService} from "./region.service";
 import {TableHeaderSortableComponent} from "../shared/table/table-header-sortable.component";
@@ -30,8 +30,12 @@ import {TableSortDirective} from "../shared/table/table-sort.directive";
 import {Page} from "../shared/page";
 import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
-import {Region} from "./region";
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {CurrentUser} from '../user/current/current-user';
+import {MetaService} from '../core/meta.service';
+import {CurrentUserService} from '../user/current/current-user.service';
+import {Region} from './region';
+import {TableComponent} from '../shared/table/table.component';
+import {Pagination} from '../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-regions',
@@ -41,39 +45,49 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
     RouterLink,
     TableSortDirective,
     TableHeaderSortableComponent,
-    NgbPagination
+    TableComponent,
+    Pagination
   ],
   templateUrl: './regions.component.html'
 })
 export class RegionsComponent implements OnInit {
 
-  regions?: Page<Region>;
+  protected featureFlags = signal('');
+
+  protected regions = signal<Page<Region> | undefined>(undefined);
+
+  protected currentUser = signal<CurrentUser | null>(null);
+
   private paging: Paging = new Paging();
 
-  constructor(private regionService: RegionService,
-              private ref: ChangeDetectorRef) {
+  constructor(private metaService: MetaService,
+              private regionService: RegionService,
+              private currentUserService: CurrentUserService) {
   }
 
   ngOnInit() {
-    this.refreshRegions();
+    this.featureFlags.set(this.metaService.getFeatureFlags());
+
+    this.refreshData();
   }
 
-  private refreshRegions() {
+  private refreshData() {
     forkJoin([
-      this.regionService.getRegions(this.paging)
+      this.regionService.getRegions(this.paging),
+      this.currentUserService.getCurrentUser(),
     ]).subscribe(data => {
-      [this.regions] = data;
-      this.ref.markForCheck();
+      this.regions.set(data[0]);
+      this.currentUser.set(data[1]);
     });
   }
 
-  onPageChange(pageIndex: number) {
+  onPageChanged(pageIndex: number) {
     this.paging.page = pageIndex;
-    this.refreshRegions();
+    this.refreshData();
   }
 
   onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
-    this.refreshRegions();
+    this.refreshData();
   }
 }

@@ -24,69 +24,63 @@
   <h2>
     Servers
   </h2>
-  <div class="table-responsive">
-    <table class="table table-striped table-hover table-sm caption-bottom" (sort)="onSort($event)">
-      <!--    <caption>{{servers.length}} servers</caption>-->
-      <thead>
-      <tr>
-        <th scope="col" sortable="id">ID</th>
-        <th scope="col">Actions</th>
-        <th scope="col" sortable="region">Region</th>
-        <th scope="col" sortable="areas">Areas</th>
-        <th scope="col" sortable="map">Map</th>
-        <th scope="col" sortable="x">X</th>
-        <th scope="col" sortable="y">Y</th>
-        <th scope="col" sortable="z">Z</th>
-        <th scope="col" sortable="enabled">Enabled</th>
-        <th scope="col" sortable="active">Active</th>
-        <th scope="col" sortable="publicIp">Public IP</th>
-        <th scope="col" sortable="publicWebSocketPort">Port</th>
-        <th scope="col" sortable="domain">Domain</th>
-        <!--<th scope="col" sortable="webSocketUrl">Web Socket URL</th>-->
-        <!--<th scope="col" sortable="initiated">Initiated</th>-->
-        <!--<th scope="col" sortable="seen">Seen</th>-->
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let server of servers?.content">
-        <th scope="row"><a routerLink="/servers/{{ server.id }}">{{ server.id }}</a></th>
-        <td>
-          <button type="button" class="btn btn-primary"
-                  style="--bs-btn-padding-y: 0; --bs-btn-font-size: 0.75rem"
-                  *ngIf="server.enabled && server.active && server.webSocketUrl && server.areaIds" (click)="joinServer(server)">
-            Join
-          </button>
-        </td>
-        <td>{{ server.regionId }}</td>
-        <td>
-          <ng-container *ngFor="let areaId of server.areaIds; last as isLast">
-            <span>{{ areaId }}</span>
-            <span *ngIf="!isLast">, </span>
-          </ng-container>
-        </td>
-        <td>{{ server.mapName }}</td>
-        <td>{{ server.x }}</td>
-        <td>{{ server.y }}</td>
-        <td>{{ server.z }}</td>
-        <td>{{ server.enabled }}</td>
-        <td>{{ server.active }}</td>
-        <td>{{ server.publicIp }}</td>
-        <td>{{ server.publicWebSocketPort }}</td>
-        <td>{{ server.domain }}</td>
-        <!--<td>{{ server.webSocketUrl }}</td>-->
-        <!--<td>{{ server.initiated | simpleDate }}</td>-->
-        <!--<td>{{ server.seen | simpleDate }}</td>-->
-      </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="d-flex justify-content-end" *ngIf="servers && servers.page.totalElements">
-    <div class="mt-2 me-4 text-nowrap">{{ (servers.page!.number! * servers.page!.size!) + 1 }} - {{ (servers.page!.number! * servers.page!.size!) + servers.content!.length }} of {{ servers.page!.totalElements }}</div>
-    <ngb-pagination [page]="servers.page!.number! + 1"
-                    [pageSize]="servers.page!.size!"
-                    [collectionSize]="servers.page!.totalElements!"
-                    [maxSize]="3"
-                    [boundaryLinks]="true"
-                    (pageChange)="onPageChange($event - 1)"/>
-  </div>
+  <app-table (sort)="onSort($event)">
+    <thead>
+    <tr>
+      <th scope="col" sortable="id">ID</th>
+      <th scope="col">Actions</th>
+      <th scope="col" sortable="region">Region</th>
+      <th scope="col" sortable="areas">Areas</th>
+      <th scope="col" sortable="map">Map</th>
+      <th scope="col" sortable="x">X</th>
+      <th scope="col" sortable="y">Y</th>
+      <th scope="col" sortable="z">Z</th>
+      <th scope="col" sortable="enabled">Enabled</th>
+      <th scope="col" sortable="active">Active</th>
+      <th scope="col" sortable="publicIp">Public IP</th>
+      <th scope="col" sortable="publicWebSocketPort">Port</th>
+      <th scope="col" sortable="domain">Domain</th>
+      <!--<th scope="col" sortable="webSocketUrl">Web Socket URL</th>-->
+      <!--<th scope="col" sortable="initiated">Initiated</th>-->
+      <!--<th scope="col" sortable="seen">Seen</th>-->
+    </tr>
+    </thead>
+    <tbody>
+      @for (server of servers()?.content; track server.id) {
+        <tr>
+          <th scope="row"><a routerLink="/servers/{{ server.id }}">{{ server.id }}</a></th>
+          <td>
+            @if (server.enabled && server.active && server.webSocketUrl && server.areaIds) {
+              <button class="btn btn-primary" style="--bs-btn-padding-y: 0; --bs-btn-font-size: 0.75rem"
+                      type="button" (click)="joinServer(server)">
+                Join
+              </button>
+            }
+          </td>
+          <td>{{ server.regionId }}</td>
+          <td>
+            @for (areaId of server.areaIds; track areaId) {
+              <span>{{ areaId }}</span>
+              @if (!$last) {
+                <span>, </span>
+              }
+            }
+          </td>
+          <td>{{ server.mapName }}</td>
+          <td>{{ server.x }}</td>
+          <td>{{ server.y }}</td>
+          <td>{{ server.z }}</td>
+          <td>{{ server.enabled }}</td>
+          <td>{{ server.active }}</td>
+          <td>{{ server.publicIp }}</td>
+          <td>{{ server.publicWebSocketPort }}</td>
+          <td>{{ server.domain }}</td>
+          <!--<td>{{ server.webSocketUrl }}</td>-->
+          <!--<td>{{ server.initiated | simpleDate }}</td>-->
+          <!--<td>{{ server.seen | simpleDate }}</td>-->
+        </tr>
+      }
+    </tbody>
+  </app-table>
+  <app-pagination [data]="servers()" (pageChanged)="onPageChanged($event)"/>
 </div>

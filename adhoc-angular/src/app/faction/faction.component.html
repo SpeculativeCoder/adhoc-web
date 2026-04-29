@@ -22,21 +22,18 @@
 
 <div class="container-xxl">
   <h2>
-    Faction {{ faction.id }}
-    <!--   <small class="text-muted">{{ factions.name }}</small> -->
+    Faction {{ faction().id }}
   </h2>
   <form>
-    <!--   <div class="form-group form-row">
-      <label for="idInput" class="col-md-2 col-form-label">ID</label>
-      <input type="number" readonly [(ngModel)]="factions.id" name="id" id="idInput" class="col-md-4 form-control" />
-    </div> -->
     <div class="mb-3">
       <label class="form-label" for="nameInput">Name</label>
-      <input class="form-control" id="nameInput" name="name" type="text" readonly [(ngModel)]="faction.name"/>
+      <input class="form-control" id="nameInput" name="name" type="text" readonly
+             [(ngModel)]="faction().name"/>
     </div>
     <div class="mb-3">
       <label class="form-label" for="colorInput">Color</label>
-      <input class="form-control" id="colorInput" name="color" type="text" readonly [(ngModel)]="faction.color"/>
+      <input class="form-control" id="colorInput" name="color" type="text" readonly
+             [(ngModel)]="faction().color"/>
       <!--<label class="form-label" for="colorDropdown">Color</label>
       <div class="row">
         <div ngbDropdown class="d-inline-block">
@@ -53,14 +50,17 @@
     </div>
     <div class="mb-3">
       <label class="form-label" for="scoreInput">Score</label>
-      <input class="form-control" id="scoreInput" name="score" type="number" readonly [(ngModel)]="faction.score"/>
+      <input class="form-control" id="scoreInput" name="score" type="number" readonly
+             [(ngModel)]="faction().score"/>
     </div>
     <div class="row">
-      <!--<div class="col-auto mt-3 mb-3">
-        <button type="submit" class="btn btn-primary" (click)="save()">Save</button>
-      </div>-->
+      @if ((currentUser()?.roles || []).indexOf("ADMIN") != -1) {
+        <div class="col-auto mt-3 mb-3">
+          <button class="btn btn-primary" type="button" (click)="save()">Save</button>
+        </div>
+      }
       <div class="col-auto mt-3 mb-3">
-        <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
+        <button class="btn btn-secondary" type="button" (click)="back()">Back</button>
       </div>
     </div>
   </form>

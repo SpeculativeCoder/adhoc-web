@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {forkJoin} from "rxjs";
 import {AreaService} from "./area.service";
 import {TableHeaderSortableComponent} from "../shared/table/table-header-sortable.component";
@@ -31,7 +31,9 @@ import {Page} from "../shared/page";
 import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
 import {Area} from "./area";
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {TableComponent} from '../shared/table/table.component';
+import {Pagination} from '../shared/pagination/pagination.component';
+import {CurrentUser} from '../user/current/current-user';
 
 @Component({
   selector: 'app-areas',
@@ -41,39 +43,41 @@ import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
     RouterLink,
     TableSortDirective,
     TableHeaderSortableComponent,
-    NgbPagination
+    TableComponent,
+    Pagination
   ],
   templateUrl: './areas.component.html'
 })
 export class AreasComponent implements OnInit {
 
-  areas?: Page<Area>;
+  protected areas = signal<Page<Area> | undefined>(undefined);
+
+  protected currentUser = signal<CurrentUser | null>(null);
+
   private paging: Paging = new Paging();
 
-  constructor(private areaService: AreaService,
-              private ref: ChangeDetectorRef) {
+  constructor(private areaService: AreaService) {
   }
 
   ngOnInit() {
-    this.refreshAreas();
+    this.refreshData();
   }
 
-  private refreshAreas() {
+  private refreshData() {
     forkJoin([
       this.areaService.getAreas(this.paging)
     ]).subscribe(data => {
-      [this.areas] = data;
-      this.ref.markForCheck();
+      this.areas.set(data[0]);
     });
   }
 
-  onPageChange(pageIndex: number) {
+  protected onPageChanged(pageIndex: number) {
     this.paging.page = pageIndex;
-    this.refreshAreas();
+    this.refreshData();
   }
 
-  onSort(sort: Sort) {
+  protected onSort(sort: Sort) {
     this.paging.sort = [new Sort(sort.column, sort.direction)];
-    this.refreshAreas();
+    this.refreshData();
   }
 }

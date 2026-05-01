@@ -59,12 +59,13 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class ServerEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ServerIdSequence")
     @SequenceGenerator(name = "ServerIdSequence", initialValue = 1, allocationSize = 100)
+    @ToString.Include
     private Long id;
 
     @Version
@@ -72,11 +73,9 @@ public class ServerEntity {
     private Long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @ToString.Exclude
     private RegionEntity region;
 
     @OneToMany(mappedBy = "server")
-    @ToString.Exclude
     private List<AreaEntity> areas;
 
     @Column(nullable = false)
@@ -109,14 +108,11 @@ public class ServerEntity {
     private LocalDateTime seen;
 
     @OneToMany(mappedBy = "destinationServer")
-    @ToString.Exclude
     private List<UserStateEntity> destinedUserStates;
 
     @OneToMany(mappedBy = "server")
-    @ToString.Exclude
     private List<UserStateEntity> userStates;
 
     @OneToMany(mappedBy = "server")
-    @ToString.Exclude
     private List<PawnEntity> pawns;
 }

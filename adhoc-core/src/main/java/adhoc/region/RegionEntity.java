@@ -54,12 +54,13 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class RegionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RegionIdSequence")
     @SequenceGenerator(name = "RegionIdSequence", initialValue = 1, allocationSize = 100)
+    @ToString.Include
     private Long id;
 
     @Version
@@ -67,6 +68,7 @@ public class RegionEntity {
     private Long version;
 
     @Column(nullable = false)
+    @ToString.Include
     private String name;
 
     /** Name of map/level in the Unreal project. */
@@ -81,10 +83,8 @@ public class RegionEntity {
     private BigDecimal z;
 
     @OneToMany(mappedBy = "region")
-    @ToString.Exclude
     private List<AreaEntity> areas;
 
     @OneToMany(mappedBy = "region")
-    @ToString.Exclude
     private List<ServerEntity> servers;
 }

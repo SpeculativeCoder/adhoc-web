@@ -51,12 +51,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public abstract class TaskEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TaskIdSequence")
     @SequenceGenerator(name = "TaskIdSequence", initialValue = 1, allocationSize = 100)
+    @ToString.Include
     private Long id;
 
     @Version
@@ -65,6 +66,7 @@ public abstract class TaskEntity {
 
     /** Identifier of the task within the hosting service (e.g. task ARN of AWS ECS task). */
     @Column(nullable = false, unique = true)
+    @ToString.Include
     private String taskIdentifier;
 
     /** IP that is reachable within the hosting service but not externally. */

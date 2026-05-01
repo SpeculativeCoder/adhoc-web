@@ -59,12 +59,13 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class AreaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AreaIdSequence")
     @SequenceGenerator(name = "AreaIdSequence", initialValue = 1, allocationSize = 100)
+    @ToString.Include
     private Long id;
 
     @Version
@@ -72,13 +73,15 @@ public class AreaEntity {
     private Long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @ToString.Include
     private RegionEntity region;
 
     @Column(nullable = false)
+    @ToString.Include
     private Integer index;
 
     @Column(nullable = false)
+    @ToString.Include
     private String name;
 
     @Column(nullable = false)
@@ -96,11 +99,9 @@ public class AreaEntity {
     private BigDecimal sizeZ;
 
     @OneToMany(mappedBy = "area")
-    @ToString.Exclude
     private List<ObjectiveEntity> objectives;
 
     /** Server currently representing this area. */
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
     private ServerEntity server;
 }

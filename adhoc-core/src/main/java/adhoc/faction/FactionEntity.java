@@ -50,12 +50,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class FactionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "FactionIdSequence")
     @SequenceGenerator(name = "FactionIdSequence", initialValue = 1, allocationSize = 100)
+    @ToString.Include
     private Long id;
 
     @Version
@@ -63,9 +64,11 @@ public class FactionEntity {
     private Long version;
 
     @Column(nullable = false, unique = true)
+    @ToString.Include
     private Integer index;
 
     @Column(nullable = false, unique = true)
+    @ToString.Include
     private String name;
 
     @Column(nullable = false, unique = true)

@@ -47,12 +47,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class MessageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MessageIdSequence")
     @SequenceGenerator(name = "MessageIdSequence", initialValue = 1, allocationSize = 100)
+    @ToString.Include
     private Long id;
 
     @Version
@@ -60,13 +61,15 @@ public class MessageEntity {
     private Long version;
 
     @Column(nullable = false, length = 10000)
+    @ToString.Include
     private String text;
 
     @Column(nullable = false)
+    @ToString.Include
     private LocalDateTime timestamp;
 
     /** If this message is only relevant to a specific user, this will be set. */
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @ToString.Include
     private UserEntity user;
 }

@@ -35,7 +35,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
+@ToString(callSuper = true, onlyExplicitlyIncluded = true)
 public class ManagerTaskEntity extends TaskEntity {
 
     @Override

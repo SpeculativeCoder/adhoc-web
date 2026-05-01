@@ -55,12 +55,13 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class ObjectiveEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ObjectiveIdSequence")
     @SequenceGenerator(name = "ObjectiveIdSequence", initialValue = 1, allocationSize = 100)
+    @ToString.Include
     private Long id;
 
     @Version
@@ -68,13 +69,15 @@ public class ObjectiveEntity {
     private Long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @ToString.Include
     private RegionEntity region;
 
     @Column(nullable = false)
+    @ToString.Include
     private Integer index;
 
     @Column(nullable = false)
+    @ToString.Include
     private String name;
 
     @Column(nullable = false)
@@ -85,18 +88,14 @@ public class ObjectiveEntity {
     private BigDecimal z;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
     private FactionEntity initialFaction;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
     private FactionEntity faction;
 
     @ManyToMany
-    @ToString.Exclude
     private Set<ObjectiveEntity> linkedObjectives;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
     private AreaEntity area;
 }

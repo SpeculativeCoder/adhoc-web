@@ -65,10 +65,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class UserStateEntity {
 
     @Id
+    @ToString.Include
     private Long id;
 
     @Version
@@ -78,11 +79,10 @@ public class UserStateEntity {
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")
-    @ToString.Exclude
+    @ToString.Include
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
     private RegionEntity region;
 
     private BigDecimal x;
@@ -95,11 +95,9 @@ public class UserStateEntity {
     private UUID token;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
     private ServerEntity destinationServer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
     private ServerEntity server;
 
     @CreationTimestamp

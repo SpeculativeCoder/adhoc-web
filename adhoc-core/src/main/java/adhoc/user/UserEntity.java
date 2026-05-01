@@ -82,12 +82,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UserIdSequence")
     @SequenceGenerator(name = "UserIdSequence", initialValue = 1, allocationSize = 100)
+    @ToString.Include
     private Long id;
 
     @Version
@@ -99,15 +100,14 @@ public class UserEntity {
     private UserStateEntity state;
 
     @Column(nullable = false, unique = true)
+    @ToString.Include
     private String name;
 
     private String email;
 
-    @ToString.Exclude
     @Setter(AccessLevel.NONE)
     private String password;
 
-    @ToString.Exclude
     @Setter(AccessLevel.NONE)
     private String quickLoginPassword;
 
@@ -115,7 +115,6 @@ public class UserEntity {
     private boolean human;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @ToString.Exclude
     private FactionEntity faction;
 
     @Column(nullable = false)
@@ -135,7 +134,6 @@ public class UserEntity {
     private LocalDateTime lastLogin;
 
     @OneToMany(mappedBy = "user")
-    @ToString.Exclude
     private List<PawnEntity> pawns;
 
     public UserStateEntity getState() {

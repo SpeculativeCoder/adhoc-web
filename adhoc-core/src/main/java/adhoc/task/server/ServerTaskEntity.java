@@ -36,10 +36,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
+@ToString(callSuper = true, onlyExplicitlyIncluded = true)
 public class ServerTaskEntity extends TaskEntity {
 
     @Column(nullable = false)
+    @ToString.Include
     private Long serverId;
 
     @Override

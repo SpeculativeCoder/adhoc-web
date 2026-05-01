@@ -57,6 +57,11 @@ public class ManagerProperties {
     @Value("${adhoc.purge-old.servers.seen-before}")
     private Duration purgeOldServersSeenBefore;
 
+    // Should some demo data (some more users, objectives, areas etc.) be inserted on first run?
+    // NOTE: initial factions, a single region, and a single area are always inserted regardless of this setting.
+    @Value("${adhoc.insert-demo-data}")
+    private boolean insertDemoData;
+
     @PostConstruct
     public void postConstruct() {
         log.info("defaultUserPassword={} defaultAdminPassword={}", defaultUserPassword, defaultAdminPassword == null ? null : "***");

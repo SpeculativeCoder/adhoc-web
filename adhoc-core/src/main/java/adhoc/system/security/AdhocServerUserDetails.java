@@ -22,14 +22,16 @@
 
 package adhoc.system.security;
 
-import org.springframework.security.core.GrantedAuthority;
+import adhoc.user.UserRole;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collection;
+import java.util.Collections;
 
 /** Spring Security user details for an Unreal server. */
 public class AdhocServerUserDetails extends org.springframework.security.core.userdetails.User {
 
-    public AdhocServerUserDetails(String username, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, enabled, true, true, true, authorities);
+    public AdhocServerUserDetails(String username, String password) {
+        super(username, password, true, true, true, true,
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserRole.SERVER.name())));
     }
 }

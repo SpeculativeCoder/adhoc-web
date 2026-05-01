@@ -26,13 +26,11 @@ import adhoc.shared.random_uuid.RandomUUIDUtils;
 import adhoc.system.properties.CoreProperties;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
-import adhoc.user.UserRole;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -41,7 +39,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 
 /**
@@ -73,9 +70,7 @@ public class AdhocUserDetailsService implements UserDetailsService {
 
             return new AdhocServerUserDetails(
                     coreProperties.getServerBasicAuthUsername(),
-                    passwordEncoder.encode(coreProperties.getServerBasicAuthPassword()),
-                    true,
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserRole.SERVER.name())));
+                    passwordEncoder.encode(coreProperties.getServerBasicAuthPassword()));
         }
 
         log.atTrace()

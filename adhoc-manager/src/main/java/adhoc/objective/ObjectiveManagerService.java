@@ -151,7 +151,8 @@ public class ObjectiveManagerService {
             objective.setLinkedObjectives(new LinkedHashSet<>());
         }
 
-        objective.setArea(areaRepository.getByRegionAndIndex(region, objectiveDto.getAreaIndex()));
+        objective.setArea(objectiveDto.getAreaIndex() == null ? null :
+                areaRepository.findByRegionAndIndex(region, objectiveDto.getAreaIndex()).orElseThrow());
 
         return objective;
     }
@@ -160,7 +161,8 @@ public class ObjectiveManagerService {
         RegionEntity region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         Set<ObjectiveEntity> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
-                .map(linkedObjectiveIndex -> objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
+                .map(linkedObjectiveIndex -> objectiveRepository.findByRegionAndIndex(region, linkedObjectiveIndex)
+                        .orElseThrow()) // TODO
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         if (!linkedObjectives.equals(objective.getLinkedObjectives())) {

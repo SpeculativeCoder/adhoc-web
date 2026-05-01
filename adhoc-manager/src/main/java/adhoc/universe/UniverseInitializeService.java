@@ -31,7 +31,6 @@ import adhoc.objective.ObjectiveEntity;
 import adhoc.objective.ObjectiveRepository;
 import adhoc.region.RegionEntity;
 import adhoc.region.RegionRepository;
-import adhoc.server.ServerRepository;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
 import adhoc.user.UserEntity;
@@ -70,7 +69,6 @@ public class UniverseInitializeService {
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
     private final ObjectiveRepository objectiveRepository;
-    private final ServerRepository serverRepository;
 
     private final UniverseService universeService;
     private final MessageService messageService;
@@ -85,13 +83,12 @@ public class UniverseInitializeService {
     public void initializeDefaultUniverse() {
 
         if (universeRepository.existsById(UniverseService.UNIVERSE_ID)) {
-            return; // already initialised the universe - no need to do anything
+            return; // already initialized the universe - no need to do anything
         }
 
         UniverseEntity universe = new UniverseEntity();
         universe = universeRepository.save(universe);
-
-        Verify.verify(universe.getId().equals(UniverseService.UNIVERSE_ID)); // TODO
+        Verify.verify(universe.getId().equals(UniverseService.UNIVERSE_ID));
 
         // insert factions
 
@@ -101,6 +98,7 @@ public class UniverseInitializeService {
         team1.setColor("#4B8EFF");
         team1.setScore(BigDecimal.valueOf(0.0));
         team1 = factionRepository.save(team1);
+        Verify.verify(team1.getId().equals(1L));
 
         FactionEntity team2 = new FactionEntity();
         team2.setIndex(1);
@@ -108,6 +106,7 @@ public class UniverseInitializeService {
         team2.setColor("#FF4D96");
         team2.setScore(BigDecimal.valueOf(0.0));
         team2 = factionRepository.save(team2);
+        Verify.verify(team2.getId().equals(2L));
 
         FactionEntity team3 = new FactionEntity();
         team3.setIndex(2);
@@ -115,6 +114,7 @@ public class UniverseInitializeService {
         team3.setColor("#FFFA6A");
         team3.setScore(BigDecimal.valueOf(0.0));
         team3 = factionRepository.save(team3);
+        Verify.verify(team3.getId().equals(3L));
 
         FactionEntity team4 = new FactionEntity();
         team4.setIndex(3);
@@ -122,6 +122,7 @@ public class UniverseInitializeService {
         team4.setColor("#A7FF6B");
         team4.setScore(BigDecimal.valueOf(0.0));
         team4 = factionRepository.save(team4);
+        Verify.verify(team4.getId().equals(4L));
 
         FactionEntity team5 = new FactionEntity();
         team5.setIndex(4);
@@ -129,6 +130,7 @@ public class UniverseInitializeService {
         team5.setColor("#96E8FF");
         team5.setScore(BigDecimal.valueOf(0.0));
         team5 = factionRepository.save(team5);
+        Verify.verify(team5.getId().equals(5L));
 
         FactionEntity team6 = new FactionEntity();
         team6.setIndex(5);
@@ -136,6 +138,7 @@ public class UniverseInitializeService {
         team6.setColor("#B96EFF");
         team6.setScore(BigDecimal.valueOf(0.0));
         team6 = factionRepository.save(team6);
+        Verify.verify(team6.getId().equals(6L));
 
         FactionEntity team7 = new FactionEntity();
         team7.setIndex(6);
@@ -143,6 +146,7 @@ public class UniverseInitializeService {
         team7.setColor("#FF905B");
         team7.setScore(BigDecimal.valueOf(0.0));
         team7 = factionRepository.save(team7);
+        Verify.verify(team7.getId().equals(7L));
 
         FactionEntity team8 = new FactionEntity();
         team8.setIndex(7);
@@ -150,20 +154,42 @@ public class UniverseInitializeService {
         team8.setColor("#8480BB");
         team8.setScore(BigDecimal.valueOf(0.0));
         team8 = factionRepository.save(team8);
+        Verify.verify(team8.getId().equals(8L));
 
         RegionEntity region1 = new RegionEntity();
-        //region1.setId(1L);
         region1.setName("Region 1");
-        // TODO: handle multiple regions
-        region1.setMapName(coreProperties.getUnrealProjectRegionMaps().get(0));
-        region1.setX(BigDecimal.valueOf(1750.0));
-        region1.setY(BigDecimal.valueOf(1000.0));
-        region1.setZ(BigDecimal.valueOf(50.0));
-        region1.setAreas(Collections.emptyList());
+        region1.setX(BigDecimal.valueOf(0));
+        region1.setY(BigDecimal.valueOf(0));
+        region1.setZ(BigDecimal.valueOf(0));
+        region1.setMapName(coreProperties.getUnrealProjectRegionMaps().get(0)); // TODO: handle multiple regions
+        region1.setAreas(Collections.emptyList()); // will be set below
         region1 = regionRepository.save(region1);
+        Verify.verify(region1.getId().equals(1L));
 
         AreaEntity area1 = new AreaEntity();
         area1.setIndex(0);
+        area1.setName("Area 1");
+        area1.setX(BigDecimal.valueOf(0));
+        area1.setY(BigDecimal.valueOf(0));
+        area1.setZ(BigDecimal.valueOf(0));
+        area1.setSizeX(BigDecimal.valueOf(1000));
+        area1.setSizeY(BigDecimal.valueOf(1000));
+        area1.setSizeZ(BigDecimal.valueOf(1000));
+        area1.setRegion(region1);
+        area1 = areaRepository.save(area1);
+        Verify.verify(area1.getId().equals(1L));
+
+        region1.setAreas(Arrays.asList(area1));
+
+        // only continue if we want some more plausible demo data to be inserted
+        if (!managerProperties.isInsertDemoData()) {
+            return;
+        }
+
+        region1.setX(BigDecimal.valueOf(1750.0));
+        region1.setY(BigDecimal.valueOf(1000.0));
+        region1.setZ(BigDecimal.valueOf(50.0));
+
         area1.setName("A");
         area1.setX(BigDecimal.valueOf(1250.0));
         area1.setY(BigDecimal.valueOf(1800.0));
@@ -171,8 +197,6 @@ public class UniverseInitializeService {
         area1.setSizeX(BigDecimal.valueOf(2000.0));
         area1.setSizeY(BigDecimal.valueOf(750.0));
         area1.setSizeZ(BigDecimal.valueOf(1000.0));
-        area1.setRegion(region1);
-        area1 = areaRepository.save(area1);
 
         AreaEntity area2 = new AreaEntity();
         area2.setIndex(1);

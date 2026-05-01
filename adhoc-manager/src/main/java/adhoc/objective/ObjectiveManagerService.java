@@ -60,9 +60,10 @@ public class ObjectiveManagerService {
     private final ObjectiveService objectiveService;
 
     public ObjectiveDto updateObjective(ObjectiveDto objectiveDto) {
-        // NOTE: this is a two stage save to allow linked objectives to be set too
-        ObjectiveEntity objective = toEntityStage1(objectiveDto, objectiveRepository.getReferenceById(objectiveDto.getId()));
+        ObjectiveEntity objective = objectiveRepository.getReferenceById(objectiveDto.getId());
 
+        // NOTE: this is a two stage save to allow linked objectives to be set too
+        objective = toEntityStage1(objectiveDto, objective);
         objective = toEntityStage2(objectiveDto, objective);
 
         return objectiveService.toDto(objective);
@@ -81,7 +82,6 @@ public class ObjectiveManagerService {
             objectiveDto.getLinkedObjectiveIndexes().forEach(linkedObjectiveIndex -> {
                 Preconditions.checkArgument(!Objects.equals(objectiveDto.getIndex(), linkedObjectiveIndex),
                         "Self loop not allowed: %s -> %s", objectiveDto.getIndex(), linkedObjectiveIndex);
-
                 for (ObjectiveDto otherObjectiveDto : objectiveDtos) {
                     if (Objects.equals(otherObjectiveDto.getIndex(), linkedObjectiveIndex)) {
                         Preconditions.checkArgument(otherObjectiveDto.getLinkedObjectiveIndexes().contains(objectiveDto.getIndex()),
@@ -89,7 +89,6 @@ public class ObjectiveManagerService {
                     }
                 }
             });
-
             boolean unique = objectiveIndexes.add(objectiveDto.getIndex());
             Preconditions.checkArgument(unique, "Objective index not unique: %s", objectiveDto.getIndex());
         }
@@ -103,18 +102,20 @@ public class ObjectiveManagerService {
             objectiveRepository.delete(objectiveToDelete);
         });
 
-        // NOTE: this is a two stage save to allow linked objectives to be set too
         return objectiveDtos.stream().map(objectiveDto -> {
-            ObjectiveEntity objective = toEntityStage1(objectiveDto,
-                    objectiveRepository.findByRegionAndIndex(serverRegion, objectiveDto.getIndex()).orElseGet(ObjectiveEntity::new));
 
-            // set faction to be initial faction if this is a new entity
-            if (objective.getId() == null) {
-                objective.setFaction(objective.getInitialFaction());
-            }
+            ObjectiveEntity objective = objectiveRepository
+                    .findByRegionAndIndex(serverRegion, objectiveDto.getIndex())
+                    .orElseGet(ObjectiveEntity::new);
 
-            return new AbstractMap.SimpleEntry<>(objectiveDto, objectiveRepository.save(objective));
+            // NOTE: this is a two stage save to allow linked objectives to be set too
+            objective = toEntityStage1(objectiveDto, objective);
+
+            objective = objectiveRepository.save(objective);
+
+            return new AbstractMap.SimpleImmutableEntry<>(objectiveDto, objective);
         }).toList().stream().map(entry -> {
+
             ObjectiveEntity objective = toEntityStage2(entry.getKey(), entry.getValue());
 
             return objectiveService.toDto(objective);
@@ -136,9 +137,13 @@ public class ObjectiveManagerService {
         objective.setInitialFaction(objectiveDto.getInitialFactionIndex() == null ? null
                 : factionRepository.getByIndex(objectiveDto.getInitialFactionIndex()));
 
-        //noinspection OptionalAssignedToNull
+        // submitter can override whatever the current faction is (should only be for admin user flipping an objective)
         if (objectiveDto.getFactionIndex() != null) {
-            objective.setFaction(objectiveDto.getFactionIndex().map(factionRepository::getByIndex).orElse(null));
+            objective.setFaction(factionRepository.getByIndex(objectiveDto.getFactionIndex()));
+        }
+        // set faction to be initial faction for new entities
+        if (objective.getId() == null && objective.getFaction() == null) {
+            objective.setFaction(objective.getInitialFaction());
         }
 
         // NOTE: linked objectives will be set in stage 2
@@ -155,12 +160,12 @@ public class ObjectiveManagerService {
         RegionEntity region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         Set<ObjectiveEntity> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
-                .map(linkedObjectiveIndex ->
-                        objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
+                .map(linkedObjectiveIndex -> objectiveRepository.getByRegionAndIndex(region, linkedObjectiveIndex))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        objective.getLinkedObjectives().retainAll(linkedObjectives);
-        objective.getLinkedObjectives().addAll(linkedObjectives);
+        if (!linkedObjectives.equals(objective.getLinkedObjectives())) {
+            objective.setLinkedObjectives(linkedObjectives);
+        }
 
         return objective;
     }

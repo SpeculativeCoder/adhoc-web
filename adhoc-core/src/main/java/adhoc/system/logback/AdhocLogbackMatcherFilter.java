@@ -137,6 +137,11 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                     || message.startsWith("/* <criteria> */ select")) {
                 return FilterReply.DENY;
             }
+
+            //if (!message.contains(" objective ") &&
+            //        !message.contains(" objective_linked_objectives ")) {
+            //    return FilterReply.DENY;
+            //}
         }
 
         return FilterReply.NEUTRAL;

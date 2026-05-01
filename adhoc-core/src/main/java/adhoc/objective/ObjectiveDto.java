@@ -32,7 +32,6 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Value
 @AllArgsConstructor
@@ -72,8 +71,8 @@ public class ObjectiveDto {
 
     @Min(1)
     Long factionId;
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    Optional<@Min(0) Integer> factionIndex;
+    @Min(0)
+    Integer factionIndex;
 
     List<@NotNull Long> linkedObjectiveIds;
     @NotNull

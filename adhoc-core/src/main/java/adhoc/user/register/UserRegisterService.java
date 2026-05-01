@@ -29,8 +29,8 @@ import adhoc.system.properties.CoreProperties;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
-import adhoc.user.UserService;
 import adhoc.user.current.CurrentUserDto;
+import adhoc.user.current.CurrentUserService;
 import adhoc.user.programmatic_login.ProgrammaticLoginService;
 import adhoc.user.state.UserStateEntity;
 import com.google.common.base.Preconditions;
@@ -61,7 +61,7 @@ public class UserRegisterService {
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
 
-    private final UserService userService;
+    private final CurrentUserService currentUserService;
     private final ProgrammaticLoginService programmaticLoginService;
 
     private final HttpServletRequest httpServletRequest;
@@ -75,7 +75,7 @@ public class UserRegisterService {
 
         programmaticLoginService.programmaticLoginInternal(user, userRegisterRequest.getPassword());
 
-        return userService.toCurrentUserDto(user);
+        return currentUserService.toCurrentUserDto(user);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)

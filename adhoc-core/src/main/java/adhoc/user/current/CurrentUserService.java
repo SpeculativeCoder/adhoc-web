@@ -20,23 +20,22 @@
  * SOFTWARE.
  */
 
-package adhoc.user;
+package adhoc.user.current;
 
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
 import adhoc.system.properties.CoreProperties;
+import adhoc.system.security.AdhocUserDetails;
+import adhoc.user.UserEntity;
+import adhoc.user.UserRepository;
+import adhoc.user.UserRole;
 import adhoc.user.state.UserStateEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.resilience.annotation.Retryable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,44 +43,33 @@ import java.util.stream.Collectors;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserService {
+public class CurrentUserService {
 
     private final CoreProperties coreProperties;
 
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Page<UserDto> findUsers(Pageable pageable) {
-        return userRepository.findAll(pageable).map(this::toDto);
+    public Optional<CurrentUserDto> findCurrentUser(Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails currentUserDetails)) {
+            return Optional.empty();
+        }
+        return userRepository.findById(currentUserDetails.getUserId()).map(this::toCurrentUserDto);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<UserDto> findUser(Long userId) {
-        return userRepository.findById(userId).map(this::toDto);
-    }
+    public CurrentUserDto toCurrentUserDto(UserEntity user) {
 
-    @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
-    public void updateLastLogin(Long userId) {
-        UserEntity user = userRepository.getReferenceById(userId);
+        String quickLoginCode = user.getName() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey());
 
-        //UUID newToken = RandomUUIDUtils.randomUUID();
-        LocalDateTime now = LocalDateTime.now();
-
-        //user.getState().setToken(newToken);
-        user.setLastLogin(now);
-    }
-
-    UserDto toDto(UserEntity user) {
-        return new UserDto(
+        return new CurrentUserDto(
                 user.getId(),
                 user.getVersion(),
                 user.getName(),
+                quickLoginCode,
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
                 Optional.ofNullable(user.getState()).map(UserStateEntity::getRegion).map(RegionEntity::getId).orElse(null),
-                Optional.ofNullable(user.getState()).map(UserStateEntity::getSeen).orElse(null),
                 user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
                 Optional.ofNullable(user.getState()).map(UserStateEntity::getDestinationServer).map(ServerEntity::getId).orElse(null),
                 Optional.ofNullable(user.getState()).map(UserStateEntity::getServer).map(ServerEntity::getId).orElse(null));

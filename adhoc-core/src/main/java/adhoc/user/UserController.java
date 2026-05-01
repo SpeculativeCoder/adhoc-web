@@ -24,6 +24,7 @@ package adhoc.user;
 
 import adhoc.system.security.AdhocUserDetails;
 import adhoc.user.current.CurrentUserDto;
+import adhoc.user.current.CurrentUserService;
 import adhoc.user.navigate.UserNavigateRequest;
 import adhoc.user.navigate.UserNavigateResponse;
 import adhoc.user.navigate.UserNavigateService;
@@ -59,6 +60,7 @@ public class UserController {
     private final UserService userService;
     private final UserRegisterService userRegisterService;
     private final UserNavigateService userNavigateService;
+    private final CurrentUserService currentUserService;
 
     @GetMapping("/users")
     public Page<UserDto> getUsers(@SortDefault(sort = "score", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -72,7 +74,7 @@ public class UserController {
 
     @GetMapping("/users/current")
     public ResponseEntity<CurrentUserDto> getCurrentUser(Authentication authentication) {
-        return userService.findCurrentUser(authentication)
+        return currentUserService.findCurrentUser(authentication)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }

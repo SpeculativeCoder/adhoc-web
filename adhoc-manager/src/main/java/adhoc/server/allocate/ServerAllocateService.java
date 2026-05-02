@@ -210,11 +210,6 @@ public class ServerAllocateService {
             }
         }
 
-        if (!Objects.equals(server.getMapName(), mapName)) {
-            server.setMapName(mapName);
-            emitEvent = true;
-        }
-
         if (!Objects.equals(server.getX(), areaGroupX)
                 || !Objects.equals(server.getY(), areaGroupY)
                 || !Objects.equals(server.getZ(), areaGroupZ)) {

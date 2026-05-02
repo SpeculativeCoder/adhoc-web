@@ -23,7 +23,6 @@
 package adhoc.hosting.local;
 
 import adhoc.hosting.HostingService;
-import adhoc.server.ServerDto;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.task.TaskDto;
@@ -92,14 +91,14 @@ public class LocalHostingService implements HostingService {
     }
 
     @Override
-    public TaskDto startServerTask(ServerDto server) {
-        log.debug("Assuming local task for server {}", server);
-        serverIds.add(server.getId());
+    public TaskDto startServerTask(Long serverId, Long regionId, String mapName, List<Integer> areaIndexes) {
+        log.debug("Assuming local task for server {}", serverId);
+        serverIds.add(serverId);
 
         TaskDto serverTask = TaskDto.builder()
-                .taskIdentifier(server.getId().toString())
+                .taskIdentifier(serverId.toString())
                 .publicWebSocketPort(8889)
-                .serverId(server.getId())
+                .serverId(serverId)
                 .build();
 
         return serverTask;

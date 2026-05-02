@@ -23,7 +23,6 @@
 package adhoc.server;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,9 +54,6 @@ public class ServerDto {
     List<Long> areaIds;
     @NotNull
     List<Integer> areaIndexes;
-
-    @NotEmpty
-    String mapName;
 
     @NotNull
     BigDecimal x;

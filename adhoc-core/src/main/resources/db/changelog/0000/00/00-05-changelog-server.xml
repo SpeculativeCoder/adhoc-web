@@ -47,10 +47,6 @@
                     type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="map_name"
-                    type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
             <column name="x"
                     type="DECIMAL"/>
             <column name="y"

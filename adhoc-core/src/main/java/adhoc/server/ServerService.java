@@ -58,7 +58,6 @@ public class ServerService {
                 server.getRegion().getId(),
                 server.getAreas().stream().map(AreaEntity::getId).collect(Collectors.toList()),
                 server.getAreas().stream().map(AreaEntity::getIndex).collect(Collectors.toList()),
-                server.getMapName(),
                 server.getX(), server.getY(), server.getZ(),
                 server.isEnabled(),
                 server.isActive(),

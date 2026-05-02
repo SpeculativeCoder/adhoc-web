@@ -24,7 +24,6 @@ package adhoc.hosting.ecs;
 
 import adhoc.hosting.HostingService;
 import adhoc.hosting.ecs.properties.EcsHostingProperties;
-import adhoc.server.ServerDto;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
 import adhoc.task.TaskDto;
@@ -265,8 +264,8 @@ public class EcsHostingService implements HostingService {
                 serverNetworkInterfaceIds.values().stream()).toList();
     }
 
-    public TaskDto startServerTask(ServerDto server) {
-        log.debug("Starting task for {}", server);
+    public TaskDto startServerTask(Long serverId, Long regionId, String mapName, List<Integer> areaIndexes) {
+        log.debug("Starting task for server {}", serverId);
 
         try (EcsClient ecsClient = ecsClient();
              Ec2Client ec2Client = ec2Client()) {
@@ -327,19 +326,19 @@ public class EcsHostingService implements HostingService {
                     .overrides(TaskOverride.builder().containerOverrides(ContainerOverride.builder()
                             .name(managerProperties.getServerImage())
                             .environment(
-                                    KeyValuePair.builder().name("MAP_NAME").value(server.getMapName()).build(),
-                                    KeyValuePair.builder().name("SERVER_ID").value(server.getId().toString()).build(),
+                                    KeyValuePair.builder().name("MAP_NAME").value(mapName).build(),
+                                    KeyValuePair.builder().name("SERVER_ID").value(serverId.toString()).build(),
                                     //KeyValuePair.builder().name("MANAGER_HOST").value(managerHosts.iterator().next()).build(),
                                     //KeyValuePair.builder().name("INITIAL_MANAGER_HOSTS")
                                     //       .value(String.join(",", managerHosts)).build(),
-                                    KeyValuePair.builder().name("REGION_ID").value(server.getRegionId().toString()).build(),
+                                    KeyValuePair.builder().name("REGION_ID").value(regionId.toString()).build(),
                                     //KeyValuePair.builder().name("INITIAL_AREA_IDS")
                                     //        .value(server.getAreas().stream()
                                     //                .map(Area::getId)
                                     //                .map(Object::toString)
                                     //                .collect(Collectors.joining(","))).build(),
                                     KeyValuePair.builder().name("INITIAL_AREA_INDEXES")
-                                            .value(server.getAreaIndexes().stream()
+                                            .value(areaIndexes.stream()
                                                     .map(Object::toString)
                                                     .collect(Collectors.joining(","))).build(),
                                     KeyValuePair.builder().name("MAX_CONTROLLERS").value(managerProperties.getMaxControllers().toString()).build(),
@@ -378,7 +377,7 @@ public class EcsHostingService implements HostingService {
             TaskDto serverTask = TaskDto.builder()
                     .taskIdentifier(taskArn)
                     .publicWebSocketPort(8889)
-                    .serverId(server.getId())
+                    .serverId(serverId)
                     .build();
 
             return serverTask;

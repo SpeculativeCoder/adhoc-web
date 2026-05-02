@@ -22,7 +22,6 @@
 
 package adhoc.hosting;
 
-import adhoc.server.ServerDto;
 import adhoc.task.TaskDto;
 import adhoc.task.TaskEntity;
 
@@ -35,7 +34,7 @@ public interface HostingService {
 
     List<TaskEntity> poll();
 
-    TaskDto startServerTask(ServerDto server);
+    TaskDto startServerTask(Long serverId, Long regionId, String mapName, List<Integer> areaIndexes);
 
     void stopServerTask(String taskIdentifier);
 }

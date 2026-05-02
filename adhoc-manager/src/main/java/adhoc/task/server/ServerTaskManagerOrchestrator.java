@@ -23,7 +23,6 @@
 package adhoc.task.server;
 
 import adhoc.hosting.HostingService;
-import adhoc.server.ServerDto;
 import adhoc.task.TaskDto;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +43,13 @@ public class ServerTaskManagerOrchestrator {
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.
      */
     public void manageServerTasks() {
-        List<ServerDto> enabledTasklessServers = serverTaskManagerService.findEnabledTasklessServers();
-        for (ServerDto enabledTasklessServer : enabledTasklessServers) {
-            TaskDto serverTask = startHostedServerTask(enabledTasklessServer);
+        List<ServerTaskManagerService.NeededServerTask> neededServerTasks = serverTaskManagerService.determineNeededServerTasks();
+        for (ServerTaskManagerService.NeededServerTask neededServerTask : neededServerTasks) {
+            TaskDto serverTask = startHostedServerTask(
+                    neededServerTask.serverId(),
+                    neededServerTask.regionId(),
+                    neededServerTask.mapName(),
+                    neededServerTask.areaIndexes());
             serverTaskManagerService.createServerTask(serverTask);
         }
 
@@ -57,10 +60,10 @@ public class ServerTaskManagerOrchestrator {
         }
     }
 
-    private TaskDto startHostedServerTask(ServerDto server) {
+    private TaskDto startHostedServerTask(Long serverId, Long regionId, String mapName, List<Integer> areaIndexes) {
         try {
-            log.debug("Starting server task for server {}", server.getId());
-            TaskDto serverTask = hostingService.startServerTask(server);
+            log.debug("Starting server task for server {}", serverId);
+            TaskDto serverTask = hostingService.startServerTask(serverId, regionId, mapName, areaIndexes);
 
             Verify.verifyNotNull(serverTask.getTaskIdentifier());
             Verify.verifyNotNull(serverTask.getServerId());
@@ -68,7 +71,7 @@ public class ServerTaskManagerOrchestrator {
             return serverTask;
 
         } catch (Exception e) {
-            log.warn("Failed to start server task for server {}!", server.getId(), e);
+            log.warn("Failed to start server task for server {}!", serverId, e);
             throw e;
         }
     }

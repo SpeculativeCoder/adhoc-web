@@ -78,9 +78,6 @@ public class ServerEntity {
     @OneToMany(mappedBy = "server")
     private List<AreaEntity> areas;
 
-    @Column(nullable = false)
-    private String mapName;
-
     private BigDecimal x;
     private BigDecimal y;
     private BigDecimal z;
@@ -115,4 +112,9 @@ public class ServerEntity {
 
     @OneToMany(mappedBy = "server")
     private List<PawnEntity> pawns;
+
+    public ServerEntity(RegionEntity region, List<AreaEntity> areas) {
+        this.region = region;
+        this.areas = areas;
+    }
 }

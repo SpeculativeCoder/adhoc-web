@@ -136,6 +136,12 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<PawnEntity> pawns;
 
+    public UserEntity(String name, String roles) {
+        this.name = name;
+        this.roles = roles;
+        this.score = BigDecimal.ZERO;
+    }
+
     public UserStateEntity getState() {
         if (state == null) {
             state = new UserStateEntity();

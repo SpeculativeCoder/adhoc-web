@@ -25,7 +25,6 @@ export class Server {
   version?: number;
   regionId?: number;
   areaIds?: number[];
-  mapName?: string;
   x?: number;
   y?: number;
   z?: number;

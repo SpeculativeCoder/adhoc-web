@@ -22,8 +22,8 @@
 
 package adhoc.task.server;
 
+import adhoc.area.AreaEntity;
 import adhoc.message.MessageService;
-import adhoc.server.ServerDto;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.server.ServerService;
@@ -54,21 +54,34 @@ public class ServerTaskManagerService {
     private final ServerService serverService;
     private final MessageService messageService;
 
-    public List<ServerDto> findEnabledTasklessServers() {
-        List<ServerDto> enabledTasklessServers = new ArrayList<>();
+    record NeededServerTask(
+            Long serverId,
+            Long regionId,
+            String mapName,
+            List<Integer> areaIndexes
+    ) {
+    }
+
+    public List<NeededServerTask> determineNeededServerTasks() {
+        List<NeededServerTask> neededServerTasks = new ArrayList<>();
 
         try (Stream<ServerEntity> enabledServers = serverRepository.streamByEnabledTrue()) {
             enabledServers.forEach(enabledServer -> {
-                Optional<ServerTaskEntity> serverTask = serverTaskRepository.findFirstByServerId(enabledServer.getId());
-                if (serverTask.isEmpty()) {
+                Optional<ServerTaskEntity> existingServerTask = serverTaskRepository.findFirstByServerId(enabledServer.getId());
+                if (existingServerTask.isEmpty()) {
                     // no existing server task? will need to start a new one
-                    ServerDto enabledTasklessServer = serverService.toDto(enabledServer);
-                    enabledTasklessServers.add(enabledTasklessServer);
+                    NeededServerTask neededServerTask = new NeededServerTask(
+                            enabledServer.getId(),
+                            enabledServer.getRegion().getId(),
+                            enabledServer.getRegion().getMapName(),
+                            enabledServer.getAreas().stream().map(AreaEntity::getIndex).toList());
+
+                    neededServerTasks.add(neededServerTask);
                 }
             });
         }
 
-        return enabledTasklessServers;
+        return neededServerTasks;
     }
 
     public List<String> findSeenUnusedServerTasks() {

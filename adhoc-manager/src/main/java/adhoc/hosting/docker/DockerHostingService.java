@@ -24,7 +24,6 @@ package adhoc.hosting.docker;
 
 import adhoc.hosting.HostingService;
 import adhoc.hosting.docker.properties.DockerHostingProperties;
-import adhoc.server.ServerDto;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
 import adhoc.task.TaskDto;
@@ -193,9 +192,9 @@ public class DockerHostingService implements HostingService {
     }
 
     @Override
-    public TaskDto startServerTask(ServerDto server) {
-        log.debug("Starting Docker container for {}", server); // linked to managers {}", managerHosts);
-        int publicWebSocketPort = calculatePublicWebSocketPort(server.getId());
+    public TaskDto startServerTask(Long serverId, Long regionId, String mapName, List<Integer> areaIndexes) {
+        log.debug("Starting Docker container for server {}", serverId); // linked to managers {}", managerHosts);
+        int publicWebSocketPort = calculatePublicWebSocketPort(serverId);
 
         DockerClient dockerClient = dockerClient();
 
@@ -204,18 +203,18 @@ public class DockerHostingService implements HostingService {
                 //.withName(server.getId() + "-" + managerProperties.getServerImage())
                 .withEnv(Arrays.asList(
                         String.format("UNREAL_PROJECT_NAME=%s", coreProperties.getUnrealProjectName()),
-                        String.format("MAP_NAME=%s", server.getMapName()),
-                        String.format("SERVER_ID=%d", server.getId()),
+                        String.format("MAP_NAME=%s", mapName),
+                        String.format("SERVER_ID=%d", serverId),
                         String.format("MANAGER_HOST=%s", "host.docker.internal"), // TODO
                         //String.format("MANAGER_HOST=%s", managerHosts.iterator().next()),
                         //String.format("INITIAL_MANAGER_HOSTS=%s", String.join(",", managerHosts)),
-                        String.format("REGION_ID=%d", server.getRegionId()),
+                        String.format("REGION_ID=%d", regionId),
                         //String.format("INITIAL_AREA_IDS=%s",
                         //        server.getAreas().stream()
                         //                .map(Area::getId)
                         //                .map(Object::toString)
                         //                .collect(Collectors.joining(","))),
-                        String.format("INITIAL_AREA_INDEXES=%s", server.getAreaIndexes().stream()
+                        String.format("INITIAL_AREA_INDEXES=%s", areaIndexes.stream()
                                 .map(Object::toString)
                                 .collect(Collectors.joining(","))),
                         String.format("MAX_CONTROLLERS=%d", managerProperties.getMaxControllers()),
@@ -244,7 +243,7 @@ public class DockerHostingService implements HostingService {
         TaskDto serverTask = TaskDto.builder()
                 .taskIdentifier(createdContainer.getId())
                 .publicWebSocketPort(publicWebSocketPort)
-                .serverId(server.getId())
+                .serverId(serverId)
                 .build();
 
         return serverTask;

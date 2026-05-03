@@ -167,20 +167,60 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <skip>${skipSpringdoc}</skip>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <workingDirectory>..</workingDirectory>
+                    <!-- -Dspring.application.admin.enabled=true -->
+                    <!-- run the app just like in the integration tests -->
+                    <jvmArguments>
+                        -Dspringdoc.api-docs.enabled=true
+                        -Dspring.artemis.embedded.enabled=false
+                        -Dspring.quartz.auto-startup=false
+                        -Dspring.output.ansi.enabled=always
+                        -Dadhoc.third-party-domains=
+                    </jvmArguments>
+                    <profiles>db-h2-mem</profiles>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>start-app</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-app</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>springdoc</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <workingDirectory>..</workingDirectory>
+                    <skip>${skipSpringdoc}</skip>
+                    <apiDocsUrl>http://localhost:81/api-docs.yaml</apiDocsUrl>
+                    <outputFileName>api-docs.yaml</outputFileName>
+                    <!--<failOnError>true</failOnError>-->
                 </configuration>
             </plugin>
         </plugins>

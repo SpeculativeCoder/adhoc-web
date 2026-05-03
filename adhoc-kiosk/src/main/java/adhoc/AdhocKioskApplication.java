@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
 import java.util.List;
@@ -56,6 +57,8 @@ public class AdhocKioskApplication extends AbstractAdhocApplication {
     public static void main(String[] args) {
         // rather than rely on spring.profiles.default we will just pick some extra default profiles as needed
         ConfigurableEnvironment environment = new StandardEnvironment();
+        environment.getPropertySources().addLast(new SimpleCommandLinePropertySource(args));
+
         List<String> activeProfiles = Lists.newArrayList(environment.getActiveProfiles());
 
         if (activeProfiles.stream().noneMatch(profile -> profile.startsWith("db-"))) {

@@ -71,6 +71,7 @@
               <goal>exec</goal>
             </goals>
             <configuration>
+              <skip>${skipAngular}</skip>
               <executable>C:/Program Files/Git/bin/bash.exe</executable>
               <arguments>
                 <argument>pnpm_ci.sh</argument>
@@ -84,6 +85,7 @@
               <goal>exec</goal>
             </goals>
             <configuration>
+              <skip>${skipAngular}</skip>
               <executable>C:/Program Files/Git/bin/bash.exe</executable>
               <arguments>
                 <argument>pnpm_run_build.sh</argument>

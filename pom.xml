@@ -74,7 +74,8 @@
         <!-- when true, angular build will be skipped (assumes angular has already been built previously) -->
         <skipAngular>false</skipAngular>
 
-        <skipSpringdoc>false</skipSpringdoc>
+        <!-- TODO -->
+        <skipSpringdoc>true</skipSpringdoc>
 
     </properties>
 
@@ -146,6 +147,10 @@
                         <!-- running ITs with surefire -->
                         <includes>**/*IT.java</includes>
                         <workingDirectory>${project.parent.basedir}</workingDirectory>
+                        <!-- don't force ANSI colors when outputting to file -->
+                        <systemPropertyVariables>
+                            <spring.output.ansi.enabled>detect</spring.output.ansi.enabled>
+                        </systemPropertyVariables>
                     </configuration>
                 </plugin>
 
@@ -156,6 +161,10 @@
                         <!-- no need to run ITs here as we have run them with surefire -->
                         <includes/>
                         <workingDirectory>${project.parent.basedir}</workingDirectory>
+                        <!-- don't force ANSI colors when outputting to file -->
+                        <systemPropertyVariables>
+                            <spring.output.ansi.enabled>detect</spring.output.ansi.enabled>
+                        </systemPropertyVariables>
                     </configuration>
                 </plugin>
 

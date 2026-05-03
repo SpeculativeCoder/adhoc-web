@@ -41,6 +41,8 @@ export UNREAL_ENGINE_DIR=${UNREAL_ENGINE_DIR:-${HOME}/ue-4.27-html5-es3}
 
 web_project_dir=$(realpath -e $(dirname "$0"))
 
+#mkdir -p logs
+
 # TODO: array split
 for map in ${UNREAL_PROJECT_REGION_MAPS}
 do
@@ -58,6 +60,7 @@ do
    -ArchiveDirectory=${package_dir} \
    -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
    -NoP4 -UTF8Output -NoDebugInfo
+   #>logs/runuat_client_${map}_astc.txt 2>&1
 
   # DXT (default)
   ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
@@ -68,6 +71,7 @@ do
    -ArchiveDirectory=${package_dir} \
    -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
    -NoP4 -UTF8Output -NoDebugInfo
+   #>logs/runuat_client_${map}_dxt.txt 2>&1
 
   find ${package_dir} -exec touch {} +
 

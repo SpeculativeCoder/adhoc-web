@@ -31,9 +31,7 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>adhoc</groupId>
   <artifactId>adhoc-angular</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <name>adhoc-angular</name>
   <description>adhoc-angular</description>
 
@@ -76,8 +74,10 @@
               <arguments>
                 <argument>pnpm_ci.sh</argument>
               </arguments>
+              <!--<outputFile>target/pnpm_ci.log</outputFile>-->
             </configuration>
           </execution>
+
           <execution>
             <id>pnpm run build</id>
             <phase>generate-resources</phase>
@@ -96,6 +96,7 @@
                 <!-- TODO: figure out a way to have analytics on -->
                 <!--<NG_CLI_ANALYTICS>false</NG_CLI_ANALYTICS>-->
               </environmentVariables>
+              <!--<outputFile>target/pnpm_run_build.txt</outputFile>-->
             </configuration>
           </execution>
         </executions>
@@ -104,7 +105,6 @@
   </build>
 
   <profiles>
-
     <!-- profile to switch off angular customization if the relevant file is missing -->
     <profile>
       <id>adhoc-angular-customization</id>
@@ -117,7 +117,5 @@
         <adhoc.angular.customization/>
       </properties>
     </profile>
-
   </profiles>
-
 </project>

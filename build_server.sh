@@ -52,6 +52,8 @@ export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_${ADHOC_ENV}_server}
 web_project_dir=$(realpath -e $(dirname "$0"))
 package_dir=${web_project_dir}/Package
 
+#mkdir -p logs
+
 mkdir -p ${package_dir}/${UNREAL_SERVER_CONFIGURATION}
 
 # TODO: array join on maps
@@ -63,6 +65,7 @@ ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
  -ArchiveDirectory=${package_dir}/${UNREAL_SERVER_CONFIGURATION} \
  -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
  -NoP4 -UTF8Output -NoDebugInfo
+ #>logs/runuat_server.txt 2>&1
 
 # we only want the symbols for now so delete debug info
 #debug_filepath=${package_dir}/${SERVER_UNREAL_CONFIGURATION}/LinuxServer/${UNREAL_PROJECT_NAME}/Binaries/Linux/${UNREAL_PROJECT_NAME}Server.debug

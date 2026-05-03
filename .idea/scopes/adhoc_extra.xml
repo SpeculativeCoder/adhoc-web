@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="adhoc_extra" pattern="file[adhoc-angular]:src/app/adhoc-angular-extra//*||file[adhoc-core]:*/extra//*||file[adhoc-kiosk]:*/extra//*||file[adhoc-manager]:*/extra//*" />
+</component>

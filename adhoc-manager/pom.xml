@@ -31,9 +31,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>adhoc</groupId>
     <artifactId>adhoc-manager</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>adhoc-manager</name>
     <description>adhoc-manager</description>
 
@@ -167,7 +165,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <skip>${skipSpringdoc}</skip>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -182,6 +179,7 @@
                         -Dspring.artemis.embedded.enabled=false
                         -Dspring.quartz.auto-startup=false
                         -Dspring.output.ansi.enabled=always
+                        -Dserver.shutdown=immediate
                         -Dadhoc.third-party-domains=
                         -Dadhoc.insert-demo-data=false
                     </jvmArguments>
@@ -194,6 +192,9 @@
                         <goals>
                             <goal>start</goal>
                         </goals>
+                        <configuration>
+                            <skip>${skipSpringdoc}</skip>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>stop-app</id>
@@ -201,6 +202,9 @@
                         <goals>
                             <goal>stop</goal>
                         </goals>
+                        <configuration>
+                            <skip>${skipSpringdoc}</skip>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -303,5 +307,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

@@ -31,9 +31,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>adhoc</groupId>
     <artifactId>adhoc-core</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>adhoc-core</name>
     <description>adhoc-core</description>
 
@@ -403,5 +401,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

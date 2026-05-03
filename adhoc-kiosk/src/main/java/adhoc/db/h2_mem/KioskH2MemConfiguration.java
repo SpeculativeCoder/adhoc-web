@@ -43,6 +43,7 @@ public class KioskH2MemConfiguration {
     Server h2MemServer() throws Exception {
 
         Server server = Server.createTcpServer(
+                "-ifNotExists",
                 "-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
 
         return server;

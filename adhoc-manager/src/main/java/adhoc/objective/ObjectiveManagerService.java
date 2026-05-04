@@ -135,11 +135,11 @@ public class ObjectiveManagerService {
         objective.setZ(objectiveDto.getZ());
 
         objective.setInitialFaction(objectiveDto.getInitialFactionIndex() == null ? null
-                : factionRepository.getByIndex(objectiveDto.getInitialFactionIndex()));
+                : factionRepository.findByIndex(objectiveDto.getInitialFactionIndex()).orElseThrow());
 
         // submitter can override whatever the current faction is (should only be for admin user flipping an objective)
         if (objectiveDto.getFactionIndex() != null) {
-            objective.setFaction(factionRepository.getByIndex(objectiveDto.getFactionIndex()));
+            objective.setFaction(factionRepository.findByIndex(objectiveDto.getFactionIndex()).orElseThrow());
         }
         // set faction to be initial faction for new entities
         if (objective.getId() == null && objective.getFaction() == null) {

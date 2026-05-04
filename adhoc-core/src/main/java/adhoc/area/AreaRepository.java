@@ -31,8 +31,6 @@ import java.util.Optional;
 
 public interface AreaRepository extends JpaRepository<AreaEntity, Long> {
 
-    AreaEntity getByRegionAndIndex(RegionEntity region, Integer index);
-
     Optional<AreaEntity> findByRegionAndIndex(RegionEntity region, Integer index);
 
     List<AreaEntity> findByRegionAndIndexNotIn(RegionEntity region, Collection<Integer> indexNotIn);

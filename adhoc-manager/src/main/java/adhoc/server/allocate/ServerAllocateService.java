@@ -30,7 +30,7 @@ import adhoc.server.ServerEntity;
 import adhoc.server.ServerManagerService;
 import adhoc.server.ServerRepository;
 import adhoc.server.ServerUpdatedEvent;
-import adhoc.shared.Event;
+import adhoc.system.Event;
 import adhoc.task.server.ServerTaskEntity;
 import adhoc.task.server.ServerTaskRepository;
 import com.google.common.base.Verify;

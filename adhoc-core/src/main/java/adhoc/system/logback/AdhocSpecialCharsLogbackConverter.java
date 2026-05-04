@@ -22,7 +22,7 @@
 
 package adhoc.system.logback;
 
-import adhoc.shared.special_chars.SpecialCharsUtils;
+import adhoc.system.special_chars.SpecialCharsUtils;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.CompositeConverter;
 

@@ -20,16 +20,30 @@
  * SOFTWARE.
  */
 
-package adhoc.shared;
+package adhoc.user.random_name;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.experimental.UtilityClass;
+import net.datafaker.Faker;
+import net.datafaker.internal.helper.WordUtils;
 
-/** Stomp events we can emit should implement this interface to provide an automatic eventType property based on the class name of the event. */
-@JsonPropertyOrder("eventType")
-public interface Event {
+@UtilityClass
+public class RandomNameUtils {
 
-    // for output in JSON
-    default String getEventType() {
-        return getClass().getSimpleName().replaceFirst("Event$", "");
+    public String randomName() {
+        Faker faker = new Faker();
+
+        return onlyAlpha(WordUtils.capitalize(faker.word().adjective()) +
+                WordUtils.capitalize(faker.word().adjective()) +
+                WordUtils.capitalize(faker.word().verb()));
+    }
+
+    private String onlyAlpha(String str) {
+        return str.replaceAll("[^A-Za-z]", "");
+    }
+
+    public static void main() {
+        for (int i = 0; i < 20; i++) {
+            System.out.println(randomName());
+        }
     }
 }

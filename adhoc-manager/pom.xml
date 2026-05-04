@@ -183,7 +183,7 @@
                         -Dadhoc.third-party-domains=
                         -Dadhoc.insert-demo-data=false
                     </jvmArguments>
-                    <profiles>db-h2-mem</profiles>
+                    <profiles>db-h2mem</profiles>
                 </configuration>
                 <executions>
                     <execution>

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.db.h2_mem;
+package adhoc.db.h2mem;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("db-h2-mem")
+@Profile("db-h2mem")
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerH2MemConfiguration {

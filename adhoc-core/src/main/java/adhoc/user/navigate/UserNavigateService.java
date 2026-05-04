@@ -27,7 +27,7 @@ import adhoc.area.AreaRepository;
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.shared.random_uuid.RandomUUIDUtils;
+import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;

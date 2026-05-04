@@ -182,7 +182,7 @@
                         -Dserver.shutdown=immediate
                         -Dadhoc.third-party-domains=
                     </jvmArguments>
-                    <profiles>db-h2-mem</profiles>
+                    <profiles>db-h2mem</profiles>
                 </configuration>
                 <executions>
                     <execution>

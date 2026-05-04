@@ -22,7 +22,7 @@
 
 package adhoc.universe;
 
-import adhoc.shared.Event;
+import adhoc.system.Event;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

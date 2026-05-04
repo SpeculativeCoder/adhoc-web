@@ -22,7 +22,7 @@
 
 package adhoc.system.logback;
 
-import adhoc.shared.special_chars.SpecialCharsUtils;
+import adhoc.system.special_chars.SpecialCharsUtils;
 import ch.qos.logback.classic.pattern.ExtendedThrowableProxyConverter;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.RequiredArgsConstructor;

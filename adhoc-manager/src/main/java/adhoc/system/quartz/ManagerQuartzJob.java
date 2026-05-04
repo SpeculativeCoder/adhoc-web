@@ -26,7 +26,7 @@ import adhoc.faction.award_decay.FactionAwardDecayService;
 import adhoc.pawn.purge.PawnPurgeService;
 import adhoc.server.allocate.ServerAllocateService;
 import adhoc.server.purge.ServerPurgeService;
-import adhoc.shared.Event;
+import adhoc.system.Event;
 import adhoc.task.domain.TaskDomainOrchestrator;
 import adhoc.task.refresh.TaskRefreshOrchestrator;
 import adhoc.task.server.ServerTaskManagerOrchestrator;

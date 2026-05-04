@@ -20,23 +20,16 @@
  * SOFTWARE.
  */
 
-package adhoc.shared.special_chars;
+package adhoc.system;
 
-import lombok.experimental.UtilityClass;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.regex.Pattern;
+/** Stomp events we can emit should implement this interface to provide an automatic eventType property based on the class name of the event. */
+@JsonPropertyOrder("eventType")
+public interface Event {
 
-@UtilityClass
-public final class SpecialCharsUtils {
-
-    private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
-
-    public String replaceSpecialChars(String text) {
-
-        text = text.replace("\r", "\\r");
-        text = text.replace("\n", "\\n");
-        text = text.replace("\t", "\\t");
-
-        return NON_PRINTABLE.matcher(text).replaceAll("?");
+    // for output in JSON
+    default String getEventType() {
+        return getClass().getSimpleName().replaceFirst("Event$", "");
     }
 }

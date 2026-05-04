@@ -22,8 +22,8 @@
 
 package adhoc.system.security;
 
-import adhoc.shared.random_uuid.RandomUUIDUtils;
 import adhoc.system.properties.CoreProperties;
+import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import com.google.common.base.Strings;

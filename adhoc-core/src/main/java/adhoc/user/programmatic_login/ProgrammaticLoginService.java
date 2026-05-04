@@ -22,7 +22,7 @@
 
 package adhoc.user.programmatic_login;
 
-import adhoc.shared.random_uuid.RandomUUIDUtils;
+import adhoc.system.random_uuid.RandomUUIDUtils;
 import adhoc.system.security.WebSecurityConfiguration;
 import adhoc.user.UserEntity;
 import adhoc.user.UserService;

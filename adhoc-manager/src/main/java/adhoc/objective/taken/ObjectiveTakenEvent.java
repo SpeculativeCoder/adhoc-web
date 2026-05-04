@@ -22,7 +22,7 @@
 
 package adhoc.objective.taken;
 
-import adhoc.shared.Event;
+import adhoc.system.Event;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

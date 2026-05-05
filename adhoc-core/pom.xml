@@ -291,38 +291,6 @@
                 <targetPath>HTML5Client</targetPath>
             </resource>
         </resources>
-
-        <!--
-        <resource>
-            <directory>certs</directory>
-            <includes>
-                <include>adhoc.cer</include>
-                <include>adhoc.key</include>
-                <include>adhoc-ca.cer</include>
-            </includes>
-            <targetPath>certs</targetPath>
-            <filtering>false</filtering>
-        </resource>
-        -->
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-configuration-processor</artifactId>
-                        </path>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 
     <profiles>

@@ -35,9 +35,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
@@ -65,23 +63,13 @@ public class WebSecurityConfiguration<S extends Session> {
     @SuppressWarnings("Convert2MethodRef")
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            CsrfTokenRepository csrfTokenRepository,
-            RememberMeServices rememberMeServices,
-            SpringSessionBackedSessionRegistry<S> sessionRegistry,
+            SpringSessionRememberMeServices springSessionRememberMeServices,
+            SpringSessionBackedSessionRegistry<S> springSessionBackedSessionRegistry,
             AdhocServerUserBasicAuthRequestMatcher adhocServerUserBasicAuthRequestMatcher,
             AdhocFormLoginSuccessHandler adhocFormLoginSuccessHandler,
             AdhocFormLoginFailureHandler adhocFormLoginFailureHandler,
             AdhocLogoutSuccessHandler adhocLogoutSuccessHandler,
             AdhocAccessDeniedHandler adhocAccessDeniedHandler) {
-
-        StringBuilder frameAncestors = new StringBuilder("frame-ancestors 'self'");
-        //frameAncestors.append(" https://").append(coreProperties.getManagerDomain()).append("/");
-        //frameAncestors.append(" https://").append(coreProperties.getKioskDomain()).append("/");
-        for (String thirdPartyDomain : coreProperties.getThirdPartyDomains()) {
-            frameAncestors.append(" https://").append(thirdPartyDomain);
-            //frameAncestors.append(" http://").append(thirdPartyDomain);
-        }
-        log.info("frameAncestors={}", frameAncestors);
 
         return http
                 .authorizeHttpRequests(auth -> auth
@@ -114,10 +102,11 @@ public class WebSecurityConfiguration<S extends Session> {
                         //        .sameOrigin())
                         .frameOptions(frameOptions -> frameOptions.disable())
                         .contentSecurityPolicy(csp ->
-                                csp.policyDirectives(frameAncestors.toString())))
+                                csp.policyDirectives(frameAncestors())))
 
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(csrfTokenRepository)
+                        //.spa()
+                        .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
                         // ignore CSRF for sockjs as protected by Stomp headers
                         .ignoringRequestMatchers("/adhoc_ws/stomp/user_sockjs/**")
                         // we don't want CSRF on requests from Unreal server
@@ -131,7 +120,7 @@ public class WebSecurityConfiguration<S extends Session> {
                                 .changeSessionId())
                         .sessionConcurrency(concurrency -> concurrency
                                 //.maximumSessions(1)
-                                .sessionRegistry(sessionRegistry))
+                                .sessionRegistry(springSessionBackedSessionRegistry))
                         .withObjectPostProcessor(sessionAuthenticationStrategyPostProcessor()))
 
                 // allow form login - used by users
@@ -149,7 +138,7 @@ public class WebSecurityConfiguration<S extends Session> {
                 .httpBasic(withDefaults())
 
                 .rememberMe(remember -> remember
-                        .rememberMeServices(rememberMeServices))
+                        .rememberMeServices(springSessionRememberMeServices))
 
                 .anonymous(anonymous -> anonymous
                         .authorities(anonymousAuthorities().toArray(new String[0])))
@@ -161,11 +150,6 @@ public class WebSecurityConfiguration<S extends Session> {
     }
 
     @Bean
-    public HttpSessionCsrfTokenRepository csrfTokenRepository() {
-        return new HttpSessionCsrfTokenRepository();
-    }
-
-    @Bean
     public SpringSessionBackedSessionRegistry<S> sessionRegistry(
             @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
             FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository) {
@@ -174,15 +158,28 @@ public class WebSecurityConfiguration<S extends Session> {
 
     @Bean
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public RememberMeServices rememberMeServices() {
-        SpringSessionRememberMeServices rememberMeServices = new SpringSessionRememberMeServices();
-        //rememberMeServices.setAlwaysRemember(true);
-        return rememberMeServices;
+    public SpringSessionRememberMeServices springSessionRememberMeServices() {
+        SpringSessionRememberMeServices rememberMe = new SpringSessionRememberMeServices();
+        //rememberMe.setAlwaysRemember(true);
+        return rememberMe;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    private String frameAncestors() {
+        StringBuilder sb = new StringBuilder("frame-ancestors 'self'");
+        //sb.append(" https://").append(coreProperties.getManagerDomain()).append("/");
+        //sb.append(" https://").append(coreProperties.getKioskDomain()).append("/");
+        for (String thirdPartyDomain : coreProperties.getThirdPartyDomains()) {
+            sb.append(" https://").append(thirdPartyDomain);
+            //sb.append(" http://").append(thirdPartyDomain);
+        }
+        String frameAncestors = sb.toString();
+        log.info("frameAncestors={}", frameAncestors);
+        return frameAncestors;
     }
 
     private Set<String> anonymousAuthorities() {

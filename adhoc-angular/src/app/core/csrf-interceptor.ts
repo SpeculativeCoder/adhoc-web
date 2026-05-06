@@ -20,10 +20,10 @@
  * SOFTWARE.
  */
 
-import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {CsrfService} from './csrf.service';
 import {mergeMap, Observable} from 'rxjs';
-import {CsrfService} from "./csrf.service";
+import {Injectable} from '@angular/core';
 
 @Injectable({providedIn: 'root'})
 export class CsrfInterceptor implements HttpInterceptor {

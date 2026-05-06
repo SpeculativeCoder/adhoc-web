@@ -27,8 +27,8 @@ import {routes} from './app.routes';
 import {environment} from "../environments/environment";
 import {AppTitleStrategy} from "./app-title-strategy";
 import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
-import {CsrfInterceptor} from "./core/csrf-interceptor";
 import {ErrorInterceptor} from "./core/error-interceptor";
+import {CsrfInterceptor} from './core/csrf-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -36,7 +36,12 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     //provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes), //, withComponentInputBinding()),
-    provideHttpClient(withInterceptorsFromDi()), // TODO
+    provideHttpClient(
+        //withXsrfConfiguration({
+        //  cookieName: 'XSRF-TOKEN',
+        //  headerName: 'X-XSRF-TOKEN'
+        //}),
+        withInterceptorsFromDi()), // TODO
     {provide: HTTP_INTERCEPTORS, useExisting: CsrfInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useExisting: ErrorInterceptor, multi: true},
     {provide: 'BASE_URL', useValue: environment.baseUrl},

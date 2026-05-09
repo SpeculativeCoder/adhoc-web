@@ -38,6 +38,8 @@ export ADHOC_DOMAIN=${ADHOC_DOMAIN:-localhost}
 
 export UNREAL_ENGINE_CERTS_DIR=${UNREAL_ENGINE_CERTS_DIR:-${UNREAL_ENGINE_DIR}/certs}
 
+export ACME_HOME=${ACME_HOME:-$HOME/.acme.sh}
+
 # we keep the certs in a certs directory in this project (this should be git ignored)
 mkdir -p certs
 # we also put them in a folder in the engine (for local testing - also should be git ignored)
@@ -60,15 +62,16 @@ set -x
 
 mkdir -p certs
 
-~/.acme.sh/acme.sh --issue --keylength 2048 --force --dns dns_aws --server letsencrypt -d ${ADHOC_DOMAIN} -d *.${ADHOC_DOMAIN}
+export LE_WORKING_DIR=$ACME_HOME
+$ACME_HOME/acme.sh --issue --keylength 2048 --force --dns dns_aws --server letsencrypt -d ${ADHOC_DOMAIN} -d *.${ADHOC_DOMAIN}
 
 # put the public key first in the private key file (not sure why this is needed)
-cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.cer" > certs/${ADHOC_NAME}.key
+cat "$ACME_HOME/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.cer" > certs/${ADHOC_NAME}.key
 # follow this with the actual private key
-cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.key" >> certs/${ADHOC_NAME}.key
+cat "$ACME_HOME/${ADHOC_DOMAIN}/${ADHOC_DOMAIN}.key" >> certs/${ADHOC_NAME}.key
 
 # put the "full chain" in the public key file
-cat "$HOME/.acme.sh/${ADHOC_DOMAIN}/fullchain.cer" > certs/${ADHOC_NAME}.cer
+cat "$ACME_HOME/${ADHOC_DOMAIN}/fullchain.cer" > certs/${ADHOC_NAME}.cer
 
 cp certs/${ADHOC_NAME}-ca.cer ${UNREAL_ENGINE_CERTS_DIR}/${ADHOC_NAME}-ca.cer
 cp certs/${ADHOC_NAME}.key ${UNREAL_ENGINE_CERTS_DIR}/${ADHOC_NAME}.key

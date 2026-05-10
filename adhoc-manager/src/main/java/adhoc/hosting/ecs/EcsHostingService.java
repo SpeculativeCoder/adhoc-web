@@ -49,6 +49,7 @@ import software.amazon.awssdk.services.ec2.model.DescribeSubnetsRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeSubnetsResponse;
 import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.NetworkInterface;
+import software.amazon.awssdk.services.ec2.model.NetworkInterfaceAssociation;
 import software.amazon.awssdk.services.ec2.model.SecurityGroup;
 import software.amazon.awssdk.services.ecs.EcsClient;
 import software.amazon.awssdk.services.ecs.model.AssignPublicIp;
@@ -112,102 +113,100 @@ public class EcsHostingService implements HostingService {
     }
 
     public List<TaskEntity> poll() {
-        log.trace("Polling ECS container service tasks...");
+        log.trace("Polling ECS tasks...");
 
         // we will do a lookup of public IPs using the network interface IDs after we have looked through all the tasks
         Map<String, ManagerTaskEntity> managerNetworkInterfaceIds = new LinkedHashMap<>();
         Map<String, KioskTaskEntity> kioskNetworkInterfaceIds = new LinkedHashMap<>();
         Map<String, ServerTaskEntity> serverNetworkInterfaceIds = new LinkedHashMap<>();
 
-        try (EcsClient ecsClient = ecsClient();
-             Ec2Client ec2Client = ec2Client()) {
+        try (EcsClient ecsClient = ecsClient(); Ec2Client ec2Client = ec2Client()) {
 
-            ListTasksResponse listTasksResponse =
-                    ecsClient.listTasks(ListTasksRequest.builder()
-                            .cluster(ecsHostingProperties.getEcsCluster()).build());
-            log.trace("listTasksResponse: {}", listTasksResponse);
+            ListTasksResponse listTasksResponse = ecsClient.listTasks(ListTasksRequest.builder()
+                    .cluster(ecsHostingProperties.getEcsCluster()).build());
+            log.trace("listTasksResponse={}", listTasksResponse);
 
             if (!listTasksResponse.hasTaskArns() || listTasksResponse.taskArns().isEmpty()) {
-                log.debug("No tasks to examine");
-                return Collections.emptyList(); // TODO
+                log.debug("No ECS tasks to examine");
+                return Collections.emptyList();
             }
 
-            DescribeTasksResponse describeTasksResponse =
-                    ecsClient.describeTasks(DescribeTasksRequest.builder()
-                            .cluster(ecsHostingProperties.getEcsCluster()).tasks(listTasksResponse.taskArns()).build());
-            log.trace("describeTasksResponse: {}", describeTasksResponse);
+            DescribeTasksResponse describeTasksResponse = ecsClient.describeTasks(DescribeTasksRequest.builder()
+                    .cluster(ecsHostingProperties.getEcsCluster())
+                    .tasks(listTasksResponse.taskArns()).build());
+            log.trace("describeTasksResponse={}", describeTasksResponse);
 
             for (software.amazon.awssdk.services.ecs.model.Task task : describeTasksResponse.tasks()) {
-                log.trace("task: {}", task);
+                log.trace("task={}", task);
 
                 String networkInterfaceId = null;
                 String privateIp = null;
 
                 // get information about the network interface (we want the network interface ID and private IP address)
                 for (Attachment attachment : task.attachments()) {
-                    log.trace("attachment: {}", attachment);
+                    log.trace("attachment={}", attachment);
 
                     if ("ElasticNetworkInterface".equals(attachment.type())) {
                         for (KeyValuePair detail : attachment.details()) {
-                            log.trace("detail: {}", detail);
+                            log.trace("detail={}", detail);
 
                             if ("networkInterfaceId".equals(detail.name())) {
                                 networkInterfaceId = detail.value();
-                                log.trace("networkInterfaceId: {}", networkInterfaceId);
+                                log.trace("networkInterfaceId={}", networkInterfaceId);
 
                             } else if ("privateIPv4Address".equals(detail.name())) {
                                 privateIp = detail.value();
-                                log.trace("privateIp: {}", privateIp);
+                                log.trace("privateIp={}", privateIp);
                             }
                         }
                     }
                 }
 
-                // check the type of task
-                for (Container container : task.containers()) {
-                    log.trace("container: {}", container);
-                    String containerName = container.name();
-                    log.trace("containerName: {}", containerName);
+                if (networkInterfaceId != null) {
 
-                    if (managerProperties.getManagerImage().equals(containerName) && networkInterfaceId != null) {
-                        log.trace("Found manager. networkInterfaceId={}", networkInterfaceId);
+                    // check the type of task
+                    for (Container container : task.containers()) {
+                        log.trace("container={}", container);
 
-                        ManagerTaskEntity managerTask = new ManagerTaskEntity();
-                        managerTask.setTaskIdentifier(task.taskArn());
-                        managerTask.setPrivateIp(privateIp);
-                        managerNetworkInterfaceIds.put(networkInterfaceId, managerTask);
+                        String containerName = container.name();
+                        log.trace("containerName={}", containerName);
 
-                    } else if (managerProperties.getKioskImage().equals(containerName) && networkInterfaceId != null) {
-                        log.trace("Found kiosk. networkInterfaceId={}", networkInterfaceId);
+                        if (managerProperties.getManagerImage().equals(containerName)) {
+                            log.debug("Found manager: networkInterfaceId={} privateIp={}", networkInterfaceId, privateIp);
 
-                        KioskTaskEntity kioskTask = new KioskTaskEntity();
-                        kioskTask.setTaskIdentifier(task.taskArn());
-                        kioskTask.setPrivateIp(privateIp);
-                        kioskNetworkInterfaceIds.put(networkInterfaceId, kioskTask);
+                            ManagerTaskEntity managerTask = new ManagerTaskEntity();
+                            managerTask.setTaskIdentifier(task.taskArn());
+                            managerTask.setPrivateIp(privateIp);
+                            managerNetworkInterfaceIds.put(networkInterfaceId, managerTask);
 
-                    } else if (managerProperties.getServerImage().equals(containerName)) {
-                        log.trace("Found server. networkInterfaceId={}", networkInterfaceId);
+                        } else if (managerProperties.getKioskImage().equals(containerName)) {
+                            log.debug("Found kiosk: networkInterfaceId={} privateIp={}", networkInterfaceId, privateIp);
 
-                        // get the environment variable for server ID that was set when the container was launched
-                        for (ContainerOverride containerOverride : task.overrides().containerOverrides()) {
-                            log.trace("containerOverride: {}", containerOverride);
+                            KioskTaskEntity kioskTask = new KioskTaskEntity();
+                            kioskTask.setTaskIdentifier(task.taskArn());
+                            kioskTask.setPrivateIp(privateIp);
+                            kioskNetworkInterfaceIds.put(networkInterfaceId, kioskTask);
 
-                            for (KeyValuePair env : containerOverride.environment()) {
-                                log.trace("env name: {}", env.name());
+                        } else if (managerProperties.getServerImage().equals(containerName)) {
+                            log.debug("Found server: networkInterfaceId={} privateIp={}", networkInterfaceId, privateIp);
 
-                                if ("SERVER_ID".equals(env.name())) {
-                                    Long serverId;
-                                    try {
-                                        serverId = Long.valueOf(env.value());
-                                    } catch (NumberFormatException e) {
-                                        throw new RuntimeException("Failed to parse server ID", e);
+                            // get the environment variable for server ID that was set when the container was launched
+                            for (ContainerOverride containerOverride : task.overrides().containerOverrides()) {
+                                log.trace("containerOverride={}", containerOverride);
+
+                                for (KeyValuePair env : containerOverride.environment()) {
+                                    log.trace("env.name={}", env.name());
+
+                                    if ("SERVER_ID".equals(env.name())) {
+                                        long serverId = parseServerId(env.value());
+                                        log.trace("serverId={}", serverId);
+
+                                        ServerTaskEntity serverTask = new ServerTaskEntity();
+                                        serverTask.setTaskIdentifier(task.taskArn());
+                                        serverTask.setPrivateIp(privateIp);
+                                        serverTask.setServerId(serverId);
+                                        serverNetworkInterfaceIds.put(networkInterfaceId, serverTask);
                                     }
-
-                                    ServerTaskEntity serverTask = new ServerTaskEntity();
-                                    serverTask.setTaskIdentifier(task.taskArn());
-                                    serverTask.setPrivateIp(privateIp);
-                                    serverTask.setServerId(serverId);
-                                    serverNetworkInterfaceIds.put(networkInterfaceId, serverTask);
                                 }
                             }
                         }
@@ -225,33 +224,41 @@ public class EcsHostingService implements HostingService {
                 DescribeNetworkInterfacesResponse describeNetworkInterfacesResponse =
                         ec2Client.describeNetworkInterfaces(DescribeNetworkInterfacesRequest.builder()
                                 .networkInterfaceIds(ImmutableList.copyOf(networkInterfaceIds)).build());
-                log.trace("describeNetworkInterfacesResponse: {}", describeNetworkInterfacesResponse);
+                log.trace("describeNetworkInterfacesResponse={}", describeNetworkInterfacesResponse);
 
                 for (NetworkInterface networkInterface : describeNetworkInterfacesResponse.networkInterfaces()) {
-                    log.trace("networkInterface: {}", networkInterface);
+                    log.trace("networkInterface={}", networkInterface);
 
                     String networkInterfaceId = networkInterface.networkInterfaceId();
-                    String publicIp = networkInterface.association().publicIp();
-                    log.trace("networkInterfaceId: {}", networkInterfaceId);
-                    log.trace("publicIp: {}", publicIp);
+                    log.trace("networkInterfaceId={}", networkInterfaceId);
 
-                    ManagerTaskEntity managerTask = managerNetworkInterfaceIds.get(networkInterfaceId);
-                    if (managerTask != null) {
-                        log.trace("Found manager: publicIp={}", publicIp);
-                        managerTask.setPublicIp(publicIp);
+                    String publicIp = null;
+                    NetworkInterfaceAssociation association = networkInterface.association();
+                    if (association != null) {
+                        publicIp = association.publicIp();
+                        log.trace("publicIp={}", publicIp);
                     }
 
-                    KioskTaskEntity kioskTask = kioskNetworkInterfaceIds.get(networkInterfaceId);
-                    if (kioskTask != null) {
-                        log.trace("Found kiosk: publicIp={}", publicIp);
-                        kioskTask.setPublicIp(publicIp);
-                    }
+                    if (publicIp != null) {
 
-                    ServerTaskEntity serverTask = serverNetworkInterfaceIds.get(networkInterfaceId);
-                    if (serverTask != null) {
-                        log.trace("Found server: publicIp={}", publicIp);
-                        serverTask.setPublicIp(publicIp);
-                        serverTask.setPublicWebSocketPort(8889);
+                        ManagerTaskEntity managerTask = managerNetworkInterfaceIds.get(networkInterfaceId);
+                        if (managerTask != null) {
+                            log.debug("Found manager: networkInterfaceId={} publicIp={}", networkInterfaceId, publicIp);
+                            managerTask.setPublicIp(publicIp);
+                        }
+
+                        KioskTaskEntity kioskTask = kioskNetworkInterfaceIds.get(networkInterfaceId);
+                        if (kioskTask != null) {
+                            log.debug("Found kiosk: networkInterfaceId={} publicIp={}", networkInterfaceId, publicIp);
+                            kioskTask.setPublicIp(publicIp);
+                        }
+
+                        ServerTaskEntity serverTask = serverNetworkInterfaceIds.get(networkInterfaceId);
+                        if (serverTask != null) {
+                            log.debug("Found server: networkInterfaceId={} publicIp={}", networkInterfaceId, publicIp);
+                            serverTask.setPublicIp(publicIp);
+                            serverTask.setPublicWebSocketPort(8889);
+                        }
                     }
                 }
             }
@@ -391,6 +398,16 @@ public class EcsHostingService implements HostingService {
         try (EcsClient ecsClient = ecsClient()) {
             ecsClient.stopTask(StopTaskRequest.builder().task(taskIdentifier).cluster(ecsHostingProperties.getEcsCluster()).build());
         }
+    }
+
+    private static long parseServerId(String value) {
+        long serverId;
+        try {
+            serverId = Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Failed to parse server ID", e);
+        }
+        return serverId;
     }
 }
 

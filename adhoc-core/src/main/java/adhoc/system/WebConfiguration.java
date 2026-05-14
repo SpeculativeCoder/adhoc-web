@@ -53,11 +53,11 @@ public class WebConfiguration {
     }
 
     @Bean
-    public WebMvcRegistrations webMvcRegistrations() {
+    public WebMvcRegistrations webMvcRegistrations(AdhocExceptionHandlerExceptionResolver adhocExceptionHandlerExceptionResolver) {
         return new WebMvcRegistrations() {
             @Override
             public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
-                return new AdhocExceptionHandlerExceptionResolver();
+                return adhocExceptionHandlerExceptionResolver;
             }
         };
     }

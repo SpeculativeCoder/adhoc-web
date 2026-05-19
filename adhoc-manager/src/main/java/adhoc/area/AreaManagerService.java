@@ -69,18 +69,21 @@ public class AreaManagerService {
             Preconditions.checkArgument(unique, "Area index not unique: %s", areaDto.getIndex());
         }
 
-        areaRepository.findByRegionAndIndexNotIn(serverRegion, areaIndexes).forEach(areaToDelete -> {
-            log.info("Deleting unused area: {}", areaToDelete);
-            // before deleting unused areas we must unlink any objectives that will become orphaned
-            for (ObjectiveEntity orphanedObjective : areaToDelete.getObjectives()) {
+        List<AreaEntity> unusedAreas = areaRepository.findByRegionAndIndexNotIn(serverRegion, areaIndexes);
+        for (AreaEntity unusedArea : unusedAreas) {
+            log.info("Deleting unused area: {}", unusedArea);
+
+            // before deleting an unused area we must unlink any objectives
+            for (ObjectiveEntity orphanedObjective : unusedArea.getObjectives()) {
                 orphanedObjective.setArea(null);
             }
-            areaRepository.delete(areaToDelete);
-        });
+            areaRepository.delete(unusedArea);
+        }
 
         return areaDtos.stream()
                 .map(areaDto -> toEntity(areaDto,
-                        areaRepository.findByRegionAndIndex(serverRegion, areaDto.getIndex()).orElseGet(AreaEntity::new)))
+                        areaRepository.findByRegionAndIndex(serverRegion, areaDto.getIndex())
+                                .orElseGet(AreaEntity::new)))
                 .map(areaRepository::save)
                 .map(areaService::toDto)
                 .toList();

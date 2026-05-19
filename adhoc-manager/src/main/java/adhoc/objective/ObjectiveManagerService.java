@@ -79,28 +79,31 @@ public class ObjectiveManagerService {
         for (ObjectiveDto objectiveDto : objectiveDtos) {
             Preconditions.checkArgument(Objects.equals(serverRegion.getId(), objectiveDto.getRegionId()));
 
-            objectiveDto.getLinkedObjectiveIndexes().forEach(linkedObjectiveIndex -> {
+            for (Integer linkedObjectiveIndex : objectiveDto.getLinkedObjectiveIndexes()) {
                 Preconditions.checkArgument(!Objects.equals(objectiveDto.getIndex(), linkedObjectiveIndex),
                         "Self loop not allowed: %s -> %s", objectiveDto.getIndex(), linkedObjectiveIndex);
+
                 for (ObjectiveDto otherObjectiveDto : objectiveDtos) {
                     if (Objects.equals(otherObjectiveDto.getIndex(), linkedObjectiveIndex)) {
                         Preconditions.checkArgument(otherObjectiveDto.getLinkedObjectiveIndexes().contains(objectiveDto.getIndex()),
                                 "Linked objectives must have matching backlink: %s -> %s", otherObjectiveDto.getIndex(), linkedObjectiveIndex);
                     }
                 }
-            });
+            }
             boolean unique = objectiveIndexes.add(objectiveDto.getIndex());
             Preconditions.checkArgument(unique, "Objective index not unique: %s", objectiveDto.getIndex());
         }
 
-        objectiveRepository.findByRegionAndIndexNotIn(serverRegion, objectiveIndexes).forEach(objectiveToDelete -> {
-            log.info("Deleting unused objective: {}", objectiveToDelete);
-            // before deleting unused objectives we must unlink any objectives that are linked to it
-            for (ObjectiveEntity linkedObjective : objectiveToDelete.getLinkedObjectives()) {
-                linkedObjective.getLinkedObjectives().remove(objectiveToDelete);
+        List<ObjectiveEntity> unusedObjectives = objectiveRepository.findByRegionAndIndexNotIn(serverRegion, objectiveIndexes);
+        for (ObjectiveEntity unusedObjective : unusedObjectives) {
+            log.info("Deleting unused objective: {}", unusedObjective);
+
+            // before deleting an unused objective we must unlink any objectives that are linked to it
+            for (ObjectiveEntity linkedObjective : unusedObjective.getLinkedObjectives()) {
+                linkedObjective.getLinkedObjectives().remove(unusedObjective);
             }
-            objectiveRepository.delete(objectiveToDelete);
-        });
+            objectiveRepository.delete(unusedObjective);
+        }
 
         return objectiveDtos.stream().map(objectiveDto -> {
 

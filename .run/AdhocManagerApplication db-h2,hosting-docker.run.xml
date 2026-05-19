@@ -3,6 +3,7 @@
     <option name="ACTIVE_PROFILES" value="db-h2,hosting-docker" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="adhoc-manager" />
+    <option name="SHORTEN_COMMAND_LINE" value="ARGS_FILE" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="adhoc.AdhocManagerApplication" />
     <method v="2">
       <option name="Make" enabled="true" />

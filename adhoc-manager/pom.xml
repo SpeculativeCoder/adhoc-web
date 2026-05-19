@@ -119,6 +119,10 @@
             <artifactId>spring-boot-starter-session-jdbc-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache-test</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>

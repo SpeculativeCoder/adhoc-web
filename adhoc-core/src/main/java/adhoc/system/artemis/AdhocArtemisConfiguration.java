@@ -164,7 +164,7 @@ public class AdhocArtemisConfiguration {
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         //props.put(TransportConstants.HEART_BEAT_TO_CONNECTION_TTL_MODIFIER, "4");
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(5).toMillis()));
-        log.info("stompConnectorProps: props={}", props);
+        log.debug("stompConnectorProps: props={}", props);
         return props;
     }
 
@@ -176,7 +176,7 @@ public class AdhocArtemisConfiguration {
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(5).toMillis()));
-        log.info("coreConnectorProps: props={}", props);
+        log.debug("coreConnectorProps: props={}", props);
         return props;
     }
 
@@ -188,7 +188,7 @@ public class AdhocArtemisConfiguration {
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(5).toMillis()));
-        log.info("managerCoreConnectorProps: props={}", props);
+        log.debug("managerCoreConnectorProps: props={}", props);
         return props;
     }
 
@@ -200,7 +200,7 @@ public class AdhocArtemisConfiguration {
         props.put(TransportConstants.PROTOCOLS_PROP_NAME, "CORE");
         //props.put(TransportConstants.CONNECTION_TTL, Long.toString(Duration.ofMinutes(2).toMillis()));
         props.put(TransportConstants.NETTY_CONNECT_TIMEOUT, Long.toString(Duration.ofMinutes(5).toMillis()));
-        log.info("kioskCoreConnectorProps: props={}", props);
+        log.debug("kioskCoreConnectorProps: props={}", props);
         return props;
     }
 }

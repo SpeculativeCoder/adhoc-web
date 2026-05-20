@@ -199,7 +199,7 @@ public class WebSecurityConfiguration<S extends Session> {
                 // keep a reference to this so we can use it for our programmatic login code
                 // TODO: would prefer it as a bean in the context
                 WebSecurityConfiguration.this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
-                log.info("sessionAuthenticationStrategy={}", sessionAuthenticationStrategy);
+                log.debug("sessionAuthenticationStrategy={}", sessionAuthenticationStrategy);
                 return sessionAuthenticationStrategy;
             }
         };

@@ -24,12 +24,16 @@ package adhoc.system;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -76,6 +80,26 @@ public class AdhocResponseEntityExceptionHandler extends ResponseEntityException
                     exception, httpStatus, httpStatus.getReasonPhrase(), null, null, webRequest);
             return handleExceptionInternal(exception, problemDetail, new HttpHeaders(), httpStatus, webRequest);
         }
+    }
+
+    @Override
+    protected @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException exception, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
+        ResponseEntity<Object> responseEntity = super.handleMethodArgumentNotValid(exception, headers, status, request);
+
+        //if (responseEntity != null && responseEntity.getBody() instanceof ProblemDetail problemDetail) {
+        //    MessageSource messageSource = getMessageSource();
+        //    if (messageSource != null) {
+        //
+        //        List<String> errors = Stream.concat(
+        //                        exception.getGlobalErrors().stream(),
+        //                        exception.getFieldErrors().stream())
+        //                .map(error -> messageSource.getMessage(error, LocaleContextHolder.getLocale()))
+        //                .toList();
+        //        problemDetail.setProperty("errors", errors);
+        //    }
+        //}
+
+        return responseEntity;
     }
 
     //@Override

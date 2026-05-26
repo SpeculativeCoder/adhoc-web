@@ -90,6 +90,13 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
             logEvent = logEvent.addKeyValue("modelAndView.status", modelAndView.getStatus());
         }
 
+        //if (exception instanceof ErrorResponse errorResponse) {
+        //    logEvent = logEvent
+        //            .addKeyValue("typeMessageCode", errorResponse.getTypeMessageCode())
+        //            .addKeyValue("detailMessageCode", errorResponse.getDetailMessageCode())
+        //            .addKeyValue("titleMessageCode", errorResponse.getTitleMessageCode());
+        //}
+
         logEvent = logEvent.addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
 
         //logEvent = logEvent.addKeyValue("method", method)

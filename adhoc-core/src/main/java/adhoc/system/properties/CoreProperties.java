@@ -106,16 +106,16 @@ public class CoreProperties {
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         try {
             String classpathPattern = "/HTML5Client/" + unrealProjectRegionMaps.getFirst() + "/HTML5/*.UE4.js";
-            log.info("classpathPattern={}", classpathPattern);
+            log.debug("classpathPattern={}", classpathPattern);
             Resource[] resources = resolver.getResources(classpathPattern);
             for (Resource resource : resources) {
-                log.info("resource={}", resource);
+                log.debug("resource={}", resource);
                 String filename = resource.getFilename();
                 Pattern pattern = Pattern.compile("^[A-Za-z]+");
                 Matcher matcher = pattern.matcher(filename);
                 if (matcher.find()) {
                     unrealProjectName = matcher.group();
-                    log.info("unrealProjectName={}", unrealProjectName);
+                    log.debug("unrealProjectName={}", unrealProjectName);
                     break;
                 }
             }
@@ -134,6 +134,6 @@ public class CoreProperties {
         log.info("thirdPartyDomains={}", thirdPartyDomains);
         log.info("unrealProjectName={} unrealProjectRegionMaps={}", unrealProjectName, unrealProjectRegionMaps);
         log.info("serverBasicAuthUsername={} serverBasicAuthPassword?={}", serverBasicAuthUsername, !Strings.isNullOrEmpty(serverBasicAuthPassword));
-        log.info("quickLoginPasswordEncryptionKey?={}", !Strings.isNullOrEmpty(quickLoginPasswordEncryptionKey));
+        //log.info("quickLoginPasswordEncryptionKey?={}", !Strings.isNullOrEmpty(quickLoginPasswordEncryptionKey));
     }
 }

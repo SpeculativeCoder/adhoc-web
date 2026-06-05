@@ -94,10 +94,7 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
         ContentCachingResponseWrapper responseWrapper = null;
 
         boolean uriApi = false;
-
-        if (request.getRequestURI().startsWith("/adhoc_api/")
-                || request.getRequestURI().startsWith("/adhoc_ws/")) {
-
+        if (request.getRequestURI().startsWith("/adhoc_api/") || request.getRequestURI().startsWith("/adhoc_ws/")) {
             uriApi = true;
         }
 
@@ -123,6 +120,7 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
             boolean statusServerError = (response.getStatus() / 100) == 5;
             //boolean statusBadRequest = response.getStatus() == 400;
+            boolean statusNotFound = response.getStatus() == 404;
             boolean statusSuccess = (response.getStatus() / 100) == 2;
             boolean statusInfo = (response.getStatus() / 100) == 1;
 
@@ -145,7 +143,8 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
                 //} else if (logger.isWarnEnabled() && statusBadRequest && uriApi) {
                 //    logEvent = logger.atWarn();
 
-            } else if (logger.isInfoEnabled() && !statusSuccess && !statusInfo && uriApi) {
+            } else if (logger.isInfoEnabled() && !statusSuccess && !statusInfo && uriApi
+                    && !statusNotFound) { // TODO: 404
                 logEvent = logger.atInfo();
 
             } else if (logger.isDebugEnabled() && !methodGet) {

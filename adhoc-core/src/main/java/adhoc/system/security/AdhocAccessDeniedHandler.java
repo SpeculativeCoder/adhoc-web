@@ -68,8 +68,7 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
         boolean exceptionKnown = ImmutableList.of(MissingCsrfTokenException.class).equals(exceptionChain)
                 || ImmutableList.of(InvalidCsrfTokenException.class).equals(exceptionChain);
 
-        boolean uriApi = uri.startsWith("/adhoc_api/")
-                || uri.startsWith("/adhoc_ws/");
+        boolean uriApi = uri.startsWith("/adhoc_api/") || uri.startsWith("/adhoc_ws/");
 
         int status = HttpStatus.FORBIDDEN.value();
         String message = HttpStatus.FORBIDDEN.getReasonPhrase();
@@ -79,7 +78,9 @@ public class AdhocAccessDeniedHandler implements AccessDeniedHandler {
                 //.addKeyValue("method", method)
                 //.addKeyValue("uri", uri)
                 .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
-        if (!exceptionKnown) {
+        if (exceptionKnown) {
+            logEvent = logEvent.addKeyValue("exception.message", exception.getMessage());
+        } else {
             logEvent = logEvent.setCause(exception);
         }
         logEvent.log("Access denied.");

@@ -54,10 +54,13 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
         boolean exceptionKnown = ImmutableList.of(MessageDeliveryException.class, InvalidCsrfTokenException.class).equals(exceptionChain);
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
-                .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")))
-                .addKeyValue("clientMessage", clientMessage);
-        if (!exceptionKnown) {
-            logEvent = logEvent.setCause(exception);
+                .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
+        if (exceptionKnown) {
+            logEvent = logEvent.addKeyValue("exception.message", exception.getMessage());
+        } else {
+            logEvent = logEvent
+                    .addKeyValue("clientMessage", clientMessage)
+                    .setCause(exception);
         }
         logEvent.log("Stomp failure.");
 

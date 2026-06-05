@@ -81,7 +81,9 @@ public class AdhocFormLoginFailureHandler implements AuthenticationFailureHandle
                 //.addKeyValue("uri", uri)
                 .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")))
                 .addKeyValue("principal", authentication == null ? null : authentication.getPrincipal());
-        if (!exceptionKnown) {
+        if (exceptionKnown) {
+            logEvent = logEvent.addKeyValue("exception.message", exception.getMessage());
+        } else {
             logEvent = logEvent
                     .addKeyValue("authentication", authentication)
                     .setCause(exception);

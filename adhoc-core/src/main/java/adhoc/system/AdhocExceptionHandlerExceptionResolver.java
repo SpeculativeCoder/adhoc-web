@@ -34,6 +34,7 @@ import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
@@ -73,15 +74,14 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
         boolean exceptionKnown = ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class).equals(exceptionChain)
                 || ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, SocketTimeoutException.class).equals(exceptionChain)
                 || ImmutableList.of(ClientAbortException.class, IOException.class).equals(exceptionChain)
-                //|| ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionChain)
+                || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionChain)
                 || ImmutableList.of(NoResourceFoundException.class).equals(exceptionChain)
                 // sorting errors TODO
                 || ImmutableList.of(PropertyReferenceException.class).equals(exceptionChain)
                 // error page TODO
                 || ImmutableList.of(HttpMediaTypeNotAcceptableException.class).equals(exceptionChain);
 
-        boolean uriApi = uri.startsWith("/adhoc_api/")
-                || uri.startsWith("/adhoc_ws/");
+        boolean uriApi = uri.startsWith("/adhoc_api/") || uri.startsWith("/adhoc_ws/");
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : (uriApi ? Level.INFO : Level.DEBUG))
                 .addKeyValue("status", response.getStatus());
@@ -102,7 +102,9 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
         //logEvent = logEvent.addKeyValue("method", method)
         //        .addKeyValue("uri", uri);
 
-        if (!exceptionKnown) {
+        if (exceptionKnown) {
+            logEvent = logEvent.addKeyValue("exception.message", exception.getMessage());
+        } else {
             logEvent = logEvent.setCause(exception);
         }
 

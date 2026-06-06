@@ -74,6 +74,7 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
         boolean exceptionKnown = ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class).equals(exceptionChain)
                 || ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, SocketTimeoutException.class).equals(exceptionChain)
                 || ImmutableList.of(ClientAbortException.class, IOException.class).equals(exceptionChain)
+                || ImmutableList.of(ClientAbortException.class, SocketTimeoutException.class).equals(exceptionChain)
                 || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionChain)
                 || ImmutableList.of(NoResourceFoundException.class).equals(exceptionChain)
                 // sorting errors TODO

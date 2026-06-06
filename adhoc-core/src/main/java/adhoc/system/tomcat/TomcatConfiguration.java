@@ -35,13 +35,16 @@ import org.springframework.context.annotation.Configuration;
 public class TomcatConfiguration {
 
     private final CoreProperties coreProperties;
+    //private final ServerProperties serverProperties;
 
     @Bean(destroyMethod = "destroy")
     public Connector httpConnector() {
-        final Connector connector = new Connector();
+        final Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
         connector.setThrowOnFailure(true);
         connector.setPort(coreProperties.getServerPortHttp());
-        //connector.addUpgradeProtocol(new Http2Protocol());
+        //if (serverProperties.getHttp2().isEnabled()) {
+        //    connector.addUpgradeProtocol(new Http2Protocol());
+        //}
         return connector;
     }
 

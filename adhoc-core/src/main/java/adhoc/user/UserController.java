@@ -81,7 +81,7 @@ public class UserController {
 
     @PostMapping("/users/register")
     public ResponseEntity<CurrentUserDto> postUserRegister(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
-        log.atInfo()
+        log.atDebug()
                 .addKeyValue("name", userRegisterRequest.getName())
                 .addKeyValue("password?", userRegisterRequest.getPassword() != null)
                 .addKeyValue("factionId", userRegisterRequest.getFactionId())

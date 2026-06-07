@@ -69,7 +69,7 @@ public class Route53DnsService implements DnsService {
 
     @Override
     public void createOrUpdate(String domain, Set<String> ips) {
-        log.info("Updating Route 53 DNS entry: domain={} ips={}", domain, ips);
+        log.atInfo().addKeyValue("domain", domain).addKeyValue("ips", ips).log("Route 53 DNS update.");
 
         //  TODO
         if (domain.contains("local") || ips.isEmpty()) {

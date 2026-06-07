@@ -81,10 +81,6 @@ public class UserRegisterService {
     @Transactional(propagation = Propagation.MANDATORY)
     public UserEntity userRegisterInternal(UserRegisterRequest userRegisterRequest) {
 
-        String remoteAddr = determineRemoteAddr();
-        String userAgent = determineUserAgent();
-        log.debug("userRegister: remoteAddr={} userAgent={}", remoteAddr, userAgent);
-
         if (!coreProperties.getFeatureFlags().contains("development")) {
             Preconditions.checkArgument(userRegisterRequest.getEmail() == null, "Registering with email not allowed yet");
             Preconditions.checkArgument(userRegisterRequest.getPassword() == null, "Registering with password not allowed yet");
@@ -150,19 +146,10 @@ public class UserRegisterService {
                 .addKeyValue("human", user.isHuman())
                 .addKeyValue("factionIndex", user.getFaction().getIndex())
                 .addKeyValue("factionId", user.getFaction().getId())
-                .addKeyValue("remoteAddr", remoteAddr)
-                .addKeyValue("userAgent", userAgent)
                 .log("User registered.");
 
         return user;
     }
 
-    private String determineRemoteAddr() {
-        return httpServletRequest.getRemoteAddr();
-    }
 
-    private String determineUserAgent() {
-        String userAgent = httpServletRequest.getHeader("user-agent");
-        return userAgent == null ? null : userAgent.replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?");
-    }
 }

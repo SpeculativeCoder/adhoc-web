@@ -41,12 +41,14 @@ import java.io.IOException;
 public class AdhocMdcFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String method = request.getMethod();
         String uri = request.getRequestURI();
         String query = request.getQueryString();
+        String remoteAddr = determineRemoteAddr(request);
+        String userAgent = determineUserAgent(request);
 
         StringBuilder sb = new StringBuilder();
         sb.append(method);
@@ -70,6 +72,8 @@ public class AdhocMdcFilter extends OncePerRequestFilter {
             //if (!Strings.isEmpty(ip)) {
             //    MDC.put("ip", ip);
             //}
+            MDC.put("ip", remoteAddr);
+            MDC.put("ua", userAgent);
             filterChain.doFilter(request, response);
 
         } finally {
@@ -80,7 +84,21 @@ public class AdhocMdcFilter extends OncePerRequestFilter {
             //MDC.remove("uri");
             //MDC.remove("method");
             //MDC.remove("ip");
+            MDC.remove("ua");
+            MDC.remove("ip");
             MDC.remove("req");
         }
+    }
+
+    private String determineRemoteAddr(HttpServletRequest request) {
+        return request.getRemoteAddr();
+    }
+
+    private String determineUserAgent(HttpServletRequest request) {
+        String userAgent = request.getHeader("user-agent");
+        return userAgent == null ? null : userAgent
+                //.replaceAll("[^A-Za-z0-9 _()/;:,.+\\-]", "?")
+                .replaceAll("[^A-Za-z0-9.]", "")
+                .formatted("%100s");
     }
 }

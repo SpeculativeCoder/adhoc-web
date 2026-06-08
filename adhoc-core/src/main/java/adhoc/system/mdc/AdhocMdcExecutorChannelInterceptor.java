@@ -48,8 +48,7 @@ public class AdhocMdcExecutorChannelInterceptor implements ExecutorChannelInterc
     }
 
     @Override
-    public void afterMessageHandled(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler,
-                                    Exception ex) {
+    public void afterMessageHandled(@NonNull Message<?> message, @NonNull MessageChannel channel, @NonNull MessageHandler handler, Exception ex) {
         MDC.remove("dest");
         //MDC.remove("uuid");
     }

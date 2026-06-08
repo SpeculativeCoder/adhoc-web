@@ -56,7 +56,7 @@ public class PawnManagerService {
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
-    public List<PawnDto> handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
+    public ServerPawnsEvent handleServerPawns(ServerPawnsEvent serverPawnsEvent) {
         LocalDateTime seen = LocalDateTime.now();
 
         ServerEntity server = serverRepository.getReferenceById(serverPawnsEvent.getServerId());
@@ -101,7 +101,7 @@ public class PawnManagerService {
         // update users seen
         //userRepository.updateServerAndSeenByIdIn(server, seen, userIds);
 
-        return pawnDtos;
+        return new ServerPawnsEvent(server.getId(), pawnDtos);
     }
 
     PawnEntity toEntity(PawnDto pawnDto, PawnEntity pawn) {
@@ -118,7 +118,6 @@ public class PawnManagerService {
         pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
         pawn.setHuman(pawnDto.getHuman());
         pawn.setFaction(pawnDto.getFactionId() == null ? null : factionRepository.getReferenceById(pawnDto.getFactionId()));
-
         return pawn;
     }
 }

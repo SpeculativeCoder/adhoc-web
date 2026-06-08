@@ -20,5 +20,6 @@
     <exclude-change idName="qrtz_triggers" tagName="dropTable" />
     <exclude-change idName="spring_session" tagName="dropTable" />
     <exclude-change idName="spring_session_attributes" tagName="dropTable" />
+    <exclude-change idName="fk_user__on_faction" tagName="addForeignKeyConstraint" />
   </component>
 </project>

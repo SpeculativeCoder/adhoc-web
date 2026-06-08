@@ -53,7 +53,7 @@ public class AdhocRetryListener implements ApplicationListener<MethodRetryEvent>
         if (exceptionRelevant && event.isRetryAborted()) {
             level = Level.WARN;
         } else if (exceptionRelevant) {
-            level = Level.DEBUG;
+            level = Level.INFO;
         } else {
             level = Level.TRACE;
         }

@@ -27,6 +27,7 @@ import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current/current-user.service';
 import {CsrfService} from '../../core/csrf.service';
 import {CurrentUser} from '../current/current-user';
+import {StompService} from '../../core/stomp.service';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +39,8 @@ export class RegisterService {
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient,
               private currentUserService: CurrentUserService,
-              private csrfService: CsrfService) {
+              private csrfService: CsrfService,
+              private stompService: StompService) {
 
     this.usersUrl = `${baseUrl}/adhoc_api/users`;
   }
@@ -51,6 +53,7 @@ export class RegisterService {
     }).pipe(
         tap((currentUser: CurrentUser) => {
           this.csrfService.refreshCsrf().subscribe();
+          this.stompService.reconnect();
           this.currentUserService.setCurrentUser(currentUser);
         }));
   }

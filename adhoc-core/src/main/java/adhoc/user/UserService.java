@@ -65,10 +65,8 @@ public class UserService {
     public void updateLastLogin(Long userId) {
         UserEntity user = userRepository.getReferenceById(userId);
 
-        //UUID newToken = RandomUUIDUtils.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        //user.getState().setToken(newToken);
         user.setLastLogin(now);
     }
 

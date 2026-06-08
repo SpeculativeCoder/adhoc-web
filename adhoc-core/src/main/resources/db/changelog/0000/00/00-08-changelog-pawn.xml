@@ -117,6 +117,11 @@
                                  referencedColumnNames="id"
                                  referencedTableName="faction"/>
 
+        <createIndex indexName="idx_pawn_seen"
+                     tableName="pawn">
+            <column name="seen"/>
+        </createIndex>
+
     </changeSet>
 
 </databaseChangeLog>

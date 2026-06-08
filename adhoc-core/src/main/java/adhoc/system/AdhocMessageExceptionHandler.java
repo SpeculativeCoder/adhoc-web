@@ -23,6 +23,7 @@
 package adhoc.system;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
@@ -32,8 +33,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 public class AdhocMessageExceptionHandler {
 
     @MessageExceptionHandler
-    public void handleThrowable(Throwable exception) {
+    public void handleThrowable(Throwable exception, Message<?> message) {
         // TODO
-        log.warn("Message failure.", exception);
+        log.atWarn()
+                .addKeyValue("message", message)
+                .log("Message failure.", exception);
     }
 }

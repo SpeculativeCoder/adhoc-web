@@ -25,6 +25,7 @@ import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current/current-user.service';
 import {CsrfService} from '../../core/csrf.service';
 import {mergeMap} from 'rxjs';
+import {StompService} from '../../core/stomp.service';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,8 @@ export class LoginService {
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient,
               private currentUserService: CurrentUserService,
-              private csrfService: CsrfService) {
+              private csrfService: CsrfService,
+              private stompService: StompService) {
 
     this.loginUrl = `${baseUrl}/adhoc_api/login`;
   }
@@ -55,6 +57,7 @@ export class LoginService {
     }).pipe(
         mergeMap(_ => {
           this.csrfService.refreshCsrf().subscribe();
+          this.stompService.reconnect();
           return this.currentUserService.refreshCurrentUser();
         }));
   }

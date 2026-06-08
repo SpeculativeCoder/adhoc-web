@@ -30,7 +30,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
@@ -90,7 +89,7 @@ public class ProgrammaticLoginService {
             user.setPassword(tempPassword, passwordEncoder);
         }
 
-        Authentication authentication = getAuthenticationManager().authenticate(authenticationToken);
+        Authentication authentication = authenticationConfiguration.getAuthenticationManager().authenticate(authenticationToken);
 
         if (tempPassword != null) {
             user.setPassword(null, passwordEncoder);
@@ -107,13 +106,5 @@ public class ProgrammaticLoginService {
 
         //adhocFormLoginSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
         userService.updateLastLogin(user.getId());
-    }
-
-    private AuthenticationManager getAuthenticationManager() {
-        try {
-            return authenticationConfiguration.getAuthenticationManager();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

@@ -32,8 +32,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/adhoc_api")
 @Slf4j
@@ -48,9 +46,7 @@ public class PawnManagerController {
     public ServerPawnsEvent handleServerPawns(@Valid @RequestBody ServerPawnsEvent event) {
         log.debug("Handling: {}", event);
 
-        List<PawnDto> pawnDtos = pawnManagerService.handleServerPawns(event);
-
-        ServerPawnsEvent serverPawnsEvent = new ServerPawnsEvent(event.getServerId(), pawnDtos);
+        ServerPawnsEvent serverPawnsEvent = pawnManagerService.handleServerPawns(event);
 
         log.debug("Sending: {}", serverPawnsEvent);
         return serverPawnsEvent;

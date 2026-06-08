@@ -31,8 +31,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -52,6 +54,9 @@ import java.util.UUID;
  * (intended for an "at a glance" location of bots/humans in the world).
  */
 @Entity(name = "Pawn")
+@Table(indexes = {
+        @Index(name = "idx_pawn_seen", columnList = "seen")
+})
 @DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor

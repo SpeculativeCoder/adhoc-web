@@ -32,13 +32,20 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
-public class TomcatConfiguration {
+public class AdhocTomcatConfiguration {
 
     private final CoreProperties coreProperties;
     //private final ServerProperties serverProperties;
 
-    @Bean(destroyMethod = "destroy")
-    public Connector httpConnector() {
+    /** Also allow HTTP access on a secondary port for now. */
+    @Bean
+    WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer() {
+        return (TomcatServletWebServerFactory factory) -> {
+            factory.addAdditionalConnectors(httpConnector());
+        };
+    }
+
+    private Connector httpConnector() {
         final Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
         connector.setThrowOnFailure(true);
         connector.setPort(coreProperties.getServerPortHttp());
@@ -46,13 +53,5 @@ public class TomcatConfiguration {
         //    connector.addUpgradeProtocol(new Http2Protocol());
         //}
         return connector;
-    }
-
-    /** Also allow HTTP access on a secondary port for now. */
-    @Bean
-    WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer(Connector httpConnector) {
-        return (TomcatServletWebServerFactory factory) -> {
-            factory.addAdditionalConnectors(httpConnector);
-        };
     }
 }

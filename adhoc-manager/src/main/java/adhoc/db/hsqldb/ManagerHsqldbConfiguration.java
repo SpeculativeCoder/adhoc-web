@@ -91,7 +91,7 @@ public class ManagerHsqldbConfiguration {
 
     /** Make the JDBC connection details (will be provided to Spring) dependent on the DB server being started first. */
     @Bean
-    public JdbcConnectionDetails dataSourceProperties(Server hsqldbServer) {
+    public JdbcConnectionDetails jdbcConnectionDetails(Server hsqldbServer) {
         return new JdbcConnectionDetails() {
 
             @Override

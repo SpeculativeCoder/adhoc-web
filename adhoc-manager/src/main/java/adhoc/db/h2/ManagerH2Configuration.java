@@ -73,7 +73,7 @@ public class ManagerH2Configuration {
 
     /** Make the JDBC connection details (will be provided to Spring) dependent on the DB server being started first. */
     @Bean
-    public JdbcConnectionDetails dataSourceProperties(Server h2Server) {
+    public JdbcConnectionDetails jdbcConnectionDetails(Server h2Server) {
         return new JdbcConnectionDetails() {
 
             @Override

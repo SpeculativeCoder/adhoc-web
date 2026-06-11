@@ -74,7 +74,7 @@ public class ManagerH2PostgresConfiguration {
 
     /** Make the JDBC connection details (will be provided to Spring) dependent on the DB server being started first. */
     @Bean
-    public JdbcConnectionDetails dataSourceProperties(Server h2PostgresServer) {
+    public JdbcConnectionDetails jdbcConnectionDetails(Server h2PostgresServer) {
         return new JdbcConnectionDetails() {
 
             @Override

@@ -132,9 +132,10 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
 
         if ("org.hibernate.SQL".equals(loggerName)) {
 
-            if (message.startsWith("select")
+            if ((message.startsWith("select")
                     || message.startsWith("/* select")
-                    || message.startsWith("/* <criteria> */ select")) {
+                    || message.startsWith("/* <criteria> */ select"))
+                    && !message.endsWith(" for update")) {
                 return FilterReply.DENY;
             }
 

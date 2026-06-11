@@ -51,23 +51,27 @@ public class ObjectiveTakenService {
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
     public ObjectiveTakenEvent handleObjectiveTaken(ServerObjectiveTakenEvent event) {
-
-        ObjectiveEntity objective = objectiveRepository.getReferenceById(event.getObjectiveId());
-        FactionEntity faction = factionRepository.getReferenceById(event.getFactionId());
+        ObjectiveEntity objective = objectiveRepository.findById(event.getObjectiveId()).orElseThrow();
+        FactionEntity faction = factionRepository.findById(event.getFactionId()).orElseThrow();
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
 
         objective.setFaction(faction);
+        objectiveRepository.flush();
 
-        factionRepository.updateScoreAddById(BigDecimal.valueOf(1.0), faction.getId());
+        faction.setScore(faction.getScore().add(BigDecimal.valueOf(1.0)));
+        factionRepository.flush();
 
-        BigDecimal humanScoreAdd = BigDecimal.valueOf(1.0);
-        BigDecimal notHumanScoreAdd = BigDecimal.valueOf(0.1);
+        BigDecimal scoreAddHuman = BigDecimal.valueOf(1.0);
+        BigDecimal scoreAddNonHuman = BigDecimal.valueOf(0.1);
         LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
-
-        userRepository.updateScoreAddByFactionIdAndStateSeenAfter(humanScoreAdd, notHumanScoreAdd, faction.getId(), seenAfter);
+        userRepository.updateScoreAddByFactionIdAndStateSeenAfter(scoreAddHuman, scoreAddNonHuman, faction.getId(), seenAfter);
 
         // TODO
-        return new ObjectiveTakenEvent(objective.getId(), objective.getVersion(), faction.getId(), faction.getVersion() + 1);
+        return new ObjectiveTakenEvent(
+                objective.getId(),
+                objective.getVersion(),
+                faction.getId(),
+                faction.getVersion() + 1);
     }
 }

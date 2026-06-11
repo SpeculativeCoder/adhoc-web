@@ -31,6 +31,9 @@ import java.util.Optional;
 
 public interface FactionRepository extends JpaRepository<FactionEntity, Long> {
 
+    //@Lock(LockModeType.PESSIMISTIC_WRITE)
+    //Optional<FactionEntity> findForUpdateById(Long id);
+
     Optional<FactionEntity> findByIndex(Integer index);
 
     @Modifying

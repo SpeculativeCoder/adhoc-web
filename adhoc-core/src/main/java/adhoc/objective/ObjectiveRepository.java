@@ -33,6 +33,9 @@ import java.util.Optional;
 
 public interface ObjectiveRepository extends JpaRepository<ObjectiveEntity, Long> {
 
+    //@Lock(LockModeType.PESSIMISTIC_WRITE)
+    //Optional<ObjectiveEntity> findForUpdateById(Long id);
+
     Optional<ObjectiveEntity> findByRegionAndIndex(RegionEntity region, Integer index);
 
     List<ObjectiveEntity> findByRegionAndIndexNotIn(RegionEntity region, Collection<Integer> indexNotIn);

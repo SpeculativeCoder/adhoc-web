@@ -37,10 +37,10 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
         String message = event.getMessage();
         Level level = event.getLevel();
 
-        /*
         if ("org.apache.activemq.artemis.core.server".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 
+            /*
             // clustering failure/recovery
             if (message.startsWith("AMQ224037: cluster connection Failed to handle message")) {
                 return FilterReply.DENY;
@@ -51,6 +51,7 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                     && message.endsWith("is unable to connect to destination. Retrying")) {
                 return FilterReply.DENY;
             }
+            */
 
             // websocket disconnect/timeouts
             if (message.startsWith("AMQ222067: Connection failure has been detected:")) {
@@ -66,7 +67,6 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                 return FilterReply.DENY;
             }
         }
-        */
 
         if ("org.hibernate.orm.jdbc.warn".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
@@ -98,6 +98,7 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
             */
         }
 
+        /*
         if ("org.hibernate.orm.jdbc.batch".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 
@@ -106,8 +107,8 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                 return FilterReply.DENY;
             }
         }
+        */
 
-        /*
         if ("org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 
@@ -124,11 +125,10 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
 
             // websocket disconnect/timeouts
             if (message.startsWith("Received ERROR {message=[AMQ229014: Did not receive data from")
-                    && message.contains("within the 20000ms connection TTL. The connection will now be closed.")) {
+                    && message.contains("connection TTL. The connection will now be closed.")) {
                 return FilterReply.DENY;
             }
         }
-        */
 
         if ("org.hibernate.SQL".equals(loggerName)) {
 

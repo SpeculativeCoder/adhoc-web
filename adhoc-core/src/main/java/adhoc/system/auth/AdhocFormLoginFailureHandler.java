@@ -23,7 +23,6 @@
 package adhoc.system.auth;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,12 +34,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 /** Logging for failed login attempts. */
 @Component
@@ -67,22 +64,21 @@ public class AdhocFormLoginFailureHandler implements AuthenticationFailureHandle
         Authentication authentication = exception.getAuthenticationRequest();
         //Verify.verifyNotNull(authentication);
 
-        var exceptionChain = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
-        boolean exceptionKnown = ImmutableList.of(BadCredentialsException.class, UsernameNotFoundException.class).equals(exceptionChain)
-                || ImmutableList.of(BadCredentialsException.class).equals(exceptionChain);
-        //|| ImmutableList.of(DisabledException.class).equals(exceptionChain);
+        var exceptionChain = Throwables.getCausalChain(exception);
+        boolean exceptionKnown = exceptionChain.stream()
+                .anyMatch(e -> e instanceof BadCredentialsException);
 
         int status = HttpStatus.UNAUTHORIZED.value();
         String message = HttpStatus.UNAUTHORIZED.getReasonPhrase();
 
         LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
-                .addKeyValue("status", status)
-                //.addKeyValue("method", method)
-                //.addKeyValue("uri", uri)
-                .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")))
-                .addKeyValue("principal", authentication == null ? null : authentication.getPrincipal());
+                .addKeyValue("status", status);
         if (exceptionKnown) {
-            logEvent = logEvent.addKeyValue("exception.message", exception.getMessage());
+            logEvent = logEvent
+                    .addKeyValue("principal", authentication == null ? null : authentication.getPrincipal())
+                    .addKeyValue("exceptionChain", exceptionChain.stream()
+                            .map(e -> String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()))
+                            .toList());
         } else {
             logEvent = logEvent
                     .addKeyValue("authentication", authentication)

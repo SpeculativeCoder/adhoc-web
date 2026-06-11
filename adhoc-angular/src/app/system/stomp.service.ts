@@ -54,6 +54,7 @@ export class StompService {
     this.csrfService.getCsrf().subscribe(csrf => {
       this.client = webstomp.over(new SockJS(window.location.protocol + '//' + location.host + '/adhoc_ws/stomp/user_sockjs', {}), {
         debug: false,
+        heartbeat: {outgoing: 20000, incoming: 20000},
       });
       let headers: { [key: string]: string } = {}
       headers[csrf!.headerName!] = csrf!.token!;

@@ -23,11 +23,9 @@
 package adhoc.system.exception;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.ClientAbortException;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
@@ -35,14 +33,11 @@ import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.util.stream.Collectors;
 
 /** Request handling exception logging. */
 @Component
@@ -70,17 +65,15 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
 
         ModelAndView modelAndView = super.resolveException(request, response, handler, exception);
 
-        var exceptionChain = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
-        boolean exceptionKnown = ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class).equals(exceptionChain)
-                || ImmutableList.of(AsyncRequestNotUsableException.class, ClientAbortException.class, SocketTimeoutException.class).equals(exceptionChain)
-                || ImmutableList.of(ClientAbortException.class, IOException.class).equals(exceptionChain)
-                || ImmutableList.of(ClientAbortException.class, SocketTimeoutException.class).equals(exceptionChain)
-                || ImmutableList.of(MethodArgumentNotValidException.class).equals(exceptionChain)
-                || ImmutableList.of(NoResourceFoundException.class).equals(exceptionChain)
-                // sorting errors TODO
-                || ImmutableList.of(PropertyReferenceException.class).equals(exceptionChain)
-                // error page TODO
-                || ImmutableList.of(HttpMediaTypeNotAcceptableException.class).equals(exceptionChain);
+        var exceptionChain = Throwables.getCausalChain(exception);
+        boolean exceptionKnown = exceptionChain.stream()
+                .anyMatch(e -> e instanceof IOException
+                        || e instanceof MethodArgumentNotValidException
+                        || e instanceof NoResourceFoundException
+                        // sorting errors TODO
+                        || e instanceof PropertyReferenceException
+                        // error page TODO
+                        || e instanceof HttpMediaTypeNotAcceptableException);
 
         boolean uriApi = uri.startsWith("/adhoc_api/") || uri.startsWith("/adhoc_ws/");
 
@@ -98,13 +91,10 @@ public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExce
         //            .addKeyValue("titleMessageCode", errorResponse.getTitleMessageCode());
         //}
 
-        logEvent = logEvent.addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
-
-        //logEvent = logEvent.addKeyValue("method", method)
-        //        .addKeyValue("uri", uri);
-
         if (exceptionKnown) {
-            logEvent = logEvent.addKeyValue("exception.message", exception.getMessage());
+            logEvent = logEvent.addKeyValue("exceptionChain", exceptionChain.stream()
+                    .map(e -> String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()))
+                    .toList());
         } else {
             logEvent = logEvent.setCause(exception);
         }

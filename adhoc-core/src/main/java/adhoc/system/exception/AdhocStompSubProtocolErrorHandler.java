@@ -23,19 +23,15 @@
 package adhoc.system.exception;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.event.Level;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageDeliveryException;
-import org.springframework.security.web.csrf.InvalidCsrfTokenException;
+import org.springframework.security.web.csrf.CsrfException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
-
-import java.util.stream.Collectors;
 
 /** Stomp exception logging. */
 @Component
@@ -50,13 +46,15 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
 
         Message<byte[]> message = super.handleClientMessageProcessingError(clientMessage, exception);
 
-        var exceptionChain = Throwables.getCausalChain(exception).stream().map(Throwable::getClass).toList();
-        boolean exceptionKnown = ImmutableList.of(MessageDeliveryException.class, InvalidCsrfTokenException.class).equals(exceptionChain);
+        var exceptionChain = Throwables.getCausalChain(exception);
+        boolean exceptionKnown = exceptionChain.stream()
+                .anyMatch(e -> e instanceof CsrfException);
 
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO)
-                .addKeyValue("exceptionChain", exceptionChain.stream().map(Class::getSimpleName).collect(Collectors.joining("->")));
+        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO);
         if (exceptionKnown) {
-            logEvent = logEvent.addKeyValue("exception.message", exception.getMessage());
+            logEvent = logEvent.addKeyValue("exceptionChain", exceptionChain.stream()
+                    .map(e -> String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()))
+                    .toList());
         } else {
             logEvent = logEvent
                     .addKeyValue("clientMessage", clientMessage)
@@ -75,7 +73,8 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
 
         Message<byte[]> message = super.handleErrorMessageToClient(errorMessage);
 
-        LoggingEventBuilder logEvent = log.atLevel(Level.INFO)
+        // TODO
+        LoggingEventBuilder logEvent = log.atDebug()
                 .addKeyValue("errorMessage", errorMessage);
         logEvent.log("Stomp issue.");
 

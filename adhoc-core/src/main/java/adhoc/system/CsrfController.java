@@ -36,6 +36,7 @@ public class CsrfController {
 
     @GetMapping("/csrf")
     public CsrfToken csrf(CsrfToken token) {
+        //return new DefaultCsrfToken(token.getHeaderName(), token.getParameterName(), token.getToken());
         return token;
     }
 }

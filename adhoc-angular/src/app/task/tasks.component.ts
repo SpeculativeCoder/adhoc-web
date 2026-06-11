@@ -33,7 +33,7 @@ import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
 import {CurrentUser} from '../user/current/current-user';
 import {Task} from './task';
-import {MetaService} from '../core/meta.service';
+import {MetaService} from '../system/meta.service';
 import {CurrentUserService} from '../user/current/current-user.service';
 import {TableComponent} from '../shared/table/table.component';
 import {Pagination} from '../shared/pagination/pagination.component';

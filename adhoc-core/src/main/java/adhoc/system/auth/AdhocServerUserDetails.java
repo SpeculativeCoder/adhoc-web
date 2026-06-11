@@ -20,42 +20,18 @@
  * SOFTWARE.
  */
 
-import {Injectable} from '@angular/core';
-import {StompService} from '../../system/stomp.service';
-import {User} from '../user';
+package adhoc.system.auth;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class UserDefeatService {
+import adhoc.user.UserRole;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-  constructor(private stomp: StompService) {
+import java.util.Collections;
 
-    this.stomp
-        .observeEvent('UserDefeat')
-        .subscribe((body: any) => this.handleUserDefeat(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
-  }
+/** Spring Security user details for an Unreal server. */
+public class AdhocServerUserDetails extends org.springframework.security.core.userdetails.User {
 
-  serverUserDefeat(user: User, defeatedUser?: User) {
-    this.stomp.send('ServerUserDefeat', {userId: user.id, defeatedUserId: defeatedUser?.id});
-  }
-
-  handleUserDefeat(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
-    // let user: User;
-    // let defeatedUser: User;
-    // this.users.map(user => {
-    //   if (user.id === userId) {
-    //     user = user;
-    //   }
-    //   if (user.id === defeatedUserId) {
-    //     defeatedUser = user;
-    //   }
-    // });
-    // user.score++;
-
-    // TODO
-    if (userHuman || defeatedUserHuman) {
-      console.log(`User ${userId} defeated user ${defeatedUserId}`);
+    public AdhocServerUserDetails(String username, String password) {
+        super(username, password, true, true, true, true,
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + UserRole.SERVER.name())));
     }
-  }
 }

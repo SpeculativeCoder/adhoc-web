@@ -27,7 +27,7 @@ import adhoc.area.AreaRepository;
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.system.random_uuid.RandomUUIDUtils;
+import adhoc.system.uuid.UUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;
@@ -115,7 +115,7 @@ public class UserNavigateService {
         user.getState().setDestinationServer(destinationServer);
         user.getState().setNavigated(LocalDateTime.now());
 
-        UUID newToken = RandomUUIDUtils.randomUUID();
+        UUID newToken = UUIDUtils.randomUUID();
         user.getState().setToken(newToken);
 
         return new UserNavigateResponse(

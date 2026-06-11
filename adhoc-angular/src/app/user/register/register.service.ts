@@ -25,9 +25,9 @@ import {UserRegisterRequest} from './user-register-request';
 import {mergeMap, of, tap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current/current-user.service';
-import {CsrfService} from '../../core/csrf.service';
+import {CsrfService} from '../../system/csrf.service';
 import {CurrentUser} from '../current/current-user';
-import {StompService} from '../../core/stomp.service';
+import {StompService} from '../../system/stomp.service';
 
 @Injectable({
   providedIn: 'root'

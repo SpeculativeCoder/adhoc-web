@@ -20,42 +20,22 @@
  * SOFTWARE.
  */
 
-import {Injectable} from '@angular/core';
-import {StompService} from '../../system/stomp.service';
-import {User} from '../user';
+package adhoc.system;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class UserDefeatService {
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-  constructor(private stomp: StompService) {
+/** Allows access to CSRF token for the Angular app. */
+@RestController
+@RequestMapping("/adhoc_api")
+@RequiredArgsConstructor
+public class CsrfController {
 
-    this.stomp
-        .observeEvent('UserDefeat')
-        .subscribe((body: any) => this.handleUserDefeat(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
-  }
-
-  serverUserDefeat(user: User, defeatedUser?: User) {
-    this.stomp.send('ServerUserDefeat', {userId: user.id, defeatedUserId: defeatedUser?.id});
-  }
-
-  handleUserDefeat(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
-    // let user: User;
-    // let defeatedUser: User;
-    // this.users.map(user => {
-    //   if (user.id === userId) {
-    //     user = user;
-    //   }
-    //   if (user.id === defeatedUserId) {
-    //     defeatedUser = user;
-    //   }
-    // });
-    // user.score++;
-
-    // TODO
-    if (userHuman || defeatedUserHuman) {
-      console.log(`User ${userId} defeated user ${defeatedUserId}`);
+    @GetMapping("/csrf")
+    public CsrfToken csrf(CsrfToken token) {
+        return token;
     }
-  }
 }

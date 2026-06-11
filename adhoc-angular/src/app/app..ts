@@ -22,13 +22,13 @@
 
 import {ChangeDetectionStrategy, Component, computed, Inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {MetaService} from "./core/meta.service";
+import {MetaService} from "./system/meta.service";
 import {customization} from "./customization";
 import {CommonModule, DOCUMENT} from "@angular/common";
 import {CurrentUserService} from './user/current/current-user.service';
 import {CurrentUserComponent} from './user/current/current-user.component';
 import {CurrentUser} from './user/current/current-user';
-import {StompService} from './core/stomp.service';
+import {StompService} from './system/stomp.service';
 
 @Component({
   selector: 'app-root',

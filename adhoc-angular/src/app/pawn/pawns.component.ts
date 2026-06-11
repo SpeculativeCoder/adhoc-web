@@ -34,7 +34,7 @@ import {RouterLink} from "@angular/router";
 import {SimpleDatePipe} from "../shared/simple-date/simple-date.pipe";
 import {TableSortDirective} from "../shared/table/table-sort.directive";
 import {CurrentUser} from '../user/current/current-user';
-import {MetaService} from '../core/meta.service';
+import {MetaService} from '../system/meta.service';
 import {CurrentUserService} from '../user/current/current-user.service';
 import {Paging} from '../shared/paging';
 import {TableComponent} from '../shared/table/table.component';

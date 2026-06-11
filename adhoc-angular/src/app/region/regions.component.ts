@@ -31,7 +31,7 @@ import {Page} from "../shared/page";
 import {Paging} from "../shared/paging";
 import {Sort} from "../shared/sort";
 import {CurrentUser} from '../user/current/current-user';
-import {MetaService} from '../core/meta.service';
+import {MetaService} from '../system/meta.service';
 import {CurrentUserService} from '../user/current/current-user.service';
 import {Region} from './region';
 import {TableComponent} from '../shared/table/table.component';

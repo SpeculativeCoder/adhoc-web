@@ -20,42 +20,17 @@
  * SOFTWARE.
  */
 
-import {Injectable} from '@angular/core';
-import {StompService} from '../../system/stomp.service';
-import {User} from '../user';
+package adhoc.system.logging.logback;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class UserDefeatService {
+import adhoc.system.logging.specialchars.SpecialCharsUtils;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.pattern.CompositeConverter;
 
-  constructor(private stomp: StompService) {
+/** Replaces special characters (e.g. newlines etc.) from log messages. */
+public class AdhocLogbackSpecialCharsConverter extends CompositeConverter<ILoggingEvent> {
 
-    this.stomp
-        .observeEvent('UserDefeat')
-        .subscribe((body: any) => this.handleUserDefeat(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
-  }
-
-  serverUserDefeat(user: User, defeatedUser?: User) {
-    this.stomp.send('ServerUserDefeat', {userId: user.id, defeatedUserId: defeatedUser?.id});
-  }
-
-  handleUserDefeat(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
-    // let user: User;
-    // let defeatedUser: User;
-    // this.users.map(user => {
-    //   if (user.id === userId) {
-    //     user = user;
-    //   }
-    //   if (user.id === defeatedUserId) {
-    //     defeatedUser = user;
-    //   }
-    // });
-    // user.score++;
-
-    // TODO
-    if (userHuman || defeatedUserHuman) {
-      console.log(`User ${userId} defeated user ${defeatedUserId}`);
+    @Override
+    protected String transform(ILoggingEvent event, String in) {
+        return SpecialCharsUtils.replaceSpecialChars(in);
     }
-  }
 }

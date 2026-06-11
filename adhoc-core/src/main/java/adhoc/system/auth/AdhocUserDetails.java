@@ -20,42 +20,30 @@
  * SOFTWARE.
  */
 
-import {Injectable} from '@angular/core';
-import {StompService} from '../../system/stomp.service';
-import {User} from '../user';
+package adhoc.system.auth;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class UserDefeatService {
+import lombok.Getter;
+import org.jspecify.annotations.NonNull;
+import org.springframework.security.core.GrantedAuthority;
 
-  constructor(private stomp: StompService) {
+import java.util.Collection;
 
-    this.stomp
-        .observeEvent('UserDefeat')
-        .subscribe((body: any) => this.handleUserDefeat(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
-  }
+/**
+ * Spring Security user details for an authenticated user.
+ * We keep track of the authenticated user's database ID so we can easily look up any extra information as needed.
+ */
+public class AdhocUserDetails extends org.springframework.security.core.userdetails.User {
 
-  serverUserDefeat(user: User, defeatedUser?: User) {
-    this.stomp.send('ServerUserDefeat', {userId: user.id, defeatedUserId: defeatedUser?.id});
-  }
+    @Getter
+    private final Long userId;
 
-  handleUserDefeat(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
-    // let user: User;
-    // let defeatedUser: User;
-    // this.users.map(user => {
-    //   if (user.id === userId) {
-    //     user = user;
-    //   }
-    //   if (user.id === defeatedUserId) {
-    //     defeatedUser = user;
-    //   }
-    // });
-    // user.score++;
-
-    // TODO
-    if (userHuman || defeatedUserHuman) {
-      console.log(`User ${userId} defeated user ${defeatedUserId}`);
+    public AdhocUserDetails(String username, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities, Long userId) {
+        super(username, password, enabled, true, true, true, authorities);
+        this.userId = userId;
     }
-  }
+
+    @Override
+    public @NonNull String toString() {
+        return super.toString() + " userId=" + userId;
+    }
 }

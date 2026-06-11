@@ -23,9 +23,9 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current/current-user.service';
-import {CsrfService} from '../../core/csrf.service';
+import {CsrfService} from '../../system/csrf.service';
 import {mergeMap} from 'rxjs';
-import {StompService} from '../../core/stomp.service';
+import {StompService} from '../../system/stomp.service';
 
 @Injectable({
   providedIn: 'root'

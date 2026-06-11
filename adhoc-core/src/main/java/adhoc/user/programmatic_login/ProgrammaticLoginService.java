@@ -22,8 +22,8 @@
 
 package adhoc.user.programmatic_login;
 
-import adhoc.system.random_uuid.RandomUUIDUtils;
-import adhoc.system.security.WebSecurityConfiguration;
+import adhoc.system.WebSecurityConfiguration;
+import adhoc.system.uuid.UUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -76,7 +76,7 @@ public class ProgrammaticLoginService {
 
         String tempPassword = null;
         if (user.getPassword() == null) {
-            tempPassword = RandomUUIDUtils.randomUUID().toString();
+            tempPassword = UUIDUtils.randomUUID().toString();
         }
 
         UsernamePasswordAuthenticationToken authenticationToken =

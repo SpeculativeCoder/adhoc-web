@@ -24,8 +24,8 @@ package adhoc.user.current;
 
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
+import adhoc.system.auth.AdhocUserDetails;
 import adhoc.system.properties.CoreProperties;
-import adhoc.system.security.AdhocUserDetails;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;

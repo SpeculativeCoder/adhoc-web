@@ -20,42 +20,23 @@
  * SOFTWARE.
  */
 
-import {Injectable} from '@angular/core';
-import {StompService} from '../../system/stomp.service';
-import {User} from '../user';
+package adhoc.system.exception;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class UserDefeatService {
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
-  constructor(private stomp: StompService) {
+/** Message handling exception logging. */
+@ControllerAdvice
+@Slf4j
+public class AdhocMessageExceptionHandler {
 
-    this.stomp
-        .observeEvent('UserDefeat')
-        .subscribe((body: any) => this.handleUserDefeat(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
-  }
-
-  serverUserDefeat(user: User, defeatedUser?: User) {
-    this.stomp.send('ServerUserDefeat', {userId: user.id, defeatedUserId: defeatedUser?.id});
-  }
-
-  handleUserDefeat(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
-    // let user: User;
-    // let defeatedUser: User;
-    // this.users.map(user => {
-    //   if (user.id === userId) {
-    //     user = user;
-    //   }
-    //   if (user.id === defeatedUserId) {
-    //     defeatedUser = user;
-    //   }
-    // });
-    // user.score++;
-
-    // TODO
-    if (userHuman || defeatedUserHuman) {
-      console.log(`User ${userId} defeated user ${defeatedUserId}`);
+    @MessageExceptionHandler
+    public void handleThrowable(Throwable exception, Message<?> message) {
+        // TODO
+        log.atWarn()
+                .addKeyValue("message", message)
+                .log("Message failure.", exception);
     }
-  }
 }

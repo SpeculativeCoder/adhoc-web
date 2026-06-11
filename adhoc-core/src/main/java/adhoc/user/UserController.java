@@ -22,7 +22,7 @@
 
 package adhoc.user;
 
-import adhoc.system.security.AdhocUserDetails;
+import adhoc.system.auth.AdhocUserDetails;
 import adhoc.user.current.CurrentUserDto;
 import adhoc.user.current.CurrentUserService;
 import adhoc.user.navigate.UserNavigateRequest;

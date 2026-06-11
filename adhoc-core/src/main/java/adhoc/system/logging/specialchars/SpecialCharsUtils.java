@@ -20,42 +20,23 @@
  * SOFTWARE.
  */
 
-import {Injectable} from '@angular/core';
-import {StompService} from '../../system/stomp.service';
-import {User} from '../user';
+package adhoc.system.logging.specialchars;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class UserDefeatService {
+import lombok.experimental.UtilityClass;
 
-  constructor(private stomp: StompService) {
+import java.util.regex.Pattern;
 
-    this.stomp
-        .observeEvent('UserDefeat')
-        .subscribe((body: any) => this.handleUserDefeat(body['userId'], body['userHuman'], body['defeatedUserId'], body['defeatedUserHuman']));
-  }
+@UtilityClass
+public final class SpecialCharsUtils {
 
-  serverUserDefeat(user: User, defeatedUser?: User) {
-    this.stomp.send('ServerUserDefeat', {userId: user.id, defeatedUserId: defeatedUser?.id});
-  }
+    private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
 
-  handleUserDefeat(userId: number, userHuman: boolean, defeatedUserId: number, defeatedUserHuman: boolean) {
-    // let user: User;
-    // let defeatedUser: User;
-    // this.users.map(user => {
-    //   if (user.id === userId) {
-    //     user = user;
-    //   }
-    //   if (user.id === defeatedUserId) {
-    //     defeatedUser = user;
-    //   }
-    // });
-    // user.score++;
+    public String replaceSpecialChars(String text) {
 
-    // TODO
-    if (userHuman || defeatedUserHuman) {
-      console.log(`User ${userId} defeated user ${defeatedUserId}`);
+        text = text.replace("\r", "\\r");
+        text = text.replace("\n", "\\n");
+        text = text.replace("\t", "\\t");
+
+        return NON_PRINTABLE.matcher(text).replaceAll("?");
     }
-  }
 }

@@ -24,7 +24,7 @@ package adhoc.user.register;
 
 import adhoc.faction.FactionRepository;
 import adhoc.system.properties.CoreProperties;
-import adhoc.system.random_uuid.RandomUUIDUtils;
+import adhoc.system.uuid.UUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
@@ -129,7 +129,7 @@ public class UserRegisterService {
         user.setScore(BigDecimal.valueOf(0.0));
         user.setUserRoles(Sets.newHashSet(UserRole.USER)); //, UserRole.DEBUG, UserRole.ADMIN));
 
-        String quickLoginPassword = RandomUUIDUtils.randomUUID().toString().replaceAll("-", "");
+        String quickLoginPassword = UUIDUtils.randomUUID().toString().replaceAll("-", "");
 
         user.setQuickLoginPassword(quickLoginPassword, coreProperties.getQuickLoginPasswordEncryptionKey());
 

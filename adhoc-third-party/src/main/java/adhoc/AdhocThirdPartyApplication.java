@@ -53,29 +53,28 @@ public class AdhocThirdPartyApplication {
     @Value("${adhoc.manager-domain}")
     private String managerDomain;
 
-    @GetMapping(value = {"/"})
-    public ModelAndView getIndex(HttpServletRequest request) {
-        return new ModelAndView("index",
-                ImmutableMap.of("ADHOC_URL", request.getScheme() + "://" + managerDomain));
+    @Bean
+    WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer() {
+        return (TomcatServletWebServerFactory factory) -> {
+            factory.addAdditionalConnectors(httpConnector());
+        };
     }
 
-    @Bean(destroyMethod = "destroy")
-    public Connector httpConnector() {
-        final Connector connector = new Connector();
+    private Connector httpConnector() {
+        final Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
         connector.setThrowOnFailure(true);
         connector.setPort(serverPortHttp);
         //connector.addUpgradeProtocol(new Http2Protocol());
         return connector;
     }
 
-    @Bean
-    WebServerFactoryCustomizer<TomcatServletWebServerFactory> adhocTomcatCustomizer(Connector httpConnector) {
-        return (TomcatServletWebServerFactory factory) -> {
-            factory.addAdditionalConnectors(httpConnector);
-        };
+    @GetMapping(value = {"/"})
+    public ModelAndView getIndex(HttpServletRequest request) {
+        return new ModelAndView("index",
+                ImmutableMap.of("ADHOC_URL", request.getScheme() + "://" + managerDomain));
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(AdhocThirdPartyApplication.class, args);
     }
 }

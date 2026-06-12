@@ -54,7 +54,7 @@ public class AdhocKioskApplication extends AbstractAdhocApplication {
      * <li><tt>db-h2</tt> - used for local testing and is also what runs in AWS. This is the default if you don't specify any profiles.
      * </ul>
      */
-    public static void main(String[] args) {
+    static void main(String[] args) {
         // rather than rely on spring.profiles.default we will just pick some extra default profiles as needed
         ConfigurableEnvironment environment = new StandardEnvironment();
         environment.getPropertySources().addLast(new SimpleCommandLinePropertySource(args));

@@ -41,7 +41,7 @@ public class RandomNameUtils {
         return str.replaceAll("[^A-Za-z]", "");
     }
 
-    public static void main() {
+    static void main() {
         for (int i = 0; i < 20; i++) {
             System.out.println(randomName());
         }

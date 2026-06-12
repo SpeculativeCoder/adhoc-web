@@ -59,7 +59,7 @@ public class AdhocManagerApplication extends AbstractAdhocApplication {
      * <li><tt>db-h2,hosting-ecs,dns-route53</tt> - this is what runs in AWS. Makes use of ECS to run unreal servers, and Route53 to manage DNS entries</li>
      * </ul>
      */
-    public static void main(String[] args) {
+    static void main(String[] args) {
         // rather than rely on spring.profiles.default we will just pick default profiles as needed
         ConfigurableEnvironment environment = new StandardEnvironment();
         environment.getPropertySources().addLast(new SimpleCommandLinePropertySource(args));

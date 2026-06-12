@@ -27,11 +27,11 @@ import adhoc.system.logging.AdhocMdcExecutorChannelInterceptor;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.artemis.autoconfigure.ArtemisMode;
 import org.springframework.boot.artemis.autoconfigure.ArtemisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.NonNull;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.session.Session;
@@ -61,7 +61,7 @@ public class WebSocketConfiguration {
         return new AbstractSessionWebSocketMessageBrokerConfigurer<>() {
 
             @Override
-            public void configureStompEndpoints(StompEndpointRegistry registry) {
+            public void configureStompEndpoints(@NonNull StompEndpointRegistry registry) {
 
                 //List<String> allowedOriginPatterns = new ArrayList<>();
                 //allowedOriginPatterns.add("https://" + coreProperties.getManagerDomain());
@@ -111,7 +111,7 @@ public class WebSocketConfiguration {
             }
 
             @Override
-            public void configureClientInboundChannel(ChannelRegistration registration) {
+            public void configureClientInboundChannel(@NonNull ChannelRegistration registration) {
                 registration
                         .interceptors(adhocMdcExecutorChannelInterceptor);
             }

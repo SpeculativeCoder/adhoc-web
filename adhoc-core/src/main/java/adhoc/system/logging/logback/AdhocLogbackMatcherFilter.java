@@ -57,6 +57,16 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
             if (message.startsWith("AMQ222067: Connection failure has been detected:")) {
                 return FilterReply.DENY;
             }
+
+            // websocket disconnect/timeouts
+            if (message.startsWith("AMQ222061: Client connection failed, clearing up resources for session")) {
+                return FilterReply.DENY;
+            }
+
+            // websocket disconnect/timeouts
+            if (message.startsWith("AMQ222107: Cleared up resources for session")) {
+                return FilterReply.DENY;
+            }
         }
 
         if ("org.apache.activemq.artemis.core.protocol.stomp".equals(loggerName)

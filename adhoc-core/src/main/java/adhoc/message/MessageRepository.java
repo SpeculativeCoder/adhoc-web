@@ -26,14 +26,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.lang.Nullable;
 
 import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
 
-    Page<MessageEntity> findByUserNullOrUserId(@Nullable Long userId, Pageable pageable);
+    Page<MessageEntity> findByUserNullOrUserId(Long userId, Pageable pageable);
 
     @Query("select m from Message m where m.id = ?1 and (m.user is null or m.user.id = ?2)")
-    Optional<MessageEntity> findByIdAnd_UserNullOrUserId_(Long id, @Nullable Long userId);
+    Optional<MessageEntity> findByIdAnd_UserNullOrUserId_(Long id, Long userId);
 }

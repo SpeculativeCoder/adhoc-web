@@ -2,17 +2,35 @@
 
 Web code for Adhoc (final name to be decided).
 
-[https://github.com/SpeculativeCoder/adhoc-web](https://github.com/SpeculativeCoder/adhoc-web)
-
-[https://github.com/SpeculativeCoder/AdhocPlugin](https://github.com/SpeculativeCoder/AdhocPlugin)
-
-[https://github.com/SpeculativeCoder/AdhocDocumentation](https://github.com/SpeculativeCoder/AdhocDocumentation)
+[https://github.com/SpeculativeCoder/adhoc-web](https://github.com/SpeculativeCoder/adhoc-web)<br/>
+[https://github.com/SpeculativeCoder/AdhocPlugin](https://github.com/SpeculativeCoder/AdhocPlugin)<br/>
+[https://github.com/SpeculativeCoder/AdhocDocumentation](https://github.com/SpeculativeCoder/AdhocDocumentation)<br/>
 
 This is a work in progress, experimental, and subject to major changes.
 
 The eventual ideal/goal of Adhoc is to be a system for running a multi-user, multi-server 3D world in the cloud (e.g. AWS) using Unreal Engine with the HTML5 ES3 (WebGL2) platform plugin.
 
 Live Example: [**AdhocCombat** (https://adhoccombat.com)](https://adhoccombat.com) - work in progress
+
+## Contents
+
+```mermaid
+graph TD
+    subgraph adhoc-web["adhoc-web"]
+        adhoc-angular["adhoc-angular"] --> adhoc-core["adhoc-core"]
+        adhoc-core --> adhoc-kiosk["adhoc-kiosk"]
+        adhoc-core --> adhoc-manager["adhoc-manager"]
+        adhoc-kiosk ==> adhoc-kiosk.jar("adhoc-kiosk.jar")
+        adhoc-manager ==> adhoc-manager.jar("adhoc-manager.jar")
+    end
+```
+
+- [adhoc-angular](adhoc-angular) - Angular (TypeScript) frontend.
+- [adhoc-core](adhoc-core) - Spring Boot (Java) core/common backend functionality.
+- [adhoc-kiosk](adhoc-kiosk) - Spring Boot (Java) "kiosk" backend which only provides functionality for normal users.
+- [adhoc-manager](adhoc-manager) - Spring Boot (Java) "manager" backend which manages the Unreal servers and provides functionality for admin users in addition to normal users.
+
+Most of the time there will be at least one manager running. More kiosks can be added as necessary to handle more normal users if demand is high enough.
 
 ## Usage
 
@@ -26,7 +44,7 @@ To build the application (at least once to make sure the Angular app is built):
 
 You can then run this Spring Boot application class in your IDE: `AdhocManagerApplication`
 
-If you go to http://localhost you should see the application running in development mode.
+If you go to http://localhost you should see the manager application running in development mode.
 
 Further functionality requires setup. See: [https://github.com/SpeculativeCoder/AdhocDocumentation](https://github.com/SpeculativeCoder/AdhocDocumentation)
 

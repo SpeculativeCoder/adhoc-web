@@ -45,6 +45,5 @@ public class ServerPawnsEvent implements Event {
     Long serverId;
 
     @NotNull
-    @Valid
-    List<PawnDto> pawns;
+    List<@Valid PawnDto> pawns;
 }

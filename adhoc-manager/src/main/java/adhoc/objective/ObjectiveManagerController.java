@@ -63,7 +63,7 @@ public class ObjectiveManagerController {
 
     @PostMapping("/servers/{serverId}/objectives")
     @PreAuthorize("hasRole('SERVER')")
-    public List<ObjectiveDto> postServerObjectives(@PathVariable Long serverId, @Valid @RequestBody List<ObjectiveDto> objectiveDtos) {
+    public List<ObjectiveDto> postServerObjectives(@PathVariable Long serverId, @RequestBody List<@Valid ObjectiveDto> objectiveDtos) {
         return objectiveManagerService.updateServerObjectives(serverId, objectiveDtos);
     }
 

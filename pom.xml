@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.1.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -50,11 +50,11 @@
     <properties>
         <java.version>25</java.version>
         <guava.version>33.6.0-jre</guava.version>
-        <awssdk.version>2.42.39</awssdk.version>
+        <awssdk.version>2.46.9</awssdk.version>
         <docker-java.version>3.7.1</docker-java.version>
         <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
         <datafaker.version>2.5.4</datafaker.version>
-        <springdoc-webmvc-ui.version>3.0.2</springdoc-webmvc-ui.version>
+        <springdoc-webmvc-ui.version>3.0.3</springdoc-webmvc-ui.version>
         <springdoc-maven-plugin.version>1.5</springdoc-maven-plugin.version>
 
         <!--<quartz.version>2.5.2</quartz.version>-->

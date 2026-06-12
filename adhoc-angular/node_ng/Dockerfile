@@ -8,7 +8,7 @@ ENV npm_config_node_linker=hoisted
 
 ENV npm_config_loglevel=verbose
 
-RUN npm install --ignore-scripts -g pnpm@latest-10
+RUN npm install --ignore-scripts -g pnpm@latest-11
 
 RUN mkdir /home/node/app
 RUN chown -R node:node /home/node/app

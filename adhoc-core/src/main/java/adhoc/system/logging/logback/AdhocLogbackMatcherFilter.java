@@ -140,6 +140,15 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
             }
         }
 
+        if ("org.springframework.web.socket.messaging.SubProtocolWebSocketHandler".equals(loggerName)
+                && level.toInt() > Level.DEBUG.toInt()) {
+
+            // websocket disconnect/timeouts
+            if (message.startsWith("No messages received after")) {
+                return FilterReply.DENY;
+            }
+        }
+
         if ("org.hibernate.SQL".equals(loggerName)) {
 
             if ((message.startsWith("select")

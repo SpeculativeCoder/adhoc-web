@@ -47,10 +47,19 @@ public class AdhocStompSubProtocolErrorHandler extends StompSubProtocolErrorHand
         Message<byte[]> message = super.handleClientMessageProcessingError(clientMessage, exception);
 
         var exceptionChain = Throwables.getCausalChain(exception);
-        boolean exceptionKnown = exceptionChain.stream()
+        boolean exceptionCsrf = exceptionChain.stream()
                 .anyMatch(e -> e instanceof CsrfException);
+        boolean exceptionKnown = false;
 
-        LoggingEventBuilder logEvent = log.atLevel(!exceptionKnown ? Level.WARN : Level.INFO);
+        Level level;
+        if (exceptionCsrf) {
+            level = Level.DEBUG;
+        } else if (exceptionKnown) {
+            level = Level.INFO;
+        } else {
+            level = Level.WARN;
+        }
+        LoggingEventBuilder logEvent = log.atLevel(level);
         if (exceptionKnown) {
             logEvent = logEvent.addKeyValue("exceptionChain", exceptionChain.stream()
                     .map(e -> String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()))

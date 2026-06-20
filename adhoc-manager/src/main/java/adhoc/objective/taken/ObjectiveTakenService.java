@@ -56,11 +56,9 @@ public class ObjectiveTakenService {
 
         log.debug("Objective {} has been taken by {}", objective.getName(), faction.getName());
 
-        objective.setFaction(faction);
-        objectiveRepository.flush();
+        objectiveRepository.updateFactionById(faction, objective.getId());
 
-        faction.setScore(faction.getScore().add(BigDecimal.valueOf(1.0)));
-        factionRepository.flush();
+        factionRepository.updateScoreAddById(BigDecimal.valueOf(1.0), faction.getId());
 
         BigDecimal scoreAddHuman = BigDecimal.valueOf(1.0);
         BigDecimal scoreAddNonHuman = BigDecimal.valueOf(0.1);

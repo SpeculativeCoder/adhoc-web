@@ -25,6 +25,7 @@ package adhoc.objective;
 import adhoc.faction.FactionEntity;
 import adhoc.region.RegionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
@@ -39,6 +40,10 @@ public interface ObjectiveRepository extends JpaRepository<ObjectiveEntity, Long
     Optional<ObjectiveEntity> findByRegionAndIndex(RegionEntity region, Integer index);
 
     List<ObjectiveEntity> findByRegionAndIndexNotIn(RegionEntity region, Collection<Integer> indexNotIn);
+
+    @Modifying
+    @Query("update Objective o set o.version = o.version + 1, o.faction = ?1 where o.id = ?2")
+    void updateFactionById(FactionEntity faction, Long id);
 
     @Query("select f as faction, count(o) as objectiveCount from Faction f join Objective o on o.faction = f group by f")
     List<FactionObjectiveCount> getFactionObjectiveCounts();

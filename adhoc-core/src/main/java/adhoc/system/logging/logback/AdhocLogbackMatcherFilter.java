@@ -78,6 +78,14 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
             }
         }
 
+        if ("org.apache.activemq.artemis.core.protocol.stomp".equals(loggerName)) {
+
+            // websocket disconnect/timeouts
+            if (message.startsWith("AMQ229028: Consumer ")) { // e.g. "Consumer 1234 doesn't exist on the server"
+                return FilterReply.DENY;
+            }
+        }
+
         if ("org.hibernate.orm.jdbc.warn".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 

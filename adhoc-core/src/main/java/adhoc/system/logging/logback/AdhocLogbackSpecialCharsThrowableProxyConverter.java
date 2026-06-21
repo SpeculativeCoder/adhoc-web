@@ -22,7 +22,6 @@
 
 package adhoc.system.logging.logback;
 
-import adhoc.system.logging.specialchars.SpecialCharsUtils;
 import ch.qos.logback.classic.pattern.ExtendedThrowableProxyConverter;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +59,7 @@ public class AdhocLogbackSpecialCharsThrowableProxyConverter extends ExtendedThr
             Object result = proxy.invoke(throwableProxy, args);
 
             if ("getMessage".equals(method.getName()) && result instanceof String text) {
-                result = SpecialCharsUtils.replaceSpecialChars(text);
+                result = SpecialCharUtils.replaceSpecialChars(text);
             }
             return result;
         }

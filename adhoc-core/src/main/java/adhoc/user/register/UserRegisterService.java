@@ -30,8 +30,6 @@ import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
 import adhoc.user.current.CurrentUserDto;
 import adhoc.user.current.CurrentUserService;
-import adhoc.user.programmatic_login.ProgrammaticLoginService;
-import adhoc.user.random_name.RandomNameUtils;
 import adhoc.user.state.UserStateEntity;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;

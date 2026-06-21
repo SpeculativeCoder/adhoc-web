@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.programmatic_login;
+package adhoc.user.register;
 
 import adhoc.system.AdhocWebSecurityConfiguration;
 import adhoc.system.uuid.UUIDUtils;

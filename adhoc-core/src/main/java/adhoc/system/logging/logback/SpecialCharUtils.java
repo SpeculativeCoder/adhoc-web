@@ -20,30 +20,23 @@
  * SOFTWARE.
  */
 
-package adhoc.user.random_name;
+package adhoc.system.logging.logback;
 
 import lombok.experimental.UtilityClass;
-import net.datafaker.Faker;
-import net.datafaker.internal.helper.WordUtils;
+
+import java.util.regex.Pattern;
 
 @UtilityClass
-public class RandomNameUtils {
+public final class SpecialCharUtils {
 
-    public String randomName() {
-        Faker faker = new Faker();
+    private static final Pattern NON_PRINTABLE = Pattern.compile("\\P{Print}");
 
-        return onlyAlpha(WordUtils.capitalize(faker.word().adjective()) +
-                WordUtils.capitalize(faker.word().adjective()) +
-                WordUtils.capitalize(faker.word().verb()));
-    }
+    public String replaceSpecialChars(String text) {
 
-    private String onlyAlpha(String str) {
-        return str.replaceAll("[^A-Za-z]", "");
-    }
+        text = text.replace("\r", "\\r");
+        text = text.replace("\n", "\\n");
+        text = text.replace("\t", "\\t");
 
-    static void main() {
-        for (int i = 0; i < 20; i++) {
-            System.out.println(randomName());
-        }
+        return NON_PRINTABLE.matcher(text).replaceAll("?");
     }
 }

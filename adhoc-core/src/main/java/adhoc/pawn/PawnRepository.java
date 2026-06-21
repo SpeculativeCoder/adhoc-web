@@ -35,6 +35,9 @@ import java.util.UUID;
 
 public interface PawnRepository extends JpaRepository<PawnEntity, Long> {
 
+    //@Lock(LockModeType.PESSIMISTIC_WRITE)
+    //Optional<PawnEntity> findForUpdateByUuid(UUID uuid);
+
     Optional<PawnEntity> findByUuid(UUID uuid);
 
     Optional<PawnEntity> findFirstByServerAndUserOrderBySeenDescIdDesc(ServerEntity server, UserEntity user);

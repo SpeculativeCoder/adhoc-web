@@ -41,20 +41,20 @@ import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExc
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 @RequiredArgsConstructor
 @Slf4j
-public class WebConfiguration {
+public class AdhocWebConfiguration {
 
     private final CoreProperties coreProperties;
     //private final ServerProperties serverProperties;
 
     @Bean
-    public PageableHandlerMethodArgumentResolverCustomizer pageableHandlerMethodArgumentResolverCustomizer() {
-        return pc -> {
-            pc.setMaxPageSize(100);
+    public PageableHandlerMethodArgumentResolverCustomizer adhocPageableHandlerMethodArgumentResolverCustomizer() {
+        return pageableResolver -> {
+            pageableResolver.setMaxPageSize(100);
         };
     }
 
     @Bean
-    public WebMvcRegistrations webMvcRegistrations(AdhocExceptionHandlerExceptionResolver adhocExceptionHandlerExceptionResolver) {
+    public WebMvcRegistrations adhocWebMvcRegistrations(AdhocExceptionHandlerExceptionResolver adhocExceptionHandlerExceptionResolver) {
         return new WebMvcRegistrations() {
             @Override
             public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
@@ -64,7 +64,7 @@ public class WebConfiguration {
     }
 
     @Bean
-    public DefaultCookieSerializerCustomizer cookieSerializerCustomizer() {
+    public DefaultCookieSerializerCustomizer adhocCookieSerializerCustomizer() {
         return cookieSerializer -> {
             // if we don't need to be used in a third party context (iframe) then we can have strict SameSite for cookies
             if (coreProperties.getThirdPartyDomains().isEmpty()) {
@@ -79,7 +79,7 @@ public class WebConfiguration {
     }
 
     @Bean
-    public WebMvcConfigurer webMvcConfigurer() {
+    public WebMvcConfigurer adhocWebMvcConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {

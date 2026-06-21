@@ -22,7 +22,7 @@
 
 package adhoc.user.programmatic_login;
 
-import adhoc.system.WebSecurityConfiguration;
+import adhoc.system.AdhocWebSecurityConfiguration;
 import adhoc.system.uuid.UUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserService;
@@ -51,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProgrammaticLoginService {
 
-    private final WebSecurityConfiguration<?> webSecurityConfiguration;
+    private final AdhocWebSecurityConfiguration<?> adhocWebSecurityConfiguration;
 
     private final UserService userService;
 
@@ -95,7 +95,7 @@ public class ProgrammaticLoginService {
             user.setPassword(null, passwordEncoder);
         }
 
-        webSecurityConfiguration.getSessionAuthenticationStrategy().onAuthentication(authentication, httpServletRequest, httpServletResponse);
+        adhocWebSecurityConfiguration.getSessionAuthenticationStrategy().onAuthentication(authentication, httpServletRequest, httpServletResponse);
 
         SecurityContext securityContext = securityContextHolderStrategy.createEmptyContext();
         securityContext.setAuthentication(authentication);

@@ -49,13 +49,13 @@ import java.time.Duration;
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 @Slf4j
-public class WebSocketConfiguration {
+public class AdhocWebSocketConfiguration {
 
     private final CoreProperties coreProperties;
     private final ArtemisProperties artemisProperties;
 
     @Bean
-    public AbstractSessionWebSocketMessageBrokerConfigurer<Session> webSocketMessageBrokerConfigurer(
+    public AbstractSessionWebSocketMessageBrokerConfigurer<Session> adhocWebSocketMessageBrokerConfigurer(
             AdhocStompSubProtocolErrorHandler adhocStompSubProtocolErrorHandler,
             AdhocMdcExecutorChannelInterceptor adhocMdcExecutorChannelInterceptor) {
         //@Lazy TaskScheduler taskScheduler) {
@@ -84,6 +84,8 @@ public class WebSocketConfiguration {
                         .withSockJS()
                         .setHeartbeatTime(Duration.ofSeconds(15).toMillis());
                 //.setTaskScheduler(taskScheduler);
+
+                registry.setPreserveReceiveOrder(true);
 
                 registry.setErrorHandler(adhocStompSubProtocolErrorHandler);
             }
@@ -122,15 +124,15 @@ public class WebSocketConfiguration {
         };
     }
 
-    // replace the default messaging CSRF interceptor with a custom version which ignores CSRF for server connections
-    @Bean
+    // replace the default messaging CSRF interceptor with this custom version which ignores CSRF for server connections
+    @Bean("csrfChannelInterceptor")
     @Primary
-    public AdhocXorCsrfChannelInterceptor csrfChannelInterceptor() {
+    public AdhocXorCsrfChannelInterceptor adhocXorCsrfChannelInterceptor() {
         return new AdhocXorCsrfChannelInterceptor();
     }
 
     @Bean
-    public ServletServerContainerFactoryBean webSocketContainer() {
+    public ServletServerContainerFactoryBean adhocWebSocketContainer() {
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
         container.setMaxTextMessageBufferSize(8192 * 10); // multiplied default
         container.setMaxBinaryMessageBufferSize(8192 * 10); // multiplied default

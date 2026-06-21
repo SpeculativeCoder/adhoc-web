@@ -20,13 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.system.retry;
+package adhoc.system.cache;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.resilience.annotation.EnableResilientMethods;
 
-/** Enable retries via annotated methods. */
 @Configuration
-@EnableResilientMethods
-public class RetryConfiguration {
+@EnableCaching
+public class AdhocCacheConfiguration {
+    // TODO
 }

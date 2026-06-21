@@ -22,7 +22,7 @@
 
 package adhoc.system.auth;
 
-import adhoc.system.WebSecurityConfiguration;
+import adhoc.system.AdhocWebSecurityConfiguration;
 import adhoc.system.properties.CoreProperties;
 import com.google.common.base.Strings;
 import jakarta.annotation.PostConstruct;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * This matcher provides a way to identify requests from an Unreal server.
- * Used by {@link WebSecurityConfiguration#securityFilterChain} to ignore CSRF checking on web requests from Unreal servers.
+ * Used by {@link AdhocWebSecurityConfiguration#adhocSecurityFilterChain} to ignore CSRF checking on web requests from Unreal servers.
  */
 @Component
 @RequiredArgsConstructor

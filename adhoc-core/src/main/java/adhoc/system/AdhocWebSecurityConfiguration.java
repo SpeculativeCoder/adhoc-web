@@ -57,7 +57,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 @Slf4j
 @RequiredArgsConstructor
-public class WebSecurityConfiguration<S extends Session> {
+public class AdhocWebSecurityConfiguration<S extends Session> {
 
     private final CoreProperties coreProperties;
 
@@ -66,7 +66,7 @@ public class WebSecurityConfiguration<S extends Session> {
 
     @Bean
     @SuppressWarnings("Convert2MethodRef")
-    public SecurityFilterChain securityFilterChain(
+    public SecurityFilterChain adhocSecurityFilterChain(
             HttpSecurity http,
             SpringSessionRememberMeServices springSessionRememberMeServices,
             SpringSessionBackedSessionRegistry<S> springSessionBackedSessionRegistry,
@@ -155,7 +155,7 @@ public class WebSecurityConfiguration<S extends Session> {
     }
 
     @Bean
-    public SpringSessionBackedSessionRegistry<S> sessionRegistry(
+    public SpringSessionBackedSessionRegistry<S> adhocSpringSessionBackedSessionRegistry(
             @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
             FindByIndexNameSessionRepository<S> jdbcIndexedSessionRepository) {
         return new SpringSessionBackedSessionRegistry<>(jdbcIndexedSessionRepository);
@@ -163,7 +163,7 @@ public class WebSecurityConfiguration<S extends Session> {
 
     @Bean
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public SpringSessionRememberMeServices springSessionRememberMeServices() {
+    public SpringSessionRememberMeServices adhocSpringSessionRememberMeServices() {
         SpringSessionRememberMeServices rememberMe = new SpringSessionRememberMeServices();
         //rememberMe.setAlwaysRemember(true);
         return rememberMe;
@@ -203,7 +203,7 @@ public class WebSecurityConfiguration<S extends Session> {
             public <O extends SessionAuthenticationStrategy> O postProcess(O sessionAuthenticationStrategy) {
                 // keep a reference to this so we can use it for our programmatic login code
                 // TODO: would prefer it as a bean in the context
-                WebSecurityConfiguration.this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
+                AdhocWebSecurityConfiguration.this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
                 log.debug("sessionAuthenticationStrategy={}", sessionAuthenticationStrategy);
                 return sessionAuthenticationStrategy;
             }

@@ -31,10 +31,10 @@ import org.springframework.security.messaging.access.intercept.MessageMatcherDel
 
 @Configuration
 @EnableWebSocketSecurity
-public class WebSocketSecurityConfiguration {
+public class AdhocWebSocketSecurityConfiguration {
 
     @Bean
-    AuthorizationManager<Message<?>> messageAuthorizationManager(
+    AuthorizationManager<Message<?>> adhocMessageAuthorizationManager(
             MessageMatcherDelegatingAuthorizationManager.Builder messages) {
 
         messages.nullDestMatcher().permitAll();

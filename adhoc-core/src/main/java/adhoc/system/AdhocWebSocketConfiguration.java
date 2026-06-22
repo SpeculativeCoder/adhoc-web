@@ -22,7 +22,6 @@
 
 package adhoc.system;
 
-import adhoc.system.auth.AdhocXorCsrfChannelInterceptor;
 import adhoc.system.exception.AdhocStompSubProtocolErrorHandler;
 import adhoc.system.logging.AdhocMdcExecutorChannelInterceptor;
 import adhoc.system.properties.CoreProperties;
@@ -33,7 +32,6 @@ import org.springframework.boot.artemis.autoconfigure.ArtemisMode;
 import org.springframework.boot.artemis.autoconfigure.ArtemisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.session.Session;
@@ -122,13 +120,6 @@ public class AdhocWebSocketConfiguration {
                         .interceptors(adhocMdcExecutorChannelInterceptor);
             }
         };
-    }
-
-    // replace the default messaging CSRF interceptor with this custom version which ignores CSRF for server connections
-    @Bean("csrfChannelInterceptor")
-    @Primary
-    public AdhocXorCsrfChannelInterceptor adhocXorCsrfChannelInterceptor() {
-        return new AdhocXorCsrfChannelInterceptor();
     }
 
     @Bean

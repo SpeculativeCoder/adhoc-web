@@ -157,6 +157,12 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
             }
         }
 
+        if ("org.springframework.web.socket.messaging.StompSubProtocolHandler".equals(loggerName)
+                && level.toInt() > Level.DEBUG.toInt()) {
+
+            // TODO
+        }
+
         if ("org.hibernate.SQL".equals(loggerName)) {
 
             if ((message.startsWith("select")

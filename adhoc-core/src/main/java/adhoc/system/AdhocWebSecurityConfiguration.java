@@ -170,7 +170,7 @@ public class AdhocWebSecurityConfiguration<S extends Session> {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder adhocPasswordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 

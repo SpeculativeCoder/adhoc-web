@@ -161,6 +161,10 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                 && level.toInt() > Level.DEBUG.toInt()) {
 
             // TODO
+            // this is happening with csrf failures - need to chase down
+            if (message.startsWith("Failed to send")) {
+                return FilterReply.DENY;
+            }
         }
 
         if ("org.hibernate.SQL".equals(loggerName)) {

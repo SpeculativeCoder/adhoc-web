@@ -23,19 +23,19 @@
 package adhoc.system;
 
 import adhoc.AbstractKioskMvcTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled
 public class IndexMvcTest extends AbstractKioskMvcTest {
 
     // TODO
     @Test
     public void testIndex(@Autowired MockMvcTester mvc) {
-        assertThat(mvc.get().uri("/")).hasStatusOk().bodyText().contains("<app-root>");
+        assertThat(mvc.get().uri("/"))
+                .hasStatusOk()
+                .bodyText().contains("<app-root>");
     }
 }

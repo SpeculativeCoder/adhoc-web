@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.data.domain.Sort.Order.desc;
 import static org.springframework.data.domain.Sort.by;
 
-@Disabled
+@Disabled // TODO: only run when running slower functional/system tests
 public class UserRegisterSeleniumIT extends AbstractManagerSeleniumIT {
 
     @Autowired

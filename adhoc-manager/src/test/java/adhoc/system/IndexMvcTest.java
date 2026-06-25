@@ -28,12 +28,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled
+@Disabled // functionality covered by other tests for now
 public class IndexMvcTest extends AbstractManagerMvcTest {
 
     // TODO
     @Test
     public void testIndex() {
-        assertThat(mvc.get().uri("/")).hasStatusOk().bodyText().contains("<app-root>");
+        assertThat(mvc.get().uri("/"))
+                .hasStatusOk()
+                .bodyText().contains("<app-root>");
     }
 }

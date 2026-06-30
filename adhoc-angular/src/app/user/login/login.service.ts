@@ -24,7 +24,7 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current/current-user.service';
 import {CsrfService} from '../../system/csrf.service';
-import {mergeMap} from 'rxjs';
+import {mergeMap, tap} from 'rxjs';
 import {StompService} from '../../system/stomp.service';
 
 @Injectable({
@@ -55,10 +55,8 @@ export class LoginService {
         'remember-me': rememberMe
       }
     }).pipe(
-        mergeMap(_ => {
-          this.csrfService.refreshCsrf().subscribe();
-          this.stompService.reconnect();
-          return this.currentUserService.refreshCurrentUser();
-        }));
+        tap(_ => this.csrfService.refreshCsrf().subscribe()),
+        mergeMap(_ => this.currentUserService.refreshCurrentUser()),
+        tap(_ => this.stompService.reconnect()));
   }
 }

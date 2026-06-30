@@ -930,7 +930,7 @@ resource "aws_service_discovery_service" "adhoc_kiosk" {
 resource "aws_cloudwatch_log_group" "adhoc_manager" {
   name = "/ecs/${local.adhoc_name}_${terraform.workspace}_manager"
   // manually adjust according to needs
-  retention_in_days = terraform.workspace == "prod" ? 3 : 1
+  retention_in_days = terraform.workspace == "prod" ? 5 : 3
   lifecycle {
     ignore_changes = [
       retention_in_days
@@ -941,7 +941,7 @@ resource "aws_cloudwatch_log_group" "adhoc_manager" {
 resource "aws_cloudwatch_log_group" "adhoc_kiosk" {
   name = "/ecs/${local.adhoc_name}_${terraform.workspace}_kiosk"
   // manually adjust according to needs
-  retention_in_days = terraform.workspace == "prod" ? 3 : 1
+  retention_in_days = terraform.workspace == "prod" ? 5 : 3
   lifecycle {
     ignore_changes = [
       retention_in_days

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.faction.award_decay;
+package adhoc.faction.awarddecay;
 
 import adhoc.faction.FactionEntity;
 import adhoc.faction.FactionRepository;

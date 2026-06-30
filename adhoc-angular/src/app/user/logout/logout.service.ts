@@ -25,6 +25,7 @@ import {tap} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {CurrentUserService} from '../current/current-user.service';
 import {CsrfService} from '../../system/csrf.service';
+import {StompService} from '../../system/stomp.service';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,8 @@ export class LogoutService {
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient,
               private currentUserService: CurrentUserService,
-              private csrfService: CsrfService) {
+              private csrfService: CsrfService,
+              private stompService: StompService) {
 
     this.logoutUrl = `${baseUrl}/adhoc_api/logout`;
   }
@@ -51,6 +53,7 @@ export class LogoutService {
         tap(_ => {
           this.csrfService.refreshCsrf().subscribe();
           this.currentUserService.setCurrentUser(null);
+          this.stompService.reconnect();
         }));
   }
 }

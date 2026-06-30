@@ -95,8 +95,7 @@ export class App implements OnInit, OnDestroy {
   private start() {
     this.currentUserService.getCurrentUser$().subscribe(currentUser => {
       this.currentUser.set(currentUser);
-      // this will either connect for the first time or reconnect the socket
-      this.stompService.reconnect();
+      this.stompService.connect();
     });
   }
 

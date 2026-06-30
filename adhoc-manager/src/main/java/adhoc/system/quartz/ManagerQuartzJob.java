@@ -22,7 +22,7 @@
 
 package adhoc.system.quartz;
 
-import adhoc.faction.award_decay.FactionAwardDecayService;
+import adhoc.faction.awarddecay.FactionAwardDecayService;
 import adhoc.pawn.purge.PawnPurgeService;
 import adhoc.server.allocate.ServerAllocateService;
 import adhoc.server.purge.ServerPurgeService;
@@ -30,7 +30,7 @@ import adhoc.system.Event;
 import adhoc.task.domain.TaskDomainOrchestrator;
 import adhoc.task.refresh.TaskRefreshOrchestrator;
 import adhoc.task.server.ServerTaskManagerOrchestrator;
-import adhoc.user.award_decay.UserAwardDecayService;
+import adhoc.user.awarddecay.UserAwardDecayService;
 import adhoc.user.purge.UserPurgeService;
 import adhoc.user.state.UserStateManagerService;
 import lombok.RequiredArgsConstructor;

@@ -51,26 +51,31 @@ export class StompService {
     //     protocols: ['v12.stomp']
     // });
 
-    this.csrfService.getCsrf().subscribe(csrf => {
-      this.client = webstomp.over(new SockJS(window.location.protocol + '//' + location.host + '/adhoc_ws/stomp/user_sockjs', {}), {
-        debug: false,
-        heartbeat: {outgoing: 20000, incoming: 20000},
+    if (!this.client) {
+      this.csrfService.getCsrf().subscribe(csrf => {
+        this.client = webstomp.over(new SockJS(window.location.protocol + '//' + location.host + '/adhoc_ws/stomp/user_sockjs', {}), {
+          debug: false,
+          heartbeat: {outgoing: 20000, incoming: 20000},
+        });
+        let headers: { [key: string]: string } = {}
+        headers[csrf.headerName!] = csrf.token!;
+        this.client.connect(
+            headers,
+            (frame) => this.onConnect(frame),
+            (error) => this.onError(error));
       });
-      let headers: { [key: string]: string } = {}
-      headers[csrf!.headerName!] = csrf!.token!;
-      this.client.connect(
-          headers,
-          (frame) => this.onConnect(frame),
-          (error) => this.onError(error));
-    });
+    }
   }
 
   disconnect() {
     //this.eventListeners = {}; // TODO
-    if (this.client && this.client.connected) {
-      this.client.disconnect(() => this.onDisconnect(), {
-        receipt: 'disconnect'
-      });
+    if (this.client) {
+      if (this.client.connected) {
+        this.client.disconnect(() => this.onDisconnect(), {
+          receipt: 'disconnect'
+        });
+      }
+      this.client = undefined;
     }
   }
 

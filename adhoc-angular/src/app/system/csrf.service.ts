@@ -57,4 +57,8 @@ export class CsrfService {
           subject.complete();
         }));
   }
+
+  clearCsrf() {
+    this.csrf = undefined;
+  }
 }

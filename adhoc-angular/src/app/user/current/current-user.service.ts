@@ -22,7 +22,7 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, mergeMap, take} from 'rxjs';
+import {mergeMap, ReplaySubject, take} from 'rxjs';
 import {CurrentUser} from './current-user';
 
 @Injectable({
@@ -32,7 +32,7 @@ export class CurrentUserService {
 
   private readonly currentUserUrl: string;
 
-  private currentUser$?: BehaviorSubject<CurrentUser | null>;
+  private currentUser$?: ReplaySubject<CurrentUser | null>;
 
   constructor(@Inject('BASE_URL') baseUrl: string,
               private http: HttpClient) {
@@ -47,7 +47,7 @@ export class CurrentUserService {
   refreshCurrentUser$() {
     let subject = this.currentUser$;
     if (!subject) {
-      subject = this.currentUser$ = new BehaviorSubject<CurrentUser | null>(null);
+      subject = this.currentUser$ = new ReplaySubject<CurrentUser | null>(1);
     }
     return this.http.get<CurrentUser | null>(this.currentUserUrl).pipe(
         mergeMap(currentUser => {

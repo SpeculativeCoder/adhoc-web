@@ -51,7 +51,7 @@ export class LogoutService {
       //params: {}
     }).pipe(
         tap(_ => {
-          this.csrfService.refreshCsrf().subscribe();
+          this.csrfService.clearCsrf();
           this.currentUserService.setCurrentUser(null);
           this.stompService.reconnect();
         }));

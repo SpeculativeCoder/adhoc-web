@@ -52,7 +52,7 @@ export class RegisterService {
       }
     }).pipe(
         tap((currentUser: CurrentUser) => {
-          this.csrfService.refreshCsrf().subscribe();
+          this.csrfService.clearCsrf();
           this.currentUserService.setCurrentUser(currentUser);
           this.stompService.reconnect();
         }));

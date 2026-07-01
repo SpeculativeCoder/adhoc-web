@@ -55,7 +55,7 @@ export class LoginService {
         'remember-me': rememberMe
       }
     }).pipe(
-        tap(_ => this.csrfService.refreshCsrf().subscribe()),
+        tap(_ => this.csrfService.clearCsrf()),
         mergeMap(_ => this.currentUserService.refreshCurrentUser()),
         tap(_ => this.stompService.reconnect()));
   }

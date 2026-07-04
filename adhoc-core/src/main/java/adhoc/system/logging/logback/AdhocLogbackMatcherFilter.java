@@ -157,7 +157,6 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
             }
         }
 
-        /*
         if ("org.springframework.web.socket.messaging.StompSubProtocolHandler".equals(loggerName)
                 && level.toInt() > Level.DEBUG.toInt()) {
 
@@ -167,7 +166,6 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
                 return FilterReply.DENY;
             }
         }
-        */
 
         if ("org.hibernate.SQL".equals(loggerName)) {
 

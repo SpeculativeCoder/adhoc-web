@@ -52,9 +52,11 @@ public class RobotsController {
 
     private ClassPathResource classPathResource(String path) {
         ClassPathResource resource = new ClassPathResource(path);
+
         // ensure nothing unexpected due to path normalization etc.
         Verify.verify(Objects.equals("/" + resource.getPath(), path));
         Verify.verify(resource.getPath().startsWith("robots/"));
+
         return resource;
     }
 }

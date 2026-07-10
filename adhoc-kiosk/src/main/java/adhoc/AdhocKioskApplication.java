@@ -36,12 +36,13 @@ import org.springframework.core.env.StandardEnvironment;
 import java.util.List;
 
 /**
- * When running as a Kiosk this application is for access by users (i.e. the "public" facing variant of the application).
- * There will likely be many Kiosks running - enough to handle whatever load is occurring.
+ * When running as a kiosk this application is for access by users (i.e. the "public" facing variant of the application).
+ * There will likely be many kiosks running - enough to handle whatever load is occurring.
  * <p>
- * It receives events via the Artemis cluster (see {@link AdhocArtemisConfiguration}) to pass on to users.
+ * It receives events via the Artemis cluster (see {@link AdhocArtemisConfiguration}) from the manager to pass on to users.
  * <p>
- * Most of the access to the Kiosk will be users with {@link UserRole#USER} role.
+ * Most of the access to the kiosk will be users with {@link UserRole#USER} role.
+ * Administrators will need to use the web-facing functionality of the manager application.
  */
 @SpringBootApplication
 @Slf4j

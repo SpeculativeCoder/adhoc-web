@@ -36,15 +36,15 @@ import org.springframework.core.env.StandardEnvironment;
 import java.util.List;
 
 /**
- * When running as a Manager, this application manages the Unreal servers.
- * There will likely only be a few (and typically just 1) Manager application(s) running.
+ * When running as a manager, this application manages the Unreal servers.
+ * There will likely only be a few (and typically just 1) manager application(s) running.
  * <p>
- * Unreal servers communicate with the Manager to let it know about events occurring.
- * Events are handled by the Manager and then emitted in the Artemis cluster (see {@link AdhocArtemisConfiguration})
- * for Kiosks to observe.
+ * Unreal servers communicate with the manager to let it know about events occurring.
+ * Events are handled by the manager and then emitted in the Artemis cluster (see {@link AdhocArtemisConfiguration})
+ * for kiosks to observe and pass on to users.
  * <p>
- * The Manager also runs all the same web-facing functionality of the Kiosk, particularly for administrator access.
- * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the Manager.
+ * The manager also runs all the same web-facing functionality of the kiosk, particularly for administrator access.
+ * Typically, only {@link UserRole#SERVER} and {@link UserRole#ADMIN} users access the manager.
  */
 @SpringBootApplication
 @Slf4j
@@ -60,7 +60,7 @@ public class AdhocManagerApplication extends AbstractAdhocApplication {
      * </ul>
      */
     static void main(String[] args) {
-        // rather than rely on spring.profiles.default we will just pick default profiles as needed
+        // rather than rely on spring.profiles.default we will just pick some extra default profiles as needed
         ConfigurableEnvironment environment = new StandardEnvironment();
         environment.getPropertySources().addLast(new SimpleCommandLinePropertySource(args));
 

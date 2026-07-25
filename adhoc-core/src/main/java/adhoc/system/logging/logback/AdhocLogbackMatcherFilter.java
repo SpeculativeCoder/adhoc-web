@@ -182,6 +182,32 @@ public class AdhocLogbackMatcherFilter extends AbstractMatcherFilter<ILoggingEve
             //}
         }
 
+        if ("org.apache.coyote.http11.Http11Processor".equals(loggerName)
+                && level.toInt() > Level.DEBUG.toInt()) {
+
+            if (message.startsWith("Error parsing HTTP request header")) {
+                return FilterReply.DENY;
+            }
+        }
+
+        if ("adhoc.system.exception.AdhocResponseEntityExceptionHandler".equals(loggerName)
+                && level.toInt() > Level.DEBUG.toInt()) {
+
+            if (message.startsWith("Response already committed. Ignoring:")) {
+                return FilterReply.DENY;
+            }
+        }
+
+        if ("org.springframework.web.servlet.resource.ResourceHandlerUtils".equals(loggerName)
+                && level.toInt() > Level.DEBUG.toInt()) {
+
+            // TODO: check uri
+            if (message.startsWith("\"Path contains")
+                    && message.contains("after call to StringUtils#cleanPath:")) {
+                return FilterReply.DENY;
+            }
+        }
+
         return FilterReply.NEUTRAL;
     }
 }

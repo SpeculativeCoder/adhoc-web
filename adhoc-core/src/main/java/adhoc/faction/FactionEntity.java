@@ -76,4 +76,11 @@ public class FactionEntity {
 
     @Column(nullable = false)
     private BigDecimal score;
+
+    public FactionEntity(Integer index, String name, String color, double score) {
+        this.index = index;
+        this.name = name;
+        this.color = color;
+        this.score = BigDecimal.valueOf(score);
+    }
 }

@@ -99,16 +99,12 @@ public class ObjectiveEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private AreaEntity area;
 
-    public ObjectiveEntity(RegionEntity region, Integer index, String name, BigDecimal x, BigDecimal y, BigDecimal z) {
+    public ObjectiveEntity(RegionEntity region, Integer index, String name, double x, double y, double z) {
         this.region = region;
         this.index = index;
         this.name = name;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public ObjectiveEntity(RegionEntity region, Integer index, String name, Double x, Double y, Double z) {
-        this(region, index, name, BigDecimal.valueOf(x), BigDecimal.valueOf(y), BigDecimal.valueOf(z));
+        this.x = BigDecimal.valueOf(x);
+        this.y = BigDecimal.valueOf(y);
+        this.z = BigDecimal.valueOf(z);
     }
 }

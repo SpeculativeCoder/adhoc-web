@@ -33,7 +33,8 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 @SpringBootTest
 @WebAppConfiguration
 @TestPropertySource("classpath:/application-test.properties")
-@AutoConfigureMockMvc //(printOnlyOnFailure = false)
+// TODO: why can we not set printOnlyOnFailure via test properties?
+@AutoConfigureMockMvc(printOnlyOnFailure = false) // print = MockMvcPrint.LOG_DEBUG,
 @Slf4j
 public class AbstractManagerMvcTest {
 

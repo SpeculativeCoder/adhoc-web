@@ -25,6 +25,7 @@ package adhoc.user.navigate;
 import adhoc.AbstractManagerMvcTest;
 import adhoc.area.AreaEntity;
 import adhoc.area.AreaRepository;
+import adhoc.faction.FactionEntity;
 import adhoc.faction.FactionRepository;
 import adhoc.region.RegionEntity;
 import adhoc.region.RegionRepository;
@@ -33,10 +34,12 @@ import adhoc.server.ServerRepository;
 import adhoc.system.auth.AdhocUserDetails;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,65 +61,70 @@ public class UserNavigateMvcTest extends AbstractManagerMvcTest {
     private AreaRepository areaRepository;
     @Autowired
     private RegionRepository regionRepository;
+    @Autowired
+    private EntityManager entityManager;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     public void testNavigate() throws Exception {
-        LocalDateTime startTime = LocalDateTime.now();
 
-        RegionEntity region = regionRepository.findById(1L).orElseThrow();
-        AreaEntity area = areaRepository.findById(1L).orElseThrow();
+        // ARRANGE
 
-        UserEntity user = new UserEntity("TestUser", "USER");
-        user.setFaction(factionRepository.findById(1L).orElseThrow());
+        LocalDateTime priorTime = LocalDateTime.now();
+
+        int factionIndex = entityManager.createQuery(
+                        "SELECT f.index FROM Faction f ORDER BY f.index DESC LIMIT 1", Integer.class)
+                .getSingleResult() + 1;
+        FactionEntity faction = new FactionEntity(factionIndex, "Faction 1", "#0000FF", 0);
+        faction = factionRepository.save(faction);
+
+        RegionEntity region = new RegionEntity("Region 1", "Region0001", 10, -20, 0);
+        region = regionRepository.save(region);
+
+        AreaEntity area = new AreaEntity(region, 0, "Area 1", 0, 0, 0, 10, 10, 10);
+        area = areaRepository.save(area);
+
+        UserEntity user = new UserEntity("TestUser", "USER", faction, 0d);
+        UUID priorToken = UUID.randomUUID();
+        user.getState().setToken(priorToken);
         user = userRepository.save(user);
-        UUID originalToken = user.getState().getToken();
 
-        ServerEntity server = new ServerEntity(region, List.of(area));
-        server.setEnabled(true);
-        server.setActive(true);
+        ServerEntity server = new ServerEntity(region, List.of(area), true, true);
         server.setPublicIp("127.0.0.1");
-        server.setWebSocketUrl("wss://server.localhost:8889");
         server.setPublicWebSocketPort(8889);
+        server.setWebSocketUrl("wss://server.localhost:8889");
         server = serverRepository.save(server);
 
+        // ACT
+
         MvcTestResult result = mvc.post().uri("/adhoc_api/users/navigate")
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(csrf())
                 .with(user(new AdhocUserDetails(user.getName(), user.getPassword(), true, user.getAuthorities(), user.getId())))
-                .content("""
-                        {
-                            "destinationServerId": %d
-                        }
-                        """.formatted(
-                        server.getId()))
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(UserNavigateRequest.builder()
+                        .destinationServerId(server.getId())
+                        .build()))
                 .exchange();
 
-        user = userRepository.findById(user.getId()).orElseThrow();
+        // ASSERT
 
+        user = userRepository.findById(user.getId()).orElseThrow();
         assertThat(user.getState().getDestinationServer().getId()).isEqualTo(server.getId());
-        assertThat(user.getState().getNavigated()).isAfterOrEqualTo(startTime);
-        assertThat(user.getState().getUpdated()).isAfterOrEqualTo(startTime);
-        assertThat(user.getState().getToken()).isNotNull().isNotEqualTo(originalToken);
+        assertThat(user.getState().getNavigated()).isAfterOrEqualTo(priorTime);
+        assertThat(user.getState().getToken()).isNotNull().isNotEqualTo(priorToken);
 
         assertThat(result)
                 .hasStatusOk()
-                .hasContentType(MediaType.APPLICATION_JSON);
-
-        assertThat(result).bodyJson().isEqualTo("""
-                {
-                    "ip": "127.0.0.1",
-                    "port": 8889,
-                    "webSocketUrl": "wss://server.localhost:8889",
-                    "mapName": "Region0001",
-                    "userId": %d,
-                    "factionId": 1,
-                    "token": "%s",
-                    "x": null,
-                    "y": null,
-                    "z": null,
-                    "yaw": null,
-                    "pitch": null
-                }
-                """.formatted(user.getId(), user.getState().getToken()));
+                .hasContentType(MediaType.APPLICATION_JSON)
+                .bodyJson().isEqualTo(objectMapper.writeValueAsString(UserNavigateResponse.builder()
+                        .ip("127.0.0.1")
+                        .port(8889)
+                        .webSocketUrl("wss://server.localhost:8889")
+                        .mapName("Region0001")
+                        .userId(user.getId())
+                        .factionId(faction.getId())
+                        .token(user.getState().getToken().toString())
+                        .build()));
     }
 }

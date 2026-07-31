@@ -104,4 +104,16 @@ public class AreaEntity {
     /** Server currently representing this area. */
     @ManyToOne(fetch = FetchType.LAZY)
     private ServerEntity server;
+
+    public AreaEntity(RegionEntity region, Integer index, String name, double x, double y, double z, double sizeX, double sizeY, double sizeZ) {
+        this.region = region;
+        this.index = index;
+        this.name = name;
+        this.x = BigDecimal.valueOf(x);
+        this.y = BigDecimal.valueOf(y);
+        this.z = BigDecimal.valueOf(z);
+        this.sizeX = BigDecimal.valueOf(sizeX);
+        this.sizeY = BigDecimal.valueOf(sizeY);
+        this.sizeZ = BigDecimal.valueOf(sizeZ);
+    }
 }

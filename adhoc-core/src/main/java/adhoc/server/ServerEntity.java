@@ -113,8 +113,10 @@ public class ServerEntity {
     @OneToMany(mappedBy = "server")
     private List<PawnEntity> pawns;
 
-    public ServerEntity(RegionEntity region, List<AreaEntity> areas) {
+    public ServerEntity(RegionEntity region, List<AreaEntity> areas, boolean enabled, boolean active) {
         this.region = region;
         this.areas = areas;
+        this.enabled = enabled;
+        this.active = active;
     }
 }

@@ -87,4 +87,12 @@ public class RegionEntity {
 
     @OneToMany(mappedBy = "region")
     private List<ServerEntity> servers;
+
+    public RegionEntity(String name, String mapName, double x, double y, double z) {
+        this.name = name;
+        this.mapName = mapName;
+        this.x = BigDecimal.valueOf(x);
+        this.y = BigDecimal.valueOf(y);
+        this.z = BigDecimal.valueOf(z);
+    }
 }

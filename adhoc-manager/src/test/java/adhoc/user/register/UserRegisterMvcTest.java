@@ -27,19 +27,20 @@ import adhoc.system.properties.CoreProperties;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
+import adhoc.user.current.CurrentUserDto;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
+import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.data.domain.Sort.Order.desc;
-import static org.springframework.data.domain.Sort.by;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 public class UserRegisterMvcTest extends AbstractManagerMvcTest {
@@ -48,28 +49,38 @@ public class UserRegisterMvcTest extends AbstractManagerMvcTest {
     private CoreProperties coreProperties;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private EntityManager entityManager;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     public void testRegister() throws Exception {
-        long numUsersBefore = userRepository.count();
 
+        // ARRANGE
+
+        long priorUserCount = userRepository.count();
+
+        // ACT
+
+        UserRegisterRequest request = UserRegisterRequest.builder()
+                .human(true)
+                .build();
         MvcTestResult result = mvc.post().uri("/adhoc_api/users/register")
-                .contentType(MediaType.APPLICATION_JSON).with(csrf())
-                //.content(jsonMapper.writeValueAsBytes(request))
-                .content("""
-                        {
-                            "human": true
-                        }
-                        """)
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
                 .exchange();
 
-        long numUsersAfter = userRepository.count();
-        assertThat(numUsersAfter).isEqualTo(numUsersBefore + 1);
+        // ASSERT
 
-        List<UserEntity> users = userRepository.findAll(by(desc("id")));
-        UserEntity user = users.getFirst();
+        long userCount = userRepository.count();
+        assertThat(userCount).isEqualTo(priorUserCount + 1);
 
-        assertThat(user.getId()).isEqualTo(numUsersAfter);
+        UserEntity user = entityManager.createQuery(
+                        "SELECT u FROM User u ORDER BY u.id DESC LIMIT 1", UserEntity.class)
+                .getSingleResult();
+        assertThat(user.getVersion()).isEqualTo(2); // NOTE: programmatic login sets last login time
         assertThat(user.getName()).isAlphanumeric();
         assertThat(user.getEmail()).isNull();
         assertThat(user.getPassword()).isNull();
@@ -77,34 +88,21 @@ public class UserRegisterMvcTest extends AbstractManagerMvcTest {
         assertThat(user.isHuman()).isTrue();
         assertThat(user.getScore()).isEqualTo(BigDecimal.ZERO);
         assertThat(user.getUserRoles()).isEqualTo(Set.of(UserRole.USER));
-        // TODO
 
         assertThat(result)
                 .hasStatus(HttpStatus.CREATED)
-                .hasContentType(MediaType.APPLICATION_JSON) // TODO
-                .hasHeader("Location", "/adhoc_api/users/current");
-
+                .hasHeader("Location", "/adhoc_api/users/current")
+                .hasContentType(MediaType.APPLICATION_JSON)
+                .bodyJson().isEqualTo(objectMapper.writeValueAsString(CurrentUserDto.builder()
+                        .id(user.getId()).version(1L) // NOTE: programmatic login sets last login time
+                        .name(user.getName())
+                        .quickLoginCode(user.getName() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey()))
+                        .human(true)
+                        .factionId(user.getFaction().getId())
+                        .score(BigDecimal.ZERO)
+                        .roles(List.of("USER"))
+                        .build()));
         assertThat(result).cookies()
                 .containsCookie("SESSION");
-
-        assertThat(result).bodyJson().isEqualTo("""
-                {
-                    "id": %d,
-                    "version": 1,
-                    "name": "%s",
-                    "quickLoginCode": "%s",
-                    "human": true,
-                    "factionId": %d,
-                    "score": 0.0,
-                    "regionId": null,
-                    "roles": ["USER"],
-                    "destinationServerId": null,
-                    "serverId": null
-                }
-                """.formatted(
-                user.getId(),
-                user.getName(),
-                user.getName() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey()),
-                user.getFaction().getId()));
     }
 }

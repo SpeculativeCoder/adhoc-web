@@ -136,10 +136,11 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<PawnEntity> pawns;
 
-    public UserEntity(String name, String roles) {
+    public UserEntity(String name, String roles, FactionEntity faction, double score) {
         this.name = name;
         this.roles = roles;
-        this.score = BigDecimal.ZERO;
+        this.faction = faction;
+        this.score = BigDecimal.valueOf(score);
     }
 
     public UserStateEntity getState() {

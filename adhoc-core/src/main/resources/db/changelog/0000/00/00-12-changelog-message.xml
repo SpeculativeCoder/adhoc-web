@@ -43,6 +43,10 @@
                     type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="universe_id"
+                    type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
             <column name="text"
                     type="VARCHAR(10000)">
                 <constraints nullable="false"/>
@@ -54,6 +58,12 @@
             <column name="user_id"
                     type="BIGINT"/>
         </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="universe_id"
+                                 baseTableName="message"
+                                 constraintName="fk_message_on_universe"
+                                 referencedColumnNames="id"
+                                 referencedTableName="universe"/>
 
         <addForeignKeyConstraint baseColumnNames="user_id"
                                  baseTableName="message"

@@ -38,8 +38,8 @@ import org.springframework.stereotype.Component;
  * This wrapper deliberately ignores CSRF for all web socket connections from an Unreal server,
  * but allows the wrapped {@link XorCsrfChannelInterceptor} to do CSRF checking on all other connections.
  */
-@Component("csrfChannelInterceptor") // replace the default messaging CSRF interceptor with this custom version
 @Primary
+@Component("csrfChannelInterceptor") // replace the default messaging CSRF interceptor with this custom version
 public class AdhocXorCsrfChannelInterceptor implements ChannelInterceptor {
 
     private final XorCsrfChannelInterceptor xorCsrfChannelInterceptor = new XorCsrfChannelInterceptor();

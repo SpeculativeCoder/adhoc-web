@@ -22,6 +22,8 @@
 
 package adhoc.message;
 
+import adhoc.universe.UniverseRepository;
+import adhoc.universe.UniverseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,6 +41,7 @@ import java.util.Optional;
 public class MessageService {
 
     private final MessageRepository messageRepository;
+    private final UniverseRepository universeRepository;
 
     @Transactional(readOnly = true)
     public Page<MessageDto> findMessages(Optional<Long> optionalUserId, Pageable pageable) {
@@ -56,6 +59,7 @@ public class MessageService {
         LocalDateTime now = LocalDateTime.now();
 
         MessageEntity message = new MessageEntity();
+        message.setUniverse(universeRepository.getReferenceById(UniverseService.UNIVERSE_ID));
         message.setTimestamp(now);
         message.setText(text);
 

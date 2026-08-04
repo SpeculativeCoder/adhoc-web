@@ -93,6 +93,7 @@ public class UniverseInitializeService {
         // insert factions
 
         FactionEntity team1 = new FactionEntity();
+        team1.setUniverse(universe);
         team1.setIndex(0);
         team1.setName("Alpha");
         team1.setColor("#4B8EFF");
@@ -101,6 +102,7 @@ public class UniverseInitializeService {
         Verify.verify(team1.getId().equals(1L));
 
         FactionEntity team2 = new FactionEntity();
+        team2.setUniverse(universe);
         team2.setIndex(1);
         team2.setName("Beta");
         team2.setColor("#FF4D96");
@@ -109,6 +111,7 @@ public class UniverseInitializeService {
         Verify.verify(team2.getId().equals(2L));
 
         FactionEntity team3 = new FactionEntity();
+        team3.setUniverse(universe);
         team3.setIndex(2);
         team3.setName("Gamma");
         team3.setColor("#FFFA6A");
@@ -117,6 +120,7 @@ public class UniverseInitializeService {
         Verify.verify(team3.getId().equals(3L));
 
         FactionEntity team4 = new FactionEntity();
+        team4.setUniverse(universe);
         team4.setIndex(3);
         team4.setName("Delta");
         team4.setColor("#A7FF6B");
@@ -125,6 +129,7 @@ public class UniverseInitializeService {
         Verify.verify(team4.getId().equals(4L));
 
         FactionEntity team5 = new FactionEntity();
+        team5.setUniverse(universe);
         team5.setIndex(4);
         team5.setName("Epsilon");
         team5.setColor("#96E8FF");
@@ -133,6 +138,7 @@ public class UniverseInitializeService {
         Verify.verify(team5.getId().equals(5L));
 
         FactionEntity team6 = new FactionEntity();
+        team6.setUniverse(universe);
         team6.setIndex(5);
         team6.setName("Zeta");
         team6.setColor("#B96EFF");
@@ -141,6 +147,7 @@ public class UniverseInitializeService {
         Verify.verify(team6.getId().equals(6L));
 
         FactionEntity team7 = new FactionEntity();
+        team7.setUniverse(universe);
         team7.setIndex(6);
         team7.setName("Eta");
         team7.setColor("#FF905B");
@@ -149,6 +156,7 @@ public class UniverseInitializeService {
         Verify.verify(team7.getId().equals(7L));
 
         FactionEntity team8 = new FactionEntity();
+        team8.setUniverse(universe);
         team8.setIndex(7);
         team8.setName("Theta");
         team8.setColor("#8480BB");
@@ -157,6 +165,7 @@ public class UniverseInitializeService {
         Verify.verify(team8.getId().equals(8L));
 
         RegionEntity region1 = new RegionEntity();
+        region1.setUniverse(universe);
         region1.setName("Region 1");
         region1.setX(BigDecimal.valueOf(0));
         region1.setY(BigDecimal.valueOf(0));

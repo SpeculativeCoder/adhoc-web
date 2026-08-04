@@ -22,12 +22,15 @@
 
 package adhoc.faction;
 
+import adhoc.universe.UniverseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
@@ -62,6 +65,9 @@ public class FactionEntity {
     @Version
     @Column(nullable = false)
     private Long version;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private UniverseEntity universe;
 
     @Column(nullable = false, unique = true)
     @ToString.Include

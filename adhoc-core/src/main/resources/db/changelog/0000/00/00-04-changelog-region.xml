@@ -43,6 +43,10 @@
                     type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="universe_id"
+                    type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
             <column name="name"
                     type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -64,6 +68,12 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="universe_id"
+                                 baseTableName="region"
+                                 constraintName="fk_region_on_universe"
+                                 referencedColumnNames="id"
+                                 referencedTableName="universe"/>
 
     </changeSet>
 

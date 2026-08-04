@@ -22,6 +22,7 @@
 
 package adhoc.message;
 
+import adhoc.universe.UniverseEntity;
 import adhoc.user.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,6 +60,9 @@ public class MessageEntity {
     @Version
     @Column(nullable = false)
     private Long version;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private UniverseEntity universe;
 
     @Column(nullable = false, length = 10000)
     @ToString.Include

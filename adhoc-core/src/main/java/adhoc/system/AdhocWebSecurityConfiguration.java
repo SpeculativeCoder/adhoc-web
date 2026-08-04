@@ -218,8 +218,8 @@ public class AdhocWebSecurityConfiguration<S extends Session> {
     //}
 
     // as of Spring Boot 3.4.1 / Spring Security 6.4.2, try to ignore processor from WebSocketObservationConfiguration for now
-    //@Bean
     //@Primary
+    //@Bean
     //public ObjectPostProcessor<Object> primaryObjectPostProcessor(@Qualifier("objectPostProcessor") ObjectPostProcessor<Object> objectPostProcessor) {
     //    return objectPostProcessor;
     //}

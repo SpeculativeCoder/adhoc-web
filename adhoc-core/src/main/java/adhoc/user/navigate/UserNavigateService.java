@@ -40,6 +40,7 @@ import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -55,6 +56,8 @@ public class UserNavigateService {
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
     private final AreaRepository areaRepository;
+
+    private final Clock clock;
 
     /**
      * User navigation should be called some time prior to the client being launched.
@@ -113,7 +116,7 @@ public class UserNavigateService {
         }
 
         user.getState().setDestinationServer(destinationServer);
-        user.getState().setNavigated(LocalDateTime.now());
+        user.getState().setNavigated(LocalDateTime.now(clock));
 
         UUID newToken = UUIDUtils.randomUUID();
         user.getState().setToken(newToken);

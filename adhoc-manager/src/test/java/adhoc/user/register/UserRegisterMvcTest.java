@@ -37,10 +37,14 @@ import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 public class UserRegisterMvcTest extends AbstractManagerMvcTest {
@@ -53,6 +57,8 @@ public class UserRegisterMvcTest extends AbstractManagerMvcTest {
     private EntityManager entityManager;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private Clock clock;
 
     @Test
     public void testRegister() throws Exception {
@@ -74,6 +80,8 @@ public class UserRegisterMvcTest extends AbstractManagerMvcTest {
 
         // ASSERT
 
+        LocalDateTime now = LocalDateTime.now(clock);
+
         long userCount = userRepository.count();
         assertThat(userCount).isEqualTo(priorUserCount + 1);
 
@@ -88,6 +96,8 @@ public class UserRegisterMvcTest extends AbstractManagerMvcTest {
         assertThat(user.isHuman()).isTrue();
         assertThat(user.getScore()).isEqualTo(BigDecimal.ZERO);
         assertThat(user.getUserRoles()).isEqualTo(Set.of(UserRole.USER));
+        assertThat(user.getCreated()).isCloseTo(now, within(1, ChronoUnit.MICROS));
+        assertThat(user.getUpdated()).isCloseTo(now, within(1, ChronoUnit.MICROS));
 
         assertThat(result)
                 .hasStatus(HttpStatus.CREATED)

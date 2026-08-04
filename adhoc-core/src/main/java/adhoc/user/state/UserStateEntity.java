@@ -40,10 +40,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -56,7 +54,6 @@ import java.util.UUID;
 @Entity(name = "UserState")
 @Table(indexes = {
         @Index(name = "idx_user_state_region_id", columnList = "region_id"),
-        @Index(name = "idx_user_state_created", columnList = "created"),
         @Index(name = "idx_user_state_seen", columnList = "seen"),
         @Index(name = "idx_user_state_server_id", columnList = "server_id")
 })
@@ -99,14 +96,6 @@ public class UserStateEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ServerEntity server;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime created;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updated;
 
     private LocalDateTime navigated;
 

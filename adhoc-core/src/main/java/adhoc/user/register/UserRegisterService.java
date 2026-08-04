@@ -47,6 +47,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -64,6 +66,7 @@ public class UserRegisterService {
 
     private final HttpServletRequest httpServletRequest;
     private final PasswordEncoder passwordEncoder;
+    private final Clock clock;
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
@@ -78,6 +81,8 @@ public class UserRegisterService {
 
     @Transactional(propagation = Propagation.MANDATORY)
     public UserEntity userRegisterInternal(UserRegisterRequest userRegisterRequest) {
+
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (!coreProperties.getFeatureFlags().contains("development")) {
             Preconditions.checkArgument(userRegisterRequest.getEmail() == null, "Registering with email not allowed yet");
@@ -130,6 +135,9 @@ public class UserRegisterService {
         String quickLoginPassword = UUIDUtils.randomUUID().toString().replaceAll("-", "");
 
         user.setQuickLoginPassword(quickLoginPassword, coreProperties.getQuickLoginPasswordEncryptionKey());
+
+        user.setCreated(now);
+        user.setUpdated(now);
 
         //user.setLastLogin(LocalDateTime.now());
         //user.getState().setToken(RandomUUIDUtils.randomUUID());

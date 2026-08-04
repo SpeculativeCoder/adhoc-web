@@ -41,11 +41,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
@@ -65,13 +68,15 @@ public class UserNavigateMvcTest extends AbstractManagerMvcTest {
     private EntityManager entityManager;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private Clock clock;
 
     @Test
     public void testNavigate() throws Exception {
 
         // ARRANGE
 
-        LocalDateTime priorTime = LocalDateTime.now();
+        LocalDateTime priorTime = LocalDateTime.now().minusMinutes(10);
 
         int factionIndex = entityManager.createQuery(
                         "SELECT f.index FROM Faction f ORDER BY f.index DESC LIMIT 1", Integer.class)
@@ -86,6 +91,8 @@ public class UserNavigateMvcTest extends AbstractManagerMvcTest {
         area = areaRepository.save(area);
 
         UserEntity user = new UserEntity("TestUser", "USER", faction, 0d);
+        user.setCreated(priorTime);
+        user.setUpdated(priorTime);
         UUID priorToken = UUID.randomUUID();
         user.getState().setToken(priorToken);
         user = userRepository.save(user);
@@ -109,9 +116,11 @@ public class UserNavigateMvcTest extends AbstractManagerMvcTest {
 
         // ASSERT
 
+        LocalDateTime now = LocalDateTime.now(clock);
+
         user = userRepository.findById(user.getId()).orElseThrow();
         assertThat(user.getState().getDestinationServer().getId()).isEqualTo(server.getId());
-        assertThat(user.getState().getNavigated()).isAfterOrEqualTo(priorTime);
+        assertThat(user.getState().getNavigated()).isCloseTo(now, within(1, ChronoUnit.MICROS));
         assertThat(user.getState().getToken()).isNotNull().isNotEqualTo(priorToken);
 
         assertThat(result)

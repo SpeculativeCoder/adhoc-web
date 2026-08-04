@@ -46,10 +46,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.encrypt.Encryptors;
@@ -74,7 +72,9 @@ import java.util.stream.Collectors;
 @Table(name = "user_", indexes = {
         @Index(name = "idx_user_email", columnList = "email"),
         @Index(name = "idx_user_score", columnList = "score"),
-        @Index(name = "idx_user_created", columnList = "created")
+        @Index(name = "idx_user_created", columnList = "created"),
+        @Index(name = "idx_user_updated", columnList = "updated"),
+        @Index(name = "idx_user_last_login", columnList = "last_login")
 })
 // TODO: unique constraint(s)
 @DynamicInsert
@@ -123,11 +123,9 @@ public class UserEntity {
     @Column(nullable = false)
     private String roles;
 
-    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime created;
 
-    @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updated;
 

@@ -20,7 +20,8 @@
 # SOFTWARE.
 #
 
-FROM ubuntu:rolling
+#FROM ubuntu:rolling
+FROM debian:stable
 
 RUN apt-get update -y && apt-get dist-upgrade -y
 RUN apt-get install -y openjdk-25-jre-headless curl

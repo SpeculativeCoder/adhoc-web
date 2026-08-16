@@ -132,7 +132,7 @@ public class UserRegisterService {
         user.setScore(BigDecimal.valueOf(0.0));
         user.setUserRoles(Sets.newHashSet(UserRole.USER)); //, UserRole.DEBUG, UserRole.ADMIN));
 
-        String quickLoginPassword = UUIDUtils.randomUUID().toString().replaceAll("-", "");
+        String quickLoginPassword = UUIDUtils.randomUUID().toString().replace("-", "");
 
         user.setQuickLoginPassword(quickLoginPassword, coreProperties.getQuickLoginPasswordEncryptionKey());
 

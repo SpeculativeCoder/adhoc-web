@@ -78,18 +78,18 @@ public class AdhocUserDetailsService implements UserDetailsService {
                 .log("loadUserByUsername:");
 
         boolean quickLogin;
-        String nameOrEmail;
+        UserEntity user;
 
         if (username.endsWith("-")) {
-            nameOrEmail = username.substring(0, username.length() - 1);
             quickLogin = true;
+            Long userId = Long.valueOf(username.substring(0, username.length() - 1));
+            user = userRepository.findById(userId).orElseThrow(() ->
+                    UsernameNotFoundException.fromUsername(username));
         } else {
-            nameOrEmail = username;
             quickLogin = false;
+            user = userRepository.findByNameOrEmail(username, username).orElseThrow(() ->
+                    UsernameNotFoundException.fromUsername(username));
         }
-
-        UserEntity user = userRepository.findByNameOrEmail(nameOrEmail, nameOrEmail).orElseThrow(() ->
-                UsernameNotFoundException.fromUsername(username));
 
         log.atTrace()
                 .addKeyValue("user", user)
@@ -104,13 +104,13 @@ public class AdhocUserDetailsService implements UserDetailsService {
         String password;
         boolean enabled;
 
-        if (!quickLogin && user.getPassword() != null) {
-            password = user.getPassword();
-            enabled = true;
-
-        } else if (quickLogin && user.getQuickLoginPassword() != null) {
+        if (quickLogin && user.getQuickLoginPassword() != null) {
             String quickLoginPassword = user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey());
             password = passwordEncoder.encode(quickLoginPassword);
+            enabled = true;
+
+        } else if (!quickLogin && user.getPassword() != null) {
+            password = user.getPassword();
             enabled = true;
 
         } else {

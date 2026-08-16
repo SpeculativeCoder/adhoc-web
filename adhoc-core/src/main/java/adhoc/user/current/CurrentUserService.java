@@ -22,14 +22,13 @@
 
 package adhoc.user.current;
 
-import adhoc.region.RegionEntity;
-import adhoc.server.ServerEntity;
 import adhoc.system.auth.AdhocUserDetails;
 import adhoc.system.properties.CoreProperties;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
 import adhoc.user.state.UserStateEntity;
+import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -51,15 +50,19 @@ public class CurrentUserService {
 
     @Transactional(readOnly = true)
     public Optional<CurrentUserDto> findCurrentUser(Authentication authentication) {
+
         if (authentication == null || !(authentication.getPrincipal() instanceof AdhocUserDetails currentUserDetails)) {
             return Optional.empty();
         }
+
         return userRepository.findById(currentUserDetails.getUserId()).map(this::toCurrentUserDto);
     }
 
     public CurrentUserDto toCurrentUserDto(UserEntity user) {
 
-        String quickLoginCode = user.getName() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey());
+        String quickLoginCode = user.getId() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey());
+
+        UserStateEntity userState = Verify.verifyNotNull(user.getState());
 
         return new CurrentUserDto(
                 user.getId(),
@@ -69,9 +72,9 @@ public class CurrentUserService {
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
-                Optional.ofNullable(user.getState()).map(UserStateEntity::getRegion).map(RegionEntity::getId).orElse(null),
+                userState.getRegion() == null ? null : userState.getRegion().getId(),
                 user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
-                Optional.ofNullable(user.getState()).map(UserStateEntity::getDestinationServer).map(ServerEntity::getId).orElse(null),
-                Optional.ofNullable(user.getState()).map(UserStateEntity::getServer).map(ServerEntity::getId).orElse(null));
+                userState.getDestinationServer() == null ? null : userState.getDestinationServer().getId(),
+                userState.getServer() == null ? null : userState.getServer().getId());
     }
 }

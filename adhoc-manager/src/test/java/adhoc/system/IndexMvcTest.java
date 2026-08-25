@@ -23,12 +23,10 @@
 package adhoc.system;
 
 import adhoc.AbstractManagerMvcTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled // functionality covered by other tests for now
 public class IndexMvcTest extends AbstractManagerMvcTest {
 
     // TODO

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.state;
+package adhoc.user.presence;
 
 import adhoc.pawn.PawnEntity;
 import adhoc.pawn.PawnRepository;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserStateManagerService {
+public class UserPresenceManagerService {
 
     private final UserRepository userRepository;
     private final PawnRepository pawnRepository;
@@ -59,21 +59,21 @@ public class UserStateManagerService {
         log.trace("Managing seen users... now={} leaveUsersSeenBefore={}", now, leaveUsersSeenBefore);
 
         // manage users who we think are currently connected to a server
-        try (Stream<UserEntity> users = userRepository.streamForWriteByStateServerNotNull()) {
+        try (Stream<UserEntity> users = userRepository.streamForWriteByPresenceServerNotNull()) {
             users.forEach(user -> {
                 // users may be moving from one server to another so we are only interested after they have arrived at their desired server
-                if (user.getState().getServer() == user.getState().getDestinationServer()) {
+                if (user.getPresence().getServer() == user.getPresence().getDestinationServer()) {
 
                     //user.getPawns().stream()
                     //.filter(pawn -> pawn.getServer() == user.getServer())
                     //.max(Comparator.comparing(Pawn::getSeen));
 
                     // see if there is a pawn for the user
-                    pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getState().getServer(), user)
+                    pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getPresence().getServer(), user)
                             .ifPresent(pawn -> updateUserForPawn(user, pawn, now));
                 }
 
-                if (user.getState().getSeen() != null && user.getState().getSeen().isBefore(leaveUsersSeenBefore)) {
+                if (user.getPresence().getSeen() != null && user.getPresence().getSeen().isBefore(leaveUsersSeenBefore)) {
                     leaveUser(user);
                 }
             });
@@ -81,13 +81,13 @@ public class UserStateManagerService {
     }
 
     private static void updateUserForPawn(UserEntity user, PawnEntity pawn, LocalDateTime now) {
-        user.getState().setX(pawn.getX());
-        user.getState().setY(pawn.getY());
-        user.getState().setZ(pawn.getZ());
-        user.getState().setPitch(pawn.getPitch());
-        user.getState().setYaw(pawn.getYaw());
+        user.getPresence().setX(pawn.getX());
+        user.getPresence().setY(pawn.getY());
+        user.getPresence().setZ(pawn.getZ());
+        user.getPresence().setPitch(pawn.getPitch());
+        user.getPresence().setYaw(pawn.getYaw());
 
-        user.getState().setSeen(now);
+        user.getPresence().setSeen(now);
     }
 
     private static void leaveUser(UserEntity user) {
@@ -98,10 +98,10 @@ public class UserStateManagerService {
                 .addKeyValue("human", user.isHuman())
                 .addKeyValue("factionIndex", user.getFaction().getIndex())
                 .addKeyValue("factionId", user.getFaction().getId())
-                .addKeyValue("serverId", user.getState().getServer().getId())
+                .addKeyValue("serverId", user.getPresence().getServer().getId())
                 .log("User left.");
 
         // TODO: common path?
-        user.getState().setServer(null);
+        user.getPresence().setServer(null);
     }
 }

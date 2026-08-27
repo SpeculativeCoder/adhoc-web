@@ -70,11 +70,11 @@ public class UserJoinService {
                     "Faction ID mismatch: %s != %s", user.getFaction().getId(), userJoinRequest.getFactionId());
 
             Preconditions.checkArgument(userJoinRequest.getToken() != null, "Token missing");
-            Verify.verifyNotNull(user.getState().getToken(), "User has no token");
+            Verify.verifyNotNull(user.getPresence().getToken(), "User has no token");
 
             // TODO: in addition to token - we should check validity of player login (e.g. are they meant to even be in the area?)
-            if (!Objects.equals(user.getState().getToken().toString(), userJoinRequest.getToken())) {
-                log.warn("Token {} mismatch {} for user {}", userJoinRequest.getToken(), user.getState().getToken(), user);
+            if (!Objects.equals(user.getPresence().getToken().toString(), userJoinRequest.getToken())) {
+                log.warn("Token {} mismatch {} for user {}", userJoinRequest.getToken(), user.getPresence().getToken(), user);
                 throw new IllegalArgumentException("Token mismatch");
             }
 
@@ -82,11 +82,11 @@ public class UserJoinService {
             user = autoRegister(userJoinRequest.getFactionId(), userJoinRequest.getHuman());
         }
 
-        user.getState().setRegion(server.getRegion());
-        user.getState().setServer(server);
-        user.getState().setDestinationServer(server);
-        user.getState().setLastJoin(LocalDateTime.now());
-        user.getState().setSeen(user.getState().getLastJoin());
+        user.getPresence().setRegion(server.getRegion());
+        user.getPresence().setServer(server);
+        user.getPresence().setDestinationServer(server);
+        user.getPresence().setLastJoin(LocalDateTime.now());
+        user.getPresence().setSeen(user.getPresence().getLastJoin());
 
         log.atLevel(user.isHuman() ? Level.INFO : Level.DEBUG)
                 .addKeyValue("id", user.getId())
@@ -95,25 +95,25 @@ public class UserJoinService {
                 .addKeyValue("human", user.isHuman())
                 .addKeyValue("factionIndex", user.getFaction().getIndex())
                 .addKeyValue("factionId", user.getFaction().getId())
-                .addKeyValue("serverId", user.getState().getServer().getId())
+                .addKeyValue("serverId", user.getPresence().getServer().getId())
                 .addKeyValue("regionId", server.getRegion().getId())
-                .addKeyValue("x", user.getState().getX())
-                .addKeyValue("y", user.getState().getY())
-                .addKeyValue("z", user.getState().getZ())
-                .addKeyValue("pitch", user.getState().getPitch())
-                .addKeyValue("yaw", user.getState().getYaw())
+                .addKeyValue("x", user.getPresence().getX())
+                .addKeyValue("y", user.getPresence().getY())
+                .addKeyValue("z", user.getPresence().getZ())
+                .addKeyValue("pitch", user.getPresence().getPitch())
+                .addKeyValue("yaw", user.getPresence().getYaw())
                 .log("User joined.");
 
         return UserJoinResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .factionId(user.getFaction().getId())
-                .x(user.getState().getX())
-                .y(user.getState().getY())
-                .z(user.getState().getZ())
-                .pitch(user.getState().getPitch())
-                .yaw(user.getState().getYaw())
-                .serverId(user.getState().getServer().getId())
+                .x(user.getPresence().getX())
+                .y(user.getPresence().getY())
+                .z(user.getPresence().getZ())
+                .pitch(user.getPresence().getPitch())
+                .yaw(user.getPresence().getYaw())
+                .serverId(user.getPresence().getServer().getId())
                 .build();
     }
 
@@ -125,7 +125,7 @@ public class UserJoinService {
         if (!human) {
             // bots should try to use existing bot account
             // TODO: avoid using seen (should use serverId)
-            user = userRepository.findFirstByHumanFalseAndFactionIdAndStateSeenBefore(
+            user = userRepository.findFirstByHumanFalseAndFactionIdAndPresenceSeenBefore(
                     factionId, LocalDateTime.now().minusMinutes(1)).orElse(null);
         }
 

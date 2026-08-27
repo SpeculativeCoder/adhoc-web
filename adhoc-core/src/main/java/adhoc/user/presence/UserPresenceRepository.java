@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.user.state;
+package adhoc.user.presence;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserStateRepository extends JpaRepository<UserStateEntity, Long> {
+public interface UserPresenceRepository extends JpaRepository<UserPresenceEntity, Long> {
 }

@@ -25,7 +25,7 @@ package adhoc.user;
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
 import adhoc.system.properties.CoreProperties;
-import adhoc.user.state.UserStateEntity;
+import adhoc.user.presence.UserPresenceEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -78,10 +78,10 @@ public class UserService {
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
-                Optional.ofNullable(user.getState()).map(UserStateEntity::getRegion).map(RegionEntity::getId).orElse(null),
-                Optional.ofNullable(user.getState()).map(UserStateEntity::getSeen).orElse(null),
+                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getRegion).map(RegionEntity::getId).orElse(null),
+                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getSeen).orElse(null),
                 user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
-                Optional.ofNullable(user.getState()).map(UserStateEntity::getDestinationServer).map(ServerEntity::getId).orElse(null),
-                Optional.ofNullable(user.getState()).map(UserStateEntity::getServer).map(ServerEntity::getId).orElse(null));
+                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getDestinationServer).map(ServerEntity::getId).orElse(null),
+                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getServer).map(ServerEntity::getId).orElse(null));
     }
 }

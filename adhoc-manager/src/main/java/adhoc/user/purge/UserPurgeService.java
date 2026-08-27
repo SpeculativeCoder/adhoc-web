@@ -23,7 +23,7 @@
 package adhoc.user.purge;
 
 import adhoc.user.UserRepository;
-import adhoc.user.state.UserStateRepository;
+import adhoc.user.presence.UserPresenceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -43,7 +43,7 @@ import java.util.TreeSet;
 public class UserPurgeService {
 
     private final UserRepository userRepository;
-    private final UserStateRepository userStateRepository;
+    private final UserPresenceRepository userPresenceRepository;
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
@@ -54,12 +54,12 @@ public class UserPurgeService {
         // regular cleanup of anon users who had a temp account created but never were seen in a server
         oldUserIds.addAll(userRepository.findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusHours(6)));
         // regular cleanup of anon users who were last seen in a server a long time ago
-        oldUserIds.addAll(userRepository.findIdsByStateSeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
+        oldUserIds.addAll(userRepository.findIdsByPresenceSeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime.now().minusDays(7)));
 
         if (!oldUserIds.isEmpty()) {
             log.debug("Purging old users: {}", oldUserIds);
 
-            userStateRepository.deleteAllByIdInBatch(oldUserIds);
+            userPresenceRepository.deleteAllByIdInBatch(oldUserIds);
             userRepository.deleteAllByIdInBatch(oldUserIds);
         }
     }

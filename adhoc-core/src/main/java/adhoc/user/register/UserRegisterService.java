@@ -30,7 +30,7 @@ import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
 import adhoc.user.current.CurrentUserDto;
 import adhoc.user.current.CurrentUserService;
-import adhoc.user.state.UserStateEntity;
+import adhoc.user.presence.UserPresenceEntity;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
@@ -106,8 +106,8 @@ public class UserRegisterService {
 
         UserEntity user = new UserEntity();
 
-        user.setState(new UserStateEntity());
-        user.getState().setUser(user);
+        user.setPresence(new UserPresenceEntity());
+        user.getPresence().setUser(user);
 
         user.setName(userRegisterRequest.getName());
         user.setEmail(userRegisterRequest.getEmail());
@@ -140,7 +140,7 @@ public class UserRegisterService {
         user.setUpdated(now);
 
         //user.setLastLogin(LocalDateTime.now());
-        //user.getState().setToken(RandomUUIDUtils.randomUUID());
+        //user.getPresence().setToken(RandomUUIDUtils.randomUUID());
 
         user = userRepository.save(user);
 

@@ -63,7 +63,7 @@ public class ObjectiveTakenService {
         BigDecimal scoreAddHuman = BigDecimal.valueOf(1.0);
         BigDecimal scoreAddNonHuman = BigDecimal.valueOf(0.1);
         LocalDateTime seenAfter = LocalDateTime.now().minusMinutes(15);
-        userRepository.updateScoreAddByFactionIdAndStateSeenAfter(scoreAddHuman, scoreAddNonHuman, faction.getId(), seenAfter);
+        userRepository.updateScoreAddByFactionIdAndPresenceSeenAfter(scoreAddHuman, scoreAddNonHuman, faction.getId(), seenAfter);
 
         // TODO
         return new ObjectiveTakenEvent(

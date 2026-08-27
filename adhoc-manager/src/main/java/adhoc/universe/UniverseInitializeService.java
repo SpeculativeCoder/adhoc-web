@@ -36,7 +36,7 @@ import adhoc.system.properties.ManagerProperties;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
-import adhoc.user.state.UserStateEntity;
+import adhoc.user.presence.UserPresenceEntity;
 import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -328,8 +328,8 @@ public class UniverseInitializeService {
 
         if (coreProperties.getFeatureFlags().contains("development") && userRepository.count() == 0) {
             UserEntity adminUser = new UserEntity();
-            adminUser.setState(new UserStateEntity());
-            adminUser.getState().setUser(adminUser);
+            adminUser.setPresence(new UserPresenceEntity());
+            adminUser.getPresence().setUser(adminUser);
             adminUser.setName("admin");
             adminUser.setEmail("admin@" + coreProperties.getAdhocDomain());
             adminUser.setFaction(team1);
@@ -338,13 +338,13 @@ public class UniverseInitializeService {
             adminUser.setPassword(managerProperties.getDefaultAdminPassword(), passwordEncoder);
             adminUser.setCreated(userCreated);
             adminUser.setUpdated(userCreated);
-            adminUser.getState().setSeen(userSeen);
+            adminUser.getPresence().setSeen(userSeen);
             adminUser.setUserRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG)); // TODO: restore User.Role.ADMIN,
             adminUser = userRepository.save(adminUser);
 
             UserEntity alphaUser = new UserEntity();
-            alphaUser.setState(new UserStateEntity());
-            alphaUser.getState().setUser(alphaUser);
+            alphaUser.setPresence(new UserPresenceEntity());
+            alphaUser.getPresence().setUser(alphaUser);
             alphaUser.setName("TestAlpha");
             alphaUser.setEmail("testalpha@" + coreProperties.getAdhocDomain());
             alphaUser.setFaction(team1);
@@ -353,13 +353,13 @@ public class UniverseInitializeService {
             alphaUser.setPassword(managerProperties.getDefaultUserPassword(), passwordEncoder);
             alphaUser.setCreated(userCreated);
             alphaUser.setUpdated(userCreated);
-            alphaUser.getState().setSeen(userSeen);
+            alphaUser.getPresence().setSeen(userSeen);
             alphaUser.setUserRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             alphaUser = userRepository.save(alphaUser);
 
             UserEntity betaUser = new UserEntity();
-            betaUser.setState(new UserStateEntity());
-            betaUser.getState().setUser(betaUser);
+            betaUser.setPresence(new UserPresenceEntity());
+            betaUser.getPresence().setUser(betaUser);
             betaUser.setName("TestBeta");
             betaUser.setEmail("testbeta@" + coreProperties.getAdhocDomain());
             betaUser.setFaction(team2);
@@ -368,13 +368,13 @@ public class UniverseInitializeService {
             betaUser.setPassword(managerProperties.getDefaultUserPassword(), passwordEncoder);
             betaUser.setCreated(userCreated);
             betaUser.setUpdated(userCreated);
-            betaUser.getState().setSeen(userSeen);
+            betaUser.getPresence().setSeen(userSeen);
             betaUser.setUserRoles(Sets.newHashSet(UserRole.USER, UserRole.DEBUG));
             betaUser = userRepository.save(betaUser);
 
             UserEntity gammaUser = new UserEntity();
-            gammaUser.setState(new UserStateEntity());
-            gammaUser.getState().setUser(gammaUser);
+            gammaUser.setPresence(new UserPresenceEntity());
+            gammaUser.getPresence().setUser(gammaUser);
             gammaUser.setName("TestGamma");
             gammaUser.setEmail("testgamma@" + coreProperties.getAdhocDomain());
             gammaUser.setFaction(team3);
@@ -388,8 +388,8 @@ public class UniverseInitializeService {
             gammaUser = userRepository.save(gammaUser);
 
             //User deltaUser = new User();
-            //deltaUser.setState(new UserState());
-            //deltaUser.getState().setUser(deltaUser);
+            //deltaUser.setPresence(new UserPresenceEntity());
+            //deltaUser.getPresence().setUser(deltaUser);
             //deltaUser.setName("TestDelta");
             //deltaUser.setEmail("testdelta@" + coreProperties.getAdhocDomain());
             //deltaUser.setFaction(team4);

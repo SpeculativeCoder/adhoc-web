@@ -28,12 +28,12 @@
 
     <changeSet id="0000000000009-1" author="adhoc" runAlways="true">
 
-        <createTable tableName="user_state">
+        <createTable tableName="user_presence">
             <column name="id"
                     type="BIGINT">
                 <constraints nullable="false"
                              primaryKey="true"
-                             primaryKeyName="pk_userstate"/>
+                             primaryKeyName="pk_userpresence"/>
             </column>
             <column name="version"
                     type="BIGINT">
@@ -65,40 +65,40 @@
                     type="TIMESTAMP WITHOUT TIME ZONE"/>
         </createTable>
 
-        <createIndex indexName="idx_user_state_region_id"
-                     tableName="user_state">
+        <createIndex indexName="idx_user_presence_region_id"
+                     tableName="user_presence">
             <column name="region_id"/>
         </createIndex>
-        <createIndex indexName="idx_user_state_seen"
-                     tableName="user_state">
+        <createIndex indexName="idx_user_presence_seen"
+                     tableName="user_presence">
             <column name="seen"/>
         </createIndex>
-        <createIndex indexName="idx_user_state_server_id"
-                     tableName="user_state">
+        <createIndex indexName="idx_user_presence_server_id"
+                     tableName="user_presence">
             <column name="server_id"/>
         </createIndex>
 
         <addForeignKeyConstraint baseColumnNames="id"
-                                 baseTableName="user_state"
-                                 constraintName="fk_userstate_on_user"
+                                 baseTableName="user_presence"
+                                 constraintName="fk_userpresence_on_user"
                                  referencedColumnNames="id"
                                  referencedTableName="user_"/>
 
         <addForeignKeyConstraint baseColumnNames="region_id"
-                                 baseTableName="user_state"
-                                 constraintName="fk_userstate_on_region"
+                                 baseTableName="user_presence"
+                                 constraintName="fk_userpresence_on_region"
                                  referencedColumnNames="id"
                                  referencedTableName="region"/>
 
         <addForeignKeyConstraint baseColumnNames="server_id"
-                                 baseTableName="user_state"
-                                 constraintName="fk_userstate_on_server"
+                                 baseTableName="user_presence"
+                                 constraintName="fk_userpresence_on_server"
                                  referencedColumnNames="id"
                                  referencedTableName="server"/>
 
         <addForeignKeyConstraint baseColumnNames="destination_server_id"
-                                 baseTableName="user_state"
-                                 constraintName="fk_userstate_on_destinationserver"
+                                 baseTableName="user_presence"
+                                 constraintName="fk_userpresence_on_destinationserver"
                                  referencedColumnNames="id"
                                  referencedTableName="server"/>
     </changeSet>

@@ -102,34 +102,34 @@ public class UserNavigateService {
             destinationServer = servers.get(ThreadLocalRandom.current().nextInt(servers.size()));
         }
 
-        ServerEntity oldDestinationServer = user.getState().getDestinationServer();
+        ServerEntity oldDestinationServer = user.getPresence().getDestinationServer();
         RegionEntity oldRegion = oldDestinationServer == null ? null : oldDestinationServer.getRegion();
 
         // when moving servers, update the position to ensure they can spawn at the right location
         if (destinationServer != oldDestinationServer
                 && Objects.equals(destinationServer.getRegion(), oldRegion)) {
-            user.getState().setX(request.getX());
-            user.getState().setY(request.getY());
-            user.getState().setZ(request.getZ());
-            user.getState().setYaw(request.getYaw());
-            user.getState().setPitch(request.getPitch());
+            user.getPresence().setX(request.getX());
+            user.getPresence().setY(request.getY());
+            user.getPresence().setZ(request.getZ());
+            user.getPresence().setYaw(request.getYaw());
+            user.getPresence().setPitch(request.getPitch());
         }
 
-        user.getState().setDestinationServer(destinationServer);
-        user.getState().setNavigated(LocalDateTime.now(clock));
+        user.getPresence().setDestinationServer(destinationServer);
+        user.getPresence().setNavigated(LocalDateTime.now(clock));
 
         UUID newToken = UUIDUtils.randomUUID();
-        user.getState().setToken(newToken);
+        user.getPresence().setToken(newToken);
 
         return new UserNavigateResponse(
-                user.getState().getDestinationServer().getPublicIp(),
-                user.getState().getDestinationServer().getPublicWebSocketPort(),
-                user.getState().getDestinationServer().getWebSocketUrl(),
-                user.getState().getDestinationServer().getRegion().getMapName(),
+                user.getPresence().getDestinationServer().getPublicIp(),
+                user.getPresence().getDestinationServer().getPublicWebSocketPort(),
+                user.getPresence().getDestinationServer().getWebSocketUrl(),
+                user.getPresence().getDestinationServer().getRegion().getMapName(),
                 user.getId(),
                 user.getFaction().getId(),
-                user.getState().getToken().toString(),
-                user.getState().getX(), user.getState().getY(), user.getState().getZ(), user.getState().getYaw(), user.getState().getPitch());
+                user.getPresence().getToken().toString(),
+                user.getPresence().getX(), user.getPresence().getY(), user.getPresence().getZ(), user.getPresence().getYaw(), user.getPresence().getPitch());
     }
 
     //private static boolean isAuthenticatedAsServer() {

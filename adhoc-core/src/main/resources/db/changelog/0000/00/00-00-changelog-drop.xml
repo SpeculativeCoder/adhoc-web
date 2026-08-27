@@ -65,9 +65,9 @@
 
     <changeSet id="0000000000000-6" author="adhoc" runAlways="true">
         <preConditions onFail="CONTINUE">
-            <tableExists tableName="user_state"/>
+            <tableExists tableName="user_presence"/>
         </preConditions>
-        <dropTable tableName="user_state"/>
+        <dropTable tableName="user_presence"/>
     </changeSet>
 
     <changeSet id="0000000000000-7" author="adhoc" runAlways="true">

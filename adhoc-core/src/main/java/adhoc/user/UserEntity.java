@@ -24,7 +24,7 @@ package adhoc.user;
 
 import adhoc.faction.FactionEntity;
 import adhoc.pawn.PawnEntity;
-import adhoc.user.state.UserStateEntity;
+import adhoc.user.presence.UserPresenceEntity;
 import com.google.common.base.Verify;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -97,7 +97,7 @@ public class UserEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
-    private UserStateEntity state;
+    private UserPresenceEntity presence;
 
     @Column(nullable = false, unique = true)
     @ToString.Include
@@ -141,12 +141,12 @@ public class UserEntity {
         this.score = BigDecimal.valueOf(score);
     }
 
-    public UserStateEntity getState() {
-        if (state == null) {
-            state = new UserStateEntity();
-            state.setUser(this);
+    public UserPresenceEntity getPresence() {
+        if (presence == null) {
+            presence = new UserPresenceEntity();
+            presence.setUser(this);
         }
-        return state;
+        return presence;
     }
 
     public void setUserRoles(Set<UserRole> userRoles) {

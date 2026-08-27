@@ -27,7 +27,7 @@ import adhoc.system.properties.CoreProperties;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
-import adhoc.user.state.UserStateEntity;
+import adhoc.user.presence.UserPresenceEntity;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class CurrentUserService {
 
         String quickLoginCode = user.getId() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey());
 
-        UserStateEntity userState = Verify.verifyNotNull(user.getState());
+        UserPresenceEntity userPresence = Verify.verifyNotNull(user.getPresence());
 
         return new CurrentUserDto(
                 user.getId(),
@@ -72,9 +72,9 @@ public class CurrentUserService {
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
-                userState.getRegion() == null ? null : userState.getRegion().getId(),
+                userPresence.getRegion() == null ? null : userPresence.getRegion().getId(),
                 user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
-                userState.getDestinationServer() == null ? null : userState.getDestinationServer().getId(),
-                userState.getServer() == null ? null : userState.getServer().getId());
+                userPresence.getDestinationServer() == null ? null : userPresence.getDestinationServer().getId(),
+                userPresence.getServer() == null ? null : userPresence.getServer().getId());
     }
 }

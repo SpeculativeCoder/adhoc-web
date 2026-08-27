@@ -94,7 +94,7 @@ public class UserNavigateMvcTest extends AbstractManagerMvcTest {
         user.setCreated(priorTime);
         user.setUpdated(priorTime);
         UUID priorToken = UUID.randomUUID();
-        user.getState().setToken(priorToken);
+        user.getPresence().setToken(priorToken);
         user = userRepository.save(user);
 
         ServerEntity server = new ServerEntity(region, List.of(area), true, true);
@@ -119,9 +119,9 @@ public class UserNavigateMvcTest extends AbstractManagerMvcTest {
         LocalDateTime now = LocalDateTime.now(clock);
 
         user = userRepository.findById(user.getId()).orElseThrow();
-        assertThat(user.getState().getDestinationServer().getId()).isEqualTo(server.getId());
-        assertThat(user.getState().getNavigated()).isCloseTo(now, within(1, ChronoUnit.MICROS));
-        assertThat(user.getState().getToken()).isNotNull().isNotEqualTo(priorToken);
+        assertThat(user.getPresence().getDestinationServer().getId()).isEqualTo(server.getId());
+        assertThat(user.getPresence().getNavigated()).isCloseTo(now, within(1, ChronoUnit.MICROS));
+        assertThat(user.getPresence().getToken()).isNotNull().isNotEqualTo(priorToken);
 
         assertThat(result)
                 .hasStatusOk()
@@ -133,7 +133,7 @@ public class UserNavigateMvcTest extends AbstractManagerMvcTest {
                         .mapName("Region0001")
                         .userId(user.getId())
                         .factionId(faction.getId())
-                        .token(user.getState().getToken().toString())
+                        .token(user.getPresence().getToken().toString())
                         .build()));
     }
 }

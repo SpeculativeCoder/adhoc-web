@@ -66,7 +66,7 @@ public class UserAwardDecayService {
             BigDecimal scoreAddHuman = BigDecimal.valueOf(0.01).multiply(BigDecimal.valueOf(objectiveCount));
             BigDecimal scoreAddNonHuman = BigDecimal.valueOf(0.001).multiply(BigDecimal.valueOf(objectiveCount));
 
-            userRepository.updateScoreAddByFactionIdAndStateSeenAfter(scoreAddHuman, scoreAddNonHuman, faction.getId(), forUsersSeenAfter);
+            userRepository.updateScoreAddByFactionIdAndPresenceSeenAfter(scoreAddHuman, scoreAddNonHuman, faction.getId(), forUsersSeenAfter);
         }
 
         // TODO: multiplier property

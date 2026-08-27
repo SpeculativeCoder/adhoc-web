@@ -41,19 +41,19 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByNameOrEmail(String name, String email);
 
-    Optional<UserEntity> findFirstByHumanFalseAndFactionIdAndStateSeenBefore(Long factionId, LocalDateTime seenBefore);
+    Optional<UserEntity> findFirstByHumanFalseAndFactionIdAndPresenceSeenBefore(Long factionId, LocalDateTime seenBefore);
 
-    Stream<UserEntity> streamForWriteByStateServerNotNull();
+    Stream<UserEntity> streamForWriteByPresenceServerNotNull();
 
-    @Query("select u.id from User u where u.created < ?1 and u.state.seen is null and u.password is null and u.pawns is empty")
+    @Query("select u.id from User u where u.created < ?1 and u.presence.seen is null and u.password is null and u.pawns is empty")
     List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);
 
-    @Query("select u.id from User u where u.state.seen < ?1 and u.password is null and u.pawns is empty")
-    List<Long> findIdsByStateSeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime seenBefore);
+    @Query("select u.id from User u where u.presence.seen < ?1 and u.password is null and u.pawns is empty")
+    List<Long> findIdsByPresenceSeenBeforeAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime seenBefore);
 
     @Query("select cast(count(1) as boolean) " +
             "from User u " +
-            "where u.human and ((u.state.destinationServer = ?1 and u.state.navigated > ?2) or (u.state.server = ?1))")
+            "where u.human and ((u.presence.destinationServer = ?1 and u.presence.navigated > ?2) or (u.presence.server = ?1))")
     boolean existsByHumanTrueAnd_DestinationServerAndNavigatedAfterOrServer_(ServerEntity server, LocalDateTime navigatedAfter);
 
     @Modifying
@@ -65,8 +65,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             "set u.version = u.version + 1, " +
             "    u.score = u.score + (case u.human when true then ?1 else ?2 end) " +
             "where u.faction.id = ?3 " +
-            "    and (select us.seen from u.state us) > ?4")
-    void updateScoreAddByFactionIdAndStateSeenAfter(BigDecimal scoreAddHuman, BigDecimal scoreAddNonHuman, Long factionId, LocalDateTime seenAfter);
+            "    and (select us.seen from u.presence us) > ?4")
+    void updateScoreAddByFactionIdAndPresenceSeenAfter(BigDecimal scoreAddHuman, BigDecimal scoreAddNonHuman, Long factionId, LocalDateTime seenAfter);
 
     @Modifying
     @Query("update User u set u.version = u.version + 1, u.score = u.score * ?1")

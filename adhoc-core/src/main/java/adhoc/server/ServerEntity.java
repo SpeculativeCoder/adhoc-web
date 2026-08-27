@@ -25,7 +25,7 @@ package adhoc.server;
 import adhoc.area.AreaEntity;
 import adhoc.pawn.PawnEntity;
 import adhoc.region.RegionEntity;
-import adhoc.user.state.UserStateEntity;
+import adhoc.user.presence.UserPresenceEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -105,10 +105,10 @@ public class ServerEntity {
     private LocalDateTime seen;
 
     @OneToMany(mappedBy = "destinationServer")
-    private List<UserStateEntity> destinedUserStates;
+    private List<UserPresenceEntity> destinedUserPresences;
 
     @OneToMany(mappedBy = "server")
-    private List<UserStateEntity> userStates;
+    private List<UserPresenceEntity> userPresences;
 
     @OneToMany(mappedBy = "server")
     private List<PawnEntity> pawns;

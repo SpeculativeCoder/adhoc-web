@@ -93,7 +93,7 @@ public class AdhocUserDetailsService implements UserDetailsService {
 
         log.atTrace()
                 .addKeyValue("user", user)
-                //.addKeyValue("user.token", user.getState().getToken())
+                //.addKeyValue("user.token", user.getPresence().getToken())
                 .log("loadUserByUsername:");
 
         Collection<GrantedAuthority> authorities = new LinkedHashSet<>(user.getAuthorities());

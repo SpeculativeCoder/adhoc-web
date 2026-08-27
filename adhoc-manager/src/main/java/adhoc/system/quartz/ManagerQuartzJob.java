@@ -22,7 +22,7 @@
 
 package adhoc.system.quartz;
 
-import adhoc.faction.awarddecay.FactionAwardDecayService;
+import adhoc.faction.score.FactionScoreService;
 import adhoc.pawn.purge.PawnPurgeService;
 import adhoc.server.allocate.ServerAllocateService;
 import adhoc.server.purge.ServerPurgeService;
@@ -30,9 +30,9 @@ import adhoc.system.Event;
 import adhoc.task.domain.TaskDomainOrchestrator;
 import adhoc.task.refresh.TaskRefreshOrchestrator;
 import adhoc.task.server.ServerTaskManagerOrchestrator;
-import adhoc.user.awarddecay.UserAwardDecayService;
 import adhoc.user.presence.UserPresenceManagerService;
 import adhoc.user.purge.UserPurgeService;
+import adhoc.user.score.UserScoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
@@ -58,9 +58,9 @@ public class ManagerQuartzJob implements Job {
     private final TaskRefreshOrchestrator taskRefreshOrchestrator;
     private final TaskDomainOrchestrator taskDomainOrchestrator;
     private final ServerTaskManagerOrchestrator serverTaskManagerOrchestrator;
-    private final FactionAwardDecayService factionAwardDecayService;
+    private final FactionScoreService factionScoreService;
     private final UserPresenceManagerService userPresenceManagerService;
-    private final UserAwardDecayService userAwardDecayService;
+    private final UserScoreService userScoreService;
     private final UserPurgeService userPurgeService;
     private final PawnPurgeService pawnPurgeService;
 
@@ -89,10 +89,10 @@ public class ManagerQuartzJob implements Job {
                 serverTaskManagerOrchestrator.manageServerTasks();
                 break;
             case ManagerQuartzConfiguration.AWARD_AND_DECAY_FACTION_SCORES:
-                factionAwardDecayService.awardAndDecayFactionScores();
+                factionScoreService.awardAndDecayFactionScores();
                 break;
             case ManagerQuartzConfiguration.AWARD_AND_DECAY_USER_SCORES:
-                userAwardDecayService.awardAndDecayUserScores();
+                userScoreService.awardAndDecayUserScores();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SEEN_USERS:
                 userPresenceManagerService.manageSeenUsers();

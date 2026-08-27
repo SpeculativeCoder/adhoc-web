@@ -35,7 +35,7 @@ public class UniverseService {
 
     public static final long UNIVERSE_ID = 1L;
 
-    UniverseDto toDto(UniverseEntity universe) {
+    public UniverseDto toDto(UniverseEntity universe) {
         return new UniverseDto(
                 universe.getId(),
                 universe.getVersion());

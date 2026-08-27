@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.db.h2postgres;
+package adhoc.system.db.h2;
 
-import adhoc.db.h2postgres.properties.ManagerH2PostgresProperties;
+import adhoc.system.db.h2.properties.ManagerH2Properties;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,34 +38,33 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Configuration
-@Profile("db-h2postgres")
+@Profile("db-h2")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerH2PostgresConfiguration {
+public class ManagerH2Configuration {
 
-    private final ManagerH2PostgresProperties managerH2PostgresProperties;
-
+    private final ManagerH2Properties managerH2Properties;
     private final DataSourceProperties dataSourceProperties;
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    Server h2PostgresServer() throws Exception {
+    Server h2Server() throws Exception {
 
-        String h2PostgresPath = managerH2PostgresProperties.getH2PostgresPath();
+        String h2Path = managerH2Properties.getH2Path();
 
-        if (Strings.isNullOrEmpty(h2PostgresPath)) {
+        if (Strings.isNullOrEmpty(h2Path)) {
             try {
-                h2PostgresPath = Files.createTempDirectory("adhoc_h2postgres_").toString() + "/adhoc";
+                h2Path = Files.createTempDirectory("adhoc_h2_").toString() + "/adhoc";
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        h2PostgresPath = Paths.get(h2PostgresPath).toAbsolutePath().normalize().toString();
+        h2Path = Paths.get(h2Path).toAbsolutePath().normalize().toString();
 
-        log.info("h2PostgresPath={}", h2PostgresPath);
+        log.info("h2Path={}", h2Path);
 
         Server server = Server.createTcpServer(
-                "-baseDir", h2PostgresPath,
+                "-baseDir", h2Path,
                 "-ifNotExists",
                 "-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
 
@@ -74,7 +73,7 @@ public class ManagerH2PostgresConfiguration {
 
     /** Make the JDBC connection details (will be provided to Spring) dependent on the DB server being started first. */
     @Bean
-    public JdbcConnectionDetails jdbcConnectionDetails(Server h2PostgresServer) {
+    public JdbcConnectionDetails jdbcConnectionDetails(Server h2Server) {
         return new JdbcConnectionDetails() {
 
             @Override

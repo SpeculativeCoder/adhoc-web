@@ -20,13 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.db.hsqldb;
+package adhoc.system.db.h2postgres;
 
-import adhoc.db.hsqldb.properties.ManagerHsqldbProperties;
+import adhoc.system.db.h2postgres.properties.ManagerH2PostgresProperties;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hsqldb.server.Server;
+import org.h2.tools.Server;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.context.annotation.Bean;
@@ -38,60 +38,43 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Configuration
-@Profile("db-hsqldb")
+@Profile("db-h2postgres")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerHsqldbConfiguration {
+public class ManagerH2PostgresConfiguration {
 
-    private final ManagerHsqldbProperties managerHsqldbProperties;
+    private final ManagerH2PostgresProperties managerH2PostgresProperties;
 
     private final DataSourceProperties dataSourceProperties;
 
-    static {
-        System.setProperty("hsqldb.reconfig_logging", "false");
-    }
-
     @Bean(initMethod = "start", destroyMethod = "stop")
-    Server hsqldbServer() {
+    Server h2PostgresServer() throws Exception {
 
-        String hsqldbPath = managerHsqldbProperties.getHsqldbPath();
+        String h2PostgresPath = managerH2PostgresProperties.getH2PostgresPath();
 
-        if (Strings.isNullOrEmpty(hsqldbPath)) {
+        if (Strings.isNullOrEmpty(h2PostgresPath)) {
             try {
-                hsqldbPath = Files.createTempDirectory("adhoc_hsqldb_").toString() + "/adhoc";
+                h2PostgresPath = Files.createTempDirectory("adhoc_h2postgres_").toString() + "/adhoc";
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        hsqldbPath = Paths.get(hsqldbPath).toAbsolutePath().normalize().toString();
+        h2PostgresPath = Paths.get(h2PostgresPath).toAbsolutePath().normalize().toString();
 
-        log.info("hsqldbPath={}", hsqldbPath);
+        log.info("h2PostgresPath={}", h2PostgresPath);
 
-        Server server = new Server();
-        //server.setAddress("localhost"); //"0.0.0.0");
-        server.setDatabaseName(0, "adhoc");
-        server.setDatabasePath(0, "file:" + hsqldbPath + "/adhoc" +
-                ";user=" + dataSourceProperties.getUsername() + ";password=" + dataSourceProperties.getPassword() +
-                // TODO: back to mvcc when hsqldb issue fixed
-                ";hsqldb.tx=mvcc" + // locks/mvlocks/mvcc
-                ";check_props=true" +
-                ";sql.restrict_exec=true" +
-                ";sql.enforce_names=true" +
-                ";sql.enforce_refs=true" +
-                ";sql.enforce_types=true");
-        server.setNoSystemExit(true);
-        server.setSilent(true); // TODO
-        //Properties hsqldbProperties = new Properties();
-        //server.setProperties(hsqldbProperties);
-        server.setPort(9001);
+        Server server = Server.createTcpServer(
+                "-baseDir", h2PostgresPath,
+                "-ifNotExists",
+                "-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
 
         return server;
     }
 
     /** Make the JDBC connection details (will be provided to Spring) dependent on the DB server being started first. */
     @Bean
-    public JdbcConnectionDetails jdbcConnectionDetails(Server hsqldbServer) {
+    public JdbcConnectionDetails jdbcConnectionDetails(Server h2PostgresServer) {
         return new JdbcConnectionDetails() {
 
             @Override

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging.logback;
+package adhoc.system.log.logback;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;

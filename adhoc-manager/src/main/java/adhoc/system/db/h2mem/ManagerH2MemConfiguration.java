@@ -20,10 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.db.h2;
+package adhoc.system.db.h2mem;
 
-import adhoc.db.h2.properties.ManagerH2Properties;
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.h2.tools.Server;
@@ -33,38 +31,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 @Configuration
-@Profile("db-h2")
+@Profile("db-h2mem")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerH2Configuration {
+public class ManagerH2MemConfiguration {
 
-    private final ManagerH2Properties managerH2Properties;
     private final DataSourceProperties dataSourceProperties;
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    Server h2Server() throws Exception {
-
-        String h2Path = managerH2Properties.getH2Path();
-
-        if (Strings.isNullOrEmpty(h2Path)) {
-            try {
-                h2Path = Files.createTempDirectory("adhoc_h2_").toString() + "/adhoc";
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        h2Path = Paths.get(h2Path).toAbsolutePath().normalize().toString();
-
-        log.info("h2Path={}", h2Path);
+    Server h2MemServer() throws Exception {
 
         Server server = Server.createTcpServer(
-                "-baseDir", h2Path,
                 "-ifNotExists",
                 "-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
 
@@ -73,7 +51,7 @@ public class ManagerH2Configuration {
 
     /** Make the JDBC connection details (will be provided to Spring) dependent on the DB server being started first. */
     @Bean
-    public JdbcConnectionDetails jdbcConnectionDetails(Server h2Server) {
+    public JdbcConnectionDetails jdbcConnectionDetails(Server h2MemServer) {
         return new JdbcConnectionDetails() {
 
             @Override

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging;
+package adhoc.system.log;
 
 import adhoc.system.properties.CoreProperties;
 import com.google.common.base.Strings;

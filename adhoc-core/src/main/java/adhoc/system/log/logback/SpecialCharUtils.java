@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging.logback;
+package adhoc.system.log.logback;
 
 import lombok.experimental.UtilityClass;
 

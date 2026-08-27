@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging;
+package adhoc.system.log;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;

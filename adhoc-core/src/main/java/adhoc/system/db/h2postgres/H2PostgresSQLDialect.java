@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.db.h2postgres;
+package adhoc.system.db.h2postgres;
 
 import org.hibernate.dialect.DatabaseVersion;
 import org.hibernate.dialect.PostgreSQLDialect;

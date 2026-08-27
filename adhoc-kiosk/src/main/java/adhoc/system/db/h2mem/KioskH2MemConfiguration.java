@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.db.h2mem;
+package adhoc.system.db.h2mem;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Profile;
 @Profile("db-h2mem")
 @Slf4j
 @RequiredArgsConstructor
-public class ManagerH2MemConfiguration {
+public class KioskH2MemConfiguration {
 
     private final DataSourceProperties dataSourceProperties;
 

@@ -24,9 +24,9 @@
 <configuration packagingData="true">
     <!--<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>-->
 
-    <conversionRule conversionWord="color" class="adhoc.system.logging.logback.AdhocLogbackColorConverter"/>
-    <conversionRule conversionWord="specialChars" class="adhoc.system.logging.logback.AdhocLogbackSpecialCharsConverter"/>
-    <conversionRule conversionWord="specialCharsThrowable" class="adhoc.system.logging.logback.AdhocLogbackSpecialCharsThrowableProxyConverter"/>
+    <conversionRule conversionWord="color" class="adhoc.system.log.logback.AdhocLogbackColorConverter"/>
+    <conversionRule conversionWord="specialChars" class="adhoc.system.log.logback.AdhocLogbackSpecialCharsConverter"/>
+    <conversionRule conversionWord="specialCharsThrowable" class="adhoc.system.log.logback.AdhocLogbackSpecialCharsThrowableProxyConverter"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 
@@ -41,7 +41,7 @@
             <charset>${CONSOLE_LOG_CHARSET}</charset>
         </encoder>-->
 
-        <filter class="adhoc.system.logging.logback.AdhocLogbackMatcherFilter"/>
+        <filter class="adhoc.system.log.logback.AdhocLogbackMatcherFilter"/>
 
     </appender>
 

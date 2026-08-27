@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2026 SpeculativeCoder (https://github.com/SpeculativeCoder)
+ * Copyright (c) 2022-2025 SpeculativeCoder (https://github.com/SpeculativeCoder)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,16 +20,20 @@
  * SOFTWARE.
  */
 
-package adhoc.system.logging.logback;
+package adhoc.system.db.h2postgres.properties;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.pattern.CompositeConverter;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
-/** Replaces special characters (e.g. newlines etc.) from log messages. */
-public class AdhocLogbackSpecialCharsConverter extends CompositeConverter<ILoggingEvent> {
+@Component
+@Profile({"db-h2postgres"})
+@Slf4j
+@Getter
+public class ManagerH2PostgresProperties {
 
-    @Override
-    protected String transform(ILoggingEvent event, String in) {
-        return SpecialCharUtils.replaceSpecialChars(in);
-    }
+    @Value("${adhoc.h2PostgresPath}")
+    private String h2PostgresPath;
 }

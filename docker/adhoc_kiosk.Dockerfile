@@ -24,7 +24,9 @@
 FROM debian:stable
 
 RUN apt-get update -y && apt-get dist-upgrade -y
-RUN apt-get install -y openjdk-25-jre-headless curl
+RUN apt-get install -y procps
+RUN apt-get install -y openjdk-25-jre-headless
+RUN apt-get install -y curl
 #ca-certificates
 
 ARG ADHOC_NAME=adhoc

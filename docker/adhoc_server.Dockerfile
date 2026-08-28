@@ -24,7 +24,8 @@
 FROM debian:stable
 
 RUN apt-get update -y && apt-get dist-upgrade -y
-# RUN apt-get install -y openssl ca-certificates
+RUN apt-get install -y procps
+#openssl ca-certificates
 
 ARG ADHOC_NAME=adhoc
 

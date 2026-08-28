@@ -22,10 +22,7 @@
 
 package adhoc.user;
 
-import adhoc.region.RegionEntity;
-import adhoc.server.ServerEntity;
 import adhoc.system.properties.CoreProperties;
-import adhoc.user.presence.UserPresenceEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -38,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -50,14 +46,16 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final UserMapper userMapper;
+
     @Transactional(readOnly = true)
     public Page<UserDto> findUsers(Pageable pageable) {
-        return userRepository.findAll(pageable).map(this::toDto);
+        return userRepository.findAll(pageable).map(userMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<UserDto> findUser(Long userId) {
-        return userRepository.findById(userId).map(this::toDto);
+        return userRepository.findById(userId).map(userMapper::toDto);
     }
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
@@ -68,20 +66,5 @@ public class UserService {
         LocalDateTime now = LocalDateTime.now();
 
         user.setLastLogin(now);
-    }
-
-    UserDto toDto(UserEntity user) {
-        return new UserDto(
-                user.getId(),
-                user.getVersion(),
-                user.getName(),
-                user.isHuman(),
-                user.getFaction().getId(),
-                user.getScore(),
-                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getRegion).map(RegionEntity::getId).orElse(null),
-                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getSeen).orElse(null),
-                user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
-                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getDestinationServer).map(ServerEntity::getId).orElse(null),
-                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getServer).map(ServerEntity::getId).orElse(null));
     }
 }

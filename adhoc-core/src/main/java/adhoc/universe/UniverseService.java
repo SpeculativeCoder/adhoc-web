@@ -34,10 +34,4 @@ import org.springframework.transaction.annotation.Transactional;
 public class UniverseService {
 
     public static final long UNIVERSE_ID = 1L;
-
-    public UniverseDto toDto(UniverseEntity universe) {
-        return new UniverseDto(
-                universe.getId(),
-                universe.getVersion());
-    }
 }

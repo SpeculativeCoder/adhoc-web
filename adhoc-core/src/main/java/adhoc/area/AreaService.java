@@ -22,7 +22,6 @@
 
 package adhoc.area;
 
-import adhoc.server.ServerEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,25 +39,15 @@ public class AreaService {
 
     private final AreaRepository areaRepository;
 
+    private final AreaMapper areaMapper;
+
     @Transactional(readOnly = true)
     public Page<AreaDto> findAreas(Pageable pageable) {
-        return areaRepository.findAll(pageable).map(this::toDto);
+        return areaRepository.findAll(pageable).map(areaMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<AreaDto> findArea(Long areaId) {
-        return areaRepository.findById(areaId).map(this::toDto);
-    }
-
-    AreaDto toDto(AreaEntity area) {
-        return new AreaDto(
-                area.getId(),
-                area.getVersion(),
-                area.getRegion().getId(),
-                area.getIndex(),
-                area.getName(),
-                area.getX(), area.getY(), area.getZ(),
-                area.getSizeX(), area.getSizeY(), area.getSizeZ(),
-                Optional.ofNullable(area.getServer()).map(ServerEntity::getId));
+        return areaRepository.findById(areaId).map(areaMapper::toDto);
     }
 }

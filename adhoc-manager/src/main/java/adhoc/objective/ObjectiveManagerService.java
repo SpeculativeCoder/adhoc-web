@@ -57,7 +57,7 @@ public class ObjectiveManagerService {
     private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
 
-    private final ObjectiveService objectiveService;
+    private final ObjectiveMapper objectiveMapper;
 
     public ObjectiveDto updateObjective(ObjectiveDto objectiveDto) {
         ObjectiveEntity objective = objectiveRepository.getReferenceById(objectiveDto.getId());
@@ -66,7 +66,7 @@ public class ObjectiveManagerService {
         objective = toEntityStage1(objectiveDto, objective);
         objective = toEntityStage2(objectiveDto, objective);
 
-        return objectiveService.toDto(objective);
+        return objectiveMapper.toDto(objective);
     }
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
@@ -121,7 +121,7 @@ public class ObjectiveManagerService {
 
             ObjectiveEntity objective = toEntityStage2(entry.getKey(), entry.getValue());
 
-            return objectiveService.toDto(objective);
+            return objectiveMapper.toDto(objective);
         }).toList();
     }
 

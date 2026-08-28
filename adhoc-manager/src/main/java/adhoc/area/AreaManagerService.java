@@ -51,7 +51,7 @@ public class AreaManagerService {
     private final RegionRepository regionRepository;
     private final ServerRepository serverRepository;
 
-    private final AreaService areaService;
+    private final AreaMapper areaMapper;
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
@@ -85,7 +85,7 @@ public class AreaManagerService {
                         areaRepository.findByRegionAndIndex(serverRegion, areaDto.getIndex())
                                 .orElseGet(AreaEntity::new)))
                 .map(areaRepository::save)
-                .map(areaService::toDto)
+                .map(areaMapper::toDto)
                 .toList();
     }
 

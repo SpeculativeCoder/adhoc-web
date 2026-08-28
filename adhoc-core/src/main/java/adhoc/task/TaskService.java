@@ -22,7 +22,6 @@
 
 package adhoc.task;
 
-import adhoc.task.server.ServerTaskEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,32 +40,15 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
 
+    private final TaskMapper taskMapper;
+
     @Transactional(readOnly = true)
     public Page<TaskDto> findTasks(@SortDefault("id") Pageable pageable) {
-        return taskRepository.findAll(pageable).map(this::toDto);
+        return taskRepository.findAll(pageable).map(taskMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<TaskDto> findTask(Long taskId) {
-        return taskRepository.findById(taskId).map(this::toDto);
-    }
-
-    TaskDto toDto(TaskEntity task) {
-        return new TaskDto(
-                task.getId(),
-                task.getVersion(),
-                task.getType().name(),
-                null, // TODO
-                null, // TODO
-                task.getPublicIp(),
-                task.getPublicWebSocketPort(),
-                task.getDomain(),
-                task.getInitiated(),
-                task.getSeen(),
-                task instanceof ServerTaskEntity serverTask ? serverTask.getServerId() : null,
-                // TODO
-                null,
-                null,
-                null);
+        return taskRepository.findById(taskId).map(taskMapper::toDto);
     }
 }

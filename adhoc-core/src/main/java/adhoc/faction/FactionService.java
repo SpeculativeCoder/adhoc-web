@@ -39,23 +39,15 @@ public class FactionService {
 
     private final FactionRepository factionRepository;
 
+    private final FactionMapper factionMapper;
+
     @Transactional(readOnly = true)
     public Page<FactionDto> findFactions(Pageable pageable) {
-        return factionRepository.findAll(pageable).map(this::toDto);
+        return factionRepository.findAll(pageable).map(factionMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<FactionDto> findFaction(Long factionId) {
-        return factionRepository.findById(factionId).map(this::toDto);
-    }
-
-    FactionDto toDto(FactionEntity faction) {
-        return new FactionDto(
-                faction.getId(),
-                faction.getVersion(),
-                faction.getIndex(),
-                faction.getName(),
-                faction.getColor(),
-                faction.getScore());
+        return factionRepository.findById(factionId).map(factionMapper::toDto);
     }
 }

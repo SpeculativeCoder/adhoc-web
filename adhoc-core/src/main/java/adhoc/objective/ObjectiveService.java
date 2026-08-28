@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -40,31 +39,15 @@ public class ObjectiveService {
 
     private final ObjectiveRepository objectiveRepository;
 
+    private final ObjectiveMapper objectiveMapper;
+
     @Transactional(readOnly = true)
     public Page<ObjectiveDto> findObjectives(Pageable pageable) {
-        return objectiveRepository.findAll(pageable).map(this::toDto);
+        return objectiveRepository.findAll(pageable).map(objectiveMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<ObjectiveDto> findObjective(Long objectiveId) {
-        return objectiveRepository.findById(objectiveId).map(this::toDto);
-    }
-
-    ObjectiveDto toDto(ObjectiveEntity objective) {
-        return new ObjectiveDto(
-                objective.getId(),
-                objective.getVersion(),
-                objective.getRegion().getId(),
-                objective.getIndex(),
-                objective.getName(),
-                objective.getX(), objective.getY(), objective.getZ(),
-                objective.getInitialFaction() == null ? null : objective.getInitialFaction().getId(),
-                objective.getInitialFaction() == null ? null : objective.getInitialFaction().getIndex(),
-                objective.getFaction() == null ? null : objective.getFaction().getId(),
-                objective.getFaction() == null ? null : objective.getFaction().getIndex(),
-                objective.getLinkedObjectives().stream().map(ObjectiveEntity::getId).collect(Collectors.toList()),
-                objective.getLinkedObjectives().stream().map(ObjectiveEntity::getIndex).collect(Collectors.toList()),
-                objective.getArea() == null ? null : objective.getArea().getId(),
-                objective.getArea() == null ? null : objective.getArea().getIndex());
+        return objectiveRepository.findById(objectiveId).map(objectiveMapper::toDto);
     }
 }

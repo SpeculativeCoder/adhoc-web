@@ -22,8 +22,6 @@
 
 package adhoc.region;
 
-import adhoc.area.AreaEntity;
-import adhoc.server.ServerEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -42,24 +39,15 @@ public class RegionService {
 
     private final RegionRepository regionRepository;
 
+    private final RegionMapper regionMapper;
+
     @Transactional(readOnly = true)
     public Page<RegionDto> findRegions(Pageable pageable) {
-        return regionRepository.findAll(pageable).map(this::toDto);
+        return regionRepository.findAll(pageable).map(regionMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<RegionDto> findRegion(Long regionId) {
-        return regionRepository.findById(regionId).map(this::toDto);
-    }
-
-    RegionDto toDto(RegionEntity region) {
-        return new RegionDto(
-                region.getId(),
-                region.getVersion(),
-                region.getName(),
-                region.getMapName(),
-                region.getX(), region.getY(), region.getZ(),
-                region.getAreas().stream().map(AreaEntity::getId).collect(Collectors.toList()),
-                region.getServers().stream().map(ServerEntity::getId).collect(Collectors.toList()));
+        return regionRepository.findById(regionId).map(regionMapper::toDto);
     }
 }

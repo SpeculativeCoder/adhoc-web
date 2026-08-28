@@ -49,16 +49,16 @@ public class ServerManagerService {
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
 
-    private final ServerService serverService;
+    private final ServerMapper serverMapper;
 
     public List<ServerDto> getServerServers(Long serverId) {
-        return serverRepository.findAll(Sort.by("id")).stream().map(serverService::toDto).toList();
+        return serverRepository.findAll(Sort.by("id")).stream().map(serverMapper::toDto).toList();
     }
 
     public ServerDto updateServer(ServerDto serverDto) {
         ServerEntity server = toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));
 
-        return serverService.toDto(server);
+        return serverMapper.toDto(server);
     }
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},

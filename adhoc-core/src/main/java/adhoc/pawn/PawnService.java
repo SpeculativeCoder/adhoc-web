@@ -39,31 +39,15 @@ public class PawnService {
 
     private final PawnRepository pawnRepository;
 
+    private final PawnMapper pawnMapper;
+
     @Transactional(readOnly = true)
     public Page<PawnDto> findPawns(Pageable pageable) {
-        return pawnRepository.findAll(pageable).map(this::toDto);
+        return pawnRepository.findAll(pageable).map(pawnMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<PawnDto> findPawn(Long pawnId) {
-        return pawnRepository.findById(pawnId).map(this::toDto);
-    }
-
-    PawnDto toDto(PawnEntity pawn) {
-        return new PawnDto(
-                pawn.getId(),
-                pawn.getVersion(),
-                pawn.getUuid(),
-                pawn.getServer().getId(),
-                pawn.getIndex(),
-                pawn.getName(),
-                pawn.getDescription(),
-                pawn.getX(), pawn.getY(), pawn.getZ(),
-                pawn.getPitch(), pawn.getYaw(),
-                pawn.getUser() == null ? null : pawn.getUser().getId(),
-                pawn.isHuman(),
-                pawn.getFaction() == null ? null : pawn.getFaction().getId(),
-                pawn.getFaction() == null ? null : pawn.getFaction().getIndex(),
-                pawn.getSeen());
+        return pawnRepository.findById(pawnId).map(pawnMapper::toDto);
     }
 }

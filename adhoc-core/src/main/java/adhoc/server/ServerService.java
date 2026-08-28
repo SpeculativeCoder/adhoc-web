@@ -22,7 +22,6 @@
 
 package adhoc.server;
 
-import adhoc.area.AreaEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -41,31 +39,15 @@ public class ServerService {
 
     private final ServerRepository serverRepository;
 
+    private final ServerMapper serverMapper;
+
     @Transactional(readOnly = true)
     public Page<ServerDto> findServers(Pageable pageable) {
-        return serverRepository.findAll(pageable).map(this::toDto);
+        return serverRepository.findAll(pageable).map(serverMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<ServerDto> findServer(Long serverId) {
-        return serverRepository.findById(serverId).map(this::toDto);
-    }
-
-    public ServerDto toDto(ServerEntity server) {
-        return new ServerDto(
-                server.getId(),
-                server.getVersion(),
-                server.getRegion().getId(),
-                server.getAreas().stream().map(AreaEntity::getId).collect(Collectors.toList()),
-                server.getAreas().stream().map(AreaEntity::getIndex).collect(Collectors.toList()),
-                server.getX(), server.getY(), server.getZ(),
-                server.isEnabled(),
-                server.isActive(),
-                server.getPublicIp(),
-                server.getPublicWebSocketPort(),
-                server.getDomain(),
-                server.getWebSocketUrl(),
-                server.getInitiated(),
-                server.getSeen());
+        return serverRepository.findById(serverId).map(serverMapper::toDto);
     }
 }

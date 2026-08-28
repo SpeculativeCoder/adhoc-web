@@ -34,6 +34,7 @@ import adhoc.region.RegionRepository;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.properties.ManagerProperties;
 import adhoc.universe.UniverseEntity;
+import adhoc.universe.UniverseMapper;
 import adhoc.universe.UniverseRepository;
 import adhoc.universe.UniverseService;
 import adhoc.universe.UniverseUpdatedEvent;
@@ -73,6 +74,8 @@ public class UniverseInitializeService {
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
     private final ObjectiveRepository objectiveRepository;
+
+    private final UniverseMapper universeMapper;
 
     private final UniverseService universeService;
     private final MessageService messageService;
@@ -430,6 +433,6 @@ public class UniverseInitializeService {
     }
 
     UniverseUpdatedEvent toUniverseUpdatedEvent(UniverseEntity universe) {
-        return new UniverseUpdatedEvent(universeService.toDto(universe));
+        return new UniverseUpdatedEvent(universeMapper.toDto(universe));
     }
 }

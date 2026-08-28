@@ -52,7 +52,7 @@ public class PawnManagerService {
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
 
-    private final PawnService pawnService;
+    private final PawnMapper pawnMapper;
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
@@ -92,7 +92,7 @@ public class PawnManagerService {
                 pawn = pawnRepository.save(pawn);
             }
 
-            pawnDtos.add(pawnService.toDto(pawn));
+            pawnDtos.add(pawnMapper.toDto(pawn));
         }
 
         // clean up any pawns that are no longer on this server

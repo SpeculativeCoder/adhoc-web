@@ -43,16 +43,18 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UniverseRepository universeRepository;
 
+    private final MessageMapper messageMapper;
+
     @Transactional(readOnly = true)
     public Page<MessageDto> findMessages(Optional<Long> optionalUserId, Pageable pageable) {
         // TODO
-        return messageRepository.findByUserNullOrUserId(optionalUserId.orElse(null), pageable).map(this::toDto);
+        return messageRepository.findByUserNullOrUserId(optionalUserId.orElse(null), pageable).map(messageMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<MessageDto> findMessage(Long id, Optional<Long> optionalUserId) {
         // TODO
-        return messageRepository.findByIdAnd_UserNullOrUserId_(id, optionalUserId.orElse(null)).map(this::toDto);
+        return messageRepository.findByIdAnd_UserNullOrUserId_(id, optionalUserId.orElse(null)).map(messageMapper::toDto);
     }
 
     public void addGlobalMessage(String text) {
@@ -64,14 +66,5 @@ public class MessageService {
         message.setText(text);
 
         messageRepository.save(message);
-    }
-
-    MessageDto toDto(MessageEntity message) {
-        return new MessageDto(
-                message.getId(),
-                message.getVersion(),
-                message.getText(),
-                message.getTimestamp(),
-                message.getUser() == null ? null : message.getUser().getId());
     }
 }

@@ -38,25 +38,16 @@ public class FactionManagerService {
 
     private final FactionRepository factionRepository;
 
+    private final FactionManagerMapper factionManagerMapper;
     private final FactionMapper factionMapper;
 
     public FactionDto updateFaction(FactionDto factionDto) {
-        FactionEntity faction = toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
+        FactionEntity faction = factionManagerMapper.toEntity(factionDto, factionRepository.getReferenceById(factionDto.getId()));
 
         return factionMapper.toDto(faction);
     }
 
     public List<FactionDto> getServerFactions(Long serverId) {
         return factionRepository.findAll(Sort.by("index")).stream().map(factionMapper::toDto).toList();
-    }
-
-    FactionEntity toEntity(FactionDto factionDto, FactionEntity faction) {
-        faction.setId(faction.getId());
-        faction.setIndex(faction.getIndex());
-        faction.setName(factionDto.getName());
-        faction.setColor(factionDto.getColor());
-        faction.setScore(factionDto.getScore());
-
-        return faction;
     }
 }

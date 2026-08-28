@@ -27,8 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 @Transactional
 @Slf4j
@@ -37,20 +35,12 @@ public class UserManagerService {
 
     private final UserRepository userRepository;
 
+    private final UserManagerMapper userManagerMapper;
     private final UserMapper userMapper;
 
     public UserDto updateUser(UserDto userDto) {
-        return userMapper.toDto(
-                toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
-    }
-
-    UserEntity toEntity(UserDto userDto, UserEntity user) {
         // TODO
-        //user.setName(userDto.getName());
-        //user.setFaction(user.getFaction());
-
-        user.setUpdated(LocalDateTime.now());
-
-        return user;
+        return userMapper.toDto(
+                userManagerMapper.toEntity(userDto, userRepository.getReferenceById(userDto.getId())));
     }
 }

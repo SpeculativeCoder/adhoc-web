@@ -38,12 +38,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.AbstractMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -57,14 +55,15 @@ public class ObjectiveManagerService {
     private final FactionRepository factionRepository;
     private final ServerRepository serverRepository;
 
+    private final ObjectiveManagerMapper objectiveManagerMapper;
     private final ObjectiveMapper objectiveMapper;
 
     public ObjectiveDto updateObjective(ObjectiveDto objectiveDto) {
         ObjectiveEntity objective = objectiveRepository.getReferenceById(objectiveDto.getId());
 
         // NOTE: this is a two stage save to allow linked objectives to be set too
-        objective = toEntityStage1(objectiveDto, objective);
-        objective = toEntityStage2(objectiveDto, objective);
+        objective = objectiveManagerMapper.toEntityStage1(objectiveDto, objective);
+        objective = objectiveManagerMapper.toEntityStage2(objectiveDto, objective);
 
         return objectiveMapper.toDto(objective);
     }
@@ -112,66 +111,16 @@ public class ObjectiveManagerService {
                     .orElseGet(ObjectiveEntity::new);
 
             // NOTE: this is a two stage save to allow linked objectives to be set too
-            objective = toEntityStage1(objectiveDto, objective);
+            objective = objectiveManagerMapper.toEntityStage1(objectiveDto, objective);
 
             objective = objectiveRepository.save(objective);
 
             return new AbstractMap.SimpleImmutableEntry<>(objectiveDto, objective);
         }).toList().stream().map(entry -> {
 
-            ObjectiveEntity objective = toEntityStage2(entry.getKey(), entry.getValue());
+            ObjectiveEntity objective = objectiveManagerMapper.toEntityStage2(entry.getKey(), entry.getValue());
 
             return objectiveMapper.toDto(objective);
         }).toList();
-    }
-
-    ObjectiveEntity toEntityStage1(ObjectiveDto objectiveDto, ObjectiveEntity objective) {
-        RegionEntity region = regionRepository.getReferenceById(objectiveDto.getRegionId());
-
-        objective.setRegion(region);
-        objective.setIndex(objectiveDto.getIndex());
-
-        objective.setName(objectiveDto.getName());
-
-        objective.setX(objectiveDto.getX());
-        objective.setY(objectiveDto.getY());
-        objective.setZ(objectiveDto.getZ());
-
-        objective.setInitialFaction(objectiveDto.getInitialFactionIndex() == null ? null
-                : factionRepository.findByIndex(objectiveDto.getInitialFactionIndex()).orElseThrow());
-
-        // submitter can override whatever the current faction is (should only be for admin user flipping an objective)
-        if (objectiveDto.getFactionIndex() != null) {
-            objective.setFaction(factionRepository.findByIndex(objectiveDto.getFactionIndex()).orElseThrow());
-        }
-        // set faction to be initial faction for new entities
-        if (objective.getId() == null && objective.getFaction() == null) {
-            objective.setFaction(objective.getInitialFaction());
-        }
-
-        // NOTE: linked objectives will be set in stage 2
-        if (objective.getLinkedObjectives() == null) {
-            objective.setLinkedObjectives(new LinkedHashSet<>());
-        }
-
-        objective.setArea(objectiveDto.getAreaIndex() == null ? null :
-                areaRepository.findByRegionAndIndex(region, objectiveDto.getAreaIndex()).orElseThrow());
-
-        return objective;
-    }
-
-    ObjectiveEntity toEntityStage2(ObjectiveDto objectiveDto, ObjectiveEntity objective) {
-        RegionEntity region = regionRepository.getReferenceById(objectiveDto.getRegionId());
-
-        Set<ObjectiveEntity> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()
-                .map(linkedObjectiveIndex -> objectiveRepository.findByRegionAndIndex(region, linkedObjectiveIndex)
-                        .orElseThrow()) // TODO
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        if (!linkedObjectives.equals(objective.getLinkedObjectives())) {
-            objective.setLinkedObjectives(linkedObjectives);
-        }
-
-        return objective;
     }
 }

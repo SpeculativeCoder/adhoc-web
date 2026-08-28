@@ -24,7 +24,6 @@ package adhoc.area;
 
 import adhoc.objective.ObjectiveEntity;
 import adhoc.region.RegionEntity;
-import adhoc.region.RegionRepository;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import com.google.common.base.Preconditions;
@@ -48,9 +47,9 @@ import java.util.TreeSet;
 public class AreaManagerService {
 
     private final AreaRepository areaRepository;
-    private final RegionRepository regionRepository;
     private final ServerRepository serverRepository;
 
+    private final AreaManagerMapper areaManagerMapper;
     private final AreaMapper areaMapper;
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
@@ -81,29 +80,11 @@ public class AreaManagerService {
         }
 
         return areaDtos.stream()
-                .map(areaDto -> toEntity(areaDto,
+                .map(areaDto -> areaManagerMapper.toEntity(areaDto,
                         areaRepository.findByRegionAndIndex(serverRegion, areaDto.getIndex())
                                 .orElseGet(AreaEntity::new)))
                 .map(areaRepository::save)
                 .map(areaMapper::toDto)
                 .toList();
-    }
-
-    AreaEntity toEntity(AreaDto areaDto, AreaEntity area) {
-        area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
-        area.setIndex(areaDto.getIndex());
-        area.setName(areaDto.getName());
-        area.setX(areaDto.getX());
-        area.setY(areaDto.getY());
-        area.setZ(areaDto.getZ());
-        area.setSizeX(areaDto.getSizeX());
-        area.setSizeY(areaDto.getSizeY());
-        area.setSizeZ(areaDto.getSizeZ());
-        //noinspection OptionalAssignedToNull
-        if (areaDto.getServerId() != null) {
-            area.setServer(areaDto.getServerId().map(serverRepository::getReferenceById).orElse(null));
-        }
-
-        return area;
     }
 }

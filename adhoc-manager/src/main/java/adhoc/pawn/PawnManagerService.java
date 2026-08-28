@@ -22,10 +22,8 @@
 
 package adhoc.pawn;
 
-import adhoc.faction.FactionRepository;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,9 +47,8 @@ public class PawnManagerService {
 
     private final PawnRepository pawnRepository;
     private final ServerRepository serverRepository;
-    private final UserRepository userRepository;
-    private final FactionRepository factionRepository;
 
+    private final PawnManagerMapper pawnManagerMapper;
     private final PawnMapper pawnMapper;
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
@@ -68,7 +65,7 @@ public class PawnManagerService {
         for (PawnDto dto : serverPawnsEvent.getPawns()) {
             Preconditions.checkArgument(Objects.equals(server.getId(), dto.getServerId()));
 
-            PawnEntity pawn = toEntity(dto,
+            PawnEntity pawn = pawnManagerMapper.toEntity(dto,
                     pawnRepository.findByUuid(dto.getUuid()).orElseGet(PawnEntity::new));
 
             pawn.setSeen(seen);
@@ -102,22 +99,5 @@ public class PawnManagerService {
         //userRepository.updateServerAndSeenByIdIn(server, seen, userIds);
 
         return new ServerPawnsEvent(server.getId(), pawnDtos);
-    }
-
-    PawnEntity toEntity(PawnDto pawnDto, PawnEntity pawn) {
-        pawn.setUuid(pawnDto.getUuid());
-        pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
-        pawn.setIndex(pawnDto.getIndex());
-        pawn.setName(pawnDto.getName());
-        pawn.setDescription(pawnDto.getDescription());
-        pawn.setX(pawnDto.getX());
-        pawn.setY(pawnDto.getY());
-        pawn.setZ(pawnDto.getZ());
-        pawn.setPitch(pawnDto.getPitch());
-        pawn.setYaw(pawnDto.getYaw());
-        pawn.setUser(pawnDto.getUserId() == null ? null : userRepository.getReferenceById(pawnDto.getUserId()));
-        pawn.setHuman(pawnDto.getHuman());
-        pawn.setFaction(pawnDto.getFactionId() == null ? null : factionRepository.getReferenceById(pawnDto.getFactionId()));
-        return pawn;
     }
 }

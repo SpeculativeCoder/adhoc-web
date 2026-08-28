@@ -52,7 +52,8 @@ public class AdhocKioskApplication extends AbstractAdhocApplication {
     /**
      * Recommended combinations of Spring profiles (defaults will be chosen if you don't specify):
      * <ul>
-     * <li><tt>db-h2</tt> - used for local testing and is also what runs in AWS. This is the default if you don't specify any profiles.
+     * <li><tt>db-h2</tt> - used for local testing and is also what runs in AWS.
+     * This is the default if you don't specify any profiles.
      * </ul>
      */
     static void main(String[] args) {

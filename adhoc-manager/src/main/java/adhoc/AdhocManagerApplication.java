@@ -54,9 +54,13 @@ public class AdhocManagerApplication extends AbstractAdhocApplication {
     /**
      * Recommended combinations of Spring profiles (defaults will be chosen if you don't specify):
      * <ul>
-     * <li><tt>db-h2,hosting-local,dns-local</tt> - used for local testing. This is the default if you don't specify any profiles. It will assume you are running an Unreal server on the localhost manually via the editor.</li>
-     * <li><tt>db-h2,hosting-docker,dns-local</tt> - used for local testing. It will use a local Docker to run the Unreal servers.</li>
-     * <li><tt>db-h2,hosting-ecs,dns-route53</tt> - this is what runs in AWS. Makes use of ECS to run unreal servers, and Route53 to manage DNS entries</li>
+     * <li><tt>db-h2,hosting-local,dns-local</tt> - used for local testing.
+     * This is the default if you don't specify any profiles.
+     * It will assume you are running an Unreal server on the localhost manually via the editor.</li>
+     * <li><tt>db-h2,hosting-docker,dns-local</tt> - used for local testing.
+     * It will use a local Docker to run the Unreal servers.</li>
+     * <li><tt>db-h2,hosting-ecs,dns-route53</tt> - this is what runs in AWS.
+     * Makes use of ECS to run unreal servers, and Route53 to manage DNS entries</li>
      * </ul>
      */
     static void main(String[] args) {

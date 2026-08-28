@@ -49,6 +49,7 @@ public class ServerManagerService {
     private final RegionRepository regionRepository;
     private final AreaRepository areaRepository;
 
+    private final ServerManagerMapper serverManagerMapper;
     private final ServerMapper serverMapper;
 
     public List<ServerDto> getServerServers(Long serverId) {
@@ -56,7 +57,7 @@ public class ServerManagerService {
     }
 
     public ServerDto updateServer(ServerDto serverDto) {
-        ServerEntity server = toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));
+        ServerEntity server = serverManagerMapper.toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));
 
         return serverMapper.toDto(server);
     }
@@ -70,21 +71,6 @@ public class ServerManagerService {
         server.setActive(true);
 
         return toServerUpdatedEvent(server);
-    }
-
-    ServerEntity toEntity(ServerDto serverDto, ServerEntity server) {
-        server.setRegion(regionRepository.getReferenceById(serverDto.getRegionId()));
-        server.setAreas(serverDto.getAreaIds().stream().map(areaRepository::getReferenceById).collect(Collectors.toList())); // TODO
-
-        server.setX(server.getX());
-        server.setY(server.getY());
-        server.setZ(server.getZ());
-
-        server.setPublicIp(server.getPublicIp());
-
-        server.setWebSocketUrl(server.getWebSocketUrl());
-
-        return server;
     }
 
     public ServerUpdatedEvent toServerUpdatedEvent(ServerEntity server) {

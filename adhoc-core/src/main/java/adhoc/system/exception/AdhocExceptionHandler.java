@@ -42,7 +42,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 /** Extension of default Spring MVC exception handler to gracefully handle some additional exceptions. */
 @ControllerAdvice
 @Slf4j
-public class AdhocResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+public class AdhocExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException exception, WebRequest webRequest) {

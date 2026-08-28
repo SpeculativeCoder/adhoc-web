@@ -42,7 +42,7 @@ import java.io.IOException;
 /** Request handling exception logging. */
 @Component
 @Slf4j
-public class AdhocExceptionHandlerExceptionResolver extends ExceptionHandlerExceptionResolver {
+public class AdhocExceptionResolver extends ExceptionHandlerExceptionResolver {
 
     // TODO
     //@Override

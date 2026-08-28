@@ -22,7 +22,7 @@
 
 package adhoc.system;
 
-import adhoc.system.exception.AdhocExceptionHandlerExceptionResolver;
+import adhoc.system.exception.AdhocExceptionResolver;
 import adhoc.system.properties.CoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,11 +63,11 @@ public class AdhocWebConfiguration {
     }
 
     @Bean
-    public WebMvcRegistrations adhocWebMvcRegistrations(AdhocExceptionHandlerExceptionResolver adhocExceptionHandlerExceptionResolver) {
+    public WebMvcRegistrations adhocWebMvcRegistrations(AdhocExceptionResolver adhocExceptionResolver) {
         return new WebMvcRegistrations() {
             @Override
             public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
-                return adhocExceptionHandlerExceptionResolver;
+                return adhocExceptionResolver;
             }
         };
     }

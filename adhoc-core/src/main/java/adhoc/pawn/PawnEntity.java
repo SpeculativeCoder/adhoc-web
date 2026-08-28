@@ -78,7 +78,6 @@ public class PawnEntity {
     private UUID uuid;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @ToString.Include
     private ServerEntity server;
 
     @Column(nullable = false)

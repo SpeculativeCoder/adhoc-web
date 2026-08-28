@@ -69,11 +69,9 @@ public class MessageEntity {
     private String text;
 
     @Column(nullable = false)
-    @ToString.Include
     private LocalDateTime timestamp;
 
     /** If this message is only relevant to a specific user, this will be set. */
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Include
     private UserEntity user;
 }

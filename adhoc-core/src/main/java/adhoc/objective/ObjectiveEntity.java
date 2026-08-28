@@ -69,7 +69,6 @@ public class ObjectiveEntity {
     private Long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @ToString.Include
     private RegionEntity region;
 
     @Column(nullable = false)

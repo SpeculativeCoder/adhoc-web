@@ -24,18 +24,18 @@ terraform {
   required_providers {
     local = {
       source  = "hashicorp/local"
-      version = "~> 2.6"
+      version = "~> 2.9"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.7"
+      version = "~> 3.9"
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 6.25"
+      version = "~> 6.62"
     }
   }
-  required_version = "~> 1.9"
+  required_version = "~> 1.16"
 }
 
 variable "adhoc_region_dev" {

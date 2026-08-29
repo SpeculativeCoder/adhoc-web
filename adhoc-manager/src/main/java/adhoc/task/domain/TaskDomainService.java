@@ -24,11 +24,11 @@ package adhoc.task.domain;
 
 import adhoc.message.MessageService;
 import adhoc.system.properties.CoreProperties;
+import adhoc.task.KioskTaskEntity;
+import adhoc.task.ManagerTaskEntity;
+import adhoc.task.ServerTaskEntity;
 import adhoc.task.TaskEntity;
 import adhoc.task.TaskRepository;
-import adhoc.task.kiosk.KioskTaskEntity;
-import adhoc.task.manager.ManagerTaskEntity;
-import adhoc.task.server.ServerTaskEntity;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

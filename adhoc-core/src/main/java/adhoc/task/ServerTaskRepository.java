@@ -20,10 +20,25 @@
  * SOFTWARE.
  */
 
-package adhoc.task.kiosk;
+package adhoc.task;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 // TODO: common
-public interface KioskTaskRepository extends JpaRepository<KioskTaskEntity, Long> {
+public interface ServerTaskRepository extends JpaRepository<ServerTaskEntity, Long> {
+
+    @Query("select st.taskIdentifier " +
+            "from ServerTask st " +
+            "where st.initiated < ?1 " +
+            "and not exists (from Server s where s.enabled and s.id = st.serverId)")
+    List<String> findTaskIdentifierByInitiatedBeforeAndServerNotEnabled(LocalDateTime initiatedBefore);
+
+    Optional<ServerTaskEntity> findFirstByServerId(Long serverId);
+
+    void deleteByTaskIdentifier(String taskIdentifier);
 }

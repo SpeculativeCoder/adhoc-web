@@ -20,28 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.task.manager;
+package adhoc.task;
 
-import adhoc.task.TaskEntity;
-import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Entity(name = "ManagerTask")
-@DynamicInsert
-@DynamicUpdate
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString(callSuper = true, onlyExplicitlyIncluded = true)
-public class ManagerTaskEntity extends TaskEntity {
-
-    @Override
-    public Type getType() {
-        return Type.MANAGER;
-    }
+// TODO: common
+public interface ManagerTaskRepository extends JpaRepository<ManagerTaskEntity, Long> {
 }

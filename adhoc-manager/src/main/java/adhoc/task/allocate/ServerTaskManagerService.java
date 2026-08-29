@@ -20,13 +20,15 @@
  * SOFTWARE.
  */
 
-package adhoc.task.server;
+package adhoc.task.allocate;
 
 import adhoc.area.AreaEntity;
 import adhoc.message.MessageService;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.server.ServerService;
+import adhoc.task.ServerTaskEntity;
+import adhoc.task.ServerTaskRepository;
 import adhoc.task.TaskDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

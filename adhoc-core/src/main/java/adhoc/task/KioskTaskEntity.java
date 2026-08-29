@@ -20,10 +20,8 @@
  * SOFTWARE.
  */
 
-package adhoc.task.server;
+package adhoc.task;
 
-import adhoc.task.TaskEntity;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,21 +30,17 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Entity(name = "ServerTask")
+@Entity(name = "KioskTask")
 @DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
-public class ServerTaskEntity extends TaskEntity {
-
-    @Column(nullable = false)
-    @ToString.Include
-    private Long serverId;
+public class KioskTaskEntity extends TaskEntity {
 
     @Override
     public Type getType() {
-        return Type.SERVER;
+        return Type.KIOSK;
     }
 }

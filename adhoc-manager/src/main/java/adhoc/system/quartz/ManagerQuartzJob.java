@@ -27,9 +27,9 @@ import adhoc.pawn.purge.PawnPurgeService;
 import adhoc.server.allocate.ServerAllocateService;
 import adhoc.server.purge.ServerPurgeService;
 import adhoc.system.Event;
+import adhoc.task.allocate.ServerTaskAllocateOrchestrator;
 import adhoc.task.domain.TaskDomainOrchestrator;
 import adhoc.task.refresh.TaskRefreshOrchestrator;
-import adhoc.task.server.ServerTaskManagerOrchestrator;
 import adhoc.user.purge.UserPurgeService;
 import adhoc.user.score.UserScoreService;
 import adhoc.user.seen.UserSeenService;
@@ -57,7 +57,7 @@ public class ManagerQuartzJob implements Job {
     private final ServerPurgeService serverPurgeService;
     private final TaskRefreshOrchestrator taskRefreshOrchestrator;
     private final TaskDomainOrchestrator taskDomainOrchestrator;
-    private final ServerTaskManagerOrchestrator serverTaskManagerOrchestrator;
+    private final ServerTaskAllocateOrchestrator serverTaskAllocateOrchestrator;
     private final FactionScoreService factionScoreService;
     private final UserSeenService userSeenService;
     private final UserScoreService userScoreService;
@@ -86,7 +86,7 @@ public class ManagerQuartzJob implements Job {
                 taskDomainOrchestrator.manageTaskDomains();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SERVER_TASKS:
-                serverTaskManagerOrchestrator.manageServerTasks();
+                serverTaskAllocateOrchestrator.manageServerTasks();
                 break;
             case ManagerQuartzConfiguration.AWARD_AND_DECAY_FACTION_SCORES:
                 factionScoreService.awardAndDecayFactionScores();

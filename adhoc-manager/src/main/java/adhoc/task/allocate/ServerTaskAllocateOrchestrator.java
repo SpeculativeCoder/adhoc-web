@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.task.server;
+package adhoc.task.allocate;
 
 import adhoc.hosting.HostingService;
 import adhoc.task.TaskDto;
@@ -34,7 +34,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ServerTaskManagerOrchestrator {
+public class ServerTaskAllocateOrchestrator {
 
     private final ServerTaskManagerService serverTaskManagerService;
     private final HostingService hostingService;

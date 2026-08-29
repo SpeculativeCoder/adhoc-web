@@ -30,9 +30,9 @@ import adhoc.system.Event;
 import adhoc.task.domain.TaskDomainOrchestrator;
 import adhoc.task.refresh.TaskRefreshOrchestrator;
 import adhoc.task.server.ServerTaskManagerOrchestrator;
-import adhoc.user.presence.UserPresenceManagerService;
 import adhoc.user.purge.UserPurgeService;
 import adhoc.user.score.UserScoreService;
+import adhoc.user.seen.UserSeenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
@@ -59,7 +59,7 @@ public class ManagerQuartzJob implements Job {
     private final TaskDomainOrchestrator taskDomainOrchestrator;
     private final ServerTaskManagerOrchestrator serverTaskManagerOrchestrator;
     private final FactionScoreService factionScoreService;
-    private final UserPresenceManagerService userPresenceManagerService;
+    private final UserSeenService userSeenService;
     private final UserScoreService userScoreService;
     private final UserPurgeService userPurgeService;
     private final PawnPurgeService pawnPurgeService;
@@ -95,7 +95,7 @@ public class ManagerQuartzJob implements Job {
                 userScoreService.awardAndDecayUserScores();
                 break;
             case ManagerQuartzConfiguration.MANAGE_SEEN_USERS:
-                userPresenceManagerService.manageSeenUsers();
+                userSeenService.manageSeenUsers();
                 break;
             case ManagerQuartzConfiguration.PURGE_OLD_USERS:
                 userPurgeService.purgeOldUsers();

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.presence;
+package adhoc.user.seen;
 
 import adhoc.pawn.PawnEntity;
 import adhoc.pawn.PawnRepository;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserPresenceManagerService {
+public class UserSeenService {
 
     private final UserRepository userRepository;
     private final PawnRepository pawnRepository;

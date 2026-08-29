@@ -24,7 +24,6 @@ package adhoc.user;
 
 import adhoc.faction.FactionEntity;
 import adhoc.pawn.PawnEntity;
-import adhoc.user.presence.UserPresenceEntity;
 import com.google.common.base.Verify;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

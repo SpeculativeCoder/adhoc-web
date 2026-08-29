@@ -22,8 +22,8 @@
 
 package adhoc.user.purge;
 
+import adhoc.user.UserPresenceRepository;
 import adhoc.user.UserRepository;
-import adhoc.user.presence.UserPresenceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;

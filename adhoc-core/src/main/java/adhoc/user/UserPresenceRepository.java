@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.presence;
+package adhoc.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

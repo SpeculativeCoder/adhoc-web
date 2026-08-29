@@ -20,11 +20,10 @@
  * SOFTWARE.
  */
 
-package adhoc.user.presence;
+package adhoc.user;
 
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
-import adhoc.user.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

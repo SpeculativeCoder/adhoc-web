@@ -24,7 +24,6 @@ package adhoc.user;
 
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
-import adhoc.user.presence.UserPresenceEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

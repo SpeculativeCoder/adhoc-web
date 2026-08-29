@@ -23,6 +23,7 @@
 package adhoc.user.register;
 
 import adhoc.faction.FactionRepository;
+import adhoc.system.auth.ProgrammaticLoginHelper;
 import adhoc.system.properties.CoreProperties;
 import adhoc.system.uuid.UUIDUtils;
 import adhoc.user.UserEntity;
@@ -63,7 +64,7 @@ public class UserRegisterService {
 
     private final UserService userService;
     private final CurrentUserService currentUserService;
-    private final ProgrammaticLoginService programmaticLoginService;
+    private final ProgrammaticLoginHelper programmaticLoginHelper;
 
     private final PasswordEncoder passwordEncoder;
     private final Clock clock;
@@ -81,7 +82,7 @@ public class UserRegisterService {
         }
 
         String password = tempPassword != null ? tempPassword : userRegisterRequest.getPassword();
-        programmaticLoginService.programmaticLoginInternal(user, password);
+        programmaticLoginHelper.programmaticLogin(user.getName(), password);
 
         if (tempPassword != null) {
             user.setPassword(null, passwordEncoder);

@@ -20,10 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.user.register;
+package adhoc.system.auth;
 
 import adhoc.system.AdhocWebSecurityConfiguration;
-import adhoc.user.UserEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,15 +37,12 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 
-@Service
-@Transactional
+@Component
 @Slf4j
 @RequiredArgsConstructor
-public class ProgrammaticLoginService {
+public class ProgrammaticLoginHelper {
 
     private final AdhocWebSecurityConfiguration<?> adhocWebSecurityConfiguration;
 
@@ -64,11 +60,10 @@ public class ProgrammaticLoginService {
      * Login the user programmatically (i.e. by invoking necessary Spring Security actions etc.), given a user and password.
      * Used after registering a user (we want them to be automatically logged in).
      */
-    @Transactional(propagation = Propagation.MANDATORY)
-    public void programmaticLoginInternal(UserEntity user, String password) {
+    public void programmaticLogin(String username, String password) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
-                UsernamePasswordAuthenticationToken.unauthenticated(user.getName(), password);
+                UsernamePasswordAuthenticationToken.unauthenticated(username, password);
 
         authenticationToken.setDetails(authenticationDetailsSource.buildDetails(httpServletRequest));
 

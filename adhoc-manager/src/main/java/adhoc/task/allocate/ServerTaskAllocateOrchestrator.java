@@ -36,27 +36,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ServerTaskAllocateOrchestrator {
 
-    private final ServerTaskManagerService serverTaskManagerService;
+    private final ServerTaskAllocateService serverTaskAllocateService;
     private final HostingService hostingService;
 
     /**
      * For each enabled server, ensure there is a server task in the hosting service. Stop any other server tasks.
      */
     public void manageServerTasks() {
-        List<ServerTaskManagerService.NeededServerTask> neededServerTasks = serverTaskManagerService.determineNeededServerTasks();
-        for (ServerTaskManagerService.NeededServerTask neededServerTask : neededServerTasks) {
+        List<ServerTaskAllocateService.NeededServerTask> neededServerTasks = serverTaskAllocateService.determineNeededServerTasks();
+        for (ServerTaskAllocateService.NeededServerTask neededServerTask : neededServerTasks) {
             TaskDto serverTask = startHostedServerTask(
                     neededServerTask.serverId(),
                     neededServerTask.regionId(),
                     neededServerTask.mapName(),
                     neededServerTask.areaIndexes());
-            serverTaskManagerService.createServerTask(serverTask);
+            serverTaskAllocateService.createServerTask(serverTask);
         }
 
-        List<String> seenUnusedServerTasks = serverTaskManagerService.findSeenUnusedServerTasks();
+        List<String> seenUnusedServerTasks = serverTaskAllocateService.findSeenUnusedServerTasks();
         for (String seenUnusedServerTask : seenUnusedServerTasks) {
             stopHostedServerTask(seenUnusedServerTask);
-            serverTaskManagerService.deleteServerTask(seenUnusedServerTask);
+            serverTaskAllocateService.deleteServerTask(seenUnusedServerTask);
         }
     }
 

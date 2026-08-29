@@ -48,7 +48,7 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class ServerTaskManagerService {
+public class ServerTaskAllocateService {
 
     private final ServerTaskRepository serverTaskRepository;
     private final ServerRepository serverRepository;

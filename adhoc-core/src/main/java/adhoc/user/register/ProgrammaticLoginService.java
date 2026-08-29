@@ -23,9 +23,7 @@
 package adhoc.user.register;
 
 import adhoc.system.AdhocWebSecurityConfiguration;
-import adhoc.system.uuid.UUIDUtils;
 import adhoc.user.UserEntity;
-import adhoc.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +34,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -53,12 +50,8 @@ public class ProgrammaticLoginService {
 
     private final AdhocWebSecurityConfiguration<?> adhocWebSecurityConfiguration;
 
-    private final UserService userService;
-
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final PasswordEncoder passwordEncoder;
     private final RememberMeServices rememberMeServices;
-    //private final AdhocFormLoginSuccessHandler adhocFormLoginSuccessHandler;
 
     private final HttpServletRequest httpServletRequest;
     private final HttpServletResponse httpServletResponse;
@@ -74,26 +67,12 @@ public class ProgrammaticLoginService {
     @Transactional(propagation = Propagation.MANDATORY)
     public void programmaticLoginInternal(UserEntity user, String password) {
 
-        String tempPassword = null;
-        if (user.getPassword() == null) {
-            tempPassword = UUIDUtils.randomUUID().toString();
-        }
-
         UsernamePasswordAuthenticationToken authenticationToken =
-                UsernamePasswordAuthenticationToken.unauthenticated(
-                        user.getName(),
-                        tempPassword != null ? tempPassword : password);
+                UsernamePasswordAuthenticationToken.unauthenticated(user.getName(), password);
+
         authenticationToken.setDetails(authenticationDetailsSource.buildDetails(httpServletRequest));
 
-        if (tempPassword != null) {
-            user.setPassword(tempPassword, passwordEncoder);
-        }
-
         Authentication authentication = authenticationConfiguration.getAuthenticationManager().authenticate(authenticationToken);
-
-        if (tempPassword != null) {
-            user.setPassword(null, passwordEncoder);
-        }
 
         adhocWebSecurityConfiguration.getSessionAuthenticationStrategy().onAuthentication(authentication, httpServletRequest, httpServletResponse);
 
@@ -105,6 +84,5 @@ public class ProgrammaticLoginService {
         rememberMeServices.loginSuccess(httpServletRequest, httpServletResponse, authentication);
 
         //adhocFormLoginSuccessHandler.onAuthenticationSuccess(httpServletRequest, httpServletResponse, authentication);
-        userService.updateLastLogin(user.getId());
     }
 }

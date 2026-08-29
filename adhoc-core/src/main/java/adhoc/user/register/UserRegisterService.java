@@ -28,13 +28,13 @@ import adhoc.system.uuid.UUIDUtils;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import adhoc.user.UserRole;
+import adhoc.user.UserService;
 import adhoc.user.current.CurrentUserDto;
 import adhoc.user.current.CurrentUserService;
 import adhoc.user.presence.UserPresenceEntity;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Sets;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -61,10 +61,10 @@ public class UserRegisterService {
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
 
+    private final UserService userService;
     private final CurrentUserService currentUserService;
     private final ProgrammaticLoginService programmaticLoginService;
 
-    private final HttpServletRequest httpServletRequest;
     private final PasswordEncoder passwordEncoder;
     private final Clock clock;
 
@@ -74,7 +74,20 @@ public class UserRegisterService {
 
         UserEntity user = userRegisterInternal(userRegisterRequest);
 
-        programmaticLoginService.programmaticLoginInternal(user, userRegisterRequest.getPassword());
+        String tempPassword = null;
+        if (user.getPassword() == null) {
+            tempPassword = UUIDUtils.randomUUID().toString();
+            user.setPassword(tempPassword, passwordEncoder);
+        }
+
+        String password = tempPassword != null ? tempPassword : userRegisterRequest.getPassword();
+        programmaticLoginService.programmaticLoginInternal(user, password);
+
+        if (tempPassword != null) {
+            user.setPassword(null, passwordEncoder);
+        }
+
+        userService.updateLastLogin(user.getId());
 
         return currentUserService.toCurrentUserDto(user);
     }

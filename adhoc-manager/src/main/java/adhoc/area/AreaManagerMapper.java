@@ -38,7 +38,7 @@ public class AreaManagerMapper {
     private final RegionRepository regionRepository;
     private final ServerRepository serverRepository;
 
-    AreaEntity toEntity(AreaDto areaDto, AreaEntity area) {
+    public AreaEntity toEntity(AreaDto areaDto, AreaEntity area) {
         area.setRegion(regionRepository.getReferenceById(areaDto.getRegionId()));
         area.setIndex(areaDto.getIndex());
         area.setName(areaDto.getName());

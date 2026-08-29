@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ObjectiveMapper {
 
-    ObjectiveDto toDto(ObjectiveEntity objective) {
+    public ObjectiveDto toDto(ObjectiveEntity objective) {
         return new ObjectiveDto(
                 objective.getId(),
                 objective.getVersion(),

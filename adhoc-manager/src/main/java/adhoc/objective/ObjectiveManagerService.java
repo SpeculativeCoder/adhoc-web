@@ -22,26 +22,10 @@
 
 package adhoc.objective;
 
-import adhoc.area.AreaRepository;
-import adhoc.faction.FactionRepository;
-import adhoc.region.RegionEntity;
-import adhoc.region.RegionRepository;
-import adhoc.server.ServerEntity;
-import adhoc.server.ServerRepository;
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 
 @Service
 @Transactional
@@ -50,10 +34,6 @@ import java.util.TreeSet;
 public class ObjectiveManagerService {
 
     private final ObjectiveRepository objectiveRepository;
-    private final RegionRepository regionRepository;
-    private final AreaRepository areaRepository;
-    private final FactionRepository factionRepository;
-    private final ServerRepository serverRepository;
 
     private final ObjectiveManagerMapper objectiveManagerMapper;
     private final ObjectiveMapper objectiveMapper;
@@ -66,61 +46,5 @@ public class ObjectiveManagerService {
         objective = objectiveManagerMapper.toEntityStage2(objectiveDto, objective);
 
         return objectiveMapper.toDto(objective);
-    }
-
-    @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
-    public List<ObjectiveDto> updateServerObjectives(Long serverId, List<ObjectiveDto> objectiveDtos) {
-        ServerEntity server = serverRepository.getReferenceById(serverId);
-        RegionEntity serverRegion = server.getRegion();
-
-        Set<Integer> objectiveIndexes = new TreeSet<>();
-        for (ObjectiveDto objectiveDto : objectiveDtos) {
-            Preconditions.checkArgument(Objects.equals(serverRegion.getId(), objectiveDto.getRegionId()));
-
-            for (Integer linkedObjectiveIndex : objectiveDto.getLinkedObjectiveIndexes()) {
-                Preconditions.checkArgument(!Objects.equals(objectiveDto.getIndex(), linkedObjectiveIndex),
-                        "Self loop not allowed: %s -> %s", objectiveDto.getIndex(), linkedObjectiveIndex);
-
-                for (ObjectiveDto otherObjectiveDto : objectiveDtos) {
-                    if (Objects.equals(otherObjectiveDto.getIndex(), linkedObjectiveIndex)) {
-                        Preconditions.checkArgument(otherObjectiveDto.getLinkedObjectiveIndexes().contains(objectiveDto.getIndex()),
-                                "Linked objectives must have matching backlink: %s -> %s", otherObjectiveDto.getIndex(), linkedObjectiveIndex);
-                    }
-                }
-            }
-            boolean unique = objectiveIndexes.add(objectiveDto.getIndex());
-            Preconditions.checkArgument(unique, "Objective index not unique: %s", objectiveDto.getIndex());
-        }
-
-        List<ObjectiveEntity> unusedObjectives = objectiveRepository.findByRegionAndIndexNotIn(serverRegion, objectiveIndexes);
-        for (ObjectiveEntity unusedObjective : unusedObjectives) {
-            log.info("Deleting unused objective: {}", unusedObjective);
-
-            // before deleting an unused objective we must unlink any objectives that are linked to it
-            for (ObjectiveEntity linkedObjective : unusedObjective.getLinkedObjectives()) {
-                linkedObjective.getLinkedObjectives().remove(unusedObjective);
-            }
-            objectiveRepository.delete(unusedObjective);
-        }
-
-        return objectiveDtos.stream().map(objectiveDto -> {
-
-            ObjectiveEntity objective = objectiveRepository
-                    .findByRegionAndIndex(serverRegion, objectiveDto.getIndex())
-                    .orElseGet(ObjectiveEntity::new);
-
-            // NOTE: this is a two stage save to allow linked objectives to be set too
-            objective = objectiveManagerMapper.toEntityStage1(objectiveDto, objective);
-
-            objective = objectiveRepository.save(objective);
-
-            return new AbstractMap.SimpleImmutableEntry<>(objectiveDto, objective);
-        }).toList().stream().map(entry -> {
-
-            ObjectiveEntity objective = objectiveManagerMapper.toEntityStage2(entry.getKey(), entry.getValue());
-
-            return objectiveMapper.toDto(objective);
-        }).toList();
     }
 }

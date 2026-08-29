@@ -108,8 +108,10 @@ public class UserRegisterService {
         }
 
         // TODO: think about existing name/email check before allowing name/email input
-        boolean nameExists = userRegisterRequest.getName() != null && userRepository.existsByName(userRegisterRequest.getName());
-        boolean emailExists = userRegisterRequest.getEmail() != null && userRepository.existsByEmail(userRegisterRequest.getEmail());
+        boolean nameExists = userRegisterRequest.getName() != null &&
+                userRepository.existsByName(userRegisterRequest.getName());
+        boolean emailExists = userRegisterRequest.getEmail() != null &&
+                userRepository.existsByEmail(userRegisterRequest.getEmail());
 
         if (nameExists || emailExists) {
             log.warn("User name or email already in use. name={} nameExists={} email={} emailExists={}",
@@ -118,8 +120,7 @@ public class UserRegisterService {
             throw new IllegalArgumentException("User name or email already in use");
         }
 
-        Verify.verifyNotNull(userRegisterRequest.getHuman(), "human is null");
-        boolean human = userRegisterRequest.getHuman();
+        boolean human = Verify.verifyNotNull(userRegisterRequest.getHuman(), "human is null");
 
         UserEntity user = new UserEntity();
 
@@ -130,14 +131,14 @@ public class UserRegisterService {
         user.setEmail(userRegisterRequest.getEmail());
         user.setPassword(userRegisterRequest.getPassword(), passwordEncoder);
         user.setHuman(human);
-        user.setFaction(userRegisterRequest.getFactionId() == null ? null : factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
+        user.setFaction(userRegisterRequest.getFactionId() == null ? null :
+                factionRepository.getReferenceById(userRegisterRequest.getFactionId()));
 
         if (user.getName() == null) {
             //Instant now = Instant.now();
             //String prefix = user.isHuman() ? "Anon" : "Bot";
             //String name = prefix + now.getLong(ChronoField.INSTANT_SECONDS) + now.getLong(ChronoField.MICRO_OF_SECOND);
             //user.setName(name);
-
             user.setName(randomNameHelper.randomName());
         }
 
@@ -155,9 +156,6 @@ public class UserRegisterService {
 
         user.setCreated(now);
         user.setUpdated(now);
-
-        //user.setLastLogin(LocalDateTime.now());
-        //user.getPresence().setToken(RandomUUIDUtils.randomUUID());
 
         user = userRepository.save(user);
 

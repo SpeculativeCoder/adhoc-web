@@ -22,6 +22,7 @@
 
 package adhoc.objective;
 
+import adhoc.objective.reconcile.ObjectiveReconcileService;
 import adhoc.objective.taken.ObjectiveTakenEvent;
 import adhoc.objective.taken.ObjectiveTakenService;
 import adhoc.objective.taken.ServerObjectiveTakenEvent;
@@ -49,6 +50,7 @@ import java.util.Objects;
 public class ObjectiveManagerController {
 
     private final ObjectiveManagerService objectiveManagerService;
+    private final ObjectiveReconcileService objectiveReconcileService;
     private final ObjectiveTakenService objectiveTakenService;
 
     @PutMapping("/objectives/{objectiveId}")
@@ -64,7 +66,7 @@ public class ObjectiveManagerController {
     @PostMapping("/servers/{serverId}/objectives")
     @PreAuthorize("hasRole('SERVER')")
     public List<ObjectiveDto> postServerObjectives(@PathVariable Long serverId, @RequestBody List<@Valid ObjectiveDto> objectiveDtos) {
-        return objectiveManagerService.updateServerObjectives(serverId, objectiveDtos);
+        return objectiveReconcileService.reconcileServerObjectives(serverId, objectiveDtos);
     }
 
     @MessageMapping("ObjectiveTaken")

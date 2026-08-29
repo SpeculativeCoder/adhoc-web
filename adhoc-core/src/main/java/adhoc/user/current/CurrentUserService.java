@@ -59,10 +59,9 @@ public class CurrentUserService {
     }
 
     public CurrentUserDto toCurrentUserDto(UserEntity user) {
+        UserPresenceEntity userPresence = Verify.verifyNotNull(user.getPresence(), "user presence is null");
 
         String quickLoginCode = user.getId() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey());
-
-        UserPresenceEntity userPresence = Verify.verifyNotNull(user.getPresence());
 
         return new CurrentUserDto(
                 user.getId(),

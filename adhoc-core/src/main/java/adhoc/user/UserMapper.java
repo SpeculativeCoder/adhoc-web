@@ -22,14 +22,12 @@
 
 package adhoc.user;
 
-import adhoc.region.RegionEntity;
-import adhoc.server.ServerEntity;
+import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +37,8 @@ import java.util.stream.Collectors;
 public class UserMapper {
 
     UserDto toDto(UserEntity user) {
+        UserPresenceEntity userPresence = Verify.verifyNotNull(user.getPresence(), "user presence is null");
+
         return new UserDto(
                 user.getId(),
                 user.getVersion(),
@@ -46,10 +46,10 @@ public class UserMapper {
                 user.isHuman(),
                 user.getFaction().getId(),
                 user.getScore(),
-                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getRegion).map(RegionEntity::getId).orElse(null),
-                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getSeen).orElse(null),
+                userPresence.getRegion() == null ? null : userPresence.getRegion().getId(),
+                userPresence.getSeen(),
                 user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
-                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getDestinationServer).map(ServerEntity::getId).orElse(null),
-                Optional.ofNullable(user.getPresence()).map(UserPresenceEntity::getServer).map(ServerEntity::getId).orElse(null));
+                userPresence.getDestinationServer() == null ? null : userPresence.getDestinationServer().getId(),
+                userPresence.getServer() == null ? null : userPresence.getServer().getId());
     }
 }

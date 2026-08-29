@@ -22,6 +22,7 @@
 
 package adhoc.area;
 
+import adhoc.area.reconcile.AreaReconcileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,11 +41,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AreaManagerController {
 
-    private final AreaManagerService areaManagerService;
+    private final AreaReconcileService areaReconcileService;
 
     @PostMapping("/servers/{serverId}/areas")
     @PreAuthorize("hasRole('SERVER')")
     public List<AreaDto> postServerAreas(@PathVariable Long serverId, @RequestBody List<@Valid AreaDto> areaDtos) {
-        return areaManagerService.updateServerAreas(serverId, areaDtos);
+        return areaReconcileService.reconcileServerAreas(serverId, areaDtos);
     }
 }

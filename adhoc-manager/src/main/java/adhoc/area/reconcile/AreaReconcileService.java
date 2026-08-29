@@ -20,8 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.area;
+package adhoc.area.reconcile;
 
+import adhoc.area.AreaDto;
+import adhoc.area.AreaEntity;
+import adhoc.area.AreaManagerMapper;
+import adhoc.area.AreaMapper;
+import adhoc.area.AreaRepository;
 import adhoc.objective.ObjectiveEntity;
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
@@ -44,7 +49,7 @@ import java.util.TreeSet;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class AreaManagerService {
+public class AreaReconcileService {
 
     private final AreaRepository areaRepository;
     private final ServerRepository serverRepository;
@@ -54,7 +59,7 @@ public class AreaManagerService {
 
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
-    public List<AreaDto> updateServerAreas(Long serverId, List<AreaDto> areaDtos) {
+    public List<AreaDto> reconcileServerAreas(Long serverId, List<AreaDto> areaDtos) {
 
         ServerEntity server = serverRepository.getReferenceById(serverId);
         RegionEntity serverRegion = server.getRegion();

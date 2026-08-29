@@ -46,7 +46,7 @@ public class ObjectiveManagerMapper {
     private final AreaRepository areaRepository;
     private final FactionRepository factionRepository;
 
-    ObjectiveEntity toEntityStage1(ObjectiveDto objectiveDto, ObjectiveEntity objective) {
+    public ObjectiveEntity toEntityStage1(ObjectiveDto objectiveDto, ObjectiveEntity objective) {
         RegionEntity region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         objective.setRegion(region);
@@ -81,7 +81,7 @@ public class ObjectiveManagerMapper {
         return objective;
     }
 
-    ObjectiveEntity toEntityStage2(ObjectiveDto objectiveDto, ObjectiveEntity objective) {
+    public ObjectiveEntity toEntityStage2(ObjectiveDto objectiveDto, ObjectiveEntity objective) {
         RegionEntity region = regionRepository.getReferenceById(objectiveDto.getRegionId());
 
         Set<ObjectiveEntity> linkedObjectives = objectiveDto.getLinkedObjectiveIndexes().stream()

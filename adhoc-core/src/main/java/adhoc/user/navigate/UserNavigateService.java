@@ -77,11 +77,11 @@ public class UserNavigateService {
 
         UserEntity user = userRepository.getReferenceById(request.getUserId());
 
-        ServerEntity destinationServer = request.getDestinationServerId() != null ?
-                serverRepository.getReferenceById(request.getDestinationServerId()) : null;
+        ServerEntity destinationServer = request.getDestinationServerId() == null ? null :
+                serverRepository.getReferenceById(request.getDestinationServerId());
 
-        AreaEntity destinationArea = request.getDestinationAreaId() != null ?
-                areaRepository.getReferenceById(request.getDestinationAreaId()) : null;
+        AreaEntity destinationArea = request.getDestinationAreaId() == null ? null :
+                areaRepository.getReferenceById(request.getDestinationAreaId());
 
         // if no server provided, use server from area if that was provided
         if (destinationServer == null && destinationArea != null) {
@@ -108,8 +108,7 @@ public class UserNavigateService {
         RegionEntity oldRegion = oldDestinationServer == null ? null : oldDestinationServer.getRegion();
 
         // when moving servers, update the position to ensure they can spawn at the right location
-        if (destinationServer != oldDestinationServer
-                && Objects.equals(destinationServer.getRegion(), oldRegion)) {
+        if (destinationServer != oldDestinationServer && Objects.equals(destinationServer.getRegion(), oldRegion)) {
             user.getPresence().setX(request.getX());
             user.getPresence().setY(request.getY());
             user.getPresence().setZ(request.getZ());
@@ -131,7 +130,8 @@ public class UserNavigateService {
                 user.getId(),
                 user.getFaction().getId(),
                 user.getPresence().getToken().toString(),
-                user.getPresence().getX(), user.getPresence().getY(), user.getPresence().getZ(), user.getPresence().getYaw(), user.getPresence().getPitch());
+                user.getPresence().getX(), user.getPresence().getY(), user.getPresence().getZ(),
+                user.getPresence().getYaw(), user.getPresence().getPitch());
     }
 
     //private static boolean isAuthenticatedAsServer() {

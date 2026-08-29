@@ -36,7 +36,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AreaMapper {
 
-    AreaDto toDto(AreaEntity area) {
+    public AreaDto toDto(AreaEntity area) {
         return new AreaDto(
                 area.getId(),
                 area.getVersion(),

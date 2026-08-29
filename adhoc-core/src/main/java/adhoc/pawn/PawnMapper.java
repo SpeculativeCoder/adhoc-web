@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PawnMapper {
 
-    PawnDto toDto(PawnEntity pawn) {
+    public PawnDto toDto(PawnEntity pawn) {
         return new PawnDto(
                 pawn.getId(),
                 pawn.getVersion(),

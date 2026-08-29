@@ -40,7 +40,7 @@ public class PawnManagerMapper {
     private final UserRepository userRepository;
     private final FactionRepository factionRepository;
 
-    PawnEntity toEntity(PawnDto pawnDto, PawnEntity pawn) {
+    public PawnEntity toEntity(PawnDto pawnDto, PawnEntity pawn) {
         pawn.setUuid(pawnDto.getUuid());
         pawn.setServer(serverRepository.getReferenceById(pawnDto.getServerId()));
         pawn.setIndex(pawnDto.getIndex());

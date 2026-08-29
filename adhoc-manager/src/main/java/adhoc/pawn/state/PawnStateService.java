@@ -20,8 +20,13 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.pawn.state;
 
+import adhoc.pawn.PawnDto;
+import adhoc.pawn.PawnEntity;
+import adhoc.pawn.PawnManagerMapper;
+import adhoc.pawn.PawnMapper;
+import adhoc.pawn.PawnRepository;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import com.google.common.base.Preconditions;
@@ -43,7 +48,7 @@ import java.util.UUID;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class PawnManagerService {
+public class PawnStateService {
 
     private final PawnRepository pawnRepository;
     private final ServerRepository serverRepository;

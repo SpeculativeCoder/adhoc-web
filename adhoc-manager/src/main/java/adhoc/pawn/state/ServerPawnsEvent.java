@@ -20,8 +20,9 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn;
+package adhoc.pawn.state;
 
+import adhoc.pawn.PawnDto;
 import adhoc.system.Event;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;

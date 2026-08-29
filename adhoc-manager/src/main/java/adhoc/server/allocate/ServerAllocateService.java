@@ -27,9 +27,9 @@ import adhoc.area.groups.AreaGroupsFactory;
 import adhoc.region.RegionEntity;
 import adhoc.region.RegionRepository;
 import adhoc.server.ServerEntity;
-import adhoc.server.ServerManagerService;
 import adhoc.server.ServerRepository;
-import adhoc.server.ServerUpdatedEvent;
+import adhoc.server.updated.ServerUpdatedEvent;
+import adhoc.server.updated.ServerUpdatedService;
 import adhoc.system.Event;
 import adhoc.task.ServerTaskEntity;
 import adhoc.task.ServerTaskRepository;
@@ -68,7 +68,7 @@ public class ServerAllocateService {
     private final RegionRepository regionRepository;
     private final ServerTaskRepository serverTaskRepository;
 
-    private final ServerManagerService serverManagerService;
+    private final ServerUpdatedService serverUpdatedService;
 
     private final AreaGroupsFactory areaGroupsFactory;
 
@@ -109,7 +109,7 @@ public class ServerAllocateService {
                     usedServerIds.add(server.getId());
 
                     if (emitEvent) {
-                        ServerUpdatedEvent event = serverManagerService.toServerUpdatedEvent(server);
+                        ServerUpdatedEvent event = serverUpdatedService.toServerUpdatedEvent(server);
                         //log.info("{}", event);
                         events.add(event);
                     }
@@ -123,7 +123,7 @@ public class ServerAllocateService {
                         boolean emitEvent = updateServerWithRegionAndAreaGroup(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
-                            ServerUpdatedEvent event = serverManagerService.toServerUpdatedEvent(unusedServer);
+                            ServerUpdatedEvent event = serverUpdatedService.toServerUpdatedEvent(unusedServer);
                             //log.info("{}", event);
                             events.add(event);
                         }

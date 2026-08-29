@@ -20,48 +20,31 @@
  * SOFTWARE.
  */
 
-package adhoc.server;
+package adhoc.server.started;
 
 import adhoc.system.Event;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.List;
-
 @Value
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Jacksonized
 @SuppressWarnings("ClassCanBeRecord")
-public class ServerUpdatedEvent implements Event {
+public class ServerStartedEvent implements Event {
 
     @NotNull
     @Min(1)
     Long serverId;
 
-    @NotNull
-    @Min(0)
-    Long version;
+    @NotEmpty
+    String privateIp;
 
-    @NotNull
-    Long regionId;
-    @NotNull
-    List<Long> areaIds;
-    @NotNull
-    List<Integer> areaIndexes;
-
-    @NotNull
-    Boolean enabled;
-    @NotNull
-    Boolean active;
-
-    String publicIp;
-
-    Integer publicWebSocketPort;
-
-    String webSocketUrl;
+    @NotEmpty
+    String managerHost;
 }

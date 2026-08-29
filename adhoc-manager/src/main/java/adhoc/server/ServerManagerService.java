@@ -22,21 +22,13 @@
 
 package adhoc.server;
 
-import adhoc.area.AreaEntity;
-import adhoc.area.AreaRepository;
-import adhoc.region.RegionRepository;
-import adhoc.task.ServerTaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Sort;
-import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -45,9 +37,6 @@ import java.util.stream.Collectors;
 public class ServerManagerService {
 
     private final ServerRepository serverRepository;
-    private final ServerTaskRepository serverTaskRepository;
-    private final RegionRepository regionRepository;
-    private final AreaRepository areaRepository;
 
     private final ServerManagerMapper serverManagerMapper;
     private final ServerMapper serverMapper;
@@ -60,31 +49,5 @@ public class ServerManagerService {
         ServerEntity server = serverManagerMapper.toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));
 
         return serverMapper.toDto(server);
-    }
-
-    @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
-            maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
-    public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
-        ServerEntity server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
-
-        // TODO: internal server status?
-        server.setActive(true);
-
-        return toServerUpdatedEvent(server);
-    }
-
-    public ServerUpdatedEvent toServerUpdatedEvent(ServerEntity server) {
-        ServerUpdatedEvent event = new ServerUpdatedEvent(
-                server.getId(),
-                server.getVersion(),
-                server.getRegion().getId(),
-                server.getAreas().stream().map(AreaEntity::getId).collect(Collectors.toList()),
-                server.getAreas().stream().map(AreaEntity::getIndex).collect(Collectors.toList()),
-                server.isEnabled(),
-                server.isActive(),
-                server.getPublicIp(),
-                server.getPublicWebSocketPort(),
-                server.getWebSocketUrl());
-        return event;
     }
 }

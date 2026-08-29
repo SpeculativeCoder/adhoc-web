@@ -20,15 +20,35 @@
  * SOFTWARE.
  */
 
-package adhoc.area.groups;
+package adhoc.server.allocate;
 
 import adhoc.area.AreaEntity;
 import adhoc.region.RegionEntity;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public interface AreaGroupsFactory {
+@Component
+@Slf4j
+public class SimpleAreaGroupsFactory implements AreaGroupsFactory {
 
-    List<Set<AreaEntity>> determineAreaGroups(RegionEntity region);
+    @PostConstruct
+    public void postConstruct() {
+        //log.debug("Simple Area Groups Factory is available");
+    }
+
+    @Override
+    public List<Set<AreaEntity>> determineAreaGroups(RegionEntity region) {
+        // one area group per area
+        List<Set<AreaEntity>> areaGroups = new ArrayList<>();
+        for (AreaEntity area : region.getAreas()) {
+            areaGroups.add(Collections.singleton(area));
+        }
+        return areaGroups;
+    }
 }

@@ -24,8 +24,6 @@ package adhoc.server.started;
 
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.server.updated.ServerUpdatedEvent;
-import adhoc.server.updated.ServerUpdatedService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
@@ -42,17 +40,12 @@ public class ServerStartedService {
 
     private final ServerRepository serverRepository;
 
-    private final ServerUpdatedService serverUpdatedService;
-
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
-    public ServerUpdatedEvent handleServerStarted(ServerStartedEvent serverStartedEvent) {
+    public void handleServerStarted(ServerStartedEvent serverStartedEvent) {
         ServerEntity server = serverRepository.getReferenceById(serverStartedEvent.getServerId());
 
         // TODO: internal server status?
         server.setActive(true);
-
-        // TODO
-        return serverUpdatedService.toServerUpdatedEvent(server);
     }
 }

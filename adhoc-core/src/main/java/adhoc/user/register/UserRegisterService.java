@@ -25,7 +25,7 @@ package adhoc.user.register;
 import adhoc.faction.FactionRepository;
 import adhoc.system.auth.ProgrammaticLoginHelper;
 import adhoc.system.properties.CoreProperties;
-import adhoc.system.uuid.UUIDUtils;
+import adhoc.system.uuid.RandomUUIDHelper;
 import adhoc.user.UserEntity;
 import adhoc.user.UserPresenceEntity;
 import adhoc.user.UserRepository;
@@ -64,6 +64,9 @@ public class UserRegisterService {
 
     private final UserService userService;
     private final CurrentUserService currentUserService;
+
+    private final RandomUUIDHelper randomUUIDHelper;
+    private final RandomNameHelper randomNameHelper;
     private final ProgrammaticLoginHelper programmaticLoginHelper;
 
     private final PasswordEncoder passwordEncoder;
@@ -77,7 +80,7 @@ public class UserRegisterService {
 
         String tempPassword = null;
         if (user.getPassword() == null) {
-            tempPassword = UUIDUtils.randomUUID().toString();
+            tempPassword = randomUUIDHelper.randomUUID().toString();
             user.setPassword(tempPassword, passwordEncoder);
         }
 
@@ -135,7 +138,7 @@ public class UserRegisterService {
             //String name = prefix + now.getLong(ChronoField.INSTANT_SECONDS) + now.getLong(ChronoField.MICRO_OF_SECOND);
             //user.setName(name);
 
-            user.setName(RandomNameUtils.randomName());
+            user.setName(randomNameHelper.randomName());
         }
 
         if (user.getFaction() == null) {
@@ -146,7 +149,7 @@ public class UserRegisterService {
         user.setScore(BigDecimal.valueOf(0.0));
         user.setUserRoles(Sets.newHashSet(UserRole.USER)); //, UserRole.DEBUG, UserRole.ADMIN));
 
-        String quickLoginPassword = UUIDUtils.randomUUID().toString().replace("-", "");
+        String quickLoginPassword = randomUUIDHelper.randomUUID().toString().replace("-", "");
 
         user.setQuickLoginPassword(quickLoginPassword, coreProperties.getQuickLoginPasswordEncryptionKey());
 

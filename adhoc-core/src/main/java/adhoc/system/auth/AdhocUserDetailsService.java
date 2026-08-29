@@ -23,7 +23,7 @@
 package adhoc.system.auth;
 
 import adhoc.system.properties.CoreProperties;
-import adhoc.system.uuid.UUIDUtils;
+import adhoc.system.uuid.RandomUUIDHelper;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import com.google.common.base.Strings;
@@ -55,6 +55,8 @@ public class AdhocUserDetailsService implements UserDetailsService {
     private final CoreProperties coreProperties;
 
     private final UserRepository userRepository;
+
+    private final RandomUUIDHelper randomUUIDHelper;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -115,7 +117,7 @@ public class AdhocUserDetailsService implements UserDetailsService {
 
         } else {
             // else account is not enabled
-            password = UUIDUtils.randomUUID().toString(); // TODO
+            password = randomUUIDHelper.randomUUID().toString(); // TODO
             enabled = false;
         }
 

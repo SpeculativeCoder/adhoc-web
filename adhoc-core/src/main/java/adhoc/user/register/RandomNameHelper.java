@@ -20,20 +20,30 @@
  * SOFTWARE.
  */
 
-package adhoc.system.uuid;
+package adhoc.user.register;
 
-import lombok.experimental.UtilityClass;
+import net.datafaker.Faker;
+import net.datafaker.internal.helper.WordUtils;
+import org.springframework.stereotype.Component;
 
-import java.util.UUID;
+@Component
+public class RandomNameHelper {
 
-@UtilityClass
-public class UUIDUtils {
+    public String randomName() {
+        Faker faker = new Faker();
 
-    public UUID randomUUID() {
-        return UUID.randomUUID();
+        return onlyAlpha(WordUtils.capitalize(faker.word().adjective()) +
+                WordUtils.capitalize(faker.word().adjective()) +
+                WordUtils.capitalize(faker.word().verb()));
     }
 
-    static void main(String[] args) {
-        System.out.println(randomUUID());
+    private String onlyAlpha(String str) {
+        return str.replaceAll("[^A-Za-z]", "");
     }
+
+    //static void main() {
+    //    for (int i = 0; i < 20; i++) {
+    //        System.out.println(randomName());
+    //    }
+    //}
 }

@@ -27,7 +27,7 @@ import adhoc.area.AreaRepository;
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.system.uuid.UUIDUtils;
+import adhoc.system.uuid.RandomUUIDHelper;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import com.google.common.base.Preconditions;
@@ -56,6 +56,8 @@ public class UserNavigateService {
     private final UserRepository userRepository;
     private final ServerRepository serverRepository;
     private final AreaRepository areaRepository;
+
+    private final RandomUUIDHelper randomUUIDHelper;
 
     private final Clock clock;
 
@@ -118,7 +120,7 @@ public class UserNavigateService {
         user.getPresence().setDestinationServer(destinationServer);
         user.getPresence().setNavigated(LocalDateTime.now(clock));
 
-        UUID newToken = UUIDUtils.randomUUID();
+        UUID newToken = randomUUIDHelper.randomUUID();
         user.getPresence().setToken(newToken);
 
         return new UserNavigateResponse(

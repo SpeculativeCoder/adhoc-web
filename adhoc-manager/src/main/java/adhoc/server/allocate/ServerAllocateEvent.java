@@ -20,35 +20,48 @@
  * SOFTWARE.
  */
 
-package adhoc.server.updated;
+package adhoc.server.allocate;
 
-import adhoc.area.AreaEntity;
-import adhoc.server.ServerEntity;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import adhoc.system.Event;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-import java.util.stream.Collectors;
+import java.util.List;
 
-@Service
-@Transactional
-@Slf4j
-@RequiredArgsConstructor
-public class ServerUpdatedService {
+@Value
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
+@SuppressWarnings("ClassCanBeRecord")
+public class ServerAllocateEvent implements Event {
 
-    public ServerUpdatedEvent toServerUpdatedEvent(ServerEntity server) {
-        ServerUpdatedEvent event = new ServerUpdatedEvent(
-                server.getId(),
-                server.getVersion(),
-                server.getRegion().getId(),
-                server.getAreas().stream().map(AreaEntity::getId).collect(Collectors.toList()),
-                server.getAreas().stream().map(AreaEntity::getIndex).collect(Collectors.toList()),
-                server.isEnabled(),
-                server.isActive(),
-                server.getPublicIp(),
-                server.getPublicWebSocketPort(),
-                server.getWebSocketUrl());
-        return event;
-    }
+    @NotNull
+    @Min(1)
+    Long serverId;
+
+    @NotNull
+    @Min(0)
+    Long version;
+
+    @NotNull
+    Long regionId;
+    @NotNull
+    List<Long> areaIds;
+    @NotNull
+    List<Integer> areaIndexes;
+
+    @NotNull
+    Boolean enabled;
+    @NotNull
+    Boolean active;
+
+    String publicIp;
+
+    Integer publicWebSocketPort;
+
+    String webSocketUrl;
 }

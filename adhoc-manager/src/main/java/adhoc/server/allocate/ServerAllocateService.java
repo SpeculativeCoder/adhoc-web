@@ -27,8 +27,6 @@ import adhoc.region.RegionEntity;
 import adhoc.region.RegionRepository;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
-import adhoc.server.updated.ServerUpdatedEvent;
-import adhoc.server.updated.ServerUpdatedService;
 import adhoc.system.Event;
 import adhoc.task.ServerTaskEntity;
 import adhoc.task.ServerTaskRepository;
@@ -53,6 +51,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -66,8 +65,6 @@ public class ServerAllocateService {
     private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
     private final ServerTaskRepository serverTaskRepository;
-
-    private final ServerUpdatedService serverUpdatedService;
 
     private final AreaGroupsFactory areaGroupsFactory;
 
@@ -108,7 +105,7 @@ public class ServerAllocateService {
                     usedServerIds.add(server.getId());
 
                     if (emitEvent) {
-                        ServerUpdatedEvent event = serverUpdatedService.toServerUpdatedEvent(server);
+                        ServerAllocateEvent event = serverAllocateEvent(server);
                         //log.info("{}", event);
                         events.add(event);
                     }
@@ -122,7 +119,7 @@ public class ServerAllocateService {
                         boolean emitEvent = updateServerWithRegionAndAreaGroup(unusedServer, region, Collections.emptySet());
 
                         if (emitEvent) {
-                            ServerUpdatedEvent event = serverUpdatedService.toServerUpdatedEvent(unusedServer);
+                            ServerAllocateEvent event = serverAllocateEvent(unusedServer);
                             //log.info("{}", event);
                             events.add(event);
                         }
@@ -254,5 +251,19 @@ public class ServerAllocateService {
         }
 
         return emitEvent;
+    }
+
+    public ServerAllocateEvent serverAllocateEvent(ServerEntity server) {
+        return new ServerAllocateEvent(
+                server.getId(),
+                server.getVersion(),
+                server.getRegion().getId(),
+                server.getAreas().stream().map(AreaEntity::getId).collect(Collectors.toList()),
+                server.getAreas().stream().map(AreaEntity::getIndex).collect(Collectors.toList()),
+                server.isEnabled(),
+                server.isActive(),
+                server.getPublicIp(),
+                server.getPublicWebSocketPort(),
+                server.getWebSocketUrl());
     }
 }

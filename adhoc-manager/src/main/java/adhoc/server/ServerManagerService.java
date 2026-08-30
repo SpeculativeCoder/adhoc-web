@@ -24,11 +24,8 @@ package adhoc.server;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -40,10 +37,6 @@ public class ServerManagerService {
 
     private final ServerManagerMapper serverManagerMapper;
     private final ServerMapper serverMapper;
-
-    public List<ServerDto> getServerServers(Long serverId) {
-        return serverRepository.findAll(Sort.by("id")).stream().map(serverMapper::toDto).toList();
-    }
 
     public ServerDto updateServer(ServerDto serverDto) {
         ServerEntity server = serverManagerMapper.toEntity(serverDto, serverRepository.getReferenceById(serverDto.getId()));

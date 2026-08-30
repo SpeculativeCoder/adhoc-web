@@ -30,14 +30,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -57,12 +55,6 @@ public class ServerManagerController {
                 "Server ID mismatch: %s != %s", serverId, serverDto.getId());
 
         return serverManagerService.updateServer(serverDto);
-    }
-
-    @GetMapping("/servers/{serverId}/servers")
-    @PreAuthorize("hasRole('SERVER')")
-    public List<ServerDto> getServerServers(@PathVariable Long serverId) {
-        return serverManagerService.getServerServers(serverId);
     }
 
     @MessageMapping("ServerStarted")

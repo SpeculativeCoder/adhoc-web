@@ -256,14 +256,7 @@ public class ServerAllocateService {
     public ServerAllocateEvent serverAllocateEvent(ServerEntity server) {
         return new ServerAllocateEvent(
                 server.getId(),
-                server.getVersion(),
                 server.getRegion().getId(),
-                server.getAreas().stream().map(AreaEntity::getId).collect(Collectors.toList()),
-                server.getAreas().stream().map(AreaEntity::getIndex).collect(Collectors.toList()),
-                server.isEnabled(),
-                server.isActive(),
-                server.getPublicIp(),
-                server.getPublicWebSocketPort(),
-                server.getWebSocketUrl());
+                server.getAreas().stream().map(AreaEntity::getIndex).collect(Collectors.toList()));
     }
 }

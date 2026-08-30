@@ -43,25 +43,28 @@ public class ServerAllocateEvent implements Event {
     @Min(1)
     Long serverId;
 
-    @NotNull
-    @Min(0)
-    Long version;
+    //@NotNull
+    //@Min(0)
+    //Long version;
 
     @NotNull
     Long regionId;
-    @NotNull
-    List<Long> areaIds;
+
+    //@NotNull
+    //List<Long> areaIds;
+
     @NotNull
     List<Integer> areaIndexes;
 
-    @NotNull
-    Boolean enabled;
-    @NotNull
-    Boolean active;
+    //@NotNull
+    //Boolean enabled;
 
-    String publicIp;
+    //@NotNull
+    //Boolean active;
 
-    Integer publicWebSocketPort;
+    //String publicIp;
 
-    String webSocketUrl;
+    //Integer publicWebSocketPort;
+
+    //String webSocketUrl;
 }

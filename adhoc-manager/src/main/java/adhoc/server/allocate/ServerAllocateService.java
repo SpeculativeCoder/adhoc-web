@@ -28,7 +28,6 @@ import adhoc.region.RegionRepository;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.system.Event;
-import adhoc.task.ServerTaskEntity;
 import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +47,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -90,8 +88,16 @@ public class ServerAllocateService {
                     Set<AreaEntity> areas = areasAllocationEntry.getKey();
                     ServerEntity server = areasAllocationEntry.getValue();
 
+                    Verify.verifyNotNull(areasAllocationEntry.getKey());
+                    Verify.verify(!areas.isEmpty());
+                    Verify.verifyNotNull(areasAllocationEntry.getValue());
+
                     // adjust server as necessary to ensure it is representing this region and area group
                     boolean emitEvent = updateServerWithRegionAndAreaGroup(areasAllocationEntry.getValue(), region, areas);
+
+                    // server is now enabled as it has one or more areas assigned to it
+                    // (this will trigger the starting of a server task via the hosting service)
+                    server.setEnabled(true);
 
                     if (server.getId() == null) {
                         server = serverRepository.save(server);
@@ -114,6 +120,9 @@ public class ServerAllocateService {
 
                         boolean emitEvent = updateServerWithRegionAndAreaGroup(unusedServer, region, Collections.emptySet());
 
+                        // setting server to disabled will cause its server task to be shut down
+                        unusedServer.setEnabled(false);
+
                         if (emitEvent) {
                             ServerAllocateEvent event = serverAllocateEvent(unusedServer);
                             //log.info("{}", event);
@@ -130,11 +139,6 @@ public class ServerAllocateService {
     private boolean updateServerWithRegionAndAreaGroup(ServerEntity server, RegionEntity region, Set<AreaEntity> areaGroup) {
         log.trace("Updating server {} with region {} and area group {}", server, region, areaGroup);
 
-        Optional<ServerTaskEntity> optionalServerTask = Optional.ofNullable(server.getId()).flatMap(serverTaskRepository::findFirstByServerId);
-
-        Verify.verifyNotNull(region, "region must be not null");
-        String mapName = region.getMapName();
-
         OptionalDouble averageX = areaGroup.stream().map(AreaEntity::getX).mapToDouble(BigDecimal::doubleValue).average();
         OptionalDouble averageY = areaGroup.stream().map(AreaEntity::getY).mapToDouble(BigDecimal::doubleValue).average();
         OptionalDouble averageZ = areaGroup.stream().map(AreaEntity::getZ).mapToDouble(BigDecimal::doubleValue).average();
@@ -142,10 +146,6 @@ public class ServerAllocateService {
         BigDecimal areaGroupX = averageX.isPresent() ? BigDecimal.valueOf(averageX.getAsDouble()).setScale(32, RoundingMode.HALF_UP) : null;
         BigDecimal areaGroupY = averageY.isPresent() ? BigDecimal.valueOf(averageY.getAsDouble()).setScale(32, RoundingMode.HALF_UP) : null;
         BigDecimal areaGroupZ = averageZ.isPresent() ? BigDecimal.valueOf(averageZ.getAsDouble()).setScale(32, RoundingMode.HALF_UP) : null;
-
-        // a server should be enabled if it has one or more areas assigned to it
-        // (this will trigger the starting of a server task via the hosting service)
-        boolean enabled = !areaGroup.isEmpty();
 
         boolean emitEvent = false;
 
@@ -184,11 +184,6 @@ public class ServerAllocateService {
             server.setX(areaGroupX);
             server.setY(areaGroupY);
             server.setZ(areaGroupZ);
-            emitEvent = true;
-        }
-
-        if (server.isEnabled() != enabled) {
-            server.setEnabled(enabled);
             emitEvent = true;
         }
 

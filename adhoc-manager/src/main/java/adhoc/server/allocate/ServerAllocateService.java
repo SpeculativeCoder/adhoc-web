@@ -28,12 +28,10 @@ import adhoc.region.RegionRepository;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.system.Event;
-import adhoc.task.ServerTaskRepository;
 import com.google.common.base.Verify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.LockAcquisitionException;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -47,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,11 +57,8 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ServerAllocateService {
 
-    private final ServerProperties serverProperties;
-
     private final ServerRepository serverRepository;
     private final RegionRepository regionRepository;
-    private final ServerTaskRepository serverTaskRepository;
 
     private final AreasAllocationStrategy areasAllocationStrategy;
 
@@ -102,23 +98,18 @@ public class ServerAllocateService {
             Verify.verify(!areas.isEmpty());
             Verify.verifyNotNull(areasAllocationEntry.getValue());
 
-            // adjust server as necessary to ensure it is representing the region and allocated areas
-            boolean emitEvent = updateServerWithRegionAndAreas(server, region, areas);
-
-            // server is now enabled as it has one or more areas assigned to it
+            // server is now enabled as it will have one or more areas assigned to it
             // (this will trigger the starting of a server task via the hosting service)
             server.setEnabled(true);
+
+            // adjust server as necessary to ensure it is representing the region and allocated areas
+            updateServerRegionAndAreas(server, region, areas)
+                    .ifPresent(events::add);
 
             if (server.getId() == null) {
                 server = serverRepository.save(server);
             }
             regionServerIds.add(server.getId());
-
-            if (emitEvent) {
-                ServerAllocateEvent event = serverAllocateEvent(server);
-                //log.info("{}", event);
-                events.add(event);
-            }
         }
 
         // any servers in this region that are no longer used should be adjusted to ensure they are not representing any areas
@@ -126,32 +117,27 @@ public class ServerAllocateService {
             unusedServers.forEach(unusedServer -> {
                 log.trace("Managing unused server {} for region {}", unusedServer, region);
 
-                boolean emitEvent = updateServerWithRegionAndAreas(unusedServer, region, Collections.emptySet());
-
                 // setting server to disabled will cause its server task to be shut down
                 unusedServer.setEnabled(false);
 
-                if (emitEvent) {
-                    ServerAllocateEvent event = serverAllocateEvent(unusedServer);
-                    //log.info("{}", event);
-                    events.add(event);
-                }
+                updateServerRegionAndAreas(unusedServer, region, Collections.emptySet())
+                        .ifPresent(events::add);
             });
         }
 
         return events;
     }
 
-    private boolean updateServerWithRegionAndAreas(ServerEntity server, RegionEntity region, Set<AreaEntity> areas) {
+    private Optional<ServerAllocateEvent> updateServerRegionAndAreas(ServerEntity server, RegionEntity region, Set<AreaEntity> areas) {
         log.trace("Updating server {} with region {} and areas {}", server, region, areas);
 
         OptionalDouble averageX = areas.stream().map(AreaEntity::getX).mapToDouble(BigDecimal::doubleValue).average();
         OptionalDouble averageY = areas.stream().map(AreaEntity::getY).mapToDouble(BigDecimal::doubleValue).average();
         OptionalDouble averageZ = areas.stream().map(AreaEntity::getZ).mapToDouble(BigDecimal::doubleValue).average();
 
-        BigDecimal areaGroupX = averageX.isPresent() ? BigDecimal.valueOf(averageX.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
-        BigDecimal areaGroupY = averageY.isPresent() ? BigDecimal.valueOf(averageY.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
-        BigDecimal areaGroupZ = averageZ.isPresent() ? BigDecimal.valueOf(averageZ.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
+        BigDecimal serverX = averageX.isPresent() ? BigDecimal.valueOf(averageX.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
+        BigDecimal serverY = averageY.isPresent() ? BigDecimal.valueOf(averageY.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
+        BigDecimal serverZ = averageZ.isPresent() ? BigDecimal.valueOf(averageZ.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
 
         boolean emitEvent = false;
 
@@ -174,7 +160,7 @@ public class ServerAllocateService {
                 emitEvent = true;
             }
         }
-        // link new areas represented by this server
+        // add new areas represented by this server
         for (AreaEntity area : areas) {
             if (!server.getAreas().contains(area)) {
                 log.debug("Server {} now contains area {}", server, area);
@@ -184,17 +170,22 @@ public class ServerAllocateService {
             }
         }
 
-        if (!Objects.equals(server.getX(), areaGroupX)
-                || !Objects.equals(server.getY(), areaGroupY)
-                || !Objects.equals(server.getZ(), areaGroupZ)) {
-            log.debug("Server {} now has location {} {} {}", server, areaGroupX, areaGroupY, areaGroupZ);
-            server.setX(areaGroupX);
-            server.setY(areaGroupY);
-            server.setZ(areaGroupZ);
+        if (!Objects.equals(server.getX(), serverX)
+                || !Objects.equals(server.getY(), serverY)
+                || !Objects.equals(server.getZ(), serverZ)) {
+            log.debug("Server {} now has location {} {} {}", server, serverX, serverY, serverZ);
+            server.setX(serverX);
+            server.setY(serverY);
+            server.setZ(serverZ);
             emitEvent = true;
         }
 
-        return emitEvent;
+        ServerAllocateEvent event = null;
+        if (emitEvent) {
+            event = serverAllocateEvent(server);
+            log.info("{}", event);
+        }
+        return Optional.ofNullable(event);
     }
 
     public ServerAllocateEvent serverAllocateEvent(ServerEntity server) {

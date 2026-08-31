@@ -24,11 +24,12 @@ package adhoc.server.allocate;
 
 import adhoc.area.AreaEntity;
 import adhoc.region.RegionEntity;
+import adhoc.server.ServerEntity;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public interface AreaGroupsFactory {
+public interface AreasAllocationStrategy {
 
-    List<Set<AreaEntity>> determineAreaGroups(RegionEntity region);
+    Map<Set<AreaEntity>, ServerEntity> calculateAreasAllocation(RegionEntity region);
 }

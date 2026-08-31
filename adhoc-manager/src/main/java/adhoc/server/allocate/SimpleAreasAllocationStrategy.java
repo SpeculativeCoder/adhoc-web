@@ -24,18 +24,28 @@ package adhoc.server.allocate;
 
 import adhoc.area.AreaEntity;
 import adhoc.region.RegionEntity;
+import adhoc.server.ServerEntity;
+import adhoc.server.ServerRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
+/**
+ * Simple strategy allocates each area to its own server.
+ * This is the default unless another strategy bean is made primary.
+ */
 @Component
+@RequiredArgsConstructor
 @Slf4j
-public class SimpleAreaGroupsFactory implements AreaGroupsFactory {
+public class SimpleAreasAllocationStrategy implements AreasAllocationStrategy {
+
+    private final ServerRepository serverRepository;
 
     @PostConstruct
     public void postConstruct() {
@@ -43,12 +53,19 @@ public class SimpleAreaGroupsFactory implements AreaGroupsFactory {
     }
 
     @Override
-    public List<Set<AreaEntity>> determineAreaGroups(RegionEntity region) {
-        // one area group per area
-        List<Set<AreaEntity>> areaGroups = new ArrayList<>();
+    public Map<Set<AreaEntity>, ServerEntity> calculateAreasAllocation(RegionEntity region) {
+
+        Map<Set<AreaEntity>, ServerEntity> areasAllocation = new LinkedHashMap<>();
         for (AreaEntity area : region.getAreas()) {
-            areaGroups.add(Collections.singleton(area));
+
+            // try to use an existing server for this area group, otherwise take an existing unused server, otherwise create a new server
+            ServerEntity server = serverRepository.findFirstByRegionAndAreasContains(region, area)
+                    .orElseGet(() -> serverRepository.findFirstByRegionAndAreasEmpty(region)
+                            .orElseGet(ServerEntity::new));
+
+            areasAllocation.put(Collections.singleton(area), server);
         }
-        return areaGroups;
+
+        return areasAllocation;
     }
 }

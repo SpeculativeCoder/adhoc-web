@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -65,7 +66,7 @@ public class ServerAllocateService {
     private final RegionRepository regionRepository;
     private final ServerTaskRepository serverTaskRepository;
 
-    private final AreaGroupsFactory areaGroupsFactory;
+    private final AreasAllocationStrategy areasAllocationStrategy;
 
     /**
      * Manage servers to ensure every area is being represented by a server, creating new servers as needed.
@@ -82,19 +83,15 @@ public class ServerAllocateService {
                 log.trace("Managing servers for region {}", region);
                 List<Long> usedServerIds = new ArrayList<>();
 
-                List<Set<AreaEntity>> areaGroups = areaGroupsFactory.determineAreaGroups(region);
-                log.trace("Region {} area groups: {}", region.getId(), areaGroups);
+                Map<Set<AreaEntity>, ServerEntity> areasAllocation = areasAllocationStrategy.calculateAreasAllocation(region);
+                log.trace("Region {} areas allocation: {}", region.getId(), areasAllocation);
 
-                for (Set<AreaEntity> areaGroup : areaGroups) {
-                    // TODO: prefer searching by area(s) that have human(s) in them
-                    AreaEntity firstArea = areaGroup.iterator().next();
-
-                    // try to use an existing server for this area group, otherwise take an existing unused server or create a new server
-                    ServerEntity server = serverRepository.findFirstByRegionAndAreasContains(region, firstArea)
-                            .orElseGet(() -> serverRepository.findFirstByRegionAndAreasEmpty(region).orElseGet(ServerEntity::new));
+                for (Map.Entry<Set<AreaEntity>, ServerEntity> areasAllocationEntry : areasAllocation.entrySet()) {
+                    Set<AreaEntity> areas = areasAllocationEntry.getKey();
+                    ServerEntity server = areasAllocationEntry.getValue();
 
                     // adjust server as necessary to ensure it is representing this region and area group
-                    boolean emitEvent = updateServerWithRegionAndAreaGroup(server, region, areaGroup);
+                    boolean emitEvent = updateServerWithRegionAndAreaGroup(areasAllocationEntry.getValue(), region, areas);
 
                     if (server.getId() == null) {
                         server = serverRepository.save(server);

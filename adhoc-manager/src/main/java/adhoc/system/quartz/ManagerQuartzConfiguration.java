@@ -45,6 +45,7 @@ import java.util.Date;
 public class ManagerQuartzConfiguration {
 
     public static final String ALLOCATE_SERVERS = "allocateServers";
+    public static final String MANAGE_ACTIVE_SERVERS = "manageActiveServers";
     public static final String REFRESH_TASKS = "refreshTasks";
     public static final String MANAGE_SERVER_TASKS = "manageServerTasks";
     public static final String MANAGE_TASK_DOMAINS = "manageTaskDomains";
@@ -63,6 +64,19 @@ public class ManagerQuartzConfiguration {
         return TriggerBuilder.newTrigger()
                 .forJob(ALLOCATE_SERVERS)
                 .withIdentity(ALLOCATE_SERVERS)
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                        .repeatForever()
+                        .withIntervalInSeconds(10)
+                        .withMisfireHandlingInstructionNextWithRemainingCount())
+                .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
+                .build();
+    }
+
+    @Bean
+    public Trigger manageActiveServersTrigger() {
+        return TriggerBuilder.newTrigger()
+                .forJob(MANAGE_ACTIVE_SERVERS)
+                .withIdentity(MANAGE_ACTIVE_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever()
                         .withIntervalInSeconds(10)
@@ -192,6 +206,14 @@ public class ManagerQuartzConfiguration {
     public JobDetail allocateServersJobDetail() {
         return JobBuilder.newJob(ManagerQuartzJob.class)
                 .withIdentity(ALLOCATE_SERVERS)
+                .storeDurably()
+                .build();
+    }
+
+    @Bean
+    public JobDetail manageActiveServersJobDetail() {
+        return JobBuilder.newJob(ManagerQuartzJob.class)
+                .withIdentity(MANAGE_ACTIVE_SERVERS)
                 .storeDurably()
                 .build();
     }

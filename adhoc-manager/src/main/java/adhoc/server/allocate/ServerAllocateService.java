@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -151,30 +150,6 @@ public class ServerAllocateService {
         // (this will trigger the starting of a server task via the hosting service)
         boolean enabled = !areaGroup.isEmpty();
 
-        // only remain marked as active if there is still a server task
-        boolean active = server.isActive() && optionalServerTask.isPresent();
-
-        String publicIp = optionalServerTask
-                .map(ServerTaskEntity::getPublicIp)
-                .orElse(null);
-
-        Integer publicWebSocketPort = optionalServerTask
-                .map(ServerTaskEntity::getPublicWebSocketPort)
-                .orElse(null);
-
-        String domain = optionalServerTask
-                .map(ServerTaskEntity::getDomain)
-                .orElse(null);
-
-        String webSocketUrl = null;
-        if (server.isEnabled() && active &&
-                publicIp != null && publicWebSocketPort != null &&
-                (domain != null || !serverProperties.getSsl().isEnabled())) {
-
-            webSocketUrl = (serverProperties.getSsl().isEnabled() ? "wss://" + domain : "ws://" + publicIp)
-                    + ":" + publicWebSocketPort;
-        }
-
         boolean emitEvent = false;
 
         if (server.getRegion() != region) {
@@ -218,36 +193,6 @@ public class ServerAllocateService {
         if (server.isEnabled() != enabled) {
             server.setEnabled(enabled);
             emitEvent = true;
-        }
-
-        if (server.isActive() != active) {
-            server.setActive(active);
-            emitEvent = true;
-        }
-
-        if (!Objects.equals(server.getPublicIp(), publicIp)) {
-            server.setPublicIp(publicIp);
-            emitEvent = true;
-        }
-
-        if (!Objects.equals(server.getPublicWebSocketPort(), publicWebSocketPort)) {
-            server.setPublicWebSocketPort(publicWebSocketPort);
-            emitEvent = true;
-        }
-
-        if (!Objects.equals(server.getDomain(), domain)) {
-            server.setDomain(domain);
-            emitEvent = true;
-        }
-
-        if (!Objects.equals(server.getWebSocketUrl(), webSocketUrl)) {
-            server.setWebSocketUrl(webSocketUrl);
-            emitEvent = true;
-        }
-
-        if (optionalServerTask.isPresent()) {
-            server.setSeen(LocalDateTime.now());
-            // this is updated every time so don't emit an event
         }
 
         return emitEvent;

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.server.started;
+package adhoc.server.active;
 
 import adhoc.system.Event;
 import jakarta.validation.constraints.Min;

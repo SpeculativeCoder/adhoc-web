@@ -24,6 +24,7 @@ package adhoc.system.quartz;
 
 import adhoc.faction.score.FactionScoreService;
 import adhoc.pawn.purge.PawnPurgeService;
+import adhoc.server.active.ServerActiveService;
 import adhoc.server.allocate.ServerAllocateService;
 import adhoc.server.purge.ServerPurgeService;
 import adhoc.system.Event;
@@ -54,6 +55,7 @@ import java.util.List;
 public class ManagerQuartzJob implements Job {
 
     private final ServerAllocateService serverAllocateService;
+    private final ServerActiveService serverActiveService;
     private final ServerPurgeService serverPurgeService;
     private final TaskRefreshOrchestrator taskRefreshOrchestrator;
     private final TaskDomainOrchestrator taskDomainOrchestrator;
@@ -78,6 +80,9 @@ public class ManagerQuartzJob implements Job {
             switch (jobName) {
             case ManagerQuartzConfiguration.ALLOCATE_SERVERS:
                 events = serverAllocateService.allocateServers();
+                break;
+            case ManagerQuartzConfiguration.MANAGE_ACTIVE_SERVERS:
+                serverActiveService.manageActiveServers();
                 break;
             case ManagerQuartzConfiguration.REFRESH_TASKS:
                 taskRefreshOrchestrator.refreshTasks();

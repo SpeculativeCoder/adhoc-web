@@ -47,7 +47,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,11 +86,11 @@ public class ServerAllocateService {
         List<Event> events = new ArrayList<>();
         List<Long> regionServerIds = new ArrayList<>();
 
-        Map<Set<AreaEntity>, ServerEntity> areasAllocation = areasAllocationStrategy.calculateAreasAllocation(region);
+        Map<List<AreaEntity>, ServerEntity> areasAllocation = areasAllocationStrategy.calculateAreasAllocation(region);
         log.trace("Region {} areas allocation: {}", region, areasAllocation);
 
-        for (Map.Entry<Set<AreaEntity>, ServerEntity> areasAllocationEntry : areasAllocation.entrySet()) {
-            Set<AreaEntity> areas = areasAllocationEntry.getKey();
+        for (Map.Entry<List<AreaEntity>, ServerEntity> areasAllocationEntry : areasAllocation.entrySet()) {
+            List<AreaEntity> areas = areasAllocationEntry.getKey();
             ServerEntity server = areasAllocationEntry.getValue();
 
             Verify.verifyNotNull(areasAllocationEntry.getKey());
@@ -120,7 +119,7 @@ public class ServerAllocateService {
                 // setting server to disabled will cause its server task to be shut down
                 unusedServer.setEnabled(false);
 
-                updateServerRegionAndAreas(unusedServer, region, Collections.emptySet())
+                updateServerRegionAndAreas(unusedServer, region, Collections.emptyList())
                         .ifPresent(events::add);
             });
         }
@@ -128,7 +127,7 @@ public class ServerAllocateService {
         return events;
     }
 
-    private Optional<ServerAllocateEvent> updateServerRegionAndAreas(ServerEntity server, RegionEntity region, Set<AreaEntity> areas) {
+    private Optional<ServerAllocateEvent> updateServerRegionAndAreas(ServerEntity server, RegionEntity region, List<AreaEntity> areas) {
         log.trace("Updating server {} with region {} and areas {}", server, region, areas);
 
         OptionalDouble averageX = areas.stream().map(AreaEntity::getX).mapToDouble(BigDecimal::doubleValue).average();

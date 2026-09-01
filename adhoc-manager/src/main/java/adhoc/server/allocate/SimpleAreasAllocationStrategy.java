@@ -33,8 +33,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Simple strategy allocates each area to its own server.
@@ -53,17 +53,18 @@ public class SimpleAreasAllocationStrategy implements AreasAllocationStrategy {
     }
 
     @Override
-    public Map<Set<AreaEntity>, ServerEntity> calculateAreasAllocation(RegionEntity region) {
+    public Map<List<AreaEntity>, ServerEntity> calculateAreasAllocation(RegionEntity region) {
 
-        Map<Set<AreaEntity>, ServerEntity> areasAllocation = new LinkedHashMap<>();
+        Map<List<AreaEntity>, ServerEntity> areasAllocation = new LinkedHashMap<>();
         for (AreaEntity area : region.getAreas()) {
 
-            // try to use an existing server for this area group, otherwise take an existing unused server, otherwise create a new server
-            ServerEntity server = serverRepository.findFirstByRegionAndAreasContains(region, area)
+            // try to use an existing server for this area, otherwise take an existing unused server, otherwise create a new server
+            ServerEntity server = serverRepository.findFirstByRegionAndAreasContainsAndIdNotIn(region, area,
+                            areasAllocation.values().stream().map(ServerEntity::getId).toList())
                     .orElseGet(() -> serverRepository.findFirstByRegionAndAreasEmpty(region)
                             .orElseGet(ServerEntity::new));
 
-            areasAllocation.put(Collections.singleton(area), server);
+            areasAllocation.put(Collections.singletonList(area), server);
         }
 
         return areasAllocation;

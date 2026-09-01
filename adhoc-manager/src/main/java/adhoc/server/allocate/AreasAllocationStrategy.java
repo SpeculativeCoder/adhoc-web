@@ -26,10 +26,10 @@ import adhoc.area.AreaEntity;
 import adhoc.region.RegionEntity;
 import adhoc.server.ServerEntity;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface AreasAllocationStrategy {
 
-    Map<Set<AreaEntity>, ServerEntity> calculateAreasAllocation(RegionEntity region);
+    Map<List<AreaEntity>, ServerEntity> calculateAreasAllocation(RegionEntity region);
 }

@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 public interface ServerRepository extends JpaRepository<ServerEntity, Long> {
 
-    Optional<ServerEntity> findFirstByRegionAndAreasContains(RegionEntity region, AreaEntity area);
+    Optional<ServerEntity> findFirstByRegionAndAreasContainsAndIdNotIn(RegionEntity region, AreaEntity area, Collection<Long> ids);
 
     Optional<ServerEntity> findFirstByRegionAndAreasEmpty(RegionEntity region);
 

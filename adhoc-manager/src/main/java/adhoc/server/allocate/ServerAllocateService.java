@@ -201,11 +201,11 @@ public class ServerAllocateService {
         if (!Objects.equals(server.getX(), serverX)
                 || !Objects.equals(server.getY(), serverY)
                 || !Objects.equals(server.getZ(), serverZ)) {
-            log.debug("Server {} now has position {} {} {}", server, serverX, serverY, serverZ);
+            //log.debug("Server {} now has position {} {} {}", server, serverX, serverY, serverZ);
             server.setX(serverX);
             server.setY(serverY);
             server.setZ(serverZ);
-            emitEvent = true;
+            //emitEvent = true;
         }
 
         return emitEvent;

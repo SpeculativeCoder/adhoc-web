@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.user.seen;
+package adhoc.user.active;
 
 import adhoc.pawn.PawnEntity;
 import adhoc.pawn.PawnRepository;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class UserSeenService {
+public class UserActiveService {
 
     private final UserRepository userRepository;
     private final PawnRepository pawnRepository;
@@ -53,10 +53,10 @@ public class UserSeenService {
      */
     @Retryable(includes = {TransientDataAccessException.class, LockAcquisitionException.class},
             maxRetries = 3, delay = 100, jitter = 10, multiplier = 1, maxDelay = 1000)
-    public void manageSeenUsers() {
+    public void manageActiveUsers() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime leaveUsersSeenBefore = now.minusMinutes(1);
-        log.trace("Managing seen users... now={} leaveUsersSeenBefore={}", now, leaveUsersSeenBefore);
+        log.trace("Managing active users... now={} leaveUsersSeenBefore={}", now, leaveUsersSeenBefore);
 
         // manage users who we think are currently connected to a server
         try (Stream<UserEntity> users = userRepository.streamForWriteByPresenceServerNotNull()) {
@@ -70,7 +70,8 @@ public class UserSeenService {
 
                     // see if there is a pawn for the user
                     pawnRepository.findFirstByServerAndUserOrderBySeenDescIdDesc(user.getPresence().getServer(), user)
-                            .ifPresent(pawn -> updateUserForPawn(user, pawn, now));
+                            .ifPresent(pawn ->
+                                    updateUserForPawn(user, pawn, now));
                 }
 
                 if (user.getPresence().getSeen() != null && user.getPresence().getSeen().isBefore(leaveUsersSeenBefore)) {

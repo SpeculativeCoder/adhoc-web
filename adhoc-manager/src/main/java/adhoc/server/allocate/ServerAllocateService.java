@@ -84,7 +84,7 @@ public class ServerAllocateService {
     private List<Event> allocateServersForRegion(RegionEntity region) {
         log.trace("Allocating servers for region {}...", region);
         List<Event> events = new ArrayList<>();
-        List<Long> regionServerIds = new ArrayList<>();
+        List<Long> usedServerIds = new ArrayList<>();
 
         Map<List<AreaEntity>, ServerEntity> areasAllocation = areasAllocationStrategy.calculateAreasAllocation(region);
         log.trace("Region {} areas allocation: {}", region, areasAllocation);
@@ -97,29 +97,20 @@ public class ServerAllocateService {
             Verify.verify(!areas.isEmpty());
             Verify.verifyNotNull(areasAllocationEntry.getValue());
 
-            // server is now enabled as it will have one or more areas assigned to it
-            // (this will trigger the starting of a server task via the hosting service)
-            server.setEnabled(true);
-
-            // adjust server as necessary to ensure it is representing the region and allocated areas
-            updateServerRegionAndAreas(server, region, areas)
+            allocateServerForRegionAndAreas(server, region, areas)
                     .ifPresent(events::add);
 
-            if (server.getId() == null) {
-                server = serverRepository.save(server);
-            }
-            regionServerIds.add(server.getId());
+            usedServerIds.add(server.getId());
         }
 
         // any servers in this region that are no longer used should be adjusted to ensure they are not representing any areas
-        try (Stream<ServerEntity> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, regionServerIds)) {
+        try (Stream<ServerEntity> unusedServers = serverRepository.streamByRegionAndIdNotIn(region, usedServerIds)) {
             unusedServers.forEach(unusedServer -> {
                 log.trace("Managing unused server {} for region {}", unusedServer, region);
 
-                // setting server to disabled will cause its server task to be shut down
-                unusedServer.setEnabled(false);
+                List<AreaEntity> areas = Collections.emptyList();
 
-                updateServerRegionAndAreas(unusedServer, region, Collections.emptyList())
+                allocateServerForRegionAndAreas(unusedServer, region, areas)
                         .ifPresent(events::add);
             });
         }
@@ -127,8 +118,8 @@ public class ServerAllocateService {
         return events;
     }
 
-    private Optional<ServerAllocateEvent> updateServerRegionAndAreas(ServerEntity server, RegionEntity region, List<AreaEntity> areas) {
-        log.trace("Updating server {} with region {} and areas {}", server, region, areas);
+    private Optional<ServerAllocateEvent> allocateServerForRegionAndAreas(ServerEntity server, RegionEntity region, List<AreaEntity> areas) {
+        log.trace("Allocating server {} for region {} and areas {}", server, region, areas);
 
         OptionalDouble averageX = areas.stream().map(AreaEntity::getX).mapToDouble(BigDecimal::doubleValue).average();
         OptionalDouble averageY = areas.stream().map(AreaEntity::getY).mapToDouble(BigDecimal::doubleValue).average();
@@ -177,6 +168,14 @@ public class ServerAllocateService {
             server.setY(serverY);
             server.setZ(serverZ);
             emitEvent = true;
+        }
+
+        // server is enabled if it has one or more areas assigned to it, disabled if no areas
+        // (enabled will trigger the starting server task via the hosting service, disabled will trigger stopping)
+        server.setEnabled(!areas.isEmpty());
+
+        if (server.getId() == null) {
+            server = serverRepository.save(server);
         }
 
         ServerAllocateEvent event = null;

@@ -121,14 +121,32 @@ public class ServerAllocateService {
     private Optional<ServerAllocateEvent> allocateServerForRegionAndAreas(ServerEntity server, RegionEntity region, List<AreaEntity> areas) {
         log.trace("Allocating server {} for region {} and areas {}", server, region, areas);
 
-        OptionalDouble averageX = areas.stream().map(AreaEntity::getX).mapToDouble(BigDecimal::doubleValue).average();
-        OptionalDouble averageY = areas.stream().map(AreaEntity::getY).mapToDouble(BigDecimal::doubleValue).average();
-        OptionalDouble averageZ = areas.stream().map(AreaEntity::getZ).mapToDouble(BigDecimal::doubleValue).average();
+        boolean emitEvent = false;
 
-        BigDecimal serverX = averageX.isPresent() ? BigDecimal.valueOf(averageX.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
-        BigDecimal serverY = averageY.isPresent() ? BigDecimal.valueOf(averageY.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
-        BigDecimal serverZ = averageZ.isPresent() ? BigDecimal.valueOf(averageZ.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
+        emitEvent |= updateServerRegion(server, region);
+        emitEvent |= updateServerAreas(server, areas);
 
+        // server position is based on the areas it represents
+        emitEvent |= updateServerPosition(server);
+
+        // server is enabled if it has one or more areas assigned to it, disabled if no areas
+        // when true, a server task will be started/maintained in the hosting service
+        // when false, any server task will be torn down
+        server.setEnabled(!areas.isEmpty());
+
+        if (server.getId() == null) {
+            server = serverRepository.save(server);
+        }
+
+        ServerAllocateEvent event = null;
+        if (emitEvent) {
+            event = serverAllocateEvent(server);
+            log.info("{}", event);
+        }
+        return Optional.ofNullable(event);
+    }
+
+    private boolean updateServerRegion(ServerEntity server, RegionEntity region) {
         boolean emitEvent = false;
 
         if (server.getRegion() != region) {
@@ -136,6 +154,12 @@ public class ServerAllocateService {
             server.setRegion(region);
             emitEvent = true;
         }
+
+        return emitEvent;
+    }
+
+    private boolean updateServerAreas(ServerEntity server, List<AreaEntity> areas) {
+        boolean emitEvent = false;
 
         if (server.getAreas() == null) {
             server.setAreas(new ArrayList<>());
@@ -160,30 +184,31 @@ public class ServerAllocateService {
             }
         }
 
+        return emitEvent;
+    }
+
+    private boolean updateServerPosition(ServerEntity server) {
+        boolean emitEvent = false;
+
+        OptionalDouble averageX = server.getAreas().stream().map(AreaEntity::getX).mapToDouble(BigDecimal::doubleValue).average();
+        OptionalDouble averageY = server.getAreas().stream().map(AreaEntity::getY).mapToDouble(BigDecimal::doubleValue).average();
+        OptionalDouble averageZ = server.getAreas().stream().map(AreaEntity::getZ).mapToDouble(BigDecimal::doubleValue).average();
+
+        BigDecimal serverX = averageX.isPresent() ? BigDecimal.valueOf(averageX.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
+        BigDecimal serverY = averageY.isPresent() ? BigDecimal.valueOf(averageY.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
+        BigDecimal serverZ = averageZ.isPresent() ? BigDecimal.valueOf(averageZ.getAsDouble()).setScale(0, RoundingMode.HALF_UP) : null;
+
         if (!Objects.equals(server.getX(), serverX)
                 || !Objects.equals(server.getY(), serverY)
                 || !Objects.equals(server.getZ(), serverZ)) {
-            log.debug("Server {} now has location {} {} {}", server, serverX, serverY, serverZ);
+            log.debug("Server {} now has position {} {} {}", server, serverX, serverY, serverZ);
             server.setX(serverX);
             server.setY(serverY);
             server.setZ(serverZ);
             emitEvent = true;
         }
 
-        // server is enabled if it has one or more areas assigned to it, disabled if no areas
-        // (enabled will trigger the starting server task via the hosting service, disabled will trigger stopping)
-        server.setEnabled(!areas.isEmpty());
-
-        if (server.getId() == null) {
-            server = serverRepository.save(server);
-        }
-
-        ServerAllocateEvent event = null;
-        if (emitEvent) {
-            event = serverAllocateEvent(server);
-            log.info("{}", event);
-        }
-        return Optional.ofNullable(event);
+        return emitEvent;
     }
 
     public ServerAllocateEvent serverAllocateEvent(ServerEntity server) {

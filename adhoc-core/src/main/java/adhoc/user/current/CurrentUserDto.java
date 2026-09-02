@@ -70,6 +70,9 @@ public class CurrentUserDto {
     Long regionId;
 
     @NotNull
+    Boolean active;
+
+    @NotNull
     @Size(min = 1)
     List<String> roles;
 

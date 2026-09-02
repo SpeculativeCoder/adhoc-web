@@ -83,6 +83,7 @@ public class UserJoinService {
         }
 
         user.getPresence().setRegion(server.getRegion());
+        user.getPresence().setActive(true);
         user.getPresence().setServer(server);
         user.getPresence().setDestinationServer(server);
         user.getPresence().setLastJoin(LocalDateTime.now());

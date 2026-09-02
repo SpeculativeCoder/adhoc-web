@@ -29,6 +29,7 @@ export class CurrentUser {
   factionId?: number;
   score?: number;
   regionId?: number;
+  active?: boolean;
   roles?: string[];
   destinationServerId?: number;
   serverId?: number;

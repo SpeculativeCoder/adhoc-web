@@ -53,6 +53,7 @@ import java.util.UUID;
 @Entity(name = "UserPresence")
 @Table(indexes = {
         @Index(name = "idx_user_presence_region_id", columnList = "region_id"),
+        @Index(name = "idx_user_presence_active", columnList = "active"),
         @Index(name = "idx_user_presence_seen", columnList = "seen"),
         @Index(name = "idx_user_presence_server_id", columnList = "server_id")
 })
@@ -87,6 +88,9 @@ public class UserPresenceEntity {
 
     private BigDecimal pitch;
     private BigDecimal yaw;
+
+    @Column(nullable = false)
+    private boolean active;
 
     private UUID token;
 

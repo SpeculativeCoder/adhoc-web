@@ -72,6 +72,7 @@ public class CurrentUserService {
                 user.getFaction().getId(),
                 user.getScore(),
                 userPresence.getRegion() == null ? null : userPresence.getRegion().getId(),
+                userPresence.isActive(),
                 user.getUserRoles().stream().map(UserRole::name).collect(Collectors.toList()),
                 userPresence.getDestinationServer() == null ? null : userPresence.getDestinationServer().getId(),
                 userPresence.getServer() == null ? null : userPresence.getServer().getId());

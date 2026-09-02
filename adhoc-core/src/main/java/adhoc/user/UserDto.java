@@ -66,6 +66,9 @@ public class UserDto {
     @Min(1)
     Long regionId;
 
+    @NotNull
+    Boolean active;
+
     LocalDateTime seen;
 
     @NotNull

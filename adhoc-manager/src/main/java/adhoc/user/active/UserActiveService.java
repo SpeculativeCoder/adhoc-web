@@ -59,7 +59,7 @@ public class UserActiveService {
         log.trace("Managing active users... now={} leaveUsersSeenBefore={}", now, leaveUsersSeenBefore);
 
         // manage users who we think are currently connected to a server
-        try (Stream<UserEntity> users = userRepository.streamForWriteByPresenceServerNotNull()) {
+        try (Stream<UserEntity> users = userRepository.streamForWriteByPresenceActiveIsTrue()) {
             users.forEach(user -> {
                 // users may be moving from one server to another so we are only interested after they have arrived at their desired server
                 if (user.getPresence().getServer() == user.getPresence().getDestinationServer()) {
@@ -85,6 +85,7 @@ public class UserActiveService {
         user.getPresence().setX(pawn.getX());
         user.getPresence().setY(pawn.getY());
         user.getPresence().setZ(pawn.getZ());
+
         user.getPresence().setPitch(pawn.getPitch());
         user.getPresence().setYaw(pawn.getYaw());
 
@@ -100,9 +101,10 @@ public class UserActiveService {
                 .addKeyValue("factionIndex", user.getFaction().getIndex())
                 .addKeyValue("factionId", user.getFaction().getId())
                 .addKeyValue("serverId", user.getPresence().getServer().getId())
-                .log("User left.");
+                .log("User leave.");
 
         // TODO: common path?
+        user.getPresence().setActive(false);
         user.getPresence().setServer(null);
     }
 }

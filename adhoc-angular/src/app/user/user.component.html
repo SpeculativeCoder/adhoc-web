@@ -69,6 +69,11 @@
       <input class="form-control" id="regionIdInput" name="regionId" type="text" readonly
              [ngModel]="user().regionId"/>
     </div>
+    <div class="mb-3 form-check">
+      <input class="form-check-input" id="activeInput" name="active" type="checkbox" readonly onclick="return false;"
+             [(ngModel)]="user().active"/>
+      <label class="form-check-label" for="activeInput">Active</label>
+    </div>
     <div class="mb-3">
       <label class="form-label" for="seenInput">Seen</label>
       <input class="form-control" id="seenInput" name="seen" type="text" readonly

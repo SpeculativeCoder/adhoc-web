@@ -43,7 +43,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findFirstByHumanFalseAndFactionIdAndPresenceSeenBefore(Long factionId, LocalDateTime seenBefore);
 
-    Stream<UserEntity> streamForWriteByPresenceServerNotNull();
+    Stream<UserEntity> streamForWriteByPresenceActiveIsTrue();
 
     @Query("select u.id from User u where u.created < ?1 and u.presence.seen is null and u.password is null and u.pawns is empty")
     List<Long> findIdsByCreatedBeforeAndSeenIsNullAndPasswordIsNullAndPawnsIsEmpty(LocalDateTime createdBefore);

@@ -35,7 +35,7 @@
     <include file="/db/changelog/0000/00/00-06-changelog-area.xml"/>
     <include file="/db/changelog/0000/00/00-07-changelog-objective.xml"/>
     <include file="/db/changelog/0000/00/00-08-changelog-pawn.xml"/>
-    <include file="/db/changelog/0000/00/00-09-changelog-user-state.xml"/>
+    <include file="/db/changelog/0000/00/00-09-changelog-user-presence.xml"/>
     <include file="/db/changelog/0000/00/00-10-changelog-structure.xml"/>
     <include file="/db/changelog/0000/00/00-11-changelog-task.xml"/>
     <include file="/db/changelog/0000/00/00-12-changelog-message.xml"/>

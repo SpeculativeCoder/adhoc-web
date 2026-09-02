@@ -35,6 +35,7 @@ export class User {
   z?: number;
   pitch?: number;
   yaw?: number;
+  active?: boolean;
   //created?: string;
   //updated?: string;
   //lastLogin?: string;

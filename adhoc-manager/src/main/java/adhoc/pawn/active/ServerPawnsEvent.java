@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn.state;
+package adhoc.pawn.active;
 
 import adhoc.pawn.PawnDto;
 import adhoc.system.Event;

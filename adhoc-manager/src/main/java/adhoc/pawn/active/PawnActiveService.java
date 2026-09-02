@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package adhoc.pawn.state;
+package adhoc.pawn.active;
 
 import adhoc.pawn.PawnDto;
 import adhoc.pawn.PawnEntity;
@@ -48,7 +48,7 @@ import java.util.UUID;
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
-public class PawnStateService {
+public class PawnActiveService {
 
     private final PawnRepository pawnRepository;
     private final ServerRepository serverRepository;

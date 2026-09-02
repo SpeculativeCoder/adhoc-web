@@ -22,8 +22,8 @@
 
 package adhoc.pawn;
 
-import adhoc.pawn.state.PawnStateService;
-import adhoc.pawn.state.ServerPawnsEvent;
+import adhoc.pawn.active.PawnActiveService;
+import adhoc.pawn.active.ServerPawnsEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PawnManagerController {
 
-    private final PawnStateService pawnStateService;
+    private final PawnActiveService pawnActiveService;
 
     @MessageMapping("ServerPawns")
     @SendTo("/topic/events")
@@ -48,7 +48,7 @@ public class PawnManagerController {
     public ServerPawnsEvent handleServerPawns(@Valid @RequestBody ServerPawnsEvent event) {
         log.debug("Handling: {}", event);
 
-        ServerPawnsEvent serverPawnsEvent = pawnStateService.handleServerPawns(event);
+        ServerPawnsEvent serverPawnsEvent = pawnActiveService.handleServerPawns(event);
 
         log.debug("Sending: {}", serverPawnsEvent);
         return serverPawnsEvent;

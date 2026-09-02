@@ -64,7 +64,7 @@ public class ServerTaskAllocateService {
     ) {
     }
 
-    public List<NeededServerTask> determineNeededServerTasks() {
+    List<NeededServerTask> determineNeededServerTasks() {
         List<NeededServerTask> neededServerTasks = new ArrayList<>();
 
         try (Stream<ServerEntity> enabledServers = serverRepository.streamByEnabledTrue()) {

@@ -34,4 +34,4 @@ docker run \
 -v ./temp-angular:/home/node/app/temp-angular \
 -i -t --rm \
 node_ng \
-pnpm run-script ng new --skip-install --skip-git temp-angular
+pnpm run ng new --skip-install --skip-git temp-angular

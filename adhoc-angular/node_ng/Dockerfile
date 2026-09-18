@@ -5,7 +5,7 @@ ENV npm_config_min_release_age=2
 
 ENV npm_config_loglevel=verbose
 
-RUN npm install -g --ignore-scripts pnpm@latest-11
+RUN npm install -g --ignore-scripts pnpm@latest-12
 
 RUN mkdir /home/node/app
 RUN chown -R node:node /home/node/app
@@ -21,8 +21,8 @@ RUN pnpm init
 
 RUN echo "minimumReleaseAge: 2880" > pnpm-workspace.yaml
 
-RUN pnpm install --save --ignore-scripts @angular/cli
+RUN pnpm install --save-dev --ignore-scripts @angular/cli
 
 RUN sed -i 's/"test":.*/"ng": "ng"/' package.json
 
-CMD ["pnpm", "run-script", "ng", "version"]
+CMD ["pnpm", "run", "ng", "version"]

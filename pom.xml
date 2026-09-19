@@ -57,6 +57,8 @@
         <springdoc-webmvc-ui.version>3.1.1</springdoc-webmvc-ui.version>
         <springdoc-maven-plugin.version>1.5</springdoc-maven-plugin.version>
 
+        <!-- spring boot dependency overrides - comment out when spring boot has these versions -->
+        <h2.version>2.5.250</h2.version>
         <!--<quartz.version>2.5.2</quartz.version>-->
 
         <maven.compiler.debug>true</maven.compiler.debug>

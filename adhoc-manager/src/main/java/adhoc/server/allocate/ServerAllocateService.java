@@ -141,7 +141,7 @@ public class ServerAllocateService {
         ServerAllocateEvent event = null;
         if (emitEvent) {
             event = serverAllocateEvent(server);
-            log.info("{}", event);
+            log.debug("event={}", event);
         }
         return Optional.ofNullable(event);
     }

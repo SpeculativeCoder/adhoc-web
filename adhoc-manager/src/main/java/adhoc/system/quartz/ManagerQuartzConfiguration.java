@@ -66,7 +66,7 @@ public class ManagerQuartzConfiguration {
                 .withIdentity(ALLOCATE_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever()
-                        .withIntervalInSeconds(10)
+                        .withIntervalInSeconds(5)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
                 .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
@@ -79,7 +79,7 @@ public class ManagerQuartzConfiguration {
                 .withIdentity(MANAGE_ACTIVE_SERVERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever()
-                        .withIntervalInSeconds(10)
+                        .withIntervalInSeconds(5)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
                 .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();
@@ -157,7 +157,7 @@ public class ManagerQuartzConfiguration {
                 .withIdentity(MANAGE_SEEN_USERS)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .repeatForever()
-                        .withIntervalInSeconds(10)
+                        .withIntervalInSeconds(5)
                         .withMisfireHandlingInstructionNextWithRemainingCount())
                 .startAt(Date.from(baseStartInstant)) //.plusMillis(startOffset += 200)))
                 .build();

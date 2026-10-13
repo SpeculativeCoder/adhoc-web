@@ -47,6 +47,8 @@ export UNREAL_PROJECT_TRANSITION_MAP=${UNREAL_PROJECT_TRANSITION_MAP:-Entry}
 export UNREAL_PROJECT_DIR=${UNREAL_PROJECT_DIR:-${HOME}/Unreal\ Projects/${UNREAL_PROJECT_NAME}}
 export UNREAL_ENGINE_DIR=${UNREAL_ENGINE_DIR:-${HOME}/ue-4.27-html5-es3}
 
+export UNREAL_DEBUG_INFO=${UNREAL_DEBUG_INFO:--DebugInfo}
+
 export SERVER_IMAGE=${SERVER_IMAGE:-${ADHOC_NAME}_${ADHOC_ENV}_server}
 
 web_project_dir=$(realpath -e $(dirname "$0"))
@@ -64,7 +66,7 @@ ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
  -MapsToCook=${UNREAL_PROJECT_REGION_MAPS}+${UNREAL_PROJECT_TRANSITION_MAP} -Map=${UNREAL_PROJECT_TRANSITION_MAP} \
  -ArchiveDirectory=${package_dir}/${UNREAL_SERVER_CONFIGURATION} \
  -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
- -NoP4 -UTF8Output -NoDebugInfo
+ -NoP4 -UTF8Output ${UNREAL_DEBUG_INFO}
  #>logs/runuat_server.txt 2>&1
 
 # we only want the symbols for now so delete debug info

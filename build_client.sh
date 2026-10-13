@@ -39,6 +39,8 @@ export UNREAL_PROJECT_TRANSITION_MAP=${UNREAL_PROJECT_TRANSITION_MAP:-Entry}
 export UNREAL_PROJECT_DIR=${UNREAL_PROJECT_DIR:-${HOME}/Unreal\ Projects/${UNREAL_PROJECT_NAME}}
 export UNREAL_ENGINE_DIR=${UNREAL_ENGINE_DIR:-${HOME}/ue-4.27-html5-es3}
 
+export UNREAL_DEBUG_INFO=${UNREAL_DEBUG_INFO:--NoDebugInfo}
+
 web_project_dir=$(realpath -e $(dirname "$0"))
 
 #mkdir -p logs
@@ -50,7 +52,7 @@ do
 
   mkdir -p ${package_dir}
 
-  # ASTC
+  # ASTC (mobile)
   ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
    -Project=${UNREAL_PROJECT_DIR}/${UNREAL_PROJECT_NAME}.uproject \
    -Target=${UNREAL_PROJECT_NAME}Client -TargetPlatform=HTML5 -ClientConfig=${UNREAL_CLIENT_CONFIGURATION} \
@@ -59,10 +61,10 @@ do
    -MapsToCook=${map}+${UNREAL_PROJECT_TRANSITION_MAP} -Map=${UNREAL_PROJECT_TRANSITION_MAP} \
    -ArchiveDirectory=${package_dir} \
    -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
-   -NoP4 -UTF8Output -NoDebugInfo
+   -NoP4 -UTF8Output ${UNREAL_DEBUG_INFO}
    #>logs/runuat_client_${map}_astc.txt 2>&1
 
-  # DXT (default)
+  # DXT (desktop)
   ${UNREAL_ENGINE_DIR}/Engine/Build/BatchFiles/RunUAT.bat BuildCookRun \
    -Project=${UNREAL_PROJECT_DIR}/${UNREAL_PROJECT_NAME}.uproject \
    -Target=${UNREAL_PROJECT_NAME}Client -TargetPlatform=HTML5 -ClientConfig=${UNREAL_CLIENT_CONFIGURATION} \
@@ -70,7 +72,7 @@ do
    -MapsToCook=${map}+${UNREAL_PROJECT_TRANSITION_MAP} -Map=${UNREAL_PROJECT_TRANSITION_MAP} \
    -ArchiveDirectory=${package_dir} \
    -PreReqs -Pak -Compressed -NoCompileEditor -SkipCookingEditorContent \
-   -NoP4 -UTF8Output -NoDebugInfo
+   -NoP4 -UTF8Output ${UNREAL_DEBUG_INFO}
    #>logs/runuat_client_${map}_dxt.txt 2>&1
 
   find ${package_dir} -exec touch {} +

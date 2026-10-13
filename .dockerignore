@@ -2,10 +2,12 @@
 !Package/Development/LinuxServer
 !Package/Test/LinuxServer
 !Package/Shipping/LinuxServer
+Package/Development/LinuxServer/*/Binaries/Linux/*.debug
+Package/Test/LinuxServer/*/Binaries/Linux/*.debug
+Package/Shipping/LinuxServer/*/Binaries/Linux/*.debug
 #!certs/adhoc-ca.cer
 #!certs/adhoc.cer
 #!certs/adhoc.key
 !docker/adhoc_container_init.sh
 !adhoc-kiosk/target/adhoc-*-SNAPSHOT.jar
 !adhoc-manager/target/adhoc-*-SNAPSHOT.jar
-*.debug

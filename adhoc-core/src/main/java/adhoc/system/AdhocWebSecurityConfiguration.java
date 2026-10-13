@@ -79,8 +79,8 @@ public class AdhocWebSecurityConfiguration<S extends Session> {
         return http
                 .authorizeHttpRequests(auth -> auth
                         // TODO: ideally have a separate one for anonymous?
-                        .requestMatchers("/adhoc_ws/stomp/user_sockjs/**").permitAll()
-                        //.requestMatchers("/adhoc_ws/stomp/user/**").permitAll()
+                        .requestMatchers("/adhoc_ws/stomp/user_sockjs/**").hasAnyRole("ANONYMOUS", "USER")
+                        //.requestMatchers("/adhoc_ws/stomp/user/**").hasAnyRole("ANONYMOUS", "USER")
                         .requestMatchers("/adhoc_ws/stomp/server/**").hasAnyRole("SERVER")
                         .requestMatchers("/adhoc_ws/stomp/**").denyAll()
 

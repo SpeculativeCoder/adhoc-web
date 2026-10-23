@@ -107,20 +107,24 @@ public class UserNavigateService {
         ServerEntity oldDestinationServer = user.getPresence().getDestinationServer();
         RegionEntity oldRegion = oldDestinationServer == null ? null : oldDestinationServer.getRegion();
 
-        // when moving servers, update the position to ensure they can spawn at the right location
-        if (destinationServer != oldDestinationServer && Objects.equals(destinationServer.getRegion(), oldRegion)) {
-            user.getPresence().setX(request.getX());
-            user.getPresence().setY(request.getY());
-            user.getPresence().setZ(request.getZ());
-            user.getPresence().setYaw(request.getYaw());
-            user.getPresence().setPitch(request.getPitch());
+        if (destinationServer != oldDestinationServer) {
+
+            // when moving servers within the same region, update the position to ensure they can spawn at the right location
+            if (Objects.equals(destinationServer.getRegion(), oldRegion)) {
+                user.getPresence().setX(request.getX());
+                user.getPresence().setY(request.getY());
+                user.getPresence().setZ(request.getZ());
+                user.getPresence().setYaw(request.getYaw());
+                user.getPresence().setPitch(request.getPitch());
+            }
+
+            user.getPresence().setDestinationServer(destinationServer);
+            user.getPresence().setNavigated(LocalDateTime.now(clock));
+
+            // regenerate the token each time we switch server
+            UUID newToken = randomUUIDHelper.randomUUID();
+            user.getPresence().setToken(newToken);
         }
-
-        user.getPresence().setDestinationServer(destinationServer);
-        user.getPresence().setNavigated(LocalDateTime.now(clock));
-
-        UUID newToken = randomUUIDHelper.randomUUID();
-        user.getPresence().setToken(newToken);
 
         return new UserNavigateResponse(
                 user.getPresence().getDestinationServer().getPublicIp(),

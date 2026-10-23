@@ -84,9 +84,15 @@ public class AdhocUserDetailsService implements UserDetailsService {
 
         if (username.endsWith("-")) {
             quickLogin = true;
-            Long userId = Long.valueOf(username.substring(0, username.length() - 1));
+            long userId;
+            try {
+                userId = Long.parseLong(username.substring(0, username.length() - 1));
+            } catch (NumberFormatException nfe) {
+                throw UsernameNotFoundException.fromUsername(username, nfe);
+            }
             user = userRepository.findById(userId).orElseThrow(() ->
                     UsernameNotFoundException.fromUsername(username));
+
         } else {
             quickLogin = false;
             user = userRepository.findByNameOrEmail(username, username).orElseThrow(() ->

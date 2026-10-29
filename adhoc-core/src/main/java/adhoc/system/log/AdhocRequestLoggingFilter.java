@@ -94,11 +94,16 @@ public class AdhocRequestLoggingFilter extends AbstractRequestLoggingFilter {
         ContentCachingResponseWrapper responseWrapper = null;
 
         boolean uriApi = false;
-        if (request.getRequestURI().startsWith("/adhoc_api/") || request.getRequestURI().startsWith("/adhoc_ws/")) {
+        if (request.getRequestURI().startsWith("/adhoc_api/")) {
             uriApi = true;
         }
 
-        if (uriApi) {
+        boolean uriWebSocket = false;
+        if (request.getRequestURI().startsWith("/adhoc_ws/")) {
+            uriWebSocket = true;
+        }
+
+        if (uriApi || uriWebSocket) {
             requestWrapper = new ContentCachingRequestWrapper(request, getMaxPayloadLength());
             responseWrapper = new ContentCachingResponseWrapper(response);
         }

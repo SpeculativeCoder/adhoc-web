@@ -47,7 +47,6 @@ import java.time.Clock;
 public class AdhocWebConfiguration {
 
     private final CoreProperties coreProperties;
-    //private final ServerProperties serverProperties;
 
     @Bean
     @ConditionalOnMissingBean(Clock.class)
@@ -75,10 +74,10 @@ public class AdhocWebConfiguration {
     @Bean
     public DefaultCookieSerializerCustomizer adhocCookieSerializerCustomizer() {
         return cookieSerializer -> {
-            // if we don't need to be used in a third party context (iframe) then we can have strict SameSite for cookies
-            if (coreProperties.getThirdPartyDomains().isEmpty()) {
-                cookieSerializer.setSameSite("strict");
-                cookieSerializer.setPartitioned(false);
+            // if we need to allow our page to be loaded in a third party context (iframe) we set SameSite 'None' and enable partitioned cookies
+            if (!coreProperties.getThirdPartyDomains().isEmpty()) {
+                cookieSerializer.setSameSite("None");
+                cookieSerializer.setPartitioned(true);
             }
             // see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#cookie_prefixes
             //if (serverProperties.getSsl().isEnabled()) {

@@ -102,10 +102,15 @@ public class AdhocWebSecurityConfiguration<S extends Session> {
                         .anyRequest().denyAll())
 
                 .headers(headers -> headers
-                        // for sockjs
-                        //.frameOptions(frameOptions -> frameOptions
-                        //        .sameOrigin())
-                        .frameOptions(frameOptions -> frameOptions.disable())
+                        .frameOptions(frameOptions -> {
+                            // do we need to allow loading in third party frame?
+                            if (!coreProperties.getThirdPartyDomains().isEmpty()) {
+                                frameOptions.disable();
+                            } else {
+                                // default for sockjs
+                                frameOptions.sameOrigin();
+                            }
+                        })
                         .contentSecurityPolicy(csp ->
                                 csp.policyDirectives(frameAncestors())))
 

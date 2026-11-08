@@ -9,15 +9,15 @@
     "test": "ng test"
   },
   "private": true,
-  "packageManager": "pnpm@12.4.2",
+  "packageManager": "pnpm@12.18.0",
   "dependencies": {
-    "@angular/common": "^22.1.0",
-    "@angular/compiler": "^22.1.0",
-    "@angular/core": "^22.1.0",
-    "@angular/forms": "^22.1.0",
-    "@angular/localize": "^22.1.0",
-    "@angular/platform-browser": "^22.1.0",
-    "@angular/router": "^22.1.0",
+    "@angular/common": "^22.2.0",
+    "@angular/compiler": "^22.2.0",
+    "@angular/core": "^22.2.0",
+    "@angular/forms": "^22.2.0",
+    "@angular/localize": "^22.2.0",
+    "@angular/platform-browser": "^22.2.0",
+    "@angular/router": "^22.2.0",
     "@ng-bootstrap/ng-bootstrap": "^21.0.0",
     "@popperjs/core": "^2.11.8",
     "angular-in-memory-web-api": "^0.22.0",
@@ -30,13 +30,13 @@
     "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
-    "@angular/build": "^22.1.8",
-    "@angular/cli": "^22.1.8",
-    "@angular/compiler-cli": "^22.1.0",
+    "@angular/build": "^22.2.6",
+    "@angular/cli": "^22.2.6",
+    "@angular/compiler-cli": "^22.2.0",
     "@types/sockjs-client": "^1.5.4",
-    "jsdom": "^28.0.0",
+    "jsdom": "^30.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
-    "vitest": "^4.0.8"
+    "vitest": "^5.0.0"
   }
 }

@@ -9,5 +9,5 @@ Package/Shipping/LinuxServer/*/Binaries/Linux/*.debug
 #!certs/adhoc.cer
 #!certs/adhoc.key
 !docker/adhoc_container_init.sh
-!adhoc-kiosk/target/adhoc-*-SNAPSHOT.jar
-!adhoc-manager/target/adhoc-*-SNAPSHOT.jar
+!adhoc-kiosk/target/adhoc-*-SNAPSHOT-exec.jar
+!adhoc-manager/target/adhoc-*-SNAPSHOT-exec.jar

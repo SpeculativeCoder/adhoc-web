@@ -111,7 +111,7 @@ RUN mkdir certs
 ADD docker/adhoc_container_init.sh .
 RUN chmod +x adhoc_container_init.sh
 
-ADD adhoc-kiosk/target/adhoc-kiosk-0.0.1-SNAPSHOT.jar adhoc-kiosk.jar
+ADD adhoc-kiosk/target/adhoc-kiosk-0.0.1-SNAPSHOT-exec.jar adhoc-kiosk.jar
 
 #USER adhoc
 

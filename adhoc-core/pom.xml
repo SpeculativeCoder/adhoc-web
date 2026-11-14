@@ -214,6 +214,19 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.liquibase</groupId>
+                    <artifactId>liquibase-maven-plugin</artifactId>
+                    <configuration>
+                        <!--<propertyFile>liquibase.properties</propertyFile>-->
+                        <driverPropertiesFile>${maven.multiModuleProjectDirectory}/env/liquibase-driver.properties</driverPropertiesFile>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -222,7 +235,7 @@
             <!-- the packaged unreal project is made available to the java resources classpath -->
             <resource>
                 <directory>
-                    ../Package/${unreal.client.configuration}/HTML5Client
+                    ${maven.multiModuleProjectDirectory}/Package/${unreal.client.configuration}/HTML5Client
                 </directory>
                 <targetPath>HTML5Client</targetPath>
             </resource>
@@ -235,7 +248,7 @@
             <id>adhoc-core-extra</id>
             <activation>
                 <file>
-                    <exists>../adhoc-web-extra/adhoc-core-extra</exists>
+                    <exists>${maven.multiModuleProjectDirectory}/adhoc-web-extra/adhoc-core-extra</exists>
                 </file>
             </activation>
             <build>
@@ -252,7 +265,7 @@
                                 </goals>
                                 <configuration>
                                     <sources>
-                                        <source>../adhoc-web-extra/adhoc-core-extra/src/main/java</source>
+                                        <source>${maven.multiModuleProjectDirectory}/adhoc-web-extra/adhoc-core-extra/src/main/java</source>
                                     </sources>
                                 </configuration>
                             </execution>
@@ -266,7 +279,7 @@
                                     <resources>
                                         <resource>
                                             <directory>
-                                                ../adhoc-web-extra/adhoc-core-extra/src/main/resources
+                                                ${maven.multiModuleProjectDirectory}/adhoc-web-extra/adhoc-core-extra/src/main/resources
                                             </directory>
                                         </resource>
                                     </resources>

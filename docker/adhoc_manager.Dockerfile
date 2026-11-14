@@ -127,7 +127,7 @@ RUN mkdir certs
 ADD docker/adhoc_container_init.sh .
 RUN chmod +x adhoc_container_init.sh
 
-ADD adhoc-manager/target/adhoc-manager-0.0.1-SNAPSHOT.jar adhoc-manager.jar
+ADD adhoc-manager/target/adhoc-manager-0.0.1-SNAPSHOT-exec.jar adhoc-manager.jar
 
 #USER adhoc
 

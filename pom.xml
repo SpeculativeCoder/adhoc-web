@@ -100,7 +100,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-configuration2</artifactId>
@@ -111,7 +110,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
@@ -156,7 +154,7 @@
                                 <artifactId>lombok</artifactId>
                             </exclude>
                         </excludes>
-                        <workingDirectory>${project.parent.basedir}</workingDirectory>
+                        <workingDirectory>${maven.multiModuleProjectDirectory}</workingDirectory>
                     </configuration>
                 </plugin>
 
@@ -164,10 +162,13 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
-                        <includes>**/*Test.java</includes>
-                        <!-- running ITs with surefire -->
-                        <includes>**/*IT.java</includes>
-                        <workingDirectory>${project.parent.basedir}</workingDirectory>
+                        <reuseForks>false</reuseForks> <!-- TODO -->
+                        <includes>
+                            <include>**/*Test.java</include>
+                            <!-- running ITs with surefire for now -->
+                            <include>**/*IT.java</include>
+                        </includes>
+                        <workingDirectory>${maven.multiModuleProjectDirectory}</workingDirectory>
                         <!-- don't force ANSI colors when outputting to file -->
                         <systemPropertyVariables>
                             <spring.output.ansi.enabled>detect</spring.output.ansi.enabled>
@@ -181,7 +182,8 @@
                     <configuration>
                         <!-- no need to run ITs here as we have run them with surefire -->
                         <includes/>
-                        <workingDirectory>${project.parent.basedir}</workingDirectory>
+                        <reuseForks>false</reuseForks> <!-- TODO -->
+                        <workingDirectory>${maven.multiModuleProjectDirectory}</workingDirectory>
                         <!-- don't force ANSI colors when outputting to file -->
                         <systemPropertyVariables>
                             <spring.output.ansi.enabled>detect</spring.output.ansi.enabled>
@@ -193,16 +195,6 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>${exec-maven-plugin.version}</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.liquibase</groupId>
-                    <artifactId>liquibase-maven-plugin</artifactId>
-                    <version>${liquibase.version}</version>
-                    <configuration>
-                        <!--<propertyFile>liquibase.properties</propertyFile>-->
-                        <driverPropertiesFile>../env/liquibase-driver.properties</driverPropertiesFile>
-                    </configuration>
                 </plugin>
 
                 <plugin>

@@ -110,6 +110,7 @@
             </build>
         </profile>
 
+        <!-- if extra features available - include them -->
         <profile>
             <id>adhoc-manager-extra</id>
             <activation>

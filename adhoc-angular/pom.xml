@@ -37,6 +37,7 @@
 
   <build>
     <resources>
+      <!-- treat index.html as a thymeleaf template -->
       <resource>
         <directory>dist/${angular.configuration}/adhoc-angular/browser/en-US</directory>
         <includes>
@@ -45,6 +46,7 @@
         <targetPath>templates</targetPath>
       </resource>
 
+      <!-- all other files are treated as static resources -->
       <resource>
         <directory>dist/${angular.configuration}/adhoc-angular/browser/en-US</directory>
         <excludes>
@@ -54,14 +56,12 @@
       </resource>
     </resources>
 
-    <!-- this is sometimes needed for npm e.g. if using older version of ng-boostrap -->
-    <!-- &#45;&#45;legacy-peer-deps -->
-
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
+          <!-- installs node_modules with appropriate locked versions -->
           <execution>
             <id>pnpm ci</id>
             <phase>generate-resources</phase>
@@ -78,6 +78,7 @@
             </configuration>
           </execution>
 
+          <!-- invokes ng build to build the angular app -->
           <execution>
             <id>pnpm run build</id>
             <phase>generate-resources</phase>

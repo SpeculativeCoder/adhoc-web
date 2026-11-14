@@ -66,11 +66,11 @@
         <maven.compiler.debug>true</maven.compiler.debug>
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-        <unreal.client.configuration>Development</unreal.client.configuration>
         <!--<unreal.client.configuration>Production</unreal.client.configuration>-->
+        <unreal.client.configuration>Development</unreal.client.configuration>
 
-        <angular.configuration>development</angular.configuration>
         <!--<angular.configuration>production</angular.configuration>-->
+        <angular.configuration>development</angular.configuration>
 
         <!--<adhoc.angular.customization/>-->
         <adhoc.angular.customization>,customization</adhoc.angular.customization>

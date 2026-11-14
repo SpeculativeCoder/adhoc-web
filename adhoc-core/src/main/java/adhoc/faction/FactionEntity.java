@@ -83,7 +83,8 @@ public class FactionEntity {
     @Column(nullable = false)
     private BigDecimal score;
 
-    public FactionEntity(Integer index, String name, String color, double score) {
+    public FactionEntity(UniverseEntity universe, Integer index, String name, String color, double score) {
+        this.universe = universe;
         this.index = index;
         this.name = name;
         this.color = color;

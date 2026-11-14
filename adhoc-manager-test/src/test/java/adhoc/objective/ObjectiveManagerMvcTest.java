@@ -32,6 +32,9 @@ import adhoc.region.RegionRepository;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.system.auth.AdhocServerUserDetails;
+import adhoc.universe.UniverseEntity;
+import adhoc.universe.UniverseRepository;
+import adhoc.universe.UniverseService;
 import com.google.common.collect.Sets;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
@@ -49,6 +52,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 public class ObjectiveManagerMvcTest extends AbstractManagerMvcTest {
 
+    @Autowired
+    private UniverseRepository universeRepository;
     @Autowired
     private FactionRepository factionRepository;
     @Autowired
@@ -69,13 +74,15 @@ public class ObjectiveManagerMvcTest extends AbstractManagerMvcTest {
 
         // ARRANGE
 
+        UniverseEntity universe =universeRepository.getReferenceById(UniverseService.UNIVERSE_ID); // TODO
+
         int faction1Index = entityManager.createQuery(
                         "SELECT f.index FROM Faction f ORDER BY f.index DESC LIMIT 1", Integer.class)
                 .getSingleResult() + 1;
-        FactionEntity faction1 = new FactionEntity(faction1Index, "Faction 1", "#0000FF", 0);
+        FactionEntity faction1 = new FactionEntity(universe, faction1Index, "Faction 1", "#0000FF", 0);
         faction1 = factionRepository.save(faction1);
 
-        RegionEntity region = new RegionEntity("Region 1", "Region0001", 10, -22, 0);
+        RegionEntity region = new RegionEntity(universe, "Region 1", "Region0001", 10, -22, 0);
         region = regionRepository.save(region);
 
         AreaEntity area = new AreaEntity(region, 0, "Area 1", 33, -44, 55, 10, 20, 30);

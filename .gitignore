@@ -16,6 +16,10 @@
 
 /adhoc-kiosk/target
 
+/adhoc-kiosk-test/target
+
+/adhoc-manager-test/target
+
 /adhoc-third-party/target
 
 /terraform/.terraform

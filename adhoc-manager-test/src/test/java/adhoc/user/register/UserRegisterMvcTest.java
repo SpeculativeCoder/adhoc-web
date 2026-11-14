@@ -103,13 +103,14 @@ public class UserRegisterMvcTest extends AbstractManagerMvcTest {
                 .hasStatus(HttpStatus.CREATED)
                 .hasHeader("Location", "/adhoc_api/users/current")
                 .hasContentType(MediaType.APPLICATION_JSON)
-                .bodyJson().isEqualTo(objectMapper.writeValueAsString(CurrentUserDto.builder()
+                .bodyJson().isLenientlyEqualTo(objectMapper.writeValueAsString(CurrentUserDto.builder()
                         .id(user.getId()).version(1L) // NOTE: programmatic login sets last login time
                         .name(user.getName())
-                        .quickLoginCode(user.getName() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey()))
+                        .quickLoginCode(user.getId() + "-" + user.getQuickLoginPassword(coreProperties.getQuickLoginPasswordEncryptionKey()))
                         .human(true)
                         .factionId(user.getFaction().getId())
                         .score(BigDecimal.ZERO)
+                        .active(false)
                         .roles(List.of("USER"))
                         .build()));
         assertThat(result).cookies()

@@ -94,7 +94,8 @@ public class RegionEntity {
     @OneToMany(mappedBy = "region")
     private List<ServerEntity> servers;
 
-    public RegionEntity(String name, String mapName, double x, double y, double z) {
+    public RegionEntity(UniverseEntity universe, String name, String mapName, double x, double y, double z) {
+        this.universe = universe;
         this.name = name;
         this.mapName = mapName;
         this.x = BigDecimal.valueOf(x);

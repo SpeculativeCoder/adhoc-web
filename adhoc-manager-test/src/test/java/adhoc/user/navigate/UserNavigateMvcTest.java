@@ -32,6 +32,9 @@ import adhoc.region.RegionRepository;
 import adhoc.server.ServerEntity;
 import adhoc.server.ServerRepository;
 import adhoc.system.auth.AdhocUserDetails;
+import adhoc.universe.UniverseEntity;
+import adhoc.universe.UniverseRepository;
+import adhoc.universe.UniverseService;
 import adhoc.user.UserEntity;
 import adhoc.user.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -54,6 +57,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 public class UserNavigateMvcTest extends AbstractManagerMvcTest {
 
+    @Autowired
+    private UniverseRepository universeRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -78,13 +83,15 @@ public class UserNavigateMvcTest extends AbstractManagerMvcTest {
 
         LocalDateTime priorTime = LocalDateTime.now().minusMinutes(10);
 
+        UniverseEntity universe = universeRepository.getReferenceById(UniverseService.UNIVERSE_ID); // TODO
+
         int factionIndex = entityManager.createQuery(
                         "SELECT f.index FROM Faction f ORDER BY f.index DESC LIMIT 1", Integer.class)
                 .getSingleResult() + 1;
-        FactionEntity faction = new FactionEntity(factionIndex, "Faction 1", "#0000FF", 0);
+        FactionEntity faction = new FactionEntity(universe, factionIndex, "Faction 1", "#0000FF", 0);
         faction = factionRepository.save(faction);
 
-        RegionEntity region = new RegionEntity("Region 1", "Region0001", 10, -20, 0);
+        RegionEntity region = new RegionEntity(universe, "Region 1", "Region0001", 10, -20, 0);
         region = regionRepository.save(region);
 
         AreaEntity area = new AreaEntity(region, 0, "Area 1", 0, 0, 0, 10, 10, 10);

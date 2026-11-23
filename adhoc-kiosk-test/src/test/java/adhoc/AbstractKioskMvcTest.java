@@ -28,7 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -42,15 +42,15 @@ import java.time.ZoneId;
 @TestPropertySource("classpath:/application-test.properties")
 // TODO: why can we not set printOnlyOnFailure via test properties?
 @AutoConfigureMockMvc(printOnlyOnFailure = false) // print = MockMvcPrint.LOG_DEBUG,
-@Import(AbstractKioskMvcTest.TestClockConfiguration.class)
 @Slf4j
 public class AbstractKioskMvcTest {
 
     @TestConfiguration
     static class TestClockConfiguration {
 
+        @Primary
         @Bean
-        public Clock clock() {
+        public Clock fixedClock() {
             return Clock.fixed(Instant.now(), ZoneId.systemDefault());
         }
     }

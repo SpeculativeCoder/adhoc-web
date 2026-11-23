@@ -49,7 +49,6 @@ public class AdhocWebConfiguration {
     private final CoreProperties coreProperties;
 
     @Bean
-    @ConditionalOnMissingBean(Clock.class)
     public Clock clock() {
         return Clock.systemDefaultZone();
     }
